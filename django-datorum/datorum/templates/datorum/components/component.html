@@ -1,0 +1,5 @@
+{% if component.is_deferred and htmx %}
+    <div hx-get="?key={{ component.key }}" hx-trigger="load"></div>
+{% else %}
+    {% include component.template %}
+{% endif %}

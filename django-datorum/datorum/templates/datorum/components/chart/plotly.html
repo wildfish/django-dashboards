@@ -1,0 +1,14 @@
+{% load datorum %}
+{% render component as data %}
+
+{% with "data_"|add:component.key as data_key %}
+    {{ data|json_script:data_key }}
+    <script>
+        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
+        const data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+        Plotly.newPlot('component-chart-{{ component.key }}', data_{{ component.key }});
+    </script>
+{% endwith %}
+
+<div id="component-chart-{{ component.key }}"></div>
+

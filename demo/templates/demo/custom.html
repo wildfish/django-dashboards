@@ -1,0 +1,15 @@
+{% extends "datorum/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block content_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    {# Q could make this a template tag #}
+    {% include "datorum/components/component.html" with component=dashboard.text_example htmx=False %}
+    <hr/>
+    {% include "datorum/components/component.html" with component=dashboard.html_example htmx=False %}
+    <hr/>
+    {% include "datorum/components/component.html" with component=dashboard.calculated_example htmx=True %}
+    <hr/>
+    {% include "datorum/components/component.html" with component=dashboard.chart_example htmx=True %}
+{% endblock %}

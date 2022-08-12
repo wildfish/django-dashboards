@@ -1,0 +1,20 @@
+<div class="dashboard-container">
+    {% regroup components by group as grouped_components %}
+    {% for group in grouped_components %}
+        {% if group.grouper %}
+            <div class="dashboard-component dashboard-component-grouped span-{{ group.list.0.group_width }}">
+                {% for component in group.list %}
+                    <div class="span-{{ component.width }}" id="component-{{ group.component }}">
+                        {% include "datorum/components/component.html" with htmx=True %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% for component in group.list %}
+                <div id="component-{{ component.key }}" class="dashboard-component span-{{ component.width }}">
+                    {% include "datorum/components/component.html" with htmx=True %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</div>

@@ -1,0 +1,18 @@
+{% regroup components by group as grouped_components %}
+{% for group in grouped_components %}
+    {% if group.grouper %}
+        <div>
+            {% for component in group.list %}
+                <div id="component-{{ group.component }}">
+                    {% include "datorum/components/component.html" with htmx=True %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% for component in group.list %}
+            <div id="component-{{ component.key }}">
+                {% include "datorum/components/component.html" with htmx=True %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endfor %}

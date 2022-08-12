@@ -1,0 +1,31 @@
+{% load datorum %}
+<div id="component-table-{{ component.key }}"></div>
+
+{% with "data_"|add:component.key as data_key %}
+    {% if not component.is_deferred %}
+        {% render component as data %}
+        {{ data|json_script:data_key }}
+    {% endif %}
+    <script>
+        {% if not component.is_deferred %}
+        const data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+        {% endif %}
+
+        /*
+        TODO for more control, the data provided to the component could be
+        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
+        */
+        const table_{{ component.key }} = new Tabulator("#component-table-{{ component.key }}", {
+            {% if component.is_deferred %}
+            "ajaxURL":"?key={{ component.key }}",
+            "ajaxSorting": "true",
+            {% else %}
+            "data": data_{{ component.key }},
+            {% endif %}
+            "autoColumns": true,
+            "layout": "fitColumns",
+        });
+    </script>
+{% endwith %}
+
+

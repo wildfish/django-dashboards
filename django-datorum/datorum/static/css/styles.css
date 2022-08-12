@@ -1,0 +1,60 @@
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: auto;
+}
+
+html {
+  font-size: 1.2em;
+  line-height: 1.4;
+  font-weight: 400;
+  font-family: 'Helvetica Neue';
+}
+
+body {
+  padding: 1em;
+  margin: 0 auto;
+  max-width: 95%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 .5em 0;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.dashboard-container, .dashboard-component-grouped {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+}
+
+.dashboard-component-grouped {
+  justify-items: center;
+}
+
+.dashboard-component {
+  border: 1px solid #CCCCCC;
+  padding: 1em;
+}
+
+/* use a lib or generate all the variants with scss for... */
+
+.span-3 {
+  grid-column-end: span 3;
+}
+
+.span-4 {
+  grid-column-end: span 4;
+}
+
+.span-6 {
+  grid-column-end: span 6;
+}
+
+.span-12 {
+  grid-column-end: span 12;
+}
