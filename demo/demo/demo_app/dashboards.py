@@ -9,6 +9,7 @@ class DemoDashboardOne(Dashboard):
     html_example = HTML(value="<strong>HTML also rendered on load</strong>")
     calculated_example = Text(defer=lambda _: "Deferred text")
     chart_example = Plotly(defer=DashboardData.fetch_bar_chart_data)
+    bubble_chart_example = Plotly(defer=DashboardData.fetch_bubble_chart_data)
     stat_one = Stat(value={"text": "100%", "sub_text": "increase"})
     stat_two = Stat(value={"text": "88%", "sub_text": "increase"})
     stat_three = Stat(value={"text": "33%", "sub_text": "decrease"})
@@ -44,7 +45,7 @@ class DemoDashboardOneVary(DemoDashboardOne):
         name = "Dashboard One Vary"
 
     class Layout(Dashboard.Layout):
-        grid_default_width = 3
+        grid_default_width = 4
         components = {
             "text_group": {
                 "components": ["text_example", "html_example"],

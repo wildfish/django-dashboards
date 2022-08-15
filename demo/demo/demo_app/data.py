@@ -2,6 +2,9 @@ from demo.demo_app.models import FlatText
 
 
 class DashboardData:
+    def _apply_filter_age_range(self):
+        pass
+
     @staticmethod
     def fetch_html(request):
         return FlatText.objects.all().first().text
@@ -50,6 +53,19 @@ class DashboardData:
                 "x": ["giraffes", "orangutans", "monkeys"],
                 "y": [20, 14, 23],
                 "type": "bar",
+            }
+        ]
+
+    @staticmethod
+    def fetch_bubble_chart_data(request):
+        return [
+            {
+                "x": [1, 2, 3, 4],
+                "y": [10, 11, 12, 13],
+                "mode": 'markers',
+                "marker": {
+                    "size": [40, 60, 80, 100]
+                }
             }
         ]
 
