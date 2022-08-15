@@ -21,7 +21,7 @@ class DemoDashboardOne(Dashboard):
     stat_three = Stat(
         defer=lambda request: {
             "text": "33%",
-            "sub_text": request.GET.get("country", "-"),
+            "sub_text": request.GET.get("country", "all"),
         }
     )
     free_text_example = HTML(defer=DashboardData.fetch_html)
