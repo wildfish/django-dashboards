@@ -2,6 +2,8 @@
     <div hx-get="?key={{ component.key }}" hx-trigger="load"></div>
 {% else %}
     {% include "datorum/components/filter.html" %}
+
+    {# -inner will be replaced if a filter is applied. #}
     <div id="component-{{ component.key }}-inner">
         {% include component.template %}
     </div>

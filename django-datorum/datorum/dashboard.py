@@ -124,16 +124,25 @@ class Dashboard(DashboardRenderMixin):
     def get_components(cls, with_layout=True) -> list[Component]:
         attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)))
 
-        components = []
-
+        components_to_keys = {}
+        awaiting_dependents = {}
         for key, component in attributes:
             if isinstance(component, Component):
                 if not component.key:
                     component.key = key
                 if not component.render_type:
                     component.render_type = component.__class__.__name__
-                components.append(component)
+                components_to_keys[key] = component
 
+                if component.dependents:
+                    awaiting_dependents[key] = component.dependents
+
+        for component, dependents in awaiting_dependents.items():
+            components_to_keys[component].dependent_components = [
+                components_to_keys.get(d) for d in dependents  # type: ignore
+            ]
+
+        components = list(components_to_keys.values())
         components.sort(key=lambda c: cls.get_attributes_order().index(c.key))
 
         if with_layout:

@@ -121,7 +121,7 @@ class DashboardData:
             "type": "scatter",
         }
 
-        # Very noddy example of filtering :)
+        # Very noddy example of filtering, should and could validate against the form class itself :)
         filter_country = request.GET.get("country")
         if filter_country and filter_country != "all":
             return {"na": [na], "europe": [europe], "asia": [asia]}[filter_country]

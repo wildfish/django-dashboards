@@ -12,11 +12,18 @@ class DemoDashboardOne(Dashboard):
     chart_example = Plotly(defer=DashboardData.fetch_bar_chart_data)
     bubble_chart_example = Plotly(defer=DashboardData.fetch_bubble_chart_data)
     line_chart_example = Plotly(
-        defer=DashboardData.fetch_scatter_chart_data, filter_form=ExampleForm
+        defer=DashboardData.fetch_scatter_chart_data,
+        filter_form=ExampleForm,
+        dependents=["stat_three"],
     )
     stat_one = Stat(value={"text": "100%", "sub_text": "increase"})
     stat_two = Stat(value={"text": "88%", "sub_text": "increase"})
-    stat_three = Stat(value={"text": "33%", "sub_text": "decrease"})
+    stat_three = Stat(
+        defer=lambda request: {
+            "text": "33%",
+            "sub_text": request.GET.get("country", "-"),
+        }
+    )
     free_text_example = HTML(defer=DashboardData.fetch_html)
     gauge_one = Plotly(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Plotly(defer=DashboardData.fetch_gauge_chart_data_two)

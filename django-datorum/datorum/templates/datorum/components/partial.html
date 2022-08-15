@@ -1,2 +1,9 @@
 {# For HTMX deferred calls #}
 {% include "datorum/components/component.html" with htmx=False %}
+
+{# When partial is called, we also render any dependent components #}
+{% for dependent in component.dependent_components %}
+    <div hx-swap-oob="innerHTML:#component-{{ dependent.key }}-inner">
+        {% include "datorum/components/component.html" with component=dependent htmx=False %}
+    </div>
+{% endfor %}
