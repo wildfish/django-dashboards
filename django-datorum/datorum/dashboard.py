@@ -108,8 +108,22 @@ class Dashboard(DashboardRenderMixin):
         return {"components": self.get_components(), "request": self.request}
 
     @classmethod
+    def get_attributes_order(cls):
+        """
+        Get the order of the attributes as they are defined on the Dashboard class.
+        Follows mro, then reverses to parents first.
+        """
+        attributes_to_class = []
+        attributes_to_class.extend(
+            [list(vars(bc).keys()) for bc in cls.__mro__ if issubclass(bc, Dashboard)]
+        )
+        attributes_to_class.sort(reverse=True)
+        return [a for nested in attributes_to_class for a in nested]
+
+    @classmethod
     def get_components(cls, with_layout=True) -> list[Component]:
         attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)))
+
         components = []
 
         for key, component in attributes:
@@ -119,6 +133,8 @@ class Dashboard(DashboardRenderMixin):
                 if not component.render_type:
                     component.render_type = component.__class__.__name__
                 components.append(component)
+
+        components.sort(key=lambda c: cls.get_attributes_order().index(c.key))
 
         if with_layout:
             components = cls.apply_layout(components=deepcopy(components))

@@ -57,6 +57,10 @@ class DemoDashboardOneVary(DemoDashboardOne):
                 "components": ["stat_one", "stat_two", "stat_three"],
                 "group_width": 3,
             },
+            # "chart_group": {
+            #     "components": ["bubble_chart_example", "line_chart_example"],
+            #     "group_width": 12,
+            # },
             # None can be uses as a catch all for the remaining non grouped ones at the end
             None: {
                 "components": [

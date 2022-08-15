@@ -80,14 +80,18 @@ class DashboardQuery:
             return None
 
     @strawberry.field
-    def component(self, slug: str, key: str, info: Info) -> Optional[DeferredComponentSchema]:
+    def component(
+        self, slug: str, key: str, info: Info
+    ) -> Optional[DeferredComponentSchema]:
         try:
             dashboard = [
                 d for d in get_dashboards(info) if slug == slugify(d.Meta.name)
             ][0]
             for component_schema in dashboard.components:
                 if component_schema.key == key:
-                    return component_schema
+                    # Changing the type to DeferredComponentSchema makes this return what we expect, but
+                    # causes a mypy issue, need to look at how we resolve this, but it is working as expected.
+                    return component_schema  # type: ignore
         except IndexError:
             return None
         return None
