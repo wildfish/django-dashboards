@@ -69,7 +69,7 @@ class DashboardData:
 
     @staticmethod
     def fetch_scatter_chart_data(request):
-        trace1 = {
+        na = {
             "x": [52698, 43117],
             "y": [53, 31],
             "mode": "markers",
@@ -83,7 +83,7 @@ class DashboardData:
             "type": "scatter",
         }
 
-        trace2 = {
+        europe = {
             "x": [39317, 37236, 35650, 30066, 29570, 27159, 23557, 21046, 18007],
             "y": [33, 20, 13, 19, 27, 19, 49, 44, 38],
             "mode": "markers",
@@ -102,7 +102,7 @@ class DashboardData:
             "type": "scatter",
         }
 
-        trace3 = {
+        asia = {
             "x": [42952, 37037, 33106, 17478, 9813, 5253, 4692, 3899],
             "y": [23, 42, 54, 89, 14, 99, 93, 70],
             "mode": "markers",
@@ -121,7 +121,12 @@ class DashboardData:
             "type": "scatter",
         }
 
-        return [trace1, trace2, trace3]
+        # Very noddy example of filtering :)
+        filter_country = request.GET.get("country")
+        if filter_country and filter_country != "all":
+            return {"na": [na], "europe": [europe], "asia": [asia]}[filter_country]
+
+        return [na, europe, asia]
 
     @staticmethod
     def fetch_table_data(request):

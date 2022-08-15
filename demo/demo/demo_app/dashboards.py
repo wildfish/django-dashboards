@@ -2,6 +2,7 @@ from datorum.component import HTML, Plotly, Stat, Tabulator, Text
 from datorum.dashboard import Dashboard
 
 from demo.demo_app.data import DashboardData
+from demo.demo_app.forms import ExampleForm
 
 
 class DemoDashboardOne(Dashboard):
@@ -10,7 +11,9 @@ class DemoDashboardOne(Dashboard):
     calculated_example = Text(defer=lambda _: "Deferred text")
     chart_example = Plotly(defer=DashboardData.fetch_bar_chart_data)
     bubble_chart_example = Plotly(defer=DashboardData.fetch_bubble_chart_data)
-    line_chart_example = Plotly(defer=DashboardData.fetch_scatter_chart_data)
+    line_chart_example = Plotly(
+        defer=DashboardData.fetch_scatter_chart_data, filter_form=ExampleForm
+    )
     stat_one = Stat(value={"text": "100%", "sub_text": "increase"})
     stat_two = Stat(value={"text": "88%", "sub_text": "increase"})
     stat_three = Stat(value={"text": "33%", "sub_text": "decrease"})

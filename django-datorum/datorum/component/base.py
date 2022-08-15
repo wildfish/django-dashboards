@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable, Optional, Type, Union
 
 from django.http import HttpRequest
 
+from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
 from datorum.types import ValueData
 
 
@@ -12,6 +13,7 @@ class Component:
     value: Optional[ValueData] = None
     width: Optional[int] = None
     defer: Optional[Callable] = None
+    filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
@@ -27,3 +29,6 @@ class Component:
         if self.is_deferred and self.defer:
             return self.defer(request)
         return self.value
+
+    def has_form(self):
+        return True if self.filter_form else False

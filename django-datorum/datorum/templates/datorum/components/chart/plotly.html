@@ -5,7 +5,7 @@
     {{ data|json_script:data_key }}
     <script>
         /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
-        const data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+        var data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
         Plotly.newPlot('component-chart-{{ component.key }}', data_{{ component.key }});
     </script>
 {% endwith %}

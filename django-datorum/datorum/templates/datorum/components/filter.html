@@ -1,0 +1,8 @@
+{% load datorum %}
+{% if component.has_form and not request.GET.filtering %}
+    {% get_filter_form component as filter_form %}
+    <form hx-get="?key={{ component.key }}&filtering=1" hx-target="#component-{{ component.key }}-inner">
+        {{ filter_form }}
+        <input type="submit"/>
+    </form>
+{% endif %}

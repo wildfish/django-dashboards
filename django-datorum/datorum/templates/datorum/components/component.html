@@ -1,5 +1,8 @@
 {% if component.is_deferred and htmx %}
     <div hx-get="?key={{ component.key }}" hx-trigger="load"></div>
 {% else %}
-    {% include component.template %}
+    {% include "datorum/components/filter.html" %}
+    <div id="component-{{ component.key }}-inner">
+        {% include component.template %}
+    </div>
 {% endif %}
