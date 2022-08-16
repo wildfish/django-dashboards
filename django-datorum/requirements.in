@@ -17,3 +17,4 @@ pytest-django
 pytest-isort
 pytest-flake8
 pytest-mypy
+snapshottest
