@@ -1,10 +1,8 @@
-{% load datorum %}
 <div id="component-table-{{ component.key }}"></div>
 
 {% with "data_"|add:component.key as data_key %}
     {% if not component.is_deferred %}
-        {% render component as data %}
-        {{ data|json_script:data_key }}
+        {{ rendered_value|json_script:data_key }}
     {% endif %}
     <script>
         {% if not component.is_deferred %}

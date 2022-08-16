@@ -1,3 +1,4 @@
+{% load datorum %}
 <div class="dashboard-container">
     {% regroup components by group as grouped_components %}
     {% for group in grouped_components %}
@@ -5,14 +6,14 @@
             <div class="dashboard-component dashboard-component-grouped span-{{ group.list.0.group_width }}">
                 {% for component in group.list %}
                     <div class="span-{{ component.width }} smooth" id="component-{{ group.component }}">
-                        {% include "datorum/components/component.html" with htmx=True %}
+                        {% render_component component=component htmx=True %}
                     </div>
                 {% endfor %}
             </div>
         {% else %}
             {% for component in group.list %}
                 <div id="component-{{ component.key }} smooth" class="dashboard-component span-{{ component.width }}">
-                    {% include "datorum/components/component.html" with htmx=True %}
+                    {% render_component component=component htmx=True %}
                 </div>
             {% endfor %}
         {% endif %}

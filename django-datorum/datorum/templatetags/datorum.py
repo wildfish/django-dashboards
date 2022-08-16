@@ -5,16 +5,21 @@ from django.forms import Form
 from django.template import RequestContext
 
 from datorum.component import Component
-from datorum.types import ValueData
 
 
 register = template.Library()
 
 
-@register.simple_tag(takes_context=True)
-def render(context: RequestContext, component: Component) -> ValueData:
-    """Render a component, passing request"""
-    return component.for_render(request=context["request"])
+@register.inclusion_tag("datorum/components/component.html", takes_context=True)
+def render_component(context: RequestContext, component: Component, htmx: bool):
+    request = context["request"]
+    rendered_value = component.for_render(request=request)
+    return {
+        "request": context["request"],
+        "component": component,
+        "htmx": htmx,
+        "rendered_value": rendered_value,
+    }
 
 
 @register.simple_tag(takes_context=True)
