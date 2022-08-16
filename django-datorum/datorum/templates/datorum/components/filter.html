@@ -1,7 +1,7 @@
 {% load datorum %}
 {% if component.has_form and not request.GET.filtering %}
     {% get_filter_form component as filter_form %}
-    <form hx-get="?key={{ component.key }}&filtering=1" hx-trigger="change" hx-target="#component-{{ component.key }}-inner">
+    <form hx-get="?key={{ component.key }}&filtering=1" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-{{ component.key }}-inner">
         {{ filter_form.as_p }}
     </form>
 {% endif %}

@@ -58,3 +58,12 @@ h1, h2, h3, h4, h5, h6 {
 .span-12 {
   grid-column-end: span 12;
 }
+
+.fade-in.htmx-added {
+  opacity: 0;
+}
+
+.fade-in {
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}

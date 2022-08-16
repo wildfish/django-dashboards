@@ -12,4 +12,13 @@
     {% include "datorum/components/component.html" with component=dashboard.calculated_example htmx=True %}
     <hr/>
     {% include "datorum/components/component.html" with component=dashboard.chart_example htmx=True %}
+    <hr/>
+    <div style="display: flex;">
+        <div style="flex: 1;">
+            {% include "datorum/components/component.html" with component=dashboard.line_chart_example htmx=True %}
+        </div>
+        <div style="flex: 1;">
+            {% include "datorum/components/component.html" with component=dashboard.stat_three htmx=True %}
+        </div>
+    </div>
 {% endblock %}
