@@ -50,6 +50,7 @@ def get_dashboards(info: Info) -> list[DashboardSchema]:
     Returns:
 
     """
+    print("??? Here ???")
     dashboards = []
     for d in settings.DATORUM_GRAPHQL_DASHBOARDS:
         try:
@@ -61,7 +62,6 @@ def get_dashboards(info: Info) -> list[DashboardSchema]:
             dashboards.append(schema)
         except (ModuleNotFoundError, ImportError):
             logger.error(f"{d} is not a valid dashboard path")
-
     return dashboards
 
 

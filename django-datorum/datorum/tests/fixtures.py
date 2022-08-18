@@ -1,9 +1,7 @@
 import pytest
-import strawberry
 
 from datorum.component import Text
 from datorum.dashboard import Dashboard
-from datorum.schema import DashboardQuery
 
 
 @pytest.fixture
@@ -16,5 +14,10 @@ def test_dashboard():
 
 
 @pytest.fixture
-def schema():
-    return strawberry.Schema(query=DashboardQuery)
+def test_complex_dashboard(test_dashboard):
+    class TestComplexDashboard(test_dashboard):
+        component_3 = Text(defer=lambda _: "value")
+        component_2 = Text(defer=lambda _: "value")
+        component_4 = Text(value="value")
+
+    return TestComplexDashboard

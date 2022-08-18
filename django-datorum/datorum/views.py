@@ -40,6 +40,7 @@ class DashboardView(TemplateView):
             return JsonResponse(self.partial_component.defer(self.request), safe=False)
         else:
             # Render to template, either partial of full.
+            print(dir(self.render_to_response(context)))
             return self.render_to_response(context)
 
     def is_ajax(self):
