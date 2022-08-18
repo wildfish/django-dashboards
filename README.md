@@ -14,7 +14,7 @@ Initial work on the Datorum idea of building a toolkit/possible open source proj
 
 https://drive.google.com/drive/u/0/folders/0AFOShL-qRZlcUk9PVA
 
-## So far
+## High level overview
 
 - `/django-datorum/datorum` is the library, which will eventually become this os project, the tool we install in clients projects.
   - Only holds a couple of basic components atm.
@@ -26,7 +26,59 @@ https://drive.google.com/drive/u/0/folders/0AFOShL-qRZlcUk9PVA
 - `/demo`is a Django MPA using `datorum` to mock up how we'd use the lib in a Sandvik like way.
   - Note that for ease the graphql endpoint for the SPA is also part of this Django project.
 - `/demo-spa` is a Next.js version of demo, using `datorum` and graphql to fetch the structure. 
-- Will eventually be split 2 3 repos, all in one for ease atm. 
+- Will eventually be split 2 3 repos, all in one for ease atm.
+
+## Current progress & todo 
+
+### General (and MPA)
+
+* Documentation 
+* Registry 
+  * Done but no auto view approach atm. 
+* Websockets
+  * Experimented with but we need a real world, ideally it would work for any component as an alternative to defer/value potentially. 
+* Permissions 
+  * Dashboard level classes added, needs adding to demo.
+* Performance
+  * Testing against Sandvik initially.
+* Dashboard/top level filtering.   
+* Test coverage - needs a lot more
+  * CI
+
+### Components
+
+* Text, HTML & Stat - Done. 
+* Chart
+  * Plotly only atm
+  * Handles gauges also.
+  * Rename to Chart   
+  * Need to decided on where option/layout control is defined, leaning towards parameterising what we want in the component. 
+* Table
+  * Added via tabulator. 
+  * Ajax data added, pagination and sorting added. 
+  * Filtering to do.
+  * Same as charts where does option control live, parameterising is the way I've started to go.
+    * Column headers etc 
+    * Sortable fields. 
+  * Adding helpers to map data to expected? This is a general question 
+  * Clickable columns/links or at least safe HTML data displaying. 
+* Map 
+  * Mapbox via plotly? 
+* Component grouping - done. 
+* Component filtering - done. 
+* Dependent components - done.
+* CTA components
+* Icons on components
+
+### Demo & SPA
+
+* Demo 
+  * Menu 
+  * Permissions 
+* SPA 
+  * Bring to same point as MPA 
+    * Table example 
+    * Grouped
 
 ## Development
 
