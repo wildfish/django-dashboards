@@ -44,7 +44,8 @@ https://drive.google.com/drive/u/0/folders/0AFOShL-qRZlcUk9PVA
 * Dashboard/top level filtering.   
 * Test coverage - needs a lot more
   * CI
-
+  * Tests for the 2 demos 
+  
 ### Components
 
 * Text, HTML & Stat - Done. 
@@ -80,7 +81,7 @@ https://drive.google.com/drive/u/0/folders/0AFOShL-qRZlcUk9PVA
     * Table example 
     * Grouped
 
-## Development
+## Development  
 
 ### Demo 
 
