@@ -12,7 +12,7 @@ setup(
     license="BSD",
     keywords="django dashboard datorum",
     url="http://wildfish.com",
-    long_description="...",
+    long_description="todo",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
