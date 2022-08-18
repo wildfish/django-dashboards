@@ -42,12 +42,13 @@ def schema_with_dashboards(schema, test_dashboard, test_complex_dashboard):
         return_value={
             "TestDashboard": test_dashboard,
             "ComplexDashboard": test_complex_dashboard,
+            "TestAdminDashboard": test_dashboard,
         },
     ):
         return schema
 
 
-def test_view__dashboards(rf, schema_with_dashboards, snapshot):
+def test_view__dashboards(rf, admin_user, schema_with_dashboards, snapshot):
     query = """
         query getDashboards {
           dashboards {
@@ -68,48 +69,65 @@ def test_view__dashboards(rf, schema_with_dashboards, snapshot):
         }
      """
 
+    request = rf.get("/")
+    request.user = admin_user
+
     result = schema_with_dashboards.execute_sync(
-        query, context_value={"request": rf.get("/")}
+        query, context_value={"request": request}
     )
     assert result.errors is None
     snapshot.assert_match(result.data["dashboards"])
 
 
-def test_view__dashboard(rf, schema_with_dashboards, snapshot):
+def test_view__dashboard(rf, admin_user, schema_with_dashboards, snapshot):
+    request = rf.get("/")
+    request.user = admin_user
+
     result = schema_with_dashboards.execute_sync(
         DASHBOARD_GQL,
         variable_values={"slug": "test-dashboard"},
-        context_value={"request": rf.get("/")},
+        context_value={"request": request},
     )
     assert result.errors is None
     snapshot.assert_match(result.data["dashboard"])
 
 
-def test_view__dashboard__not_found(rf, schema_with_dashboards, snapshot):
+def test_view__dashboard__not_found(rf, admin_user, schema_with_dashboards, snapshot):
+    request = rf.get("/")
+    request.user = admin_user
+
     result = schema_with_dashboards.execute_sync(
         DASHBOARD_GQL,
         variable_values={"slug": "not-test-dashboard"},
-        context_value={"request": rf.get("/")},
+        context_value={"request": request},
     )
     assert result.errors is None
     snapshot.assert_match(result.data["dashboard"])
 
 
-def test_view__component__not_deferred(rf, schema_with_dashboards, snapshot):
+def test_view__component__not_deferred(
+    rf, admin_user, schema_with_dashboards, snapshot
+):
+    request = rf.get("/")
+    request.user = admin_user
+
     result = schema_with_dashboards.execute_sync(
         COMPONENT_GQL,
         variable_values={"slug": "test-dashboard", "key": "component_1"},
-        context_value={"request": rf.get("/")},
+        context_value={"request": request},
     )
     assert result.errors is None
     snapshot.assert_match(result.data["component"])
 
 
-def test_view__component__deferred(rf, schema_with_dashboards, snapshot):
+def test_view__component__deferred(rf, admin_user, schema_with_dashboards, snapshot):
+    request = rf.get("/")
+    request.user = admin_user
+
     result = schema_with_dashboards.execute_sync(
         COMPONENT_GQL,
         variable_values={"slug": "test-dashboard", "key": "component_2"},
-        context_value={"request": rf.get("/")},
+        context_value={"request": request},
     )
     assert result.errors is None
     snapshot.assert_match(result.data["component"])

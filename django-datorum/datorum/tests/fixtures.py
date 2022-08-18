@@ -38,6 +38,9 @@ def test_admin_dashboard():
         permission_classes = [permissions.IsAdminUser]
         component_1 = Text(value="admin value")
 
+        class Meta:
+            name = "Test Admin Dashboard"
+
     return TestAdminDashboard
 
 

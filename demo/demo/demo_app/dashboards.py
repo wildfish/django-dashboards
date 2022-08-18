@@ -87,3 +87,6 @@ class DemoDashboardOneVary(DemoDashboardOne):
 class DemoDashboardAdmin(Dashboard):
     permission_classes = [IsAdminUser]
     admin_text = Text(value="Admin Only Text")
+
+    class Meta:
+        name = "Admin Dashboard"

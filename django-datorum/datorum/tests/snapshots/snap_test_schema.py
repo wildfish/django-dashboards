@@ -38,6 +38,20 @@ snapshots["test_view__dashboard__not_found 1"] = None
 
 snapshots["test_view__dashboards 1"] = [
     {
+        "Meta": {"name": "Test Admin Dashboard", "slug": "test-admin-dashboard"},
+        "components": [
+            {
+                "group": None,
+                "groupWidth": None,
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "admin value",
+                "width": 4,
+            }
+        ],
+    },
+    {
         "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
         "components": [
             {
