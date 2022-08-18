@@ -3,13 +3,11 @@
 #
 
 # Core
-django>=4.0,<4.1
 strawberry-graphql[debug-server]
 
 # Testing
 # workaround for tholo/pytest-flake8#87
 flake8 < 5
-model-bakery
 pytest
 pytest-black
 pytest-cov
