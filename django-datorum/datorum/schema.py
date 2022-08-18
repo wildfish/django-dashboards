@@ -47,11 +47,13 @@ def get_dashboards(info: Info) -> list[DashboardSchema]:
     dashboards = []
     for dashboard_class in registry.get_graphql_dashboards().values():
         instance = dashboard_class(request=info.context.get("request"))
-        schema = DashboardSchema(
-            Meta=DashboardSchemaMeta(name=instance.Meta.name),
-            components=instance.get_components(),
-        )
-        dashboards.append(schema)
+        # make sure the current request has access to the dashboard before adding
+        if instance.has_permissions():
+            schema = DashboardSchema(
+                Meta=DashboardSchemaMeta(name=instance.Meta.name),
+                components=instance.get_components(),
+            )
+            dashboards.append(schema)
     return dashboards
 
 

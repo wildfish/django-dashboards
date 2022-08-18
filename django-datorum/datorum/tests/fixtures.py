@@ -1,6 +1,7 @@
 import pytest
 import strawberry
 
+from datorum import permissions
 from datorum.component import Text
 from datorum.dashboard import Dashboard
 from datorum.schema import DashboardQuery
@@ -29,6 +30,15 @@ def test_complex_dashboard(test_dashboard):
             name = "Test Complex Dashboard"
 
     return TestComplexDashboard
+
+
+@pytest.fixture
+def test_admin_dashboard():
+    class TestAdminDashboard(Dashboard):
+        permission_classes = [permissions.IsAdminUser]
+        component_1 = Text(value="admin value")
+
+    return TestAdminDashboard
 
 
 @pytest.fixture

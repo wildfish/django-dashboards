@@ -104,18 +104,18 @@ class DashboardRenderMixin:
         return components_with_layout
 
 
-class DashboardMetaClass(type):
+class DashboardType(type):
     def __new__(cls, clsname, bases, attrs):
         newclass = super().__new__(cls, clsname, bases, attrs)
         registry.register(newclass)
         return newclass
 
 
-class Dashboard(DashboardRenderMixin, metaclass=DashboardMetaClass):
+class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
     include_in_graphql: bool = True
     permission_classes: list[BasePermission] = []
 
-    def __init__(self, request: HttpRequest = None):
+    def __init__(self, request: HttpRequest):
         self.request = request
 
     def get_context(self):

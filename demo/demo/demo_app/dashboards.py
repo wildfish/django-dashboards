@@ -1,5 +1,6 @@
 from datorum.component import HTML, Plotly, Stat, Table, Text
 from datorum.dashboard import Dashboard
+from datorum.permissions import IsAdminUser
 
 from demo.demo_app.data import DashboardData
 from demo.demo_app.forms import ExampleForm
@@ -81,3 +82,8 @@ class DemoDashboardOneVary(DemoDashboardOne):
                 ],
             },
         }
+
+
+class DemoDashboardAdmin(Dashboard):
+    permission_classes = [IsAdminUser]
+    admin_text = Text(value="Admin Only Text")

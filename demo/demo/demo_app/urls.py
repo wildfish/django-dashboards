@@ -2,8 +2,7 @@ from django.urls import path
 
 from datorum.views import DashboardView
 
-from demo.demo_app.dashboards import DemoDashboardOne, DemoDashboardOneVary
-
+from demo.demo_app.dashboards import DemoDashboardOne, DemoDashboardOneVary, DemoDashboardAdmin
 
 urlpatterns = [
     path(
@@ -31,6 +30,11 @@ urlpatterns = [
             template_name="demo/custom.html",
         ),
         name="dashboard-one-custom",
+    ),
+    path(
+        "admin_only/",
+        DashboardView.as_view(dashboard=DemoDashboardAdmin),
+        name="dashboard-admin",
     ),
 ]
 
