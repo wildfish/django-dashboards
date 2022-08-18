@@ -1,10 +1,11 @@
+import collections
 from dataclasses import dataclass
 
 from .base import Component
 
 
 @dataclass
-class Tabulator(Component):
+class Table(Component):
     """
     Basic table example, we'd also want it to handle pagination/searching/filter/ordering remotely etc.
 
@@ -19,6 +20,23 @@ class Tabulator(Component):
     that's what is deferred does, but then we don't render the data as ajax is called to get the data s JSON to
     leverage tabulator (and most js table libs) ajax rendering. Might be a better way to do this maybe we need a is_ajax
     also but that feels complicated, this way works for a poc.
+
+    Also need it to be possible to click on columns for list views.
     """
 
-    template: str = "datorum/components/table/tabulator.html"
+    template: str = "datorum/components/table/index.html"
+    page_size: int = 10
+
+    @classmethod
+    def get_request_data(cls, request, fields):
+        page = request.GET.get("page", 1)
+        size = request.GET.get("size", 10)
+        sorts = {}
+        for r in range(len(fields)):
+            sort_field = request.GET.get(f"sort[{r}][field]")
+            sort_order = request.GET.get(f"sort[{r}][dir]")
+            if sort_field and sort_order:
+                sorts[r] = f"{'-' if sort_order == 'desc' else ''}{sort_field}"
+        order = collections.OrderedDict(sorted(sorts.items()))
+
+        return page, size, order

@@ -15,7 +15,7 @@ const ComponentToDisplay = {
     [ComponentTypes.SomeCalculateText]: Text,
     [ComponentTypes.HTML]: HTML,
     [ComponentTypes.Plotly]: Plotly,
-    [ComponentTypes.Tabulator]: Tabulator,
+    [ComponentTypes.Table]: Table,
     [ComponentTypes.Stat]: Stat,
 }
 

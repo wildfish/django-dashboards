@@ -7,14 +7,14 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
 from datorum import permissions
-from datorum.registry import registry
 from datorum.component import Component
+from datorum.registry import registry
 
 
 logger = logging.getLogger(__name__)
 
 # todo: move to a default settings when available
-DEFAULT_PERMISSION_CLASSES = [permissions.IsAuthenticated]
+DEFAULT_PERMISSION_CLASSES = [permissions.AllowAny]
 
 
 class DashboardRenderMixin:

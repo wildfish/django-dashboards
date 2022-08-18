@@ -18,7 +18,7 @@ snapshots[
     <title>Datorum | </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="/static/js/htmx.min.js" defer></script>
+    <script src="/static/js/htmx.min.js"></script>
     <script src="/static/js/alpine-3.10.3.js" defer></script>
     <script src="/static/js/plotly-2.12.1.min.js"></script>
     <script src="/static/js/tabulator.min.js"></script>
@@ -37,7 +37,7 @@ snapshots[
     
         
             
-                <div id="component-component_1 smooth" class="dashboard-component span-4">
+                <div id="component-component_1" class="smooth dashboard-component span-4">
                     
     
 
@@ -51,7 +51,7 @@ snapshots[
 
                 </div>
             
-                <div id="component-component_2 smooth" class="dashboard-component span-4">
+                <div id="component-component_2" class="smooth dashboard-component span-4">
                     
     <div hx-get="?key=component_2" hx-trigger="load"></div>
 

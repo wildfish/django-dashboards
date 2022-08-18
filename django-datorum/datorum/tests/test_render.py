@@ -2,11 +2,11 @@ from django.template import Context
 
 import pytest
 
-from datorum.component import HTML, Plotly, Stat, Tabulator, Text
+from datorum.component import HTML, Plotly, Stat, Table, Text
 from datorum.tests.utils import render_component_test
 
 
-@pytest.mark.parametrize("component_class", [Text, HTML, Plotly, Tabulator])
+@pytest.mark.parametrize("component_class", [Text, HTML, Plotly, Table])
 @pytest.mark.parametrize(
     "component_kwargs", [{"value": "value"}, {"defer": lambda _: "value"}]
 )

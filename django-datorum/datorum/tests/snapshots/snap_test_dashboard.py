@@ -2,26 +2,35 @@
 # snapshottest: v1 - https://goo.gl/zC4yUc
 from __future__ import unicode_literals
 
-from snapshottest import GenericRepr, Snapshot
+from snapshottest import Snapshot
 
 
 snapshots = Snapshot()
 
 snapshots["test__get_attributes_order 1"] = [
     "__module__",
-    "component_1",
-    "component_2",
-    "__doc__",
-    "__module__",
+    "permission_classes",
     "__init__",
     "get_context",
     "get_attributes_order",
     "get_components",
     "Meta",
     "__doc__",
+    "__module__",
+    "component_1",
+    "component_2",
+    "__doc__",
 ]
 
 snapshots["test__get_attributes_order__with_parent 1"] = [
+    "__module__",
+    "permission_classes",
+    "__init__",
+    "get_context",
+    "get_attributes_order",
+    "get_components",
+    "Meta",
+    "__doc__",
     "__module__",
     "component_3",
     "component_2",
@@ -30,12 +39,5 @@ snapshots["test__get_attributes_order__with_parent 1"] = [
     "__module__",
     "component_1",
     "component_2",
-    "__doc__",
-    "__module__",
-    "__init__",
-    "get_context",
-    "get_attributes_order",
-    "get_components",
-    "Meta",
     "__doc__",
 ]

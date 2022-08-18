@@ -4,7 +4,7 @@ export enum ComponentTypes {
     HTML =  "HTML",
     Plotly =  "Plotly",
     Stat =  "Stat",
-    Tabulator =  "Tabulator",
+    Table =  "Table",
 }
 
 export type Component = {

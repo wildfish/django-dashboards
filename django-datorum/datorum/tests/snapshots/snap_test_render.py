@@ -46,7 +46,7 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs0-Tabulator] 1"
+    "test_component__renders_value[False-component_kwargs0-Table] 1"
 ] = """
     
 
@@ -72,8 +72,10 @@ snapshots[
             
             "data": data_test,
             
+            "pagination": true,
             "autoColumns": true,
             "layout": "fitColumns",
+            "paginationSize": 10,
         });
     </script>
 
@@ -137,7 +139,7 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs1-Tabulator] 1"
+    "test_component__renders_value[False-component_kwargs1-Table] 1"
 ] = """
     
 
@@ -157,11 +159,14 @@ snapshots[
         */
         const table_test = new Tabulator("#component-table-test", {
             
+            "sortMode": "remote",
             "ajaxURL":"?key=test",
-            "ajaxSorting": "true",
+            "paginationMode": "remote",
             
+            "pagination": true,
             "autoColumns": true,
             "layout": "fitColumns",
+            "paginationSize": 10,
         });
     </script>
 
@@ -225,7 +230,7 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs0-Tabulator] 1"
+    "test_component__renders_value[True-component_kwargs0-Table] 1"
 ] = """
     
 
@@ -251,8 +256,10 @@ snapshots[
             
             "data": data_test,
             
+            "pagination": true,
             "autoColumns": true,
             "layout": "fitColumns",
+            "paginationSize": 10,
         });
     </script>
 
@@ -292,7 +299,7 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs1-Tabulator] 1"
+    "test_component__renders_value[True-component_kwargs1-Table] 1"
 ] = """
     <div hx-get="?key=test" hx-trigger="load"></div>
 

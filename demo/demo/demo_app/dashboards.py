@@ -1,4 +1,4 @@
-from datorum.component import HTML, Plotly, Stat, Tabulator, Text
+from datorum.component import HTML, Plotly, Stat, Table, Text
 from datorum.dashboard import Dashboard
 
 from demo.demo_app.data import DashboardData
@@ -27,8 +27,8 @@ class DemoDashboardOne(Dashboard):
     free_text_example = HTML(defer=DashboardData.fetch_html)
     gauge_one = Plotly(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Plotly(defer=DashboardData.fetch_gauge_chart_data_two)
-    table_example = Tabulator(defer=DashboardData.fetch_table_data)
-    table_example_not_deferred = Tabulator(
+    table_example = Table(defer=DashboardData.fetch_table_data)
+    table_example_not_deferred = Table(
         value=[
             {
                 "id": 1,
@@ -50,7 +50,7 @@ class DemoDashboardOne(Dashboard):
 class DemoDashboardOneVary(DemoDashboardOne):
     chart_example = Plotly(defer=DashboardData.fetch_bar_chart_data, width=12)
     calculated_example = Text(defer=lambda _: "some calculated text", width=3)
-    table_example = Tabulator(defer=DashboardData.fetch_table_data, width=12)
+    table_example = Table(defer=DashboardData.fetch_table_data, width=12)
 
     class Meta:
         name = "Dashboard One Vary"

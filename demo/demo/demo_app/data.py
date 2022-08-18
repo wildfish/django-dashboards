@@ -133,7 +133,7 @@ class DashboardData:
         """
         Mock return some results for tabular.
         """
-        return [
+        data = [
             {
                 "id": 1,
                 "name": "Oli Bob",
@@ -193,3 +193,5 @@ class DashboardData:
                 "car": 1,
             },
         ]
+
+        return {"last_page": 1, "data": data}

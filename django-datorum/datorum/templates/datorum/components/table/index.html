@@ -15,13 +15,16 @@
         */
         const table_{{ component.key }} = new Tabulator("#component-table-{{ component.key }}", {
             {% if component.is_deferred %}
+            "sortMode": "remote",
             "ajaxURL":"?key={{ component.key }}",
-            "ajaxSorting": "true",
+            "paginationMode": "remote",
             {% else %}
             "data": data_{{ component.key }},
             {% endif %}
+            "pagination": true,
             "autoColumns": true,
             "layout": "fitColumns",
+            "paginationSize": {{ component.page_size }},
         });
     </script>
 {% endwith %}
