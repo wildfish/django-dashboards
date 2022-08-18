@@ -113,6 +113,7 @@ class DashboardMetaClass(type):
 
 
 class Dashboard(DashboardRenderMixin, metaclass=DashboardMetaClass):
+    include_in_graphql = True
     permission_classes = DEFAULT_PERMISSION_CLASSES
 
     def __init__(self, request: HttpRequest = None):

@@ -253,11 +253,6 @@ class Common(Configuration):
         },
     }
 
-    DATORUM_GRAPHQL_DASHBOARDS = [
-        "demo.demo_app.dashboards.DemoDashboardOne",
-        "demo.demo_app.dashboards.DemoDashboardOneVary",
-    ]
-
     CORS_ALLOW_ALL_ORIGINS = True
 
 

@@ -9,7 +9,7 @@ import strawberry
 from strawberry.types import Info
 
 from datorum.component import Component
-
+from datorum.registry import registry
 
 logger = logging.getLogger(__name__)
 
@@ -45,23 +45,14 @@ class DashboardSchema:
 
 
 def get_dashboards(info: Info) -> list[DashboardSchema]:
-    """
-    For now read them in via a setting, some sort of registry with include_in_graphql would better.
-    Returns:
-
-    """
-    print("??? Here ???")
     dashboards = []
-    for d in settings.DATORUM_GRAPHQL_DASHBOARDS:
-        try:
-            instance = import_string(d)(request=info.context.request)
-            schema = DashboardSchema(
-                Meta=DashboardSchemaMeta(name=instance.Meta.name),
-                components=instance.get_components(),
-            )
-            dashboards.append(schema)
-        except (ModuleNotFoundError, ImportError):
-            logger.error(f"{d} is not a valid dashboard path")
+    for dashboard_class in registry.get_graphql_dashboards().values():
+        instance = dashboard_class(request=info.context.request)
+        schema = DashboardSchema(
+            Meta=DashboardSchemaMeta(name=instance.Meta.name),
+            components=instance.get_components(),
+        )
+        dashboards.append(schema)
     return dashboards
 
 
