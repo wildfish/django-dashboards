@@ -3,6 +3,8 @@
 #
 
 # Core
+django-cors-headers
+django_htmx
 strawberry-graphql[debug-server]
 
 # Testing

@@ -1,3 +1,5 @@
+from django.test import RequestFactory
+
 import pytest
 
 from datorum.component import Text
@@ -21,3 +23,9 @@ def test_complex_dashboard(test_dashboard):
         component_4 = Text(value="value")
 
     return TestComplexDashboard
+
+
+@pytest.fixture
+def rf():
+    """As per pytest-black, but as we have no Django project."""
+    return RequestFactory()
