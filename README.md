@@ -36,7 +36,9 @@ https://drive.google.com/drive/u/0/folders/0AFOShL-qRZlcUk9PVA
 cd demo
 pyenv virtualenv 3.9.9 django-datorum-demo
 pyenv activate django-datorum-demo
+pip install -r requirements.txt
 python manage.py migrate
+python manage.py loaddata flat_text.json
 python manage.py runserver
 ```
 
@@ -45,7 +47,7 @@ python manage.py runserver
 Running backend as above
 
 ```
-cd demo-spa
+cd demo_spa
 yarn install
 yarn dev
 ```

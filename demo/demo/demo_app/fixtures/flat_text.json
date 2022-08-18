@@ -1,0 +1,10 @@
+[
+{
+    "model": "demo_app.flattext",
+    "pk": 1,
+    "fields": {
+        "slug": "test",
+        "text": "this is some text from db"
+    }
+}
+]

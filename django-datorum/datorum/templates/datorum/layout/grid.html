@@ -12,7 +12,7 @@
             </div>
         {% else %}
             {% for component in group.list %}
-                <div id="component-{{ component.key }} smooth" class="dashboard-component span-{{ component.width }}">
+                <div id="component-{{ component.key }}" class="smooth dashboard-component span-{{ component.width }}">
                     {% render_component component=component htmx=True %}
                 </div>
             {% endfor %}

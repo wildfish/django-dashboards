@@ -6,16 +6,21 @@ from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
+from datorum import permissions
+from datorum.registry import registry
 from datorum.component import Component
 
 
 logger = logging.getLogger(__name__)
 
+# todo: move to a default settings when available
+DEFAULT_PERMISSION_CLASSES = [permissions.IsAuthenticated]
+
 
 class DashboardRenderMixin:
     class Layout:
         """
-        Components works a like fields/formsets on contrib forms. e.g
+        Components works a like fields/formsets on contrib forms. e.g.
 
         components = {
             "group_one": {
@@ -100,8 +105,17 @@ class DashboardRenderMixin:
         return components_with_layout
 
 
-class Dashboard(DashboardRenderMixin):
-    def __init__(self, request: HttpRequest):
+class DashboardMetaClass(type):
+    def __new__(cls, clsname, bases, attrs):
+        newclass = super().__new__(cls, clsname, bases, attrs)
+        registry.register(newclass)
+        return newclass
+
+
+class Dashboard(DashboardRenderMixin, metaclass=DashboardMetaClass):
+    permission_classes = DEFAULT_PERMISSION_CLASSES
+
+    def __init__(self, request: HttpRequest = None):
         self.request = request
 
     def get_context(self):
