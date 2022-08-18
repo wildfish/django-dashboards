@@ -15,7 +15,7 @@ snapshots[
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Datorum | </title>
+    <title>Datorum | Test Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="/static/js/htmx.min.js"></script>
@@ -28,7 +28,7 @@ snapshots[
 </head>
 <body class="">
     
-    <h1></h1>
+    <h1>Test Dashboard</h1>
     <div class="content">
         
     

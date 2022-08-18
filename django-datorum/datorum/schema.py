@@ -28,7 +28,7 @@ class ComponentSchema:
 class DeferredComponentSchema(ComponentSchema):
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
-        return root.for_render(info.context.request)
+        return root.for_render(info.context.get("request"))
 
 
 @strawberry.type
@@ -46,7 +46,7 @@ class DashboardSchema:
 def get_dashboards(info: Info) -> list[DashboardSchema]:
     dashboards = []
     for dashboard_class in registry.get_graphql_dashboards().values():
-        instance = dashboard_class(request=info.context.request)
+        instance = dashboard_class(request=info.context.get("request"))
         schema = DashboardSchema(
             Meta=DashboardSchemaMeta(name=instance.Meta.name),
             components=instance.get_components(),
