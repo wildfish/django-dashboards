@@ -1,8 +1,6 @@
 import logging
 from typing import List, Optional
 
-from django.conf import settings
-from django.utils.module_loading import import_string
 from django.utils.text import slugify
 
 import strawberry
@@ -10,6 +8,7 @@ from strawberry.types import Info
 
 from datorum.component import Component
 from datorum.registry import registry
+
 
 logger = logging.getLogger(__name__)
 

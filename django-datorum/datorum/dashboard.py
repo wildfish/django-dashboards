@@ -4,17 +4,16 @@ from copy import deepcopy
 
 from django.http import HttpRequest
 from django.template.loader import render_to_string
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 
-from datorum import permissions
+from datorum import config
 from datorum.component import Component
+from datorum.permissions import BasePermission
 from datorum.registry import registry
 
 
 logger = logging.getLogger(__name__)
-
-# todo: move to a default settings when available
-DEFAULT_PERMISSION_CLASSES = [permissions.AllowAny]
 
 
 class DashboardRenderMixin:
@@ -113,8 +112,8 @@ class DashboardMetaClass(type):
 
 
 class Dashboard(DashboardRenderMixin, metaclass=DashboardMetaClass):
-    include_in_graphql = True
-    permission_classes = DEFAULT_PERMISSION_CLASSES
+    include_in_graphql: bool = True
+    permission_classes: list[BasePermission] = []
 
     def __init__(self, request: HttpRequest = None):
         self.request = request
@@ -164,6 +163,37 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardMetaClass):
             components = cls.apply_layout(components=deepcopy(components))
 
         return components
+
+    def get_dashboard_permissions(self):
+        """
+        Returns a list of permissions attached to a dashboard.
+        """
+        if self.permission_classes:
+            permissions_classes = self.permission_classes
+        else:
+            permissions_classes = []
+            for (
+                permission_class_path
+            ) in config.Config().DATORUM_DEFAULT_PERMISSION_CLASSES:
+                try:
+                    permissions_class = import_string(permission_class_path)
+                    permissions_classes.append(permissions_class)
+                except ModuleNotFoundError:
+                    logger.warning(
+                        f"{permission_class_path} is invalid permissions path"
+                    )
+
+        return [permission() for permission in permissions_classes]
+
+    def has_permissions(self):
+        """
+        Check if the request should be permitted.
+        Raises exception if the request is not permitted.
+        """
+        for permission in self.get_dashboard_permissions():
+            if not permission.has_permission(self.request):
+                return False
+        return True
 
     class Meta:
         name: str

@@ -60,24 +60,11 @@ class DashboardView(TemplateView):
                     return component
         return
 
-    def get_dashboard_permissions(self, dashboard):
-        """
-        Returns a list of permissions attached to a dashboard.
-        """
-        return [permission() for permission in dashboard.permission_classes]
-
-    def check_permissions(self, request):
-        """
-        Check if the request should be permitted.
-        Raises exception if the request is not permitted.
-        """
-        if self.dashboard:
-            for permission in self.get_dashboard_permissions(self.dashboard(request)):
-                if not permission.has_permission(request):
-                    raise PermissionDenied()
-
     def dispatch(self, request, *args, **kwargs):
-        self.check_permissions(request)
+        has_permissions = self.dashboard(request=self.request).has_permissions()
+        print(has_permissions)
+        if not has_permissions:
+            raise PermissionDenied()
         return super().dispatch(request, *args, **kwargs)
 
     def get_template_names(self):
