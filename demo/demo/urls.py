@@ -6,6 +6,7 @@ from django.urls import include, path
 from strawberry.django.views import GraphQLView
 
 from .demo_app.schema import schema
+from datorum.registry import registry
 
 
 admin.autodiscover()
@@ -18,6 +19,7 @@ urlpatterns = [
             namespace="demo_app",
         ),
     ),
+    path("dashboards/", registry.urls),
     path("admin/", admin.site.urls),
     path("graphql/", GraphQLView.as_view(schema=schema)),
 ]

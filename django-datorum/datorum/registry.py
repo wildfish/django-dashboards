@@ -19,5 +19,16 @@ class Registry(object):
             if dashboard.include_in_graphql
         }
 
+    def get_urls(self):
+        urlpatterns = []
+        for name, dashboard in self.get_all_dashboards().items():
+            urlpatterns += dashboard(1).urls
+
+        return urlpatterns
+
+    @property
+    def urls(self):
+        return self.get_urls(), "dashboards", "dashboards"
+
 
 registry = Registry()

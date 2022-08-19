@@ -17,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class DashboardRenderMixin:
+    div_template: str = "datorum/layout/div.html"
+    grid_template: str = "datorum/layout/grid.html"
+
     class Layout:
         """
         Components works a like fields/formsets on contrib forms. e.g.
@@ -58,11 +61,11 @@ class DashboardRenderMixin:
 
     def as_div(self):
         """Render as <div> components."""
-        return self.render("datorum/layout/div.html", {"layout": self.Layout()})
+        return self.render(self.div_template, {"layout": self.Layout()})
 
     def as_grid(self):
         """Render as <div> grid components."""
-        return self.render("datorum/layout/grid.html", {"layout": self.Layout()})
+        return self.render(self.grid_template, {"layout": self.Layout()})
 
     @classmethod
     def apply_layout(cls, components: list[Component]) -> list[Component]:
@@ -194,6 +197,20 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
             if not permission.has_permission(self.request):
                 return False
         return True
+
+    def get_urls(self):
+        from django.urls import path
+        from django.template.defaultfilters import slugify
+        from .views import DashboardView
+        name = slugify(self.Meta.name)
+        return [
+            path("%s/" % name, DashboardView.as_view(dashboard=self.__class__), name="%s_dashboard" % name),
+        ]
+
+    @property
+    def urls(self):
+        urls = self.get_urls()
+        return urls
 
     class Meta:
         name: str
