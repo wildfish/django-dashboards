@@ -20,31 +20,35 @@ class DashboardView(TemplateView):
         - json for (Ajax): single component (via param key)
     """
 
-    dashboard: Optional[Dashboard] = None
-    template_name: str = "datorum/as_grid.html"
+    dashboard_class: Optional[Dashboard] = None
+    template_name: str = "datorum/dashboard.html"
     partial_template_name: str = "datorum/components/partial.html"
     partial_component: Optional[Component] = None
 
     def get(self, request, *args, **kwargs):
-        dashboard = None
+        self.dashboard = self.get_dashboard()
         self.partial_component = self.get_partial_component()
-
-        if not self.partial_component:
-            dashboard = self.dashboard(request=self.request)
-
-        context = self.get_context_data(
-            **{"component": self.partial_component, "dashboard": dashboard}
-        )
 
         if self.is_ajax() and self.partial_component:
             # Return json, calling the deferred value.
             return JsonResponse(self.partial_component.defer(self.request), safe=False)
         else:
+            context = self.get_context_data(
+                **{"component": self.partial_component, "dashboard": self.dashboard}
+            )
+
             # Render to template, either partial of full.
             return self.render_to_response(context)
 
     def is_ajax(self):
         return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+    def get_dashboard_kwargs(self):
+        kwargs = {}
+        return kwargs
+
+    def get_dashboard(self):
+        return self.dashboard_class(**self.get_dashboard_kwargs())
 
     def get_partial_component(self):
         """
@@ -53,7 +57,7 @@ class DashboardView(TemplateView):
         """
         key = self.request.GET.get("key")
         if self.request.htmx and key or self.is_ajax():
-            for component in self.dashboard(request=self.request).get_components(
+            for component in self.dashboard.get_components(
                 with_layout=False
             ):
                 if component.key == key:
@@ -61,8 +65,7 @@ class DashboardView(TemplateView):
         return
 
     def dispatch(self, request, *args, **kwargs):
-        has_permissions = self.dashboard(request=self.request).has_permissions()
-        print(has_permissions)
+        has_permissions = self.get_dashboard().has_permissions(request=self.request)
         if not has_permissions:
             raise PermissionDenied()
         return super().dispatch(request, *args, **kwargs)

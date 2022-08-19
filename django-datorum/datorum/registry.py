@@ -7,7 +7,7 @@ class Registry(object):
         if (
             cls.__name__ != "Dashboard"
         ):  # TODO needs better way to exclude the base class?
-            self.dashboards[cls.__name__] = cls
+            self.dashboards[cls.__name__] = cls()
 
     def get_all_dashboards(self):
         return self.dashboards
@@ -22,7 +22,7 @@ class Registry(object):
     def get_urls(self):
         urlpatterns = []
         for name, dashboard in self.get_all_dashboards().items():
-            urlpatterns += dashboard(1).urls
+            urlpatterns += dashboard.urls
 
         return urlpatterns
 

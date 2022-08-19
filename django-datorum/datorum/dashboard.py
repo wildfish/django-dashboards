@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class DashboardRenderMixin:
+    template_name: str = "datorum/layout/grid.html"
     div_template: str = "datorum/layout/div.html"
     grid_template: str = "datorum/layout/grid.html"
 
@@ -47,25 +48,24 @@ class DashboardRenderMixin:
         default_component_width: int = 4
 
     def get_context(self):
-        raise NotImplementedError(
-            "Subclasses of DashboardRenderMixin must provide a get_context() method."
-        )
+        context = {"layout": self.Layout()}
+        return context
 
-    def render(self, template_name=None, layout_context=None):
+    def render(self, request: HttpRequest, template_name=None):
+        if not template_name:
+            template_name = self.template_name
+
         context = self.get_context()
-        context.update(layout_context)
+        context['request'] = request
         return mark_safe(render_to_string(template_name, context))
 
-    __str__ = render
-    __html__ = render
-
-    def as_div(self):
+    def as_div(self, request: HttpRequest):
         """Render as <div> components."""
-        return self.render(self.div_template, {"layout": self.Layout()})
+        return self.render(request, self.div_template)
 
-    def as_grid(self):
+    def as_grid(self, request: HttpRequest):
         """Render as <div> grid components."""
-        return self.render(self.grid_template, {"layout": self.Layout()})
+        return self.render(request, self.grid_template)
 
     @classmethod
     def apply_layout(cls, components: list[Component]) -> list[Component]:
@@ -118,11 +118,14 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
     include_in_graphql: bool = True
     permission_classes: list[BasePermission] = []
 
-    def __init__(self, request: HttpRequest):
-        self.request = request
+    def __init__(self, **kwargs):
+        self._components_cache = {}
+        super().__init__()
 
     def get_context(self):
-        return {"components": self.get_components(), "request": self.request}
+        context = super().get_context()
+        context.update({"components": self.get_components(), "dashboard": self})
+        return context
 
     @classmethod
     def get_attributes_order(cls):
@@ -188,13 +191,13 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
 
         return [permission() for permission in permissions_classes]
 
-    def has_permissions(self):
+    def has_permissions(self, request):
         """
         Check if the request should be permitted.
         Raises exception if the request is not permitted.
         """
         for permission in self.get_dashboard_permissions():
-            if not permission.has_permission(self.request):
+            if not permission.has_permission(request):
                 return False
         return True
 
@@ -204,7 +207,7 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         from .views import DashboardView
         name = slugify(self.Meta.name)
         return [
-            path("%s/" % name, DashboardView.as_view(dashboard=self.__class__), name="%s_dashboard" % name),
+            path("%s/" % name, DashboardView.as_view(dashboard_class=self.__class__), name="%s_dashboard" % name),
         ]
 
     @property
@@ -214,3 +217,18 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
 
     class Meta:
         name: str
+
+    def __str__(self, name):
+        return self.Meta.name
+
+    def __getitem__(self, name):
+        try:
+            value = getattr(self, name)
+        except KeyError:
+            if name not in self._components_cache:
+                components = dict([(x.key, x) for x in self.get_components()])
+                self._components_cache.update(components)
+
+            value = self._components_cache.get(name)
+
+        return value

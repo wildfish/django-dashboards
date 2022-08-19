@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Type, Union
 
 from django.http import HttpRequest
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 
 from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
 from datorum.types import ValueData
@@ -36,3 +38,15 @@ class Component:
 
     def has_form(self):
         return True if self.filter_form else False
+
+    def __str__(self):
+        context = {
+            "component": self,
+            "rendered_value": self.value,
+            "htmx": self.is_deferred,
+        }
+
+        return mark_safe(render_to_string("datorum/components/component.html", context))
+
+    def __repr__(self):
+        return f"{self.key}={self.value}"

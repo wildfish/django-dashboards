@@ -17,7 +17,7 @@
 </head>
 <body class="{% block body_class %}{% endblock %}">
     {% block menu %}{% endblock %}
-    <h1>{% block content_title %}{{ dashboard.Meta.name }}{% endblock %}</h1>
+    <h1>{% block content_title %}{% endblock %}</h1>
     <div class="content">
         {% block content %} {% endblock content %}
     </div>
