@@ -4,6 +4,7 @@ from datorum.views import DashboardView
 
 from demo.demo_app import dashboards
 
+
 urlpatterns = [
     path(
         "",
