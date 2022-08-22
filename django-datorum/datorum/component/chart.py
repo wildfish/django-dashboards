@@ -1,14 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Callable, Optional, Union
+
+from django.http import HttpRequest
 
 from .base import Component
-
-
-@dataclass
-class Chart(Component):
-    render_json: bool = True
-    template: str = "datorum/components/chart/chart.html"
 
 
 @dataclass
@@ -26,9 +22,35 @@ class ChartData:
 
         x: list[Any]
         y: list[Any]
-        type: Mode
-        mode: Type
-        name: Optional[str]
+        text: Optional[list] = None
+        type: Optional[Type] = None
+        mode: Optional[Mode] = None
+        name: Optional[str] = None
+        marker: Optional[dict] = field(default_factory=lambda: {})
 
-    traces: list[Trace]
+    @dataclass
+    class Gauge:
+        class Mode(Enum):
+            STANDARD = "gauge+number"
+            DELTA = "gauge+number+delta"
+
+        domain: dict
+        value: int
+        title: Optional[dict] = None
+        mode: Optional[Mode] = None
+        delta: Optional[dict] = None
+        gauge: Optional[dict] = None
+        type: str = "indicator"
+
+    data: list[Union[Gauge, Trace]]
     layout: Optional[dict[str, str]] = None
+
+
+@dataclass
+class Chart(Component):
+    render_json: bool = True
+    template: str = "datorum/components/chart/chart.html"
+
+    # Expect charts to return chart data
+    value: Optional[ChartData] = None
+    defer: Optional[Callable[[HttpRequest], ChartData]] = None

@@ -5,7 +5,7 @@
         var data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
         Plotly.newPlot(
             'component-chart-{{ component.key }}',
-            data_{{ component.key }}.traces,
+            data_{{ component.key }}.data,
             data_{{ component.key }}.layout,
         );
     </script>

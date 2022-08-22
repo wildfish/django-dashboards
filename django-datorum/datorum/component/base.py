@@ -15,7 +15,7 @@ class Component:
     template: str
     value: Optional[ValueData] = None
     width: Optional[int] = None
-    defer: Optional[Callable] = None
+    defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[List[str]] = None
 

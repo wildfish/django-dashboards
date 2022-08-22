@@ -22,7 +22,7 @@ snapshots[
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
             'component-chart-test',
-            data_test.traces,
+            data_test.data,
             data_test.layout,
         );
     </script>
@@ -119,7 +119,7 @@ snapshots[
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
             'component-chart-test',
-            data_test.traces,
+            data_test.data,
             data_test.layout,
         );
     </script>
@@ -214,7 +214,7 @@ snapshots[
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
             'component-chart-test',
-            data_test.traces,
+            data_test.data,
             data_test.layout,
         );
     </script>
