@@ -11,6 +11,7 @@ class DemoDashboardOne(Dashboard):
     html_example = HTML(value="<strong>HTML also rendered on load</strong>")
     calculated_example = Text(defer=lambda _: "Deferred text")
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
+    stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data)
     bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
     line_chart_example = Chart(
         defer=DashboardData.fetch_scatter_chart_data,

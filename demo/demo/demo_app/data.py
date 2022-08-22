@@ -56,6 +56,27 @@ class DashboardData:
         )
 
     @staticmethod
+    def fetch_stacked_bar_chart_data(request) -> ChartData:
+        return ChartData(
+            data=[
+                ChartData.Trace(
+                    x=["giraffes", "orangutans", "monkeys"],
+                    y=[20, 14, 23],
+                    name="SF Zoo",
+                    type=ChartData.Trace.Type.BAR,
+                ),
+                ChartData.Trace(
+                    x=["giraffes", "orangutans", "monkeys"],
+                    y=[12, 18, 29],
+                    name="LA Zoo",
+                    type=ChartData.Trace.Type.BAR,
+                ),
+            ],
+            layout={"barmode": "stack"}
+        )
+
+
+    @staticmethod
     def fetch_bubble_chart_data(request) -> ChartData:
         return ChartData(
             data=[ChartData.Trace(
