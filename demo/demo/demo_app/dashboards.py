@@ -1,4 +1,4 @@
-from datorum.component import HTML, Plotly, Stat, Table, Text
+from datorum.component import HTML, Chart, Stat, Table, Text
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
 
@@ -10,9 +10,9 @@ class DemoDashboardOne(Dashboard):
     text_example = Text(value="Rendered on load")
     html_example = HTML(value="<strong>HTML also rendered on load</strong>")
     calculated_example = Text(defer=lambda _: "Deferred text")
-    chart_example = Plotly(defer=DashboardData.fetch_bar_chart_data)
-    bubble_chart_example = Plotly(defer=DashboardData.fetch_bubble_chart_data)
-    line_chart_example = Plotly(
+    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
+    bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
+    line_chart_example = Chart(
         defer=DashboardData.fetch_scatter_chart_data,
         filter_form=ExampleForm,
         dependents=["stat_three"],
@@ -26,8 +26,8 @@ class DemoDashboardOne(Dashboard):
         }
     )
     free_text_example = HTML(defer=DashboardData.fetch_html)
-    gauge_one = Plotly(defer=DashboardData.fetch_gauge_chart_data)
-    gauge_two = Plotly(defer=DashboardData.fetch_gauge_chart_data_two)
+    gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
+    gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     table_example = Table(defer=DashboardData.fetch_table_data)
     table_example_not_deferred = Table(
         value=[
@@ -49,7 +49,7 @@ class DemoDashboardOne(Dashboard):
 
 
 class DemoDashboardOneVary(DemoDashboardOne):
-    chart_example = Plotly(defer=DashboardData.fetch_bar_chart_data, width=12)
+    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=12)
     calculated_example = Text(defer=lambda _: "some calculated text", width=3)
     table_example = Table(defer=DashboardData.fetch_table_data, width=12)
 

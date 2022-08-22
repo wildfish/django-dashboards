@@ -62,7 +62,6 @@ class DashboardView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         has_permissions = self.dashboard(request=self.request).has_permissions()
-        print(has_permissions)
         if not has_permissions:
             raise PermissionDenied()
         return super().dispatch(request, *args, **kwargs)

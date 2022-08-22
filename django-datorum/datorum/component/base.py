@@ -1,6 +1,9 @@
-from dataclasses import dataclass
+import json
+from dataclasses import asdict, dataclass, is_dataclass
+from enum import Enum
 from typing import Callable, List, Optional, Type, Union
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpRequest
 
 from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
@@ -21,6 +24,7 @@ class Component:
     group: Optional[str] = None
     group_width: Optional[str] = None
     render_type: Optional[str] = None
+    render_json: bool = False
 
     # attrs below should not be changed
     dependent_components: Optional[List["Component"]] = None
@@ -31,8 +35,23 @@ class Component:
 
     def for_render(self, request: HttpRequest) -> ValueData:
         if self.is_deferred and self.defer:
-            return self.defer(request)
-        return self.value
+            value = self.defer(request)
+        else:
+            value = self.value
+
+        if self.render_json:
+            value = json.dumps(value, cls=ComponentEncoder)
+
+        return value
 
     def has_form(self):
         return True if self.filter_form else False
+
+
+class ComponentEncoder(DjangoJSONEncoder):
+    def default(self, o):
+        if is_dataclass(o):
+            return asdict(o)
+        if isinstance(o, Enum):
+            return o.value
+        return super().default(o)
