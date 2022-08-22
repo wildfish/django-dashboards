@@ -4,7 +4,6 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404, JsonResponse
 from django.views.generic import TemplateView
 
-from datorum.component import Component
 from datorum.dashboard import Dashboard
 from datorum.registry import registry
 

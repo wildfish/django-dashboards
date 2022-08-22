@@ -8,20 +8,7 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs0-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="fade-in">
-        value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs0-Plotly] 1"
+    "test_component__renders_value[False-component_kwargs0-Chart] 1"
 ] = """
     
 
@@ -33,12 +20,29 @@ snapshots[
     <script>
         /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot('component-chart-test', data_test);
+        Plotly.newPlot(
+            'component-chart-test',
+            data_test.data,
+            data_test.layout,
+        );
     </script>
 
 
 <div id="component-chart-test"></div>
 
+
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs0-HTML] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="fade-in">
+        value
 
     </div>
 """
@@ -97,20 +101,7 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs1-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="fade-in">
-        value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs1-Plotly] 1"
+    "test_component__renders_value[False-component_kwargs1-Chart] 1"
 ] = """
     
 
@@ -122,12 +113,29 @@ snapshots[
     <script>
         /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot('component-chart-test', data_test);
+        Plotly.newPlot(
+            'component-chart-test',
+            data_test.data,
+            data_test.layout,
+        );
     </script>
 
 
 <div id="component-chart-test"></div>
 
+
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs1-HTML] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="fade-in">
+        value
 
     </div>
 """
@@ -184,20 +192,7 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs0-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="fade-in">
-        value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs0-Plotly] 1"
+    "test_component__renders_value[True-component_kwargs0-Chart] 1"
 ] = """
     
 
@@ -209,12 +204,29 @@ snapshots[
     <script>
         /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot('component-chart-test', data_test);
+        Plotly.newPlot(
+            'component-chart-test',
+            data_test.data,
+            data_test.layout,
+        );
     </script>
 
 
 <div id="component-chart-test"></div>
 
+
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs0-HTML] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="fade-in">
+        value
 
     </div>
 """
@@ -273,13 +285,13 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs1-HTML] 1"
+    "test_component__renders_value[True-component_kwargs1-Chart] 1"
 ] = """
     <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs1-Plotly] 1"
+    "test_component__renders_value[True-component_kwargs1-HTML] 1"
 ] = """
     <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
 """

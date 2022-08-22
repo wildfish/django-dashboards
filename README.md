@@ -45,6 +45,11 @@ https://drive.google.com/drive/u/0/folders/0AFOShL-qRZlcUk9PVA
 * Test coverage - needs a lot more
   * CI
   * Tests for the 2 demos 
+* Transformers/data?
+  * How can we map data into components, helper functions or something more complex at a component level? 
+  * Maybe we sit all this sep as the proprietary side? 
+
+
   
 ### Components
 
@@ -53,7 +58,9 @@ https://drive.google.com/drive/u/0/folders/0AFOShL-qRZlcUk9PVA
   * Plotly only atm
   * Handles gauges also.
   * Rename to Chart   
-  * Need to decided on where option/layout control is defined, leaning towards parameterising what we want in the component. 
+  * Need to decided on where option/layout control is defined, leaning towards parameterising what we want in the component.
+    * labels etc 
+    * custom tooltips
 * Table
   * Added via tabulator. 
   * Ajax data added, pagination and sorting added. 

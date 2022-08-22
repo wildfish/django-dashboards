@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any
 
 
-ValueData = Union[str, dict, list, None]
+ValueData = Any

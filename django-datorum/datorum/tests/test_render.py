@@ -3,14 +3,14 @@ from django.test.utils import override_settings
 
 import pytest
 
-from datorum.component import HTML, Plotly, Stat, Table, Text
+from datorum.component import HTML, Chart, Stat, Table, Text
 from datorum.tests.utils import render_component_test
 
 from . import urls
 
 
 @override_settings(ROOT_URLCONF=urls)
-@pytest.mark.parametrize("component_class", [Text, HTML, Plotly, Table])
+@pytest.mark.parametrize("component_class", [Text, HTML, Chart, Table])
 @pytest.mark.parametrize(
     "component_kwargs", [{"value": "value"}, {"defer": lambda _: "value"}]
 )
