@@ -23,7 +23,11 @@ snapshots["test__get_attributes_order 1"] = [
     "get_components",
     "get_dashboard_permissions",
     "has_permissions",
+    "get_urls",
+    "urls",
     "Meta",
+    "__str__",
+    "__getitem__",
     "__doc__",
 ]
 
@@ -49,6 +53,10 @@ snapshots["test__get_attributes_order__with_parent 1"] = [
     "get_components",
     "get_dashboard_permissions",
     "has_permissions",
+    "get_urls",
+    "urls",
     "Meta",
+    "__str__",
+    "__getitem__",
     "__doc__",
 ]

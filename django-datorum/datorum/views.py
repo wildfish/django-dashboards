@@ -1,11 +1,12 @@
 from typing import Optional
 
 from django.core.exceptions import PermissionDenied
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.views.generic import TemplateView
 
 from datorum.component import Component
 from datorum.dashboard import Dashboard
+from datorum.registry import registry
 
 
 class DashboardView(TemplateView):
@@ -57,9 +58,10 @@ class DashboardView(TemplateView):
         """
         key = self.request.GET.get("key")
         if self.request.htmx and key or self.is_ajax():
-            for component in self.dashboard.get_components(
-                with_layout=False
-            ):
+            dashboard = (
+                self.dashboard if hasattr(self, "dashboard") else self.get_dashboard()
+            )
+            for component in dashboard.get_components(with_layout=False):
                 if component.key == key:
                     return component
         return
@@ -78,3 +80,45 @@ class DashboardView(TemplateView):
         if self.partial_component:
             return [self.partial_template_name]
         return names
+
+
+class ComponentView(TemplateView):
+    template_name: str = "datorum/components/partial.html"
+
+    def is_ajax(self):
+        return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+    def get(self, request, *args, **kwargs):
+        self.dashboard = self.get_dashboard()
+        self.component = self.get_partial_component()
+
+        if self.is_ajax():
+            # Return json, calling the deferred value.
+            return JsonResponse(self.component.defer(self.request), safe=False)
+        else:
+            context = self.get_context_data(
+                **{"component": self.component, "dashboard": self.dashboard}
+            )
+
+            return self.render_to_response(context)
+
+    def get_dashboard(self):
+        try:
+            dashboards = registry.get_all_dashboards()
+            dashboard = dashboards[self.kwargs["dashboard"]]
+        except KeyError:
+            raise Http404(f"Dashboard {self.kwargs['dashboard']} does not exist")
+
+        if not dashboard.has_permissions(request=self.request):
+            raise PermissionDenied()
+
+        return dashboard
+
+    def get_partial_component(self):
+        for component in self.dashboard.get_components():
+            if component.key == self.kwargs["component"]:
+                return component
+
+        raise Http404(
+            f"Component {self.kwargs['component']} does not exist in dashboard {self.kwargs['dashboard']}"
+        )

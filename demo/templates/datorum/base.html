@@ -1,11 +1,11 @@
 {% extends "datorum/base.html" %}
 {% block menu %}
-    <small>
-        <a href="{% url "demo_app:dashboard-one" %}">As grid</a> :
-        <a href="{% url "demo_app:dashboard-one-vary" %}">As vary grid</a> :
-        <a href="{% url "demo_app:dashboard-one-div" %}">As div</a> :
-        <a href="{% url "demo_app:dashboard-one-custom" %}">Custom template</a>
-        <a href="{% url "demo_app:dashboard-admin" %}">Admin Only</a>
+  <small>
+    <a href="{% url "dashboards:demodashboardone_dashboard" %}">As grid</a> :
+    <a href="{% url "dashboards:demodashboardonevary_dashboard" %}">As vary grid</a> :
+        <a href="{% url "dashboards:demodashboardonediv_dashboard" %}">As div</a> :
+        <a href="{% url "dashboards:demodashboardonecustom_dashboard" %}">Custom template</a>
+        <a href="{% url "dashboards:demodashboardadmin_dashboard" %}">Admin Only</a>
     </small>
     <hr/>
 {% endblock %}

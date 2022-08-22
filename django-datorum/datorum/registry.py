@@ -1,3 +1,6 @@
+from django.urls import path
+
+
 class Registry(object):
     def __init__(self):
         # Register dashboard classes
@@ -20,7 +23,16 @@ class Registry(object):
         }
 
     def get_urls(self):
-        urlpatterns = []
+        from .views import ComponentView
+
+        urlpatterns = [
+            path(
+                "<str:dashboard>/<str:component>/",
+                ComponentView.as_view(),
+                name="dashboard_component",
+            )
+        ]
+
         for name, dashboard in self.get_all_dashboards().items():
             urlpatterns += dashboard.urls
 

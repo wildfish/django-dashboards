@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from datorum.registry import registry
+from datorum.registry import registry as dashboard_registry
 from strawberry.django.views import GraphQLView
 
 from .demo_app.schema import schema
@@ -19,7 +19,7 @@ urlpatterns = [
             namespace="demo_app",
         ),
     ),
-    path("dashboards/", registry.urls),
+    path("dashboards/", dashboard_registry.urls),
     path("admin/", admin.site.urls),
     path("graphql/", GraphQLView.as_view(schema=schema)),
 ]

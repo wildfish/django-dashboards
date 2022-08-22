@@ -56,7 +56,7 @@ class DashboardRenderMixin:
             template_name = self.template_name
 
         context = self.get_context()
-        context['request'] = request
+        context["request"] = request
         return mark_safe(render_to_string(template_name, context))
 
     def as_div(self, request: HttpRequest):
@@ -148,6 +148,7 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         awaiting_dependents = {}
         for key, component in attributes:
             if isinstance(component, Component):
+                component.dashboard_class = cls.__name__
                 if not component.key:
                     component.key = key
                 if not component.render_type:
@@ -202,12 +203,18 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         return True
 
     def get_urls(self):
-        from django.urls import path
         from django.template.defaultfilters import slugify
+        from django.urls import path
+
         from .views import DashboardView
-        name = slugify(self.Meta.name)
+
+        name = slugify(self.__class__.__name__)
         return [
-            path("%s/" % name, DashboardView.as_view(dashboard_class=self.__class__), name="%s_dashboard" % name),
+            path(
+                "%s/" % name,
+                DashboardView.as_view(dashboard_class=self.__class__),
+                name="%s_dashboard" % name,
+            ),
         ]
 
     @property

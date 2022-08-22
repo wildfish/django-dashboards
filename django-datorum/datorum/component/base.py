@@ -3,6 +3,7 @@ from typing import Callable, List, Optional, Type, Union
 
 from django.http import HttpRequest
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
@@ -17,6 +18,7 @@ class Component:
     defer: Optional[Callable] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[List[str]] = None
+    dashboard_class: str = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
@@ -38,6 +40,11 @@ class Component:
 
     def has_form(self):
         return True if self.filter_form else False
+
+    def get_absolute_url(self):
+        return reverse(
+            "dashboards:dashboard_component", args=[self.dashboard_class, self.key]
+        )
 
     def __str__(self):
         context = {
