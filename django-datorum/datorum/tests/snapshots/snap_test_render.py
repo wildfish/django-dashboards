@@ -154,7 +154,7 @@ snapshots[
         const table_test = new Tabulator("#component-table-test", {
             
             "sortMode": "remote",
-            "ajaxURL":"?key=test",
+            "ajaxURL":"/None/test/?key=test",
             "paginationMode": "remote",
             
             "pagination": true,
