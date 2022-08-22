@@ -28,7 +28,9 @@ snapshots[
 </head>
 <body class="">
     
-    <h1>Test Dashboard</h1>
+    <h1>
+  Test Dashboard
+</h1>
     <div class="content">
         
     
@@ -48,13 +50,11 @@ snapshots[
 
     </div>
 
-
                 </div>
             
                 <div id="component-component_2" class="smooth dashboard-component span-4">
                     
-    <div hx-get="?key=component_2" hx-trigger="load"></div>
-
+    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
 
                 </div>
             
@@ -81,7 +81,6 @@ snapshots[
         value
 
     </div>
-
 
 
 

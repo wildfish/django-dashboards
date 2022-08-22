@@ -32,7 +32,6 @@ snapshots[
 
 
     </div>
-
 """
 
 snapshots[
@@ -46,7 +45,6 @@ snapshots[
         value
 
     </div>
-
 """
 
 snapshots[
@@ -87,7 +85,6 @@ snapshots[
 
 
     </div>
-
 """
 
 snapshots[
@@ -101,7 +98,6 @@ snapshots[
         value
 
     </div>
-
 """
 
 snapshots[
@@ -129,7 +125,6 @@ snapshots[
 
 
     </div>
-
 """
 
 snapshots[
@@ -143,7 +138,6 @@ snapshots[
         value
 
     </div>
-
 """
 
 snapshots[
@@ -168,7 +162,7 @@ snapshots[
         const table_test = new Tabulator("#component-table-test", {
             
             "sortMode": "remote",
-            "ajaxURL":"?key=test",
+            "ajaxURL":"/None/test/?key=test",
             "paginationMode": "remote",
             
             "pagination": true,
@@ -182,7 +176,6 @@ snapshots[
 
 
     </div>
-
 """
 
 snapshots[
@@ -196,7 +189,6 @@ snapshots[
         value
 
     </div>
-
 """
 
 snapshots[
@@ -224,7 +216,6 @@ snapshots[
 
 
     </div>
-
 """
 
 snapshots[
@@ -238,7 +229,6 @@ snapshots[
         value
 
     </div>
-
 """
 
 snapshots[
@@ -279,7 +269,6 @@ snapshots[
 
 
     </div>
-
 """
 
 snapshots[
@@ -293,35 +282,30 @@ snapshots[
         value
 
     </div>
-
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Chart] 1"
 ] = """
-    <div hx-get="?key=test" hx-trigger="load"></div>
-
+    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-HTML] 1"
 ] = """
-    <div hx-get="?key=test" hx-trigger="load"></div>
-
+    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Table] 1"
 ] = """
-    <div hx-get="?key=test" hx-trigger="load"></div>
-
+    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Text] 1"
 ] = """
-    <div hx-get="?key=test" hx-trigger="load"></div>
-
+    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
 """
 
 snapshots[
@@ -336,7 +320,6 @@ snapshots[
 <small>increase</small>
 
     </div>
-
 """
 
 snapshots[
@@ -351,7 +334,6 @@ snapshots[
 <small>increase</small>
 
     </div>
-
 """
 
 snapshots[
@@ -366,12 +348,10 @@ snapshots[
 <small>increase</small>
 
     </div>
-
 """
 
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs1] 1"
 ] = """
-    <div hx-get="?key=test" hx-trigger="load"></div>
-
+    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
 """

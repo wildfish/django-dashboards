@@ -5,6 +5,9 @@ from typing import Callable, List, Optional, Type, Union
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpRequest
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
 from datorum.types import ValueData
@@ -18,6 +21,7 @@ class Component:
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[List[str]] = None
+    dashboard_class: Optional[str] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
@@ -46,6 +50,23 @@ class Component:
 
     def has_form(self):
         return True if self.filter_form else False
+
+    def get_absolute_url(self):
+        return reverse(
+            "dashboards:dashboard_component", args=[self.dashboard_class, self.key]
+        )
+
+    def __str__(self):
+        context = {
+            "component": self,
+            "rendered_value": self.value,
+            "htmx": self.is_deferred,
+        }
+
+        return mark_safe(render_to_string("datorum/components/component.html", context))
+
+    def __repr__(self):
+        return f"{self.key}={self.value}"
 
 
 class ComponentEncoder(DjangoJSONEncoder):
