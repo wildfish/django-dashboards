@@ -27,11 +27,11 @@ class Component:
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[List[str]] = None
-    dashboard_class: Optional[str] = None
     cta: Optional[CTA] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
+    dashboard_class: Optional[str] = None
     group: Optional[str] = None
     group_width: Optional[str] = None
     render_type: Optional[str] = None

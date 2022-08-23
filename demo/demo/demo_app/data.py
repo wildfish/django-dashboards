@@ -1,5 +1,10 @@
+import csv
+
+import requests
 from datorum.component.chart import ChartData
+from datorum.component.map import MapData
 from datorum.component.table import TableData
+
 from demo.demo_app.models import FlatText
 
 
@@ -14,46 +19,52 @@ class DashboardData:
     @staticmethod
     def fetch_gauge_chart_data(request) -> ChartData:
         return ChartData(
-            data=[ChartData.Gauge(
-                domain={"x": [0, 1], "y": [0, 1]},
-                value=2700,
-                title={"text": "Average RPM"},
-                mode=ChartData.Gauge.Mode.STANDARD,
-            )]
+            data=[
+                ChartData.Gauge(
+                    domain={"x": [0, 1], "y": [0, 1]},
+                    value=2700,
+                    title={"text": "Average RPM"},
+                    mode=ChartData.Gauge.Mode.STANDARD,
+                )
+            ]
         )
 
     @staticmethod
     def fetch_gauge_chart_data_two(request) -> ChartData:
         return ChartData(
-            data=[ChartData.Gauge(
-                domain={"x": [0, 1], "y": [0, 1]},
-                value=45,
-                title={"text": "MPG"},
-                mode=ChartData.Gauge.Mode.DELTA,
-                delta={"reference": 38},
-                gauge={
-                    "axis": {"range": [None, 50]},
-                    "steps": [
-                        {"range": [0, 25], "color": "lightgray"},
-                        {"range": [25, 40], "color": "gray"},
-                    ],
-                    "threshold": {
-                        "line": {"color": "red", "width": 4},
-                        "thickness": 0.75,
-                        "value": 49,
+            data=[
+                ChartData.Gauge(
+                    domain={"x": [0, 1], "y": [0, 1]},
+                    value=45,
+                    title={"text": "MPG"},
+                    mode=ChartData.Gauge.Mode.DELTA,
+                    delta={"reference": 38},
+                    gauge={
+                        "axis": {"range": [None, 50]},
+                        "steps": [
+                            {"range": [0, 25], "color": "lightgray"},
+                            {"range": [25, 40], "color": "gray"},
+                        ],
+                        "threshold": {
+                            "line": {"color": "red", "width": 4},
+                            "thickness": 0.75,
+                            "value": 49,
+                        },
                     },
-                }
-            )]
+                )
+            ]
         )
 
     @staticmethod
     def fetch_bar_chart_data(request) -> ChartData:
         return ChartData(
-            data=[ChartData.Trace(
-                x=["giraffes", "orangutans", "monkeys"],
-                y=[20, 14, 23],
-                type=ChartData.Trace.Type.BAR,
-            )]
+            data=[
+                ChartData.Trace(
+                    x=["giraffes", "orangutans", "monkeys"],
+                    y=[20, 14, 23],
+                    type=ChartData.Trace.Type.BAR,
+                )
+            ]
         )
 
     @staticmethod
@@ -73,18 +84,20 @@ class DashboardData:
                     type=ChartData.Trace.Type.BAR,
                 ),
             ],
-            layout={"barmode": "stack"}
+            layout={"barmode": "stack"},
         )
 
     @staticmethod
     def fetch_bubble_chart_data(request) -> ChartData:
         return ChartData(
-            data=[ChartData.Trace(
-                x=[1, 2, 3, 4],
-                y=[10, 11, 12, 13],
-                mode=ChartData.Trace.Mode.SCATTER,
-                marker={"size": [40, 60, 80, 100]},
-            )]
+            data=[
+                ChartData.Trace(
+                    x=[1, 2, 3, 4],
+                    y=[10, 11, 12, 13],
+                    mode=ChartData.Trace.Mode.SCATTER,
+                    marker={"size": [40, 60, 80, 100]},
+                )
+            ]
         )
 
     @staticmethod
@@ -144,7 +157,9 @@ class DashboardData:
         # Very noddy example of filtering, should and could validate against the form class itself :)
         filter_country = request.GET.get("country")
         if filter_country and filter_country != "all":
-            return ChartData(data={"na": [na], "europe": [europe], "asia": [asia]}[filter_country])
+            return ChartData(
+                data={"na": [na], "europe": [europe], "asia": [asia]}[filter_country]
+            )
 
         return ChartData(data=[na, europe, asia])
 
@@ -155,7 +170,16 @@ class DashboardData:
         """
 
         data = TableData(
-            headers=["Id", "Name", "Progress", "Gender", "Rating", "Colour", "DOB", "Car"],
+            headers=[
+                "Id",
+                "Name",
+                "Progress",
+                "Gender",
+                "Rating",
+                "Colour",
+                "DOB",
+                "Car",
+            ],
             rows=[
                 {
                     "id": 1,
@@ -215,8 +239,86 @@ class DashboardData:
                     "dob": "12/05/1966",
                     "car": 1,
                 },
-            ]
-
+            ],
         )
 
         return data
+
+    @staticmethod
+    def fetch_scatter_map_data(request) -> MapData:
+        return MapData(
+            data=[
+                MapData.ScatterGeo(
+                    lat=[40.7127, 51.5072],
+                    lon=[-74.0059, 0.1275],
+                    mode="lines",
+                    line={"width": 2, "color": "blue"},
+                )
+            ],
+            layout=MapData.MapLayout(
+                title="London to NYC Great Circle",
+                showlegend=False,
+                geo={
+                    "resolution": 50,
+                    "showland": True,
+                    "showlakes": True,
+                    "landcolor": "rgb(204, 204, 204)",
+                    "countrycolor": "rgb(204, 204, 204)",
+                    "lakecolor": "rgb(255, 255, 255)",
+                    "projection": {"type": "equirectangular"},
+                    "coastlinewidth": 2,
+                    "lataxis": {
+                        "range": [20, 60],
+                        "showgrid": True,
+                        "tickmode": "linear",
+                        "dtick": 10,
+                    },
+                    "lonaxis": {
+                        "range": [-100, 20],
+                        "showgrid": True,
+                        "tickmode": "linear",
+                        "dtick": 20,
+                    },
+                },
+            ),
+        )
+
+    @staticmethod
+    def fetch_choropleth_map_data(request) -> MapData:
+        url = "https://raw.githubusercontent.com/plotly/datasets/master/2014_usa_states.csv"
+        r = requests.get(url)
+        lines = [line.decode("utf-8") for line in r.iter_lines()]
+        reader = csv.reader(lines, delimiter=",")
+        locations = []
+        z = []
+        text = []
+        for r in reader:
+            locations.append(r[2])
+            z.append(r[3])
+            text.append(r[1])
+
+        return MapData(
+            data=[
+                MapData.Choropleth(
+                    locationmode="USA-states",
+                    locations=locations[1:],
+                    z=z[1:],
+                    text=text[1:],
+                    autocolorscale=True,
+                )
+            ],
+            layout={
+                "title": "2014 US Popultaion by State",
+                "geo": {
+                    "scope": "usa",
+                    "countrycolor": "rgb(255, 255, 255)",
+                    "showland": True,
+                    "landcolor": "rgb(217, 217, 217)",
+                    "showlakes": True,
+                    "lakecolor": "rgb(255, 255, 255)",
+                    "subunitcolor": "rgb(255, 255, 255)",
+                    "lonaxis": {},
+                    "lataxis": {},
+                },
+            },
+        )

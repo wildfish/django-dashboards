@@ -1,6 +1,6 @@
 from django.urls import reverse_lazy
 
-from datorum.component import HTML, Chart, Stat, Table, Text, CTA
+from datorum.component import HTML, Chart, Map, Stat, Table, Text, CTA
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
@@ -37,19 +37,24 @@ class DemoDashboardOne(Dashboard):
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     table_example = Table(defer=DashboardData.fetch_table_data)
     table_example_not_deferred = Table(
-        value=TableData(headers=[], rows=[
-            {
-                "id": 1,
-                "name": "Oli Bob",
-                "progress": 12,
-                "gender": "male",
-                "rating": 1,
-                "col": "red",
-                "dob": "19/02/1984",
-                "car": 1,
-            }
-        ])
+        value=TableData(
+            headers=[],
+            rows=[
+                {
+                    "id": 1,
+                    "name": "Oli Bob",
+                    "progress": 12,
+                    "gender": "male",
+                    "rating": 1,
+                    "col": "red",
+                    "dob": "19/02/1984",
+                    "car": 1,
+                }
+            ],
+        )
     )
+    scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
+    choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
 
     class Meta:
         name = "Dashboard One"
@@ -102,6 +107,8 @@ class DemoDashboardOneVary(DemoDashboardOne):
 class DemoDashboardAdmin(Dashboard):
     permission_classes = [IsAdminUser]
     admin_text = Text(value="Admin Only Text")
+    scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
+    choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
 
     class Meta:
         name = "Admin Dashboard"
