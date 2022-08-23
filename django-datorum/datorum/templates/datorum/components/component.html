@@ -4,7 +4,14 @@
     {% include "datorum/components/filter.html" %}
 
     {# -inner will be replaced if a filter is applied. #}
-    <div id="component-{{ component.key }}-inner" class="fade-in">
+    <div id="component-{{ component.key }}-inner" class="dashboard-component-inner fade-in">
         {% include component.template %}
     </div>
+    {% if component.cta %}
+        <a href="{{ component.cta.href }}">
+            <div class="dashboard-component-cta">
+                {{ component.cta.text }}
+            </div>
+        </a>
+    {% endif %}
 {% endif %}

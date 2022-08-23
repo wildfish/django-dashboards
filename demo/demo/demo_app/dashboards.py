@@ -1,4 +1,6 @@
-from datorum.component import HTML, Chart, Stat, Table, Text
+from django.urls import reverse_lazy
+
+from datorum.component import HTML, Chart, Stat, Table, Text, CTA
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
@@ -8,7 +10,10 @@ from demo.demo_app.forms import ExampleForm
 
 
 class DemoDashboardOne(Dashboard):
-    text_example = Text(value="Rendered on load")
+    text_example = Text(value="Rendered on load", cta=CTA(
+        href=reverse_lazy("dashboards:demodashboardonecustom_dashboard"),
+        text="Find out more!"
+    ))
     html_example = HTML(value="<strong>HTML also rendered on load</strong>")
     calculated_example = Text(defer=lambda _: "Deferred text")
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)

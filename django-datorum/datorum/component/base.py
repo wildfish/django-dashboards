@@ -14,6 +14,12 @@ from datorum.types import ValueData
 
 
 @dataclass
+class CTA:
+    href: str
+    text: str
+
+
+@dataclass
 class Component:
     template: str
     value: Optional[ValueData] = None
@@ -22,6 +28,7 @@ class Component:
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[List[str]] = None
     dashboard_class: Optional[str] = None
+    cta: Optional[CTA] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None

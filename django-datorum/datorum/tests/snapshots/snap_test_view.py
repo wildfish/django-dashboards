@@ -45,10 +45,11 @@ snapshots[
 
 
     
-    <div id="component-component_1-inner" class="fade-in">
+    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         value
 
     </div>
+    
 
                 </div>
             
@@ -77,10 +78,11 @@ snapshots[
 
 
     
-    <div id="component-component_2-inner" class="fade-in">
+    <div id="component-component_2-inner" class="dashboard-component-inner fade-in">
         value
 
     </div>
+    
 
 
 

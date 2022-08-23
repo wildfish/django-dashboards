@@ -20,6 +20,10 @@ body {
   max-width: 95%;
 }
 
+a{
+  text-decoration: none;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 .5em 0;
   line-height: 1.2;
@@ -38,7 +42,18 @@ h1, h2, h3, h4, h5, h6 {
 
 .dashboard-component {
   border: 1px solid #CCCCCC;
+  text-align: center;
+}
+
+.dashboard-component-inner {
   padding: 1em;
+}
+.dashboard-component-cta {
+  background-color: #c4d9e3;
+  color: #FFF;
+  text-decoration: none;
+  padding: 5px;
+  border-top: 2px solid #b7c8d2;
 }
 
 /* use a lib or generate all the variants with scss for... */
