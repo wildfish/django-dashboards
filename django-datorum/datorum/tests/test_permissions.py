@@ -18,7 +18,7 @@ def test_view__admin_only__no_permission(rf, django_user_model, test_admin_dashb
     request = rf.get("/")
     request.user = user
     request.htmx = False
-    view = DashboardView(dashboard=test_admin_dashboard)
+    view = DashboardView(dashboard_class=test_admin_dashboard)
     view.setup(request)
     with pytest.raises(PermissionDenied):
         view.dispatch(request)
@@ -34,7 +34,7 @@ def test_view__admin_only__passes(rf, django_user_model, test_admin_dashboard):
     request = rf.get("/")
     request.user = user
     request.htmx = False
-    view = DashboardView(dashboard=test_admin_dashboard)
+    view = DashboardView(dashboard_class=test_admin_dashboard)
     view.setup(request)
 
     assert view.dispatch(request).status_code == 200

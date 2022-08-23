@@ -49,6 +49,14 @@ class DemoDashboardOne(Dashboard):
         name = "Dashboard One"
 
 
+class DemoDashboardOneDiv(DemoDashboardOne):
+    template_name = "datorum/layout/div.html"
+
+
+class DemoDashboardOneCustom(DemoDashboardOne):
+    template_name = "demo/custom.html"
+
+
 class DemoDashboardOneVary(DemoDashboardOne):
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=12)
     calculated_example = Text(defer=lambda _: "some calculated text", width=3)
