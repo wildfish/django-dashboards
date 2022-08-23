@@ -1,4 +1,5 @@
 from datorum.component import HTML, Chart, Stat, Table, Text
+from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
 
@@ -31,7 +32,7 @@ class DemoDashboardOne(Dashboard):
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     table_example = Table(defer=DashboardData.fetch_table_data)
     table_example_not_deferred = Table(
-        value=[
+        value=TableData(headers=[], rows=[
             {
                 "id": 1,
                 "name": "Oli Bob",
@@ -42,7 +43,7 @@ class DemoDashboardOne(Dashboard):
                 "dob": "19/02/1984",
                 "car": 1,
             }
-        ]
+        ])
     )
 
     class Meta:
@@ -50,7 +51,7 @@ class DemoDashboardOne(Dashboard):
 
 
 class DemoDashboardOneDiv(DemoDashboardOne):
-    template_name = "datorum/layout/div.html"
+    template_name = "demo/div.html"
 
 
 class DemoDashboardOneCustom(DemoDashboardOne):

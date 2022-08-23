@@ -32,12 +32,6 @@ def get_filter_form(context: RequestContext, component: Component) -> Optional[F
 
 
 @register.simple_tag(takes_context=True)
-def render_dashboard(
-    context: RequestContext, dashboard: Dashboard, as_div: bool = False
-):
+def render_dashboard(context: RequestContext, dashboard: Dashboard):
     request = context["request"]
-    return (
-        dashboard.as_div(request=request)
-        if as_div
-        else dashboard.render(request=request)
-    )
+    return dashboard.render(request=request)

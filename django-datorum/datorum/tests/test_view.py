@@ -35,7 +35,7 @@ def test_view__get_partial__htmx__component_found(rf, test_dashboard):
     view = ComponentView()
     view.setup(request, dashboard="TestDashboard", component="component_1")
 
-    assert view.get_partial_component() == test_dashboard.component_1
+    assert view.get_partial_component(test_dashboard) == test_dashboard.component_1
 
 
 @override_settings(ROOT_URLCONF=urls)
@@ -45,7 +45,7 @@ def test_view__get_partial__component_not_found(rf, test_dashboard):
     view.setup(request, dashboard="TestDashboard", component="component_10")
 
     with pytest.raises(Http404):
-        view.get_partial_component()
+        view.get_partial_component(test_dashboard)
 
 
 @override_settings(ROOT_URLCONF=urls)

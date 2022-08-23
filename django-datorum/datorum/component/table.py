@@ -1,7 +1,34 @@
 import collections
 from dataclasses import dataclass
+from typing import Any, Callable, Optional
+
+from django.http import HttpRequest
 
 from .base import Component
+
+
+@dataclass
+class TableData:
+    headers: list[str]
+    rows: list[dict[str, Any]]
+    last_page: int = 1
+
+    @classmethod
+    def get_request_data(cls, request, fields):
+        """
+        Helper for tabulator, need to think how this functions with Table Data.
+        """
+        page = request.GET.get("page", 1)
+        size = request.GET.get("size", 10)
+        sorts = {}
+        for r in range(len(fields)):
+            sort_field = request.GET.get(f"sort[{r}][field]")
+            sort_order = request.GET.get(f"sort[{r}][dir]")
+            if sort_field and sort_order:
+                sorts[r] = f"{'-' if sort_order == 'desc' else ''}{sort_field}"
+        order = collections.OrderedDict(sorted(sorts.items()))
+
+        return page, size, order
 
 
 @dataclass
@@ -24,19 +51,10 @@ class Table(Component):
     Also need it to be possible to click on columns for list views.
     """
 
+    render_json: bool = True
     template: str = "datorum/components/table/index.html"
     page_size: int = 10
 
-    @classmethod
-    def get_request_data(cls, request, fields):
-        page = request.GET.get("page", 1)
-        size = request.GET.get("size", 10)
-        sorts = {}
-        for r in range(len(fields)):
-            sort_field = request.GET.get(f"sort[{r}][field]")
-            sort_order = request.GET.get(f"sort[{r}][dir]")
-            if sort_field and sort_order:
-                sorts[r] = f"{'-' if sort_order == 'desc' else ''}{sort_field}"
-        order = collections.OrderedDict(sorted(sorts.items()))
-
-        return page, size, order
+    # Expect tables to return table data
+    value: Optional[TableData] = None
+    defer: Optional[Callable[[HttpRequest], TableData]] = None

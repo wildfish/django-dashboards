@@ -2,11 +2,12 @@
 
 {% with "data_"|add:component.key as data_key %}
     {% if not component.is_deferred %}
-        {{ rendered_value|json_script:data_key }}
+        <script id="{{ data_key }}" type="application/json">{{ rendered_value|safe }}</script>
     {% endif %}
     <script>
         {% if not component.is_deferred %}
         const data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+        const rows_{{ component.key }} = data_{{ component.key }}.rows;
         {% endif %}
 
         /*
@@ -18,8 +19,11 @@
             "sortMode": "remote",
             "ajaxURL":"{{ component.get_absolute_url }}?key={{ component.key }}",
             "paginationMode": "remote",
+            "ajaxResponse": function(url, params, response){
+                return {"data": response.rows, "last_page": response.last_page};
+            },
             {% else %}
-            "data": data_{{ component.key }},
+            "data": rows_{{ component.key }},
             {% endif %}
             "pagination": true,
             "autoColumns": true,

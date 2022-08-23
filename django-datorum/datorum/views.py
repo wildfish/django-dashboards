@@ -1,7 +1,7 @@
 from typing import Optional
 
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse
 from django.views.generic import TemplateView
 
 from datorum.dashboard import Dashboard
@@ -10,14 +10,7 @@ from datorum.registry import registry
 
 class DashboardView(TemplateView):
     """
-    Dashboards base.
-
-    By default, datorum/as_grid.html will be used, which uses a standard 12 grid layout.
-
-    Returns either a
-        - standard template: all components
-        - partial template (for HTMX): single component (via param key)
-        - json for (Ajax): single component (via param key)
+    Dashboard view, allows a single Dashboard to be auto rendered.
     """
 
     dashboard_class: Optional[Dashboard] = None
@@ -28,7 +21,6 @@ class DashboardView(TemplateView):
 
         context = self.get_context_data(**{"dashboard": self.dashboard})
 
-        # Render to template
         return self.render_to_response(context)
 
     def get_dashboard_kwargs(self):
@@ -46,21 +38,27 @@ class DashboardView(TemplateView):
 
 
 class ComponentView(TemplateView):
+    """
+    Component view, partial rendering of a single component to support HTMX calls.
+    """
+
     template_name: str = "datorum/components/partial.html"
 
     def is_ajax(self):
         return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
 
     def get(self, request, *args, **kwargs):
-        self.dashboard = self.get_dashboard()
-        self.component = self.get_partial_component()
+        dashboard = self.get_dashboard()
+        component = self.get_partial_component(dashboard)
 
-        if self.is_ajax():
+        if self.is_ajax() and component:
             # Return json, calling the deferred value.
-            return JsonResponse(self.component.defer(self.request), safe=False)
+            return HttpResponse(
+                component.for_render(self.request), content_type="application/json"
+            )
         else:
             context = self.get_context_data(
-                **{"component": self.component, "dashboard": self.dashboard}
+                **{"component": component, "dashboard": dashboard}
             )
 
             return self.render_to_response(context)
@@ -77,12 +75,7 @@ class ComponentView(TemplateView):
 
         return dashboard
 
-    def get_partial_component(self):
-        if hasattr(self, "dashboard"):
-            dashboard = self.dashboard
-        else:
-            dashboard = self.get_dashboard()
-
+    def get_partial_component(self, dashboard):
         for component in dashboard.get_components(with_layout=False):
             if component.key == self.kwargs["component"]:
                 return component

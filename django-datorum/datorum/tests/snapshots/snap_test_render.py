@@ -64,6 +64,7 @@ snapshots[
     <script>
         
         const data_test = JSON.parse(document.getElementById('data_test').textContent);
+        const rows_test = data_test.rows;
         
 
         /*
@@ -72,7 +73,7 @@ snapshots[
         */
         const table_test = new Tabulator("#component-table-test", {
             
-            "data": data_test,
+            "data": rows_test,
             
             "pagination": true,
             "autoColumns": true,
@@ -164,6 +165,9 @@ snapshots[
             "sortMode": "remote",
             "ajaxURL":"/None/test/?key=test",
             "paginationMode": "remote",
+            "ajaxResponse": function(url, params, response){
+                return {"data": response.rows, "last_page": response.last_page};
+            },
             
             "pagination": true,
             "autoColumns": true,
@@ -248,6 +252,7 @@ snapshots[
     <script>
         
         const data_test = JSON.parse(document.getElementById('data_test').textContent);
+        const rows_test = data_test.rows;
         
 
         /*
@@ -256,7 +261,7 @@ snapshots[
         */
         const table_test = new Tabulator("#component-table-test", {
             
-            "data": data_test,
+            "data": rows_test,
             
             "pagination": true,
             "autoColumns": true,

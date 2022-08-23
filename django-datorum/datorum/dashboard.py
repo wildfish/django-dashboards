@@ -18,8 +18,6 @@ logger = logging.getLogger(__name__)
 
 class DashboardRenderMixin:
     template_name: str = "datorum/layout/grid.html"
-    div_template: str = "datorum/layout/div.html"
-    grid_template: str = "datorum/layout/grid.html"
 
     class Layout:
         """
@@ -58,14 +56,6 @@ class DashboardRenderMixin:
         context = self.get_context()
         context["request"] = request
         return mark_safe(render_to_string(template_name, context))
-
-    def as_div(self, request: HttpRequest):
-        """Render as <div> components."""
-        return self.render(request, self.div_template)
-
-    def as_grid(self, request: HttpRequest):
-        """Render as <div> grid components."""
-        return self.render(request, self.grid_template)
 
     @classmethod
     def apply_layout(cls, components: list[Component]) -> list[Component]:
@@ -108,10 +98,10 @@ class DashboardRenderMixin:
 
 
 class DashboardType(type):
-    def __new__(cls, clsname, bases, attrs):
-        newclass = super().__new__(cls, clsname, bases, attrs)
-        registry.register(newclass)
-        return newclass
+    def __new__(mcs, cls, bases, attrs):
+        dashboard_class = super().__new__(mcs, cls, bases, attrs)
+        registry.register(dashboard_class)
+        return dashboard_class
 
 
 class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
@@ -192,7 +182,7 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
 
         return [permission() for permission in permissions_classes]
 
-    def has_permissions(self, request):
+    def has_permissions(self, request: HttpRequest) -> bool:
         """
         Check if the request should be permitted.
         Raises exception if the request is not permitted.
@@ -225,7 +215,7 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
     class Meta:
         name: str
 
-    def __str__(self, name):
+    def __str__(self):
         return self.Meta.name
 
     def __getitem__(self, name):
