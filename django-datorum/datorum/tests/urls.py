@@ -1,8 +1,6 @@
-from django.urls import path
-
-from datorum.registry import registry as dashboard_registry
+from django.urls import include, path
 
 
 urlpatterns = [
-    path("", dashboard_registry.urls),
+    path("", include("datorum.urls")),
 ]

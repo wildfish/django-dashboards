@@ -60,7 +60,7 @@ class Component:
 
     def get_absolute_url(self):
         return reverse(
-            "dashboards:dashboard_component", args=[self.dashboard_class, self.key]
+            "datorum:dashboard_component", args=[self.dashboard_class, self.key]
         )
 
     def __str__(self):
