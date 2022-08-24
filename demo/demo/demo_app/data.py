@@ -57,11 +57,16 @@ class DashboardData:
 
     @staticmethod
     def fetch_bar_chart_data(request) -> ChartData:
+        data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}
+        if "animal" in request.GET and request.GET["animal"] in data:
+            animal = request.GET["animal"]
+            data = {animal: data[animal]}
+
         return ChartData(
             data=[
                 ChartData.Trace(
-                    x=["giraffes", "orangutans", "monkeys"],
-                    y=[20, 14, 23],
+                    x=list(data.keys()),
+                    y=list(data.values()),
                     type=ChartData.Trace.Type.BAR,
                 )
             ]
@@ -69,17 +74,24 @@ class DashboardData:
 
     @staticmethod
     def fetch_stacked_bar_chart_data(request) -> ChartData:
+        sf_data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}
+        la_data = {"giraffes": 12, "orangutans": 18, "monkeys": 29}
+        if "animal" in request.GET:
+            animal = request.GET["animal"]
+            sf_data = {animal: sf_data[animal]} if animal in sf_data else sf_data
+            la_data = {animal: la_data[animal]} if animal in la_data else la_data
+
         return ChartData(
             data=[
                 ChartData.Trace(
-                    x=["giraffes", "orangutans", "monkeys"],
-                    y=[20, 14, 23],
+                    x=list(sf_data.keys()),
+                    y=list(sf_data.values()),
                     name="SF Zoo",
                     type=ChartData.Trace.Type.BAR,
                 ),
                 ChartData.Trace(
-                    x=["giraffes", "orangutans", "monkeys"],
-                    y=[12, 18, 29],
+                    x=list(la_data.keys()),
+                    y=list(la_data.values()),
                     name="LA Zoo",
                     type=ChartData.Trace.Type.BAR,
                 ),

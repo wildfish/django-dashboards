@@ -1,0 +1,3 @@
+<form hx-get="{{ component.get_absolute_url }}?key={{ component.key }}" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-{{ component.key }}-inner">
+  {{ rendered_value.as_p }}
+</form>

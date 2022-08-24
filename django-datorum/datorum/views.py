@@ -1,11 +1,11 @@
 from typing import Optional
 
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.views.generic import TemplateView
 
 from datorum.dashboard import Dashboard
-from datorum.registry import registry
+from datorum.utils import get_dashboard
 
 
 class DashboardView(TemplateView):
@@ -30,7 +30,7 @@ class DashboardView(TemplateView):
     def get_dashboard(self):
         return self.dashboard_class(**self.get_dashboard_kwargs())
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
         has_permissions = self.get_dashboard().has_permissions(request=self.request)
         if not has_permissions:
             raise PermissionDenied()
@@ -47,7 +47,7 @@ class ComponentView(TemplateView):
     def is_ajax(self):
         return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard()
         component = self.get_partial_component(dashboard)
 
@@ -64,16 +64,7 @@ class ComponentView(TemplateView):
             return self.render_to_response(context)
 
     def get_dashboard(self):
-        try:
-            dashboards = registry.get_all_dashboards()
-            dashboard = dashboards[self.kwargs["dashboard"]]
-        except KeyError:
-            raise Http404(f"Dashboard {self.kwargs['dashboard']} does not exist")
-
-        if not dashboard.has_permissions(request=self.request):
-            raise PermissionDenied()
-
-        return dashboard
+        return get_dashboard(self.kwargs["dashboard"], request=self.request)
 
     def get_partial_component(self, dashboard):
         for component in dashboard.get_components(with_layout=False):
@@ -83,3 +74,34 @@ class ComponentView(TemplateView):
         raise Http404(
             f"Component {self.kwargs['component']} does not exist in dashboard {self.kwargs['dashboard']}"
         )
+
+
+class FormComponentView(ComponentView):
+    """
+    Form Component view, partial rendering of dependant components to support HTMX calls.
+    """
+
+    template_name: str = "datorum/components/form/dependants.html"
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        dashboard = self.get_dashboard()
+        component = self.get_partial_component(dashboard)
+
+        form = component.get_form(dashboard=dashboard, request=request)
+
+        if self.is_ajax():
+            response = ""
+            for c in form.components:
+                # Return json, calling the deferred value.
+                response += c.for_render(self.request)
+            return HttpResponse(response, content_type="application/json")
+        else:
+            context = self.get_context_data(
+                **{
+                    "dependants": form.components,
+                    "dashboard": dashboard,
+                    "component": component,
+                }
+            )
+
+            return self.render_to_response(context)

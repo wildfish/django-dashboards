@@ -1,0 +1,8 @@
+{% load datorum %}
+{% render_component component=component htmx=False %}
+
+{% for dependent in dependants %}
+      <div hx-swap-oob="innerHTML:#component-{{ dependent.key }}-inner">
+        {% render_component component=dependent htmx=False %}
+    </div>
+{% endfor %}
