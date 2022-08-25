@@ -31,8 +31,8 @@ snapshots[
 <div id="component-chart-test"></div>
 
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -45,8 +45,8 @@ snapshots[
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         value
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -87,8 +87,8 @@ snapshots[
 
 
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -101,8 +101,8 @@ snapshots[
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         value
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -129,8 +129,8 @@ snapshots[
 <div id="component-chart-test"></div>
 
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -143,8 +143,8 @@ snapshots[
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         value
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -185,8 +185,8 @@ snapshots[
 
 
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -199,8 +199,8 @@ snapshots[
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         value
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -227,8 +227,8 @@ snapshots[
 <div id="component-chart-test"></div>
 
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -241,8 +241,8 @@ snapshots[
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         value
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -283,8 +283,8 @@ snapshots[
 
 
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -297,8 +297,8 @@ snapshots[
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         value
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -336,8 +336,8 @@ snapshots[
         <h2>100%</h2>
 <small>increase</small>
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -351,8 +351,8 @@ snapshots[
         <h2>100%</h2>
 <small>increase</small>
 
+        
     </div>
-    
 """
 
 snapshots[
@@ -366,8 +366,8 @@ snapshots[
         <h2>100%</h2>
 <small>increase</small>
 
+        
     </div>
-    
 """
 
 snapshots[

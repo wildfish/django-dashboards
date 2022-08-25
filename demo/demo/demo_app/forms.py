@@ -1,6 +1,6 @@
 from django import forms
 
-from datorum.forms import DatorumFilterForm
+from datorum.forms import DatorumFilterForm, DatorumForm
 
 
 class ExampleForm(DatorumFilterForm):
@@ -12,3 +12,15 @@ class ExampleForm(DatorumFilterForm):
             ("asia", "Asia/Pacific"),
         )
     )
+
+
+class AnimalForm(DatorumForm):
+    animal = forms.ChoiceField(
+        choices=(
+            ("all", "All"),
+            ("giraffes", "Giraffe"),
+            ("orangutans", "Orangutan"),
+            ("monkeys", "Monkey")
+        )
+    )
+
