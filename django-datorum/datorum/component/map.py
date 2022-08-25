@@ -1,6 +1,5 @@
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Callable, Optional, Union
+from dataclasses import dataclass
+from typing import Callable, Optional, Union
 
 from django.http import HttpRequest
 
@@ -24,7 +23,7 @@ class MapData:
         z: list
         text: list
         locationmode: Optional[str]
-        type: str = 'choropleth'
+        type: str = "choropleth"
         autocolorscale: bool = True
 
     @dataclass

@@ -67,7 +67,7 @@ snapshots[
 </body>
 </html>"""
 
-snapshots["test_view__get__json 1"] = b"value"
+snapshots["test_view__get__json 1"] = b'"value"'
 
 snapshots[
     "test_view__get__partial_template 1"

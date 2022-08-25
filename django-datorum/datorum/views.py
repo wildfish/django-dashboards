@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 from django.core.exceptions import PermissionDenied
@@ -54,7 +55,8 @@ class ComponentView(TemplateView):
         if self.is_ajax() and component:
             # Return json, calling the deferred value.
             return HttpResponse(
-                component.for_render(self.request), content_type="application/json"
+                json.dumps(component.for_render(self.request, call_deferred=True)),
+                content_type="application/json",
             )
         else:
             context = self.get_context_data(
