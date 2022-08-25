@@ -2,7 +2,7 @@
 
 {% with "data_"|add:component.key as data_key %}
     {% if not component.is_deferred %}
-        <script id="{{ data_key }}" type="application/json">{{ rendered_value|safe }}</script>
+        {{ rendered_value|json_script:data_key }}
     {% endif %}
     <script>
         {% if not component.is_deferred %}

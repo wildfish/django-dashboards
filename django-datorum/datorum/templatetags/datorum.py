@@ -14,7 +14,7 @@ register = template.Library()
 @register.inclusion_tag("datorum/components/component.html", takes_context=True)
 def render_component(context: RequestContext, component: Component, htmx: bool):
     request = context["request"]
-    rendered_value = component.for_render(request=request)
+    rendered_value = component.for_render(request=request, call_deferred=not htmx)
     return {
         "request": context["request"],
         "component": component,

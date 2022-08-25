@@ -11,9 +11,10 @@ export const Tabulator: React.FC<{ value: any }> = ({value}) => {
     * likely we'd want to pass this in, or even from the component itself in gql
     * */
     let data = JSON.parse(JSON.stringify(value))
-    const columns: ColumnDefinition[] = Object.keys(data[0]).map(k => {return {title: k, field: k}})
+    let rows = data.rows;
+    const columns: ColumnDefinition[] = Object.keys(rows[0]).map(k => {return {title: k, field: k}})
     return <ReactTabulator
-        data={data}
+        data={rows}
         layout="fitColumns"
         columns={columns}
     />

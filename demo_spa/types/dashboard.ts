@@ -2,7 +2,7 @@ export enum ComponentTypes {
     Text = "Text",
     SomeCalculateText =  "SomeCalculateText",
     HTML =  "HTML",
-    Plotly =  "Plotly",
+    Chart =  "Chart",
     Stat =  "Stat",
     Table =  "Table",
 }
