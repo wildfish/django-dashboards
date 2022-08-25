@@ -2,13 +2,8 @@ from django import forms
 
 
 class DatorumFormMixin:
-    def __init__(self, dashboard, dependants=[], *args, **kwargs):
+    def __init__(self, dashboard, *args, **kwargs):
         self.dashboard = dashboard
-        self.components = [
-            component
-            for component in dashboard.get_components()
-            if component.key in dependants
-        ]
         super().__init__(*args, **kwargs)
 
 

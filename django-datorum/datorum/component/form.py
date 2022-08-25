@@ -19,10 +19,17 @@ class Form(Component):
     def get_absolute_url(self):
         return reverse("datorum:form_component", args=[self.dashboard_class, self.key])
 
+    def get_dependant_components(self, dashboard):
+        components = [
+            component
+            for component in dashboard.get_components()
+            if component.key in self.dependants
+        ]
+
+        return components
+
     def get_form(self, dashboard, request: HttpRequest) -> DatorumForm:
-        form = self.form(
-            dashboard=dashboard, dependants=self.dependants, data=request.GET or None
-        )
+        form = self.form(dashboard=dashboard, data=request.GET or None)
         return form
 
     def for_render(self, request: HttpRequest) -> DatorumForm:

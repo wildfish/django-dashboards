@@ -86,19 +86,18 @@ class FormComponentView(ComponentView):
     def get(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard()
         component = self.get_partial_component(dashboard)
-
-        form = component.get_form(dashboard=dashboard, request=request)
+        dependant_components = component.get_dependant_components(dashboard)
 
         if self.is_ajax():
-            response = ""
-            for c in form.components:
-                # Return json, calling the deferred value.
-                response += c.for_render(self.request)
+            response = []
+            for c in dependant_components:
+                # Return json, calling deferred value on dependant components.
+                response.append(c.for_render(self.request))
             return HttpResponse(response, content_type="application/json")
         else:
             context = self.get_context_data(
                 **{
-                    "dependants": form.components,
+                    "dependants": dependant_components,
                     "dashboard": dashboard,
                     "component": component,
                 }
