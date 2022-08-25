@@ -2,10 +2,8 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from django.http import HttpRequest
-from django.urls import reverse
 
 from datorum.forms import DatorumForm
-from datorum.utils import get_dashboard
 
 from .base import Component
 
@@ -13,27 +11,23 @@ from .base import Component
 @dataclass
 class Form(Component):
     form: DatorumForm = None
-    dependants: Optional[List[str]] = None
     template: str = "datorum/components/form/form.html"
 
     def get_absolute_url(self):
-        return reverse("datorum:form_component", args=[self.dashboard_class, self.key])
+        return self.get_form().get_submit_url()
 
-    def get_dependant_components(self, dashboard):
-        components = [
-            component
-            for component in dashboard.get_components()
-            if component.key in self.dependants
-        ]
+    def get_form(self, request: HttpRequest = None) -> DatorumForm:
+        if request and request.method == 'POST':
+            data = request.POST
+        elif request:
+            data = request.GET or None
+        else:
+            data = None
 
-        return components
-
-    def get_form(self, dashboard, request: HttpRequest) -> DatorumForm:
-        form = self.form(dashboard=dashboard, data=request.GET or None)
+        form = self.form(dashboard_class=self.dashboard_class, key=self.key, data=data)
         return form
 
     def for_render(self, request: HttpRequest) -> DatorumForm:
-        dashboard = get_dashboard(self.dashboard_class, request=request)
-        form = self.get_form(dashboard=dashboard, request=request)
+        form = self.get_form(request=request)
 
         return form

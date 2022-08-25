@@ -3,6 +3,8 @@ from typing import Optional
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpRequest, HttpResponse
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from datorum.dashboard import Dashboard
 from datorum.utils import get_dashboard
@@ -81,12 +83,23 @@ class FormComponentView(ComponentView):
     Form Component view, partial rendering of dependant components to support HTMX calls.
     """
 
-    template_name: str = "datorum/components/form/dependants.html"
+    template_name: str = "datorum/components/partial.html"
+
+    # todo: temp fix as currently failing as not passed through form. remove once csrf_token passed in post
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        dashboard = self.get_dashboard()
+        component = self.get_partial_component(dashboard)
+
+        return component.get_absolute_url()
 
     def get(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard()
         component = self.get_partial_component(dashboard)
-        dependant_components = component.get_dependant_components(dashboard)
+        dependant_components = component.dependent_components
 
         if self.is_ajax():
             response = []
@@ -104,3 +117,13 @@ class FormComponentView(ComponentView):
             )
 
             return self.render_to_response(context)
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        dashboard = self.get_dashboard()
+        component = self.get_partial_component(dashboard)
+        form = component.get_form(request=request)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(self.get_success_url())
+
+        return self.get(request, *args, **kwargs)
