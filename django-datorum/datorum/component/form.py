@@ -27,7 +27,7 @@ class Form(Component):
         form = self.form(dashboard_class=self.dashboard_class, key=self.key, data=data)
         return form
 
-    def for_render(self, request: HttpRequest) -> DatorumForm:
+    def for_render(self, request: HttpRequest, call_deferred: bool = False) -> DatorumForm:
         form = self.get_form(request=request)
 
         return form
