@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional, Type
 
 from django.http import HttpRequest
 
@@ -9,14 +10,20 @@ from .base import Component
 
 @dataclass
 class Form(Component):
-    form: DatorumForm = None
+    form: Optional[Type[DatorumForm]] = None
     template: str = "datorum/components/form/form.html"
     method: str = "get"
+    serializable: bool = False
 
     def get_absolute_url(self):
         return self.get_form().get_submit_url()
 
     def get_form(self, request: HttpRequest = None) -> DatorumForm:
+        if not self.form:
+            raise NotImplementedError(
+                f"No form configured for Form Component {self.__class__.__name__}"
+            )
+
         if request and request.method == "POST":
             data = request.POST
         elif request:

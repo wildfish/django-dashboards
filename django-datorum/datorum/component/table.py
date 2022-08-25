@@ -51,7 +51,6 @@ class Table(Component):
     Also need it to be possible to click on columns for list views.
     """
 
-    render_json: bool = True
     template: str = "datorum/components/table/index.html"
     page_size: int = 10
 

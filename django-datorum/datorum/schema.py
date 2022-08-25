@@ -53,7 +53,7 @@ def get_dashboards(info: Info) -> list[DashboardSchema]:
         if instance.has_permissions(request=info.context.get("request")):
             schema = DashboardSchema(
                 Meta=DashboardSchemaMeta(name=instance.Meta.name),
-                components=instance.get_components(),
+                components=[c for c in instance.get_components() if c.serializable],
             )
             dashboards.append(schema)
     return dashboards

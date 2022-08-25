@@ -38,7 +38,6 @@ class MapData:
 
 @dataclass
 class Map(Component):
-    render_json: bool = True
     template: str = "datorum/components/map/map.html"
 
     # Expect map to return map data

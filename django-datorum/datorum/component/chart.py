@@ -48,7 +48,6 @@ class ChartData:
 
 @dataclass
 class Chart(Component):
-    render_json: bool = True
     template: str = "datorum/components/chart/chart.html"
 
     # Expect charts to return chart data

@@ -33,7 +33,7 @@ class Component:
     group: Optional[str] = None
     group_width: Optional[str] = None
     render_type: Optional[str] = None
-    render_json: bool = False
+    serializable: bool = True
 
     # attrs below should not be changed
     dependent_components: Optional[List["Component"]] = None
