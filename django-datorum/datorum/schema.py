@@ -19,16 +19,19 @@ class ComponentSchema:
     key: Optional[str]
     render_type: Optional[str]
     width: Optional[int]
-    value: Optional[strawberry.scalars.JSON]
     group: Optional[str]
     group_width: Optional[int]
+
+    @strawberry.field()
+    def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
+        return root.for_render(info.context.get("request"), call_deferred=False)
 
 
 @strawberry.type
 class DeferredComponentSchema(ComponentSchema):
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
-        return root.for_render(info.context.get("request"))
+        return root.for_render(info.context.get("request"), call_deferred=True)
 
 
 @strawberry.type

@@ -60,18 +60,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .span-3 {
   grid-column-end: span 3;
+  grid-auto-rows: min-content;
 }
 
 .span-4 {
   grid-column-end: span 4;
+  grid-auto-rows: min-content;
 }
 
 .span-6 {
   grid-column-end: span 6;
+  grid-auto-rows: min-content;
 }
 
 .span-12 {
   grid-column-end: span 12;
+  grid-auto-rows: min-content;
 }
 
 .fade-in.htmx-added {

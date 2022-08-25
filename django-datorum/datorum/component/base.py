@@ -1,9 +1,7 @@
-import json
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 from typing import Callable, List, Optional, Type, Union
 
-from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -44,14 +42,14 @@ class Component:
     def is_deferred(self) -> bool:
         return True if self.defer else False
 
-    def for_render(self, request: HttpRequest) -> ValueData:
-        if self.is_deferred and self.defer:
+    def for_render(self, request: HttpRequest, call_deferred=False) -> ValueData:
+        if self.is_deferred and self.defer and call_deferred:
             value = self.defer(request)
         else:
             value = self.value
 
-        if self.render_json:
-            value = json.dumps(value, cls=ComponentEncoder)
+        if is_dataclass(value):
+            value = asdict(value, dict_factory=dataclass_encoder)
 
         return value
 
@@ -76,10 +74,12 @@ class Component:
         return f"{self.key}={self.value}"
 
 
-class ComponentEncoder(DjangoJSONEncoder):
-    def default(self, o):
+def dataclass_encoder(data):
+    def encode(o):
         if is_dataclass(o):
             return asdict(o)
         if isinstance(o, Enum):
             return o.value
-        return super().default(o)
+        return o
+
+    return dict((k, encode(v)) for k, v in data)

@@ -1,5 +1,5 @@
 {% with "data_"|add:component.key as data_key %}
-    <script id="{{ data_key }}" type="application/json">{{ rendered_value|safe }}</script>
+    {{ rendered_value|json_script:data_key }}
     <script>
         var data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
         Plotly.newPlot(
