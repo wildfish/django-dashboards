@@ -1,10 +1,10 @@
 from typing import Optional
 
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpRequest, HttpResponse
-from django.views.generic import TemplateView
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
 
 from datorum.dashboard import Dashboard
 from datorum.utils import get_dashboard

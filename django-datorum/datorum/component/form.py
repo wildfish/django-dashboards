@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Optional
 
 from django.http import HttpRequest
 
@@ -12,12 +11,13 @@ from .base import Component
 class Form(Component):
     form: DatorumForm = None
     template: str = "datorum/components/form/form.html"
+    method: str = "get"
 
     def get_absolute_url(self):
         return self.get_form().get_submit_url()
 
     def get_form(self, request: HttpRequest = None) -> DatorumForm:
-        if request and request.method == 'POST':
+        if request and request.method == "POST":
             data = request.POST
         elif request:
             data = request.GET or None

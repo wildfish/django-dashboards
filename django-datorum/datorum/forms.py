@@ -9,7 +9,9 @@ class DatorumFormMixin:
         super().__init__(*args, **kwargs)
 
     def get_submit_url(self):
-        return reverse("datorum:form_component", args=[self.dashboard_class, self.component_key])
+        return reverse(
+            "datorum:form_component", args=[self.dashboard_class, self.component_key]
+        )
 
     def save(self, **kwargs):
         print("saving the form!!!!")
