@@ -1,5 +1,7 @@
 import inspect
+import itertools
 import logging
+import string
 from copy import deepcopy
 
 from django.http import HttpRequest
@@ -95,6 +97,12 @@ class DashboardRenderMixin:
                 components_with_layout.append(component)
 
         return components_with_layout
+
+    @staticmethod
+    def grid_areas():
+        for i in itertools.count(1):
+            for p in itertools.product(string.ascii_lowercase, repeat=i):
+                yield "".join(p)
 
 
 class DashboardType(type):

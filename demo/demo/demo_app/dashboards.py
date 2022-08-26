@@ -113,3 +113,20 @@ class DemoDashboardAdmin(Dashboard):
 
     class Meta:
         name = "Admin Dashboard"
+
+
+class DemoDashboardGridTemplate(Dashboard):
+    template_name = "demo/custom_grid.html"
+
+    text_example = Text(value="Rendered on load", cta=CTA(
+        href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+        text="Find out more!"
+    ))
+    html_example = HTML(value="<strong>HTML also rendered on load</strong>")
+    calculated_example = Text(defer=lambda _: "Deferred text")
+    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
+    stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data)
+    bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
+
+    class Meta:
+        name = "Grid Template"

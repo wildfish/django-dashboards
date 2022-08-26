@@ -34,13 +34,14 @@ snapshots[
     <div class="content">
         
     
-<div class="dashboard-container">
-    
-    
+
+    <div class="dashboard-container">
+        
         
             
-                <div id="component-component_1" class="smooth dashboard-component span-4">
-                    
+                
+                    <div id="component-component_1" class="smooth dashboard-component span-4 ca">
+                        
     
 
 
@@ -51,17 +52,18 @@ snapshots[
         
     </div>
 
-                </div>
-            
-                <div id="component-component_2" class="smooth dashboard-component span-4">
-                    
+                    </div>
+                
+                    <div id="component-component_2" class="smooth dashboard-component span-4 cb">
+                        
     <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
 
-                </div>
+                    </div>
+                
             
         
-    
-</div>
+    </div>
+
 
     </div>
 </body>

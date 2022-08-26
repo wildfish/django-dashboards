@@ -35,3 +35,8 @@ def get_filter_form(context: RequestContext, component: Component) -> Optional[F
 def render_dashboard(context: RequestContext, dashboard: Dashboard):
     request = context["request"]
     return dashboard.render(request=request)
+
+
+@register.filter()
+def next_grid_area(gen):
+    return next(gen)

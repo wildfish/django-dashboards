@@ -1,21 +1,23 @@
 {% load datorum %}
-<div class="dashboard-container">
-    {% regroup components by group as grouped_components %}
-    {% for group in grouped_components %}
-        {% if group.grouper %}
-            <div class="dashboard-component dashboard-component-grouped span-{{ group.list.0.group_width }}">
+{% with dashboard.grid_areas as areas %}
+    <div class="dashboard-container">
+        {% regroup components by group as grouped_components %}
+        {% for group in grouped_components %}
+            {% if group.grouper %}
+                <div class="dashboard-component dashboard-component-grouped span-{{ group.list.0.group_width }} c{{ areas|next_grid_area }}">
+                    {% for component in group.list %}
+                        <div class="span-{{ component.width }} smooth" id="component-{{ group.component }}">
+                            {% render_component component=component htmx=True %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
                 {% for component in group.list %}
-                    <div class="span-{{ component.width }} smooth" id="component-{{ group.component }}">
+                    <div id="component-{{ component.key }}" class="smooth dashboard-component span-{{ component.width }} c{{ areas|next_grid_area }}">
                         {% render_component component=component htmx=True %}
                     </div>
                 {% endfor %}
-            </div>
-        {% else %}
-            {% for component in group.list %}
-                <div id="component-{{ component.key }}" class="smooth dashboard-component span-{{ component.width }}">
-                    {% render_component component=component htmx=True %}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
-</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endwith %}
