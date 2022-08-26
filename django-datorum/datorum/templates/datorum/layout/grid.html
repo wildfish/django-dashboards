@@ -4,16 +4,21 @@
         {% regroup components by group as grouped_components %}
         {% for group in grouped_components %}
             {% if group.grouper %}
-                <div class="dashboard-component dashboard-component-grouped span-{{ group.list.0.group_width }} c{{ areas|next_grid_area }}">
+                <div class="dashboard-component dashboard-component-grouped
+                        span-{{ group.list.0.group_width }}
+                        grid-{{ areas|next_grid_area }}
+                        {{ group.list.0.css_classes|join:" "}}
+                ">
                     {% for component in group.list %}
-                        <div class="span-{{ component.width }} smooth" id="component-{{ group.component }}">
+                        <div class="span-{{ component.width }}" id="component-{{ group.component }}">
                             {% render_component component=component htmx=True %}
                         </div>
                     {% endfor %}
                 </div>
             {% else %}
                 {% for component in group.list %}
-                    <div id="component-{{ component.key }}" class="smooth dashboard-component span-{{ component.width }} c{{ areas|next_grid_area }}">
+                    <div id="component-{{ component.key }}"
+                         class="dashboard-component span-{{ component.width }} grid-{{ areas|next_grid_area }} {{ component.css_classes|join:" "}}">
                         {% render_component component=component htmx=True %}
                     </div>
                 {% endfor %}

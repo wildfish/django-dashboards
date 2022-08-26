@@ -326,6 +326,104 @@ snapshots[
 """
 
 snapshots[
+    "test_component__renders_value[False-component_kwargs3-Chart] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        
+    <script id="data_test" type="application/json">"value"</script>
+    <script>
+        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
+        var data_test = JSON.parse(document.getElementById('data_test').textContent);
+        Plotly.newPlot(
+            'component-chart-test',
+            data_test.data,
+            data_test.layout,
+        );
+    </script>
+
+
+<div id="component-chart-test"></div>
+
+
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs3-HTML] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        value
+
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs3-Table] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-table-test"></div>
+
+
+    
+        <script id="data_test" type="application/json">"value"</script>
+    
+    <script>
+        
+        const data_test = JSON.parse(document.getElementById('data_test').textContent);
+        const rows_test = data_test.rows;
+        
+
+        /*
+        TODO for more control, the data provided to the component could be
+        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
+        */
+        const table_test = new Tabulator("#component-table-test", {
+            
+            "data": rows_test,
+            
+            "pagination": true,
+            "autoColumns": true,
+            "layout": "fitColumns",
+            "paginationSize": 10,
+        });
+    </script>
+
+
+
+
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs3-Text] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        value
+
+        
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value[True-component_kwargs0-Chart] 1"
 ] = """
     
@@ -566,6 +664,104 @@ snapshots[
         </div>
     </a>
 
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs3-Chart] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        
+    <script id="data_test" type="application/json">"value"</script>
+    <script>
+        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
+        var data_test = JSON.parse(document.getElementById('data_test').textContent);
+        Plotly.newPlot(
+            'component-chart-test',
+            data_test.data,
+            data_test.layout,
+        );
+    </script>
+
+
+<div id="component-chart-test"></div>
+
+
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs3-HTML] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        value
+
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs3-Table] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-table-test"></div>
+
+
+    
+        <script id="data_test" type="application/json">"value"</script>
+    
+    <script>
+        
+        const data_test = JSON.parse(document.getElementById('data_test').textContent);
+        const rows_test = data_test.rows;
+        
+
+        /*
+        TODO for more control, the data provided to the component could be
+        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
+        */
+        const table_test = new Tabulator("#component-table-test", {
+            
+            "data": rows_test,
+            
+            "pagination": true,
+            "autoColumns": true,
+            "layout": "fitColumns",
+            "paginationSize": 10,
+        });
+    </script>
+
+
+
+
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs3-Text] 1"
+] = """
+    
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        value
+
+        
     </div>
 """
 

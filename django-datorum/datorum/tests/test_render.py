@@ -17,6 +17,7 @@ from . import urls
         {"value": "value"},
         {"defer": lambda _: "value"},
         {"value": "value", "cta": CTA(href="/", text="CTA")},
+        {"value": "value", "css_classes": ["a", "b"]},
     ],
 )
 @pytest.mark.parametrize("htmx", [True, False])

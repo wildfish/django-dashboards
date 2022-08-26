@@ -7,13 +7,18 @@ from datorum.permissions import IsAdminUser
 
 from demo.demo_app.data import DashboardData
 from demo.demo_app.forms import ExampleForm, AnimalForm
+from demo.demo_app.style import H1
 
 
 class DemoDashboardOne(Dashboard):
-    text_example = Text(value="Rendered on load", cta=CTA(
-        href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-        text="Find out more!"
-    ))
+    text_example = Text(
+        value="Rendered on load",
+        cta=CTA(
+            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+            text="Find out more!"
+        ),
+        css_classes=[H1]
+    )
     html_example = HTML(value="<strong>HTML also rendered on load</strong>")
     calculated_example = Text(defer=lambda _: "Deferred text")
     form_example = Form(form=AnimalForm, method='get', dependents=["chart_example", "stacked_chart_example"])

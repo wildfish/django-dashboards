@@ -1,6 +1,6 @@
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
-from typing import Callable, List, Optional, Type, Union
+from typing import Callable, Optional, Type, Union
 
 from django.http import HttpRequest
 from django.template.loader import render_to_string
@@ -24,8 +24,9 @@ class Component:
     width: Optional[int] = None
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
-    dependents: Optional[List[str]] = None
+    dependents: Optional[list[str]] = None
     cta: Optional[CTA] = None
+    css_classes: Optional[list[str]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
@@ -36,7 +37,7 @@ class Component:
     serializable: bool = True
 
     # attrs below should not be changed
-    dependent_components: Optional[List["Component"]] = None
+    dependent_components: Optional[list["Component"]] = None
 
     @property
     def is_deferred(self) -> bool:
