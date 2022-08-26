@@ -23,6 +23,8 @@ def test__get_components__with_parent__no_layout(test_complex_dashboard):
         test_complex_dashboard.component_3,
         test_complex_dashboard.component_2,
         test_complex_dashboard.component_4,
+        test_complex_dashboard.component_5,
+        test_complex_dashboard.component_6,
         test_complex_dashboard.component_1,
     ]
 

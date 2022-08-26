@@ -100,8 +100,43 @@ snapshots["test_view__dashboards 1"] = [
                 "groupWidth": None,
                 "isDeferred": False,
                 "key": "component_4",
-                "renderType": "Text",
-                "value": "value",
+                "renderType": "HTML",
+                "value": "<div></div>",
+                "width": 4,
+            },
+            {
+                "group": None,
+                "groupWidth": None,
+                "isDeferred": False,
+                "key": "component_5",
+                "renderType": "Table",
+                "value": {
+                    "headers": ["a", "b"],
+                    "last_page": 1,
+                    "rows": [{"a": "Value", "b": "Value b"}],
+                },
+                "width": 4,
+            },
+            {
+                "group": None,
+                "groupWidth": None,
+                "isDeferred": False,
+                "key": "component_6",
+                "renderType": "Chart",
+                "value": {
+                    "data": [
+                        {
+                            "marker": {},
+                            "mode": None,
+                            "name": None,
+                            "text": None,
+                            "type": None,
+                            "x": ["a"],
+                            "y": ["b"],
+                        }
+                    ],
+                    "layout": {},
+                },
                 "width": 4,
             },
             {

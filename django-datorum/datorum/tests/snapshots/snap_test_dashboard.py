@@ -36,6 +36,8 @@ snapshots["test__get_attributes_order__with_parent 1"] = [
     "component_3",
     "component_2",
     "component_4",
+    "component_5",
+    "component_6",
     "Meta",
     "__doc__",
     "__module__",
