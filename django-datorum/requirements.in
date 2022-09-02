@@ -6,15 +6,3 @@
 django-cors-headers
 django_htmx
 strawberry-graphql[debug-server]
-
-# Testing
-# workaround for tholo/pytest-flake8#87
-flake8 < 5
-pytest
-pytest-black
-pytest-cov
-pytest-django
-pytest-isort
-pytest-flake8
-pytest-mypy
-snapshottest

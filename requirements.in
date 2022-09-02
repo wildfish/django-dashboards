@@ -1,0 +1,18 @@
+-r django-datorum/requirements.txt
+-r django-datorum-pipelines/requirements.txt
+#-r demo/requirements.txt
+#-r demo_spa/requirements.txt
+
+# Testing
+# workaround for tholo/pytest-flake8#87
+flake8 < 5
+ipdb
+django-webtest
+pytest
+pytest-black
+pytest-cov
+pytest-django
+pytest-isort
+pytest-flake8
+pytest-mypy
+snapshottest
