@@ -42,7 +42,15 @@ class ChartData:
         gauge: Optional[dict] = None
         type: str = "indicator"
 
-    data: list[Union[Gauge, Trace]]
+    @dataclass
+    class Sankey:
+        type: str = "sankey"
+        orientation: str = "h"
+        arrangement: str = "fixed"
+        node: dict = None
+        link: dict = None
+
+    data: list[Union[Gauge, Trace, Sankey, Any]]
     layout: Optional[dict[str, str]] = None
 
 

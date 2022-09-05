@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, Any
 
 from django.http import HttpRequest
 
@@ -23,16 +23,38 @@ class MapData:
         z: list
         text: list
         locationmode: Optional[str]
-        type: str = "choropleth"
         autocolorscale: bool = True
+        type: str = "choropleth"
 
     @dataclass
-    class MapLayout:
-        title: str
-        geo: Optional[dict]
-        showlegend: bool = False
+    class ScatterMapbox:
+        lon: float
+        lat: float
+        marker: Optional[dict]
+        type: str = "scattermapbox"
+        mode: str = "markers"
+        hoverinfo: str = 'text'
+        showlegend: bool = True
+        customdata: Any = None
+        text: list = None
+        name: str = None
 
-    data: list[Union[ScatterGeo, Choropleth]]
+    @dataclass
+    class ChoroplethMapbox:
+        geojson: dict
+        locations: list
+        z: list
+        text: list
+        featureidkey: str = None
+        hoverinfo: str = None
+        hoverlabel: dict = None
+        marker: dict = None
+        colorscale: list = None
+        zmin: str = None
+        zmax: str = None
+        type: str = 'choroplethmapbox'
+
+    data: list[Union[ScatterGeo, Choropleth, ChoroplethMapbox]]
     layout: Optional[dict[str, str]] = None
 
 

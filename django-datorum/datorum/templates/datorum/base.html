@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Datorum | {% block title %}{{ dashboard.Meta.name }}{% endblock title %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <script src="{% static 'js/htmx.min.js' %}"></script>
     <script src="{% static 'js/alpine-3.10.3.js' %}" defer></script>
@@ -14,12 +14,17 @@
 
     <link rel="stylesheet" href="{% static 'css/tabulator.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_head %}{% endblock extra_head %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
-    {% block menu %}{% endblock %}
-    <h1>{% block content_title %}{% endblock %}</h1>
+<body class="{% block body_class %}{% endblock body_class %}">
+    {% block body %}
+    <div class="menu">{% block menu %}{% endblock menu %}</div>
+    <h1>{% block content_title %}{% endblock content_title %}</h1>
     <div class="content">
         {% block content %} {% endblock content %}
     </div>
+    {% endblock body %}
+    {% block extra_script %}
+    {% endblock %}
 </body>
 </html>
