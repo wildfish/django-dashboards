@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 from pydantic import BaseModel, ValidationError
 
@@ -6,9 +6,17 @@ from ..reporter import BasePipelineReporter, PipelineTaskStatus
 from .registry import task_registry
 
 
+class BaseTaskConfig(BaseModel):
+    title: Optional[str]  # human readable name for displaying
+    label: Optional[str]  # label will be used to specify dependencies
+    parents: Optional[
+        List[str]
+    ]  # task labels that are required to have finished before this task can be started
+
+
 class BaseTask:
-    ConfigType: Optional[Type[BaseModel]] = None
-    cleaned_config: Optional[BaseModel]
+    ConfigType: Optional[Type[BaseTaskConfig]] = None
+    cleaned_config: Optional[BaseTaskConfig]
 
     InputType: Optional[Type[BaseModel]] = None
 
@@ -61,6 +69,11 @@ class BaseTask:
     def start(self, input_data: Dict[str, Any]):
         try:
             cleaned_data = self.clean_input_data(input_data)
+            self.reporter.report_task(
+                self.id,
+                PipelineTaskStatus.RUNNING,
+                "Task is running",
+            )
             self.run(cleaned_data)
         except InputValidationError as e:
             self.reporter.report_task(

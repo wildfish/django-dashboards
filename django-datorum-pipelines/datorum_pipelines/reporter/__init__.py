@@ -1,4 +1,4 @@
 from .base import BasePipelineReporter, PipelineTaskStatus
 
 
-__ALL__ = [BasePipelineReporter, PipelineTaskStatus]
+__all__ = ["BasePipelineReporter", "PipelineTaskStatus"]

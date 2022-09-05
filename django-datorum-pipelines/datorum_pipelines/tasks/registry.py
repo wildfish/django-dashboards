@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Dict, Type
 
 
 if TYPE_CHECKING:
-    from . import BaseTask
+    from .base import BaseTask
 
 from ..reporter import BasePipelineReporter, PipelineTaskStatus
 

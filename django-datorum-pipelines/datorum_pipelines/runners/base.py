@@ -1,5 +1,8 @@
+from typing import List
+
+from ..tasks import BaseTask
+
+
 class BasePipelineRunner:
-    def start(
-        self,
-    ):
+    def start(self, tasks: List[BaseTask]) -> bool:
         pass

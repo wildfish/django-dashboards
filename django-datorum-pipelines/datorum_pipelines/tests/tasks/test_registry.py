@@ -8,11 +8,6 @@ from datorum_pipelines.reporter import PipelineTaskStatus
 from datorum_pipelines.tasks.registry import RegistryError, task_registry
 
 
-@pytest.fixture(autouse=True)
-def reset_registry():
-    task_registry.reset()
-
-
 def test_task_class_created_without_name___it_is_added_to_the_registry_using_the_classname():
     class TestTask(BaseTask):
         pass
