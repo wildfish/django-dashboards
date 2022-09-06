@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from datorum_pipelines.reporter import PipelineTaskStatus
+from datorum_pipelines.reporters import PipelineTaskStatus
 from datorum_pipelines.tests.tasks.fakes import make_fake_task
 
 
@@ -45,3 +45,16 @@ def test_input_data_matches_the_input_type___run_is_called_with_the_cleaned_data
         "Task is running",
     )
     task.run_body.assert_called_once_with({"value": 1})
+
+
+def test_input_data_and_type_are_none___run_is_called_with_none():
+    task = make_fake_task(input_type=None)()
+
+    task.start(None)
+
+    task.reporter.report_task.assert_called_once_with(
+        task.id,
+        PipelineTaskStatus.RUNNING,
+        "Task is running",
+    )
+    task.run_body.assert_called_once_with(None)

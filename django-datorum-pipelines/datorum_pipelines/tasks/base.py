@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from pydantic import BaseModel, ValidationError
 
-from ..reporter import BasePipelineReporter, PipelineTaskStatus
+from ..reporters import BasePipelineReporter, PipelineTaskStatus
 from .registry import task_registry
 
 
@@ -85,23 +85,20 @@ class BaseTask:
     def run(
         self,
         cleaned_data: Optional[BaseModel],
-    ):
+    ):  # pragma: no cover
         pass
 
 
-class ConfigValidationError(Exception):
+class BaseTaskError(Exception):
     def __init__(self, task: BaseTask, msg: str):
+        super().__init__(msg)
         self.task = task
         self.msg = msg
 
-    def __str__(self):
-        return self.msg
+
+class ConfigValidationError(BaseTaskError):
+    pass
 
 
-class InputValidationError(Exception):
-    def __init__(self, task: BaseTask, msg: str):
-        self.task = task
-        self.msg = msg
-
-    def __str__(self):
-        return self.msg
+class InputValidationError(BaseTaskError):
+    pass

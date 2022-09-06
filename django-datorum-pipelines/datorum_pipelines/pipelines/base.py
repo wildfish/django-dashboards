@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from ..runners import BasePipelineRunner
 
-from ..reporter import BasePipelineReporter, PipelineTaskStatus
+from ..reporters import BasePipelineReporter, PipelineTaskStatus
 from ..tasks import BaseTask, task_registry
 
 
@@ -47,7 +47,7 @@ class BasePipeline:
                     PipelineTaskStatus.CANCELLED,
                     "Tasks cancelled due to an error in the pipeline config",
                 )
-                return False
+            return False
         else:
             # else mark them all as pending
             for task in self.cleaned_tasks:

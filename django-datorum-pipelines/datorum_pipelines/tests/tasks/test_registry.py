@@ -4,7 +4,7 @@ import pytest
 from pydantic import BaseModel
 
 from datorum_pipelines import BaseTask
-from datorum_pipelines.reporter import PipelineTaskStatus
+from datorum_pipelines.reporters import PipelineTaskStatus
 from datorum_pipelines.tasks.registry import RegistryError, task_registry
 
 

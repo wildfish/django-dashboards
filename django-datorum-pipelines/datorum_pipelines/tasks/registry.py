@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Dict, Type
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .base import BaseTask
 
-from ..reporter import BasePipelineReporter, PipelineTaskStatus
+from ..reporters import BasePipelineReporter, PipelineTaskStatus
 
 
 class RegistryError(Exception):

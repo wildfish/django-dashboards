@@ -5,7 +5,7 @@ from uuid import uuid4
 from pydantic import BaseModel
 
 from datorum_pipelines import BaseTask
-from datorum_pipelines.reporter import BasePipelineReporter
+from datorum_pipelines.reporters import BasePipelineReporter
 
 
 def make_fake_task(input_type=None, config_type=None, task_name=None):
