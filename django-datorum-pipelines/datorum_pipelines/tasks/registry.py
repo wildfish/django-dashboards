@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Dict, Type
 if TYPE_CHECKING:  # pragma: no cover
     from .base import BaseTask
 
-from ..reporters import BasePipelineReporter, PipelineTaskStatus
+from ..reporters import BasePipelineReporter
+from ..status import PipelineTaskStatus
 
 
 class RegistryError(Exception):
@@ -40,7 +41,7 @@ class TaskRegistry(object):
             return None
 
         try:
-            return cls(task_id, reporter, config=config)
+            return cls(task_id, config=config)
         except Exception as e:
             reporter.report_task(task_id, PipelineTaskStatus.CONFIG_ERROR, str(e))
             return None

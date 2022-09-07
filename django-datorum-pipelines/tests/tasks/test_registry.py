@@ -53,22 +53,6 @@ def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
     )
 
 
-def test_request_to_load_a_task_that_exists_with_a_config_when_non_is_expected___error_is_reported():
-    class TestTask(BaseTask):
-        pass
-
-    reporter = Mock()
-
-    task = task_registry.load("TestTask", "missing_task_id", {"value": 1}, reporter)
-
-    assert task is None
-    reporter.report_task.assert_called_once_with(
-        "missing_task_id",
-        PipelineTaskStatus.CONFIG_ERROR,
-        "Config was provided no config type was specified",
-    )
-
-
 def test_request_to_load_a_task_that_exists_with_a_bad_config___error_is_reported():
     class TestTaskConfigType(BaseModel):
         value: int

@@ -2,20 +2,23 @@ from typing import Any, Dict, List, Optional, Type
 
 from pydantic import BaseModel, ValidationError
 
-from ..reporters import BasePipelineReporter, PipelineTaskStatus
+from ..reporters import BasePipelineReporter
+from ..status import PipelineTaskStatus
 from .registry import task_registry
 
 
 class BaseTaskConfig(BaseModel):
     title: Optional[str]  # human readable name for displaying
     label: Optional[str]  # label will be used to specify dependencies
-    parents: Optional[
-        List[str]
-    ]  # task labels that are required to have finished before this task can be started
+    parents: List[
+        str
+    ] = (
+        []
+    )  # task labels that are required to have finished before this task can be started
 
 
 class BaseTask:
-    ConfigType: Optional[Type[BaseTaskConfig]] = None
+    ConfigType: Type[BaseTaskConfig] = BaseTaskConfig
     cleaned_config: Optional[BaseTaskConfig]
 
     InputType: Optional[Type[BaseModel]] = None
@@ -29,29 +32,19 @@ class BaseTask:
     def __init__(
         self,
         task_id: str,
-        reporter: BasePipelineReporter,
-        config: Optional[Dict[str, Any]] = None,
+        config: Dict[str, Any],
     ):
         self.id = task_id
-        self.reporter = reporter
         self.cleaned_config = self.clean_config(config)
 
-    def clean_config(self, config: Optional[Dict[str, Any]]):
-        if config and self.ConfigType is None:
-            raise ConfigValidationError(
-                self, "Config was provided no config type was specified"
-            )
-
-        if self.ConfigType is None:
-            return None
-
+    def clean_config(self, config: Dict[str, Any]):
         try:
             model = self.ConfigType(**(config or {}))
             return model
         except ValidationError as e:
             raise ConfigValidationError(self, e.json(indent=False))
 
-    def clean_input_data(self, input_data: Optional[Dict[str, Any]]):
+    def clean_input_data(self, input_data: Dict[str, Any]):
         if input_data and self.InputType is None:
             raise InputValidationError(
                 self, "Input data was provided when no input type was specified"
@@ -66,21 +59,37 @@ class BaseTask:
         except ValidationError as e:
             raise InputValidationError(self, e.json(indent=False))
 
-    def start(self, input_data: Dict[str, Any]):
+    def start(self, input_data: Dict[str, Any], reporter: BasePipelineReporter):
         try:
             cleaned_data = self.clean_input_data(input_data)
-            self.reporter.report_task(
+
+            reporter.report_task(
                 self.id,
                 PipelineTaskStatus.RUNNING,
                 "Task is running",
             )
+
             self.run(cleaned_data)
+
+            reporter.report_task(
+                self.id,
+                PipelineTaskStatus.DONE,
+                "Done",
+            )
+
+            return True
         except InputValidationError as e:
-            self.reporter.report_task(
+            # If there is an error in the input data record the error
+            reporter.report_task(
                 self.id,
                 PipelineTaskStatus.VALIDATION_ERROR,
                 e.msg,
             )
+        except Exception as e:
+            # If there is an error running the task record the error
+            reporter.report_task(self.id, PipelineTaskStatus.RUNTIME_ERROR, str(e))
+
+        return False
 
     def run(
         self,

@@ -1,8 +1,15 @@
-from typing import List
+from typing import Any, Dict, List
 
+from .. import BasePipelineReporter
 from ..tasks import BaseTask
 
 
 class BasePipelineRunner:
-    def start(self, tasks: List[BaseTask]) -> bool:  # pragma: no cover
+    def start(
+        self,
+        pipeline_id: str,
+        tasks: List[BaseTask],
+        input_data: Dict[str, Any],
+        reporter: BasePipelineReporter,
+    ) -> bool:  # pragma: no cover
         pass
