@@ -71,7 +71,7 @@ class ComponentView(TemplateView):
         return get_dashboard(self.kwargs["dashboard"], request=self.request)
 
     def get_partial_component(self, dashboard):
-        for component in dashboard.get_components(with_layout=False):
+        for component in dashboard.get_components():
             if component.key == self.kwargs["component"]:
                 return component
 

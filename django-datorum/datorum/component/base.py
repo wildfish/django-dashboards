@@ -21,7 +21,7 @@ class CTA:
 class Component:
     template: str
     value: Optional[ValueData] = None
-    width: Optional[int] = None
+    width: Optional[int] = 12
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[list[str]] = None
@@ -31,6 +31,7 @@ class Component:
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
     dashboard_class: Optional[str] = None
+    tab: Optional[str] = None
     group: Optional[str] = None
     group_width: Optional[str] = None
     render_type: Optional[str] = None

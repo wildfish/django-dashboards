@@ -47,8 +47,8 @@ class ChartData:
         type: str = "sankey"
         orientation: str = "h"
         arrangement: str = "fixed"
-        node: dict = None
-        link: dict = None
+        node: Optional[dict] = None
+        link: Optional[dict] = None
 
     data: list[Union[Gauge, Trace, Sankey, Any]]
     layout: Optional[dict[str, str]] = None

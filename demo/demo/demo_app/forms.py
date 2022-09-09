@@ -20,7 +20,6 @@ class AnimalForm(DatorumForm):
             ("all", "All"),
             ("giraffes", "Giraffe"),
             ("orangutans", "Orangutan"),
-            ("monkeys", "Monkey")
+            ("monkeys", "Monkey"),
         )
     )
-

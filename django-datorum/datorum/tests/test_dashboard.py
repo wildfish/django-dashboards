@@ -12,14 +12,14 @@ def test__get_attributes_order__with_parent(test_complex_dashboard, snapshot):
 
 
 def test__get_components__no_layout(test_dashboard):
-    assert test_dashboard.get_components(with_layout=False) == [
+    assert test_dashboard.get_components() == [
         test_dashboard.component_1,
         test_dashboard.component_2,
     ]
 
 
 def test__get_components__with_parent__no_layout(test_complex_dashboard):
-    assert test_complex_dashboard.get_components(with_layout=False) == [
+    assert test_complex_dashboard.get_components() == [
         test_complex_dashboard.component_3,
         test_complex_dashboard.component_2,
         test_complex_dashboard.component_4,

@@ -1,12 +1,14 @@
 from django.urls import reverse_lazy
 
-from datorum.component import HTML, Chart, Map, Stat, Table, Text, CTA, Form
+from datorum.component import CTA, HTML, Chart, Form, Map, Stat, Table, Text
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
+from datorum.layout import HTML as LayoutHTML
+from datorum.layout import Div, LayoutComponent, Tab, TabContainer
 from datorum.permissions import IsAdminUser
 
 from demo.demo_app.data import DashboardData
-from demo.demo_app.forms import ExampleForm, AnimalForm
+from demo.demo_app.forms import AnimalForm, ExampleForm
 from demo.demo_app.style import H1
 
 
@@ -15,13 +17,17 @@ class DemoDashboardOne(Dashboard):
         value="Rendered on load",
         cta=CTA(
             href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-            text="Find out more!"
+            text="Find out more!",
         ),
-        css_classes=[H1]
+        css_classes=[H1],
     )
     html_example = HTML(value="<strong>HTML also rendered on load</strong>")
     calculated_example = Text(defer=lambda _: "Deferred text")
-    form_example = Form(form=AnimalForm, method='get', dependents=["chart_example", "stacked_chart_example"])
+    form_example = Form(
+        form=AnimalForm,
+        method="get",
+        dependents=["chart_example", "stacked_chart_example"],
+    )
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
     stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data)
     bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
@@ -83,31 +89,49 @@ class DemoDashboardOneVary(DemoDashboardOne):
         name = "Dashboard One Vary"
 
     class Layout(Dashboard.Layout):
-        grid_default_width = 4
-        components = {
-            "text_group": {
-                "components": ["text_example", "html_example"],
-                "component_widths": [3, 6],
-                "group_width": 6,
-            },
-            "stat_group": {
-                "components": ["stat_one", "stat_two", "stat_three"],
-                "group_width": 3,
-            },
-            # "chart_group": {
-            #     "components": ["bubble_chart_example", "line_chart_example"],
-            #     "group_width": 12,
-            # },
-            # None can be uses as a catch all for the remaining non grouped ones at the end
-            None: {
-                "components": [
+        components = LayoutComponent(
+            Div(
+                Div(
+                    "text_example",
+                    "html_example",
+                    element_id="text_group_div",
+                    css_class_names="col-md-6",
+                ),
+                Div(
+                    "stat_one",
+                    "stat_two",
+                    "stat_three",
+                    element_id="stat_group_div",
+                    css_class_names="col-md-6",
+                ),
+                element_id="group_div",
+                css_class_names="row",
+            ),
+            LayoutHTML("<h3>Tab Example</h3>"),
+            TabContainer(
+                Tab(
+                    "Calculated Example",
                     "calculated_example",
+                    element_id="tab1",
+                ),
+                Tab(
+                    "Chart Example",
                     "chart_example",
+                    element_id="tab2",
+                ),
+                Tab(
+                    "Table Example",
                     "table_example",
+                    element_id="tab3",
+                ),
+                Tab(
+                    "Gauge Example",
                     "gauge_two",
-                ],
-            },
-        }
+                    element_id="tab4",
+                ),
+                element_id="tabs",
+            ),
+        )
 
 
 class DemoDashboardAdmin(Dashboard):
@@ -123,10 +147,13 @@ class DemoDashboardAdmin(Dashboard):
 class DemoDashboardGridTemplate(Dashboard):
     template_name = "demo/custom_grid.html"
 
-    text_example = Text(value="Rendered on load", cta=CTA(
-        href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-        text="Find out more!"
-    ))
+    text_example = Text(
+        value="Rendered on load",
+        cta=CTA(
+            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+            text="Find out more!",
+        ),
+    )
     html_example = HTML(value="<strong>HTML also rendered on load</strong>")
     calculated_example = Text(defer=lambda _: "Deferred text")
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)

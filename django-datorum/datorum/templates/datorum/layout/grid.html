@@ -1,28 +1,51 @@
 {% load datorum %}
 {% with dashboard.grid_areas as areas %}
+  {% regroup components by tab as tabbed_components %}
+  {% if tabbed_components|length > 1 %}
+    <ul class="nav nav-tabs" id="Tab" role="tablist">
+      {% for tab in tabbed_components %}
+        <li class="nav-item">
+          <a class="nav-link{% if forloop.first %} active{% endif %}" id="tab{{ forloop.counter }}" data-toggle="tab" href="#{{ tab.grouper|slugify }}-tab" role="tab" aria-controls="{{ tab.grouper }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ tab.grouper }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content" id="TabContent">
+  {% endif %}
+  {% for tab in tabbed_components %}
+    {% if tabbed_components|length > 1 %}
+      <div class="tab-pane fade{% if forloop.first %} show active{% endif %}" id="{{ tab.grouper|slugify }}-tab" role="tabpanel" aria-labelledby="{{ tab.grouper|slugify }}">
+    {% endif %}
     <div class="dashboard-container">
-        {% regroup components by group as grouped_components %}
-        {% for group in grouped_components %}
-            {% if group.grouper %}
-                <div class="dashboard-component dashboard-component-grouped
-                        span-{{ group.list.0.group_width }}
-                        grid-{{ areas|next_grid_area }}
-                        {{ group.list.0.css_classes|join:" "}}
-                ">
-                    {% for component in group.list %}
-                        <div class="span-{{ component.width }}" id="component-{{ group.component }}">
-                            {% render_component component=component htmx=True %}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                {% for component in group.list %}
-                    <div id="component-{{ component.key }}"
-                         class="dashboard-component span-{{ component.width }} grid-{{ areas|next_grid_area }} {{ component.css_classes|join:" "}}">
-                        {% render_component component=component htmx=True %}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
+      {% regroup tab.list by group as grouped_components %}
+      {% for group in grouped_components %}
+        {% if group.grouper %}
+          <div class="dashboard-component dashboard-component-grouped
+                              span-{{ group.list.0.group_width }}
+                              grid-{{ areas|next_grid_area }}
+                              {{ group.list.0.css_classes|join:" "}}
+                      ">
+            {% for component in group.list %}
+              <div class="span-{{ component.width }}" id="component-{{ group.component }}">
+                {% render_component component=component htmx=True %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          {% for component in group.list %}
+            <div id="component-{{ component.key }}"
+                 class="dashboard-component span-{{ component.width }} grid-{{ areas|next_grid_area }}
+                                 {{ component.css_classes|join:" "}}">
+              {% render_component component=component htmx=True %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
     </div>
+    {% if tabbed_components|length > 1 %}
+      </div>
+    {% endif %}
+  {% endfor %}
+  {% if tabbed_components|length > 1 %}
+    </div>
+  {% endif %}
 {% endwith %}

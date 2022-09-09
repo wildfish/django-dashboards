@@ -22,14 +22,14 @@ snapshots["test_view__dashboard 1"] = {
             "key": "component_1",
             "renderType": "Text",
             "value": "value",
-            "width": 4,
+            "width": 12,
         },
         {
             "isDeferred": True,
             "key": "component_2",
             "renderType": "Text",
             "value": None,
-            "width": 4,
+            "width": 12,
         },
     ],
 }
@@ -47,7 +47,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "admin value",
-                "width": 4,
+                "width": 12,
             }
         ],
     },
@@ -61,7 +61,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
-                "width": 4,
+                "width": 12,
             },
             {
                 "group": None,
@@ -70,7 +70,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
-                "width": 4,
+                "width": 12,
             },
         ],
     },
@@ -84,7 +84,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_3",
                 "renderType": "Text",
                 "value": None,
-                "width": 4,
+                "width": 12,
             },
             {
                 "group": None,
@@ -93,7 +93,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
-                "width": 4,
+                "width": 12,
             },
             {
                 "group": None,
@@ -102,7 +102,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_4",
                 "renderType": "HTML",
                 "value": "<div></div>",
-                "width": 4,
+                "width": 12,
             },
             {
                 "group": None,
@@ -115,7 +115,7 @@ snapshots["test_view__dashboards 1"] = [
                     "last_page": 1,
                     "rows": [{"a": "Value", "b": "Value b"}],
                 },
-                "width": 4,
+                "width": 12,
             },
             {
                 "group": None,
@@ -137,7 +137,7 @@ snapshots["test_view__dashboards 1"] = [
                     ],
                     "layout": {},
                 },
-                "width": 4,
+                "width": 12,
             },
             {
                 "group": None,
@@ -146,7 +146,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
-                "width": 4,
+                "width": 12,
             },
         ],
     },

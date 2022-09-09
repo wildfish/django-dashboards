@@ -14,9 +14,9 @@ snapshots[
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Datorum | Test Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <script src="/static/js/htmx.min.js"></script>
     <script src="/static/js/alpine-3.10.3.js" defer></script>
@@ -25,9 +25,11 @@ snapshots[
 
     <link rel="stylesheet" href="/static/css/tabulator.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
+    
 </head>
 <body class="">
     
+    <div class="menu"></div>
     <h1>
   Test Dashboard
 </h1>
@@ -35,14 +37,19 @@ snapshots[
         
     
 
+  
+  
+  
+    
     <div class="dashboard-container">
+      
+      
         
-        
-            
-                
-                    <div id="component-component_1"
-                         class="dashboard-component span-4 grid-a None">
-                        
+          
+            <div id="component-component_1"
+                 class="dashboard-component span-12 grid-a
+                                 None">
+              
     
 
 
@@ -53,21 +60,28 @@ snapshots[
         
     </div>
 
-                    </div>
-                
-                    <div id="component-component_2"
-                         class="dashboard-component span-4 grid-b None">
-                        
+            </div>
+          
+            <div id="component-component_2"
+                 class="dashboard-component span-12 grid-b
+                                 None">
+              
     <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
 
-                    </div>
-                
-            
+            </div>
+          
         
+      
     </div>
+    
+  
+  
 
 
     </div>
+    
+    
+    
 </body>
 </html>"""
 

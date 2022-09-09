@@ -2,7 +2,7 @@ import inspect
 import itertools
 import logging
 import string
-from copy import deepcopy
+from typing import Optional
 
 from django.http import HttpRequest
 from django.template.loader import render_to_string
@@ -11,6 +11,8 @@ from django.utils.safestring import mark_safe
 
 from datorum import config
 from datorum.component import Component
+from datorum.exceptions import ComponentNotFoundError
+from datorum.layout import LayoutComponent
 from datorum.permissions import BasePermission
 from datorum.registry import registry
 
@@ -23,80 +25,48 @@ class DashboardRenderMixin:
 
     class Layout:
         """
-        Components works a like fields/formsets on contrib forms. e.g.
+        Components classes to define layout
 
-        components = {
-            "group_one": {
-                "components": ["a", "b", "c"],
-                "component_widths": [3, 6],
-                "group_width": 6,
-            },
-            "group_two": {
-                "components": ["d", "e"],
-                "group_width": 3,
-                # no component_widths so will default to first component.width or Layout.default_component_width
-            },
-            # None can be uses as a catch all for the remaining non grouped ones.
-            None: {
-                "components": ["calculated_example", "chart_example"],
-            }
-        }
-
+        components = LayoutComponent(
+            Div(
+                Div(
+                    "a",
+                    "b",
+                    c="text_group_div",
+                    element_id="div_1",
+                ),
+                Div(
+                    "d",
+                    "e",
+                    "f",
+                    element_id="div_2",
+                ),
+                element_id="div_wrapper",
+            ),
+            'g',
+            'h'
+        )
         """
 
-        components: dict = {}
-        default_component_width: int = 4
+        components: Optional[LayoutComponent] = None
 
     def get_context(self):
-        context = {"layout": self.Layout()}
+        context = {"dashboard": self}
         return context
 
     def render(self, request: HttpRequest, template_name=None):
+        context = self.get_context()
+        context["request"] = request
+
+        layout = self.Layout
+        if layout.components:
+            context["call_deferred"] = False
+            return layout.components.render(dashboard=self, context=context)
+
         if not template_name:
             template_name = self.template_name
 
-        context = self.get_context()
-        context["request"] = request
         return mark_safe(render_to_string(template_name, context))
-
-    @classmethod
-    def apply_layout(cls, components: list[Component]) -> list[Component]:
-        """
-        If a fixed layout has been defined, order, group and annotate components as needed for rendering.
-        Otherwise return as per the attribute order.
-        """
-        layout = cls.Layout
-        width = layout.default_component_width
-
-        # if we have a defined layout, fields not in this layout are not added/shown.
-        components_with_layout = []
-        if layout.components:
-            components_to_keys = {c.key: c for c in components}
-            for group, attrs in layout.components.items():
-                for i, key in enumerate(attrs.get("components")):
-                    component = components_to_keys.get(key)
-                    if component:
-                        try:
-                            component.width = attrs.get("component_widths", [])[i]
-                        except IndexError:
-                            logger.debug(f"Missing component_widths for {key} at {i}")
-                            if not component.width:  # if not set directly on component
-                                component.width = width
-
-                        component.group_width = attrs.get("group_width")
-                        component.group = attrs.get("group", group)
-                        components_with_layout.append(component)
-                    else:
-                        logger.warning(f"Missing component for {key}")
-
-        # default layout
-        else:
-            for component in components:
-                if not component.width:
-                    component.width = width
-                components_with_layout.append(component)
-
-        return components_with_layout
 
     @staticmethod
     def grid_areas():
@@ -122,7 +92,7 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
 
     def get_context(self):
         context = super().get_context()
-        context.update({"components": self.get_components(), "dashboard": self})
+        context["components"] = self.get_components()
         return context
 
     @classmethod
@@ -139,7 +109,7 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         return [a for nested in attributes_to_class for a in nested]
 
     @classmethod
-    def get_components(cls, with_layout=True) -> list[Component]:
+    def get_components(cls) -> list[Component]:
         attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)))
 
         components_to_keys = {}
@@ -163,9 +133,6 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
 
         components = list(components_to_keys.values())
         components.sort(key=lambda c: cls.get_attributes_order().index(c.key))
-
-        if with_layout:
-            components = cls.apply_layout(components=deepcopy(components))
 
         return components
 
@@ -227,13 +194,18 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         return self.Meta.name
 
     def __getitem__(self, name):
-        try:
-            value = getattr(self, name)
-        except KeyError:
-            if name not in self._components_cache:
-                components = dict([(x.key, x) for x in self.get_components()])
-                self._components_cache.update(components)
+        # see if this is a component
+        if not self._components_cache:  # do we have a cache?
+            components = dict([(x.key, x) for x in self.get_components()])
+            self._components_cache.update(components)
 
-            value = self._components_cache.get(name)
+        # is it a component
+        try:
+            value = self._components_cache[name]
+        except KeyError:
+            try:
+                value = getattr(self, name)
+            except AttributeError:
+                raise ComponentNotFoundError
 
         return value
