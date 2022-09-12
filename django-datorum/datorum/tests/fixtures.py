@@ -6,6 +6,8 @@ from datorum.component import HTML, Chart, Table, Text
 from datorum.component.chart import ChartData
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
+from datorum.layout import HTML as LayoutHTML
+from datorum.layout import Div, LayoutComponent
 from datorum.schema import DashboardQuery
 
 
@@ -55,3 +57,30 @@ def test_admin_dashboard():
 @pytest.fixture
 def schema():
     return strawberry.Schema(query=DashboardQuery)
+
+
+@pytest.fixture
+def test_dashboard_with_layout(test_dashboard):
+    class TestDashboardWithLayout(test_dashboard):
+        class Meta:
+            name = "Test Dashboard with Layout"
+
+        class Layout:
+            components = LayoutComponent(
+                LayoutHTML("Some text....."),
+                Div(
+                    Div(
+                        "component_1",
+                        element_id="c1",
+                        css_class_names="css_style",
+                    ),
+                    Div(
+                        "component_2",
+                        element_id="c2",
+                        css_class_names="css_style",
+                    ),
+                    element_id="wrapper",
+                ),
+            )
+
+    return TestDashboardWithLayout

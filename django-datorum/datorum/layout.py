@@ -28,7 +28,7 @@ class ComponentHolder:
                     html += str(c)
                 except KeyError:
                     logger.warning(f"component {component} not found")
-                    return
+                    continue
 
         return mark_safe(html)
 
