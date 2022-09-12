@@ -63,9 +63,6 @@ class DashboardRenderMixin:
             context["call_deferred"] = False
             return layout.components.render(dashboard=self, context=context)
 
-        if not template_name:
-            template_name = self.template_name
-
         return mark_safe(render_to_string(template_name, context))
 
     @staticmethod

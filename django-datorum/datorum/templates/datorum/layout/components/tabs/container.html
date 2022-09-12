@@ -1,0 +1,9 @@
+<div x-data="{ tab: '{{ first.element_id }}' }">
+    <ul id="{{ element_id }}" class="tabs" >
+        {{ links|safe }}
+    </ul>
+
+    <div class="{{ css_class }}">
+        {{ tab_panels }}
+    </div>
+</div>

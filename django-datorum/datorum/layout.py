@@ -70,7 +70,7 @@ class HTMLComponent(ComponentHolder):
 
 
 class Card(HTMLComponent):
-    template_name: str = "datorum/layout/card.html"
+    template_name: str = "datorum/layout/components/card.html"
     css_class_names: str = "card"
 
     def __init__(
@@ -87,18 +87,15 @@ class Card(HTMLComponent):
 
 
 class Div(HTMLComponent):
-    template_name: str = "datorum/layout/div.html"
+    template_name: str = "datorum/layout/components/div.html"
     css_class_names: str = "div"
 
 
 class TabContainer(HTMLComponent):
-    template_name: str = "datorum/layout/tab_container.html"
+    template_name: str = "datorum/layout/components/tabs/container.html"
     css_class_names: str = "tab-content"
 
     def render(self, dashboard, context: Dict, **kwargs):
-        # set first tab to open
-        self.components[0].active = True
-
         tab_panels = self.get_components_rendered(dashboard, context)
         # make tab links for each tab
         links = "".join(tab.render_link() for tab in self.components)
@@ -109,6 +106,7 @@ class TabContainer(HTMLComponent):
             "element_id": self.element_id,
             "links": links,
             "tab_panels": tab_panels,
+            "first": self.components[0]
         }
 
         html = render_to_string(
@@ -118,7 +116,7 @@ class TabContainer(HTMLComponent):
 
 
 class Tab(HTMLComponent):
-    template_name: str = "datorum/layout/tab.html"
+    template_name: str = "datorum/layout/components/tabs/component.html"
     css_class_names: str = "tab-pane fade"
 
     def __init__(
@@ -127,30 +125,24 @@ class Tab(HTMLComponent):
         *components,
         element_id: str,
         css_class_names: str = "",
-        active: bool = False,
     ):
         super().__init__(
             *components, element_id=element_id, css_class_names=css_class_names
         )
         self.tab_label = tab_label
-        self.active = active
 
     def render_link(self):
         return mark_safe(
             render_to_string(
-                "datorum/layout/tab-link.html",
+                "datorum/layout/components/tabs/link.html",
                 {
                     "element_id": self.element_id,
                     "link": self.tab_label,
-                    "active": self.active,
                 },
             )
         )
 
     def render(self, dashboard, context: Dict, **kwargs):
-        if self.active:
-            self.css_class_names += " show active"
-
         return super().render(dashboard, context, **kwargs)
 
 

@@ -1,16 +1,4 @@
 <style type="text/css">
-    /*
-        Components and grouped components are all assigned a class of c[a,b,c...,aa,bb,cc..]
-        css of SCSS can then be used to layout vis a grid-template.
-
-        It would also be possible to do this via the component ids e.g. which would be easier to follow
-        until the dashboard changes. TODO allow this to be done in the python code also.
-
-        #text_component {
-            grid-area: text_component
-        }
-     */
-
     .dashboard-container{
         grid-template:
                 "a a b"
@@ -18,28 +6,6 @@
                 "f f e"
                 "f f d"
     }
-
-    {# In real world example scss would be used to create these base grid-area assignments #}
-
-    .grid-a{
-        grid-area: a
-    }
-    .grid-b{
-        grid-area: b
-    }
-    .grid-c{
-        grid-area: c
-    }
-    .grid-d{
-        grid-area: d
-    }
-    .grid-e{
-        grid-area: e
-    }
-    .grid-f{
-        grid-area: f
-    }
-
 </style>
 
 {% include "datorum/layout/grid.html" %}

@@ -1,5 +1,5 @@
 {% if component.is_deferred and htmx %}
-    <div hx-get="{{ component.get_absolute_url }}?key={{ component.key }}" hx-trigger="load"></div>
+    <div hx-get="{{ component.get_absolute_url }}?key={{ component.key }}" hx-trigger="intersect once"></div>
 {% else %}
     {% include "datorum/components/filter.html" %}
 
