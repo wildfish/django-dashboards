@@ -13,6 +13,10 @@ from demo.demo_app.style import H1
 
 
 class DemoDashboardOne(Dashboard):
+    link = CTA(
+        href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+        text="Find out more!"
+    )
     text_example = Text(
         value="Rendered on load",
         cta=CTA(

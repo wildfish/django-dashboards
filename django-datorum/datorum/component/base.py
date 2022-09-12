@@ -12,12 +12,6 @@ from datorum.types import ValueData
 
 
 @dataclass
-class CTA:
-    href: str
-    text: str
-
-
-@dataclass
 class Component:
     template: str
     value: Optional[ValueData] = None
@@ -25,7 +19,7 @@ class Component:
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[list[str]] = None
-    cta: Optional[CTA] = None
+    cta: Optional["CTA"] = None
     css_classes: Optional[list[str]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
@@ -74,6 +68,16 @@ class Component:
 
     def __repr__(self):
         return f"{self.key}={self.value}"
+
+
+@dataclass
+class CTA(Component):
+    template: str = "datorum/components/cta.html"
+    href: str = None
+    text: str = None
+
+    def for_render(self, request: HttpRequest, call_deferred=False) -> str:
+        return str(self.text)
 
 
 def dataclass_encoder(data):
