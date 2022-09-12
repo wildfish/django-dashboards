@@ -152,3 +152,13 @@ class HTML:
 
     def render(self, dashboard, context: Dict, **kwargs):
         return Template(str(self.html)).render(Context(context))
+
+
+class HR(HTML):
+    def __init__(self):
+        self.html = "<hr />"
+
+
+class Header(HTML):
+    def __init__(self, heading: str, size: int = 1):
+        self.html = f"<h{size}>{heading}</h{size}>"

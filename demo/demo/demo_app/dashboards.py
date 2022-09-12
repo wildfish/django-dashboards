@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from datorum.component import CTA, HTML, Chart, Form, Map, Stat, Table, Text
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
-from datorum.layout import HTML as LayoutHTML
+from datorum.layout import HTML as LayoutHTML, Header, HR, Card
 from datorum.layout import Div, LayoutComponent, Tab, TabContainer
 from datorum.permissions import IsAdminUser
 
@@ -90,24 +90,22 @@ class DemoDashboardOneVary(DemoDashboardOne):
 
     class Layout(Dashboard.Layout):
         components = LayoutComponent(
-            Div(
-                Div(
-                    "text_example",
-                    "html_example",
-                    element_id="text_group_div",
-                    css_class_names="col-md-6",
-                ),
-                Div(
-                    "stat_one",
-                    "stat_two",
-                    "stat_three",
-                    element_id="stat_group_div",
-                    css_class_names="col-md-6",
-                ),
-                element_id="group_div",
-                css_class_names="row",
+            Header("Header", size=2),
+            LayoutHTML("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+            Card(
+                "text_example",
+                "html_example",
+                element_id="text_group_div",
             ),
-            LayoutHTML("<h3>Tab Example</h3>"),
+            Div(
+                Div("stat_one", element_id="stat_group_div", css_class_names="span-4"),
+                Div("stat_two", element_id="stat_group_div", css_class_names="span-4"),
+                Div("stat_three", element_id="stat_group_div", css_class_names="span-4"),
+                element_id="stat_group_div",
+                css_class_names="dashboard-container",
+            ),
+            HR(),
+            Header("Tab Example", size=3),
             TabContainer(
                 Tab(
                     "Calculated Example",
