@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
+
 snapshots = Snapshot()
 
 snapshots[
@@ -42,14 +43,15 @@ snapshots[
 
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
 
 </div><div class="div css_style" id="c2">
   
-    <div hx-get="/TestDashboardWithLayout/component_2/?key=component_2" hx-trigger="load"></div>
+    <div hx-get="/TestDashboardWithLayout/component_2/?key=component_2" hx-trigger="intersect once"></div>
 
 </div>
 </div>
@@ -74,7 +76,8 @@ snapshots[
 
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
@@ -91,7 +94,8 @@ snapshots[
 
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
@@ -100,8 +104,10 @@ snapshots[
 
 snapshots[
     "test_html_component__render[Tab] 1"
-] = """<div class="tab-pane fade css_class" id="e1">
+] = """<div x-show="tab === \'e1\'">
+    <div class="tab-pane fade css_class" id="e1">
   
+</div>
 </div>"""
 
 snapshots[
@@ -112,12 +118,13 @@ snapshots[
 
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
 
-    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
+    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
 """
 
 snapshots[
@@ -128,24 +135,31 @@ snapshots[
 
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
 
-    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
+    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
 """
 
 snapshots[
     "test_tab_container__render 1"
-] = """<ul id="e2" class="nav nav-tabs">
-    <li class="nav-item">
-  <a class="nav-link active" href="#e1" data-toggle="tab">
-    &lt;datorum.layout.HTML object at 0x296019b20&gt;</a>
+] = """<div x-data="{ tab: \'e1\' }">
+    <ul id="e2" class="tabs" >
+        <li class="tab-link">
+  <a :class="{ \'active\': tab === \'e1\' }" x-on:click.prevent="tab = \'e1\'" href="#">
+    &lt;datorum.layout.HTML object at 0x293028250&gt;
+  </a>
 </li>
-</ul>
-<div class="tab-content ">
-    <div class="tab-pane fade  show active" id="e1">
+    </ul>
+
+    <div class="tab-content ">
+        <div x-show="tab === \'e1\'">
+    <div class="tab-pane fade " id="e1">
   
 </div>
+</div>
+    </div>
 </div>"""

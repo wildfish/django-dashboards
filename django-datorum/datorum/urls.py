@@ -1,7 +1,9 @@
-from datorum.registry import registry
 from django.urls import path
 
+from datorum.registry import registry
+
 from . import views
+
 
 app_name = "datorum"
 

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
+
 snapshots = Snapshot()
 
 snapshots[
@@ -29,20 +30,6 @@ snapshots[
 
 <div id="component-chart-test"></div>
 
-
-        
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs0-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
 
         
     </div>
@@ -98,7 +85,8 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
@@ -127,20 +115,6 @@ snapshots[
 
 <div id="component-chart-test"></div>
 
-
-        
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs1-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
 
         
     </div>
@@ -196,7 +170,8 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
@@ -227,32 +202,13 @@ snapshots[
 
 
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
+          <div>
+            <a href="/" class="dashboard-component-cta">
+  CTA
+</a>
 
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs2-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
-
+          </div>
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
-
     </div>
 """
 
@@ -295,12 +251,13 @@ snapshots[
 
 
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
+          <div>
+            <a href="/" class="dashboard-component-cta">
+  CTA
+</a>
 
+          </div>
+        
     </div>
 """
 
@@ -312,15 +269,17 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
+          <div>
+            <a href="/" class="dashboard-component-cta">
+  CTA
+</a>
 
+          </div>
+        
     </div>
 """
 
@@ -347,20 +306,6 @@ snapshots[
 
 <div id="component-chart-test"></div>
 
-
-        
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs3-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
 
         
     </div>
@@ -416,7 +361,8 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
@@ -445,20 +391,6 @@ snapshots[
 
 <div id="component-chart-test"></div>
 
-
-        
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs0-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
 
         
     </div>
@@ -514,7 +446,8 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
@@ -523,25 +456,19 @@ snapshots[
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Chart] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs1-HTML] 1"
-] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
+    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Table] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
+    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Text] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
+    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
 """
 
 snapshots[
@@ -569,32 +496,13 @@ snapshots[
 
 
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
+          <div>
+            <a href="/" class="dashboard-component-cta">
+  CTA
+</a>
 
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs2-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
-
+          </div>
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
-
     </div>
 """
 
@@ -637,12 +545,13 @@ snapshots[
 
 
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
+          <div>
+            <a href="/" class="dashboard-component-cta">
+  CTA
+</a>
 
+          </div>
+        
     </div>
 """
 
@@ -654,15 +563,17 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
-    <a href="/">
-        <div class="dashboard-component-cta">
-            CTA
-        </div>
-    </a>
+          <div>
+            <a href="/" class="dashboard-component-cta">
+  CTA
+</a>
 
+          </div>
+        
     </div>
 """
 
@@ -689,20 +600,6 @@ snapshots[
 
 <div id="component-chart-test"></div>
 
-
-        
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs3-HTML] 1"
-] = """
-    
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
 
         
     </div>
@@ -758,7 +655,8 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        value
+        
+value
 
         
     </div>
@@ -812,5 +710,5 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs1] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="load"></div>
+    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
 """

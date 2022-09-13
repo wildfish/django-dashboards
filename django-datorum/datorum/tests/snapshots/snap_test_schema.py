@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
+
 snapshots = Snapshot()
 
 snapshots["test_view__component__deferred 1"] = {"isDeferred": True, "value": "value"}
@@ -99,7 +100,7 @@ snapshots["test_view__dashboards 1"] = [
                 "groupWidth": None,
                 "isDeferred": False,
                 "key": "component_4",
-                "renderType": "HTML",
+                "renderType": "Text",
                 "value": "<div></div>",
                 "width": 12,
             },

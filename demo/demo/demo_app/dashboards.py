@@ -1,10 +1,7 @@
-from datorum.component import CTA, HTML, Chart, Form, Map, Stat, Table, Text
+from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
-from datorum.layout import HR
-from datorum.layout import HTML as LayoutHTML
-from datorum.layout import (Card, Div, Header, LayoutComponent, Tab,
-                            TabContainer)
+from datorum.layout import HTML, HR, Card, Div, Header, LayoutComponent, Tab, TabContainer
 from datorum.permissions import IsAdminUser
 from django.urls import reverse_lazy
 
@@ -19,14 +16,15 @@ class DemoDashboardOne(Dashboard):
         text="Find out more!",
     )
     text_example = Text(
-        value="Rendered on load",
+        value="<p>Rendered on load</p>",
         cta=CTA(
             href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
             text="Find out more!",
         ),
         css_classes=[H1],
+        mark_safe=True,
     )
-    html_example = HTML(value="<strong>HTML also rendered on load</strong>")
+    html_example = Text(value="<strong>HTML also rendered on load</strong>", mark_safe=True)
     calculated_example = Text(defer=lambda _: "Deferred text")
     form_example = Form(
         form=AnimalForm,
@@ -49,7 +47,7 @@ class DemoDashboardOne(Dashboard):
             "sub_text": request.GET.get("country", "all"),
         }
     )
-    free_text_example = HTML(defer=DashboardData.fetch_html)
+    free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True)
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     table_example = Table(defer=DashboardData.fetch_table_data)
@@ -96,7 +94,7 @@ class DemoDashboardOneVary(DemoDashboardOne):
     class Layout(Dashboard.Layout):
         components = LayoutComponent(
             Header("Header", size=2),
-            LayoutHTML(
+            HTML(
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
             ),
             Card(
@@ -161,7 +159,7 @@ class DemoDashboardGridTemplate(Dashboard):
             text="Find out more!",
         ),
     )
-    html_example = HTML(value="<strong>HTML also rendered on load</strong>")
+    html_example = Text(value="<strong>HTML also rendered on load</strong>", mark_safe=True)
     calculated_example = Text(defer=lambda _: "Deferred text")
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
     stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data)

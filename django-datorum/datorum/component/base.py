@@ -2,12 +2,13 @@ from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 from typing import Callable, Optional, Type, Union
 
-from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
-from datorum.types import ValueData
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+
+from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
+from datorum.types import ValueData
 
 
 @dataclass
@@ -72,8 +73,8 @@ class Component:
 @dataclass
 class CTA(Component):
     template: str = "datorum/components/cta.html"
-    href: str = None
-    text: str = None
+    href: str = ""
+    text: str = ""
 
     def for_render(self, request: HttpRequest, call_deferred=False) -> str:
         return str(self.text)

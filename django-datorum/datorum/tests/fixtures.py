@@ -1,12 +1,12 @@
 import pytest
 import strawberry
+
 from datorum import permissions
-from datorum.component import HTML, Chart, Table, Text
+from datorum.component import Chart, Table, Text
 from datorum.component.chart import ChartData
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
-from datorum.layout import HTML as LayoutHTML
-from datorum.layout import Div, LayoutComponent
+from datorum.layout import HTML, Div, LayoutComponent
 from datorum.schema import DashboardQuery
 
 
@@ -27,7 +27,7 @@ def test_complex_dashboard(test_dashboard):
     class TestComplexDashboard(test_dashboard):
         component_3 = Text(defer=lambda _: "value")
         component_2 = Text(defer=lambda _: "value")
-        component_4 = HTML(value="<div></div>")
+        component_4 = Text(value="<div></div>", mark_safe=True)
         component_5 = Table(
             value=TableData(headers=["a", "b"], rows=[{"a": "Value", "b": "Value b"}])
         )
@@ -66,7 +66,7 @@ def test_dashboard_with_layout(test_dashboard):
 
         class Layout:
             components = LayoutComponent(
-                LayoutHTML("Some text....."),
+                HTML("Some text....."),
                 Div(
                     Div(
                         "component_1",
