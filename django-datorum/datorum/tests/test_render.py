@@ -1,10 +1,8 @@
-from django.template import Context
-from django.test.utils import override_settings
-
 import pytest
-
 from datorum.component import CTA, HTML, Chart, Stat, Table, Text
 from datorum.tests.utils import render_component_test
+from django.template import Context
+from django.test.utils import override_settings
 
 from . import urls
 

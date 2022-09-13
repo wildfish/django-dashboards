@@ -4,10 +4,11 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
-
 snapshots = Snapshot()
 
-snapshots['test_dashboard__render_layout 1'] = '''
+snapshots[
+    "test_dashboard__render_layout 1"
+] = """
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,11 +59,13 @@ snapshots['test_dashboard__render_layout 1'] = '''
     
     
 </body>
-</html>'''
+</html>"""
 
-snapshots['test_html__render 1'] = 'some text....'
+snapshots["test_html__render 1"] = "some text...."
 
-snapshots['test_html_component__render[Card] 1'] = '''<div class="card css_class">
+snapshots[
+    "test_html_component__render[Card] 1"
+] = """<div class="card css_class">
   
   <div class="card-body">
     
@@ -77,9 +80,11 @@ snapshots['test_html_component__render[Card] 1'] = '''<div class="card css_class
     </div>
 
   </div>
-</div>'''
+</div>"""
 
-snapshots['test_html_component__render[Div] 1'] = '''<div class="div css_class" id="e1">
+snapshots[
+    "test_html_component__render[Div] 1"
+] = """<div class="div css_class" id="e1">
   
     
 
@@ -91,13 +96,17 @@ snapshots['test_html_component__render[Div] 1'] = '''<div class="div css_class" 
         
     </div>
 
-</div>'''
+</div>"""
 
-snapshots['test_html_component__render[Tab] 1'] = '''<div class="tab-pane fade css_class" id="e1">
+snapshots[
+    "test_html_component__render[Tab] 1"
+] = """<div class="tab-pane fade css_class" id="e1">
   
-</div>'''
+</div>"""
 
-snapshots['test_layout_component__render 1'] = '''
+snapshots[
+    "test_layout_component__render 1"
+] = """
     
 
 
@@ -109,9 +118,11 @@ snapshots['test_layout_component__render 1'] = '''
     </div>
 
     <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
-'''
+"""
 
-snapshots['test_layout_component__unknown_component_ignored 1'] = '''
+snapshots[
+    "test_layout_component__unknown_component_ignored 1"
+] = """
     
 
 
@@ -123,9 +134,11 @@ snapshots['test_layout_component__unknown_component_ignored 1'] = '''
     </div>
 
     <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
-'''
+"""
 
-snapshots['test_tab_container__render 1'] = '''<ul id="e2" class="nav nav-tabs">
+snapshots[
+    "test_tab_container__render 1"
+] = """<ul id="e2" class="nav nav-tabs">
     <li class="nav-item">
   <a class="nav-link active" href="#e1" data-toggle="tab">
     &lt;datorum.layout.HTML object at 0x296019b20&gt;</a>
@@ -135,4 +148,4 @@ snapshots['test_tab_container__render 1'] = '''<ul id="e2" class="nav nav-tabs">
     <div class="tab-pane fade  show active" id="e1">
   
 </div>
-</div>'''
+</div>"""

@@ -1,11 +1,12 @@
-from django.urls import reverse_lazy
-
 from datorum.component import CTA, HTML, Chart, Form, Map, Stat, Table, Text
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
-from datorum.layout import HTML as LayoutHTML, Header, HR, Card
-from datorum.layout import Div, LayoutComponent, Tab, TabContainer
+from datorum.layout import HR
+from datorum.layout import HTML as LayoutHTML
+from datorum.layout import (Card, Div, Header, LayoutComponent, Tab,
+                            TabContainer)
 from datorum.permissions import IsAdminUser
+from django.urls import reverse_lazy
 
 from demo.demo_app.data import DashboardData
 from demo.demo_app.forms import AnimalForm, ExampleForm
@@ -15,7 +16,7 @@ from demo.demo_app.style import H1
 class DemoDashboardOne(Dashboard):
     link = CTA(
         href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-        text="Find out more!"
+        text="Find out more!",
     )
     text_example = Text(
         value="Rendered on load",
@@ -95,7 +96,9 @@ class DemoDashboardOneVary(DemoDashboardOne):
     class Layout(Dashboard.Layout):
         components = LayoutComponent(
             Header("Header", size=2),
-            LayoutHTML("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+            LayoutHTML(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            ),
             Card(
                 "text_example",
                 "html_example",
@@ -104,7 +107,9 @@ class DemoDashboardOneVary(DemoDashboardOne):
             Div(
                 Div("stat_one", element_id="stat_group_div", css_class_names="span-4"),
                 Div("stat_two", element_id="stat_group_div", css_class_names="span-4"),
-                Div("stat_three", element_id="stat_group_div", css_class_names="span-4"),
+                Div(
+                    "stat_three", element_id="stat_group_div", css_class_names="span-4"
+                ),
                 element_id="stat_group_div",
                 css_class_names="dashboard-container",
             ),

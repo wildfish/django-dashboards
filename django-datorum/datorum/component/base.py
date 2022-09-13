@@ -2,13 +2,12 @@ from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 from typing import Callable, Optional, Type, Union
 
+from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
+from datorum.types import ValueData
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-
-from datorum.forms import DatorumFilterForm, DatorumModelFilterForm
-from datorum.types import ValueData
 
 
 @dataclass

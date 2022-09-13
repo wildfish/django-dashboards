@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 import pytest
 
-
 pytest_plugins = [
     "datorum.tests.fixtures",
 ]

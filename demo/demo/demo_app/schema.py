@@ -11,5 +11,4 @@
 import strawberry
 from datorum.schema import DashboardQuery
 
-
 schema = strawberry.Schema(query=DashboardQuery)

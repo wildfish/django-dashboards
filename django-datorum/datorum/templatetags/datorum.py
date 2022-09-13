@@ -1,12 +1,10 @@
 from typing import Optional
 
+from datorum.component import Component
+from datorum.dashboard import Dashboard
 from django import template
 from django.forms import Form
 from django.template import RequestContext
-
-from datorum.component import Component
-from datorum.dashboard import Dashboard
-
 
 register = template.Library()
 

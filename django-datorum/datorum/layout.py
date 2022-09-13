@@ -5,7 +5,6 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -106,7 +105,7 @@ class TabContainer(HTMLComponent):
             "element_id": self.element_id,
             "links": links,
             "tab_panels": tab_panels,
-            "first": self.components[0]
+            "first": self.components[0],
         }
 
         html = render_to_string(

@@ -1,12 +1,9 @@
+import pytest
+from datorum.views import ComponentView, DashboardView
 from django.http import Http404
 from django.test.utils import override_settings
 
-import pytest
-
-from datorum.views import ComponentView, DashboardView
-
 from . import urls
-
 
 pytest_plugins = [
     "datorum.tests.fixtures",

@@ -1,6 +1,5 @@
 import pytest
 import strawberry
-
 from datorum import permissions
 from datorum.component import HTML, Chart, Table, Text
 from datorum.component.chart import ChartData

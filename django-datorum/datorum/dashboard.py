@@ -4,18 +4,16 @@ import logging
 import string
 from typing import Optional
 
-from django.http import HttpRequest
-from django.template.loader import render_to_string
-from django.utils.module_loading import import_string
-from django.utils.safestring import mark_safe
-
 from datorum import config
 from datorum.component import Component
 from datorum.exceptions import ComponentNotFoundError
 from datorum.layout import LayoutComponent
 from datorum.permissions import BasePermission
 from datorum.registry import registry
-
+from django.http import HttpRequest
+from django.template.loader import render_to_string
+from django.utils.module_loading import import_string
+from django.utils.safestring import mark_safe
 
 logger = logging.getLogger(__name__)
 

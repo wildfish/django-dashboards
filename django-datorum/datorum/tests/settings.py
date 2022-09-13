@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 # Common settings
 BASE_DIR = Path(__file__).absolute().parent.parent
 PROJECT_NAME = "testing"
