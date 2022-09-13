@@ -12,23 +12,22 @@ from django.utils.safestring import mark_safe
 
 @dataclass
 class Component:
-    template: str
+    template_name: str = None
     value: Optional[ValueData] = None
-    width: Optional[int] = 12
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[list[str]] = None
     cta: Optional["CTA"] = None
-    css_classes: Optional[list[str]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
     dashboard_class: Optional[str] = None
-    tab: Optional[str] = None
-    group: Optional[str] = None
-    group_width: Optional[str] = None
     render_type: Optional[str] = None
     serializable: bool = True
+
+    # replicated on LayoutBase TODO need to handle this better
+    css_classes: Optional[str] = None
+    width: Optional[int] = 6
 
     # attrs below should not be changed
     dependent_components: Optional[list["Component"]] = None

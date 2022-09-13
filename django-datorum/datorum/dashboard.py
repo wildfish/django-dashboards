@@ -6,8 +6,9 @@ from typing import Optional
 
 from datorum import config
 from datorum.component import Component
+from datorum.component.layout import Card, ComponentLayout
 from datorum.exceptions import ComponentNotFoundError
-from datorum.layout import LayoutComponent
+from datorum.component.layout import ComponentLayout
 from datorum.permissions import BasePermission
 from datorum.registry import registry
 from django.http import HttpRequest
@@ -18,61 +19,6 @@ from django.utils.safestring import mark_safe
 logger = logging.getLogger(__name__)
 
 
-class DashboardRenderMixin:
-    template_name: str = "datorum/layout/grid.html"
-
-    class Layout:
-        """
-        Components classes to define layout
-
-        components = LayoutComponent(
-            Div(
-                Div(
-                    "a",
-                    "b",
-                    c="text_group_div",
-                    element_id="div_1",
-                ),
-                Div(
-                    "d",
-                    "e",
-                    "f",
-                    element_id="div_2",
-                ),
-                element_id="div_wrapper",
-            ),
-            'g',
-            'h'
-        )
-        """
-
-        components: Optional[LayoutComponent] = None
-
-    def get_context(self):
-        context = {"dashboard": self}
-        return context
-
-    def render(self, request: HttpRequest, template_name=None):
-        context = self.get_context()
-        context["request"] = request
-
-        layout = self.Layout
-        if layout.components:
-            context["call_deferred"] = False
-            return layout.components.render(dashboard=self, context=context)
-
-        if not template_name:
-            template_name = self.template_name
-
-        return mark_safe(render_to_string(template_name, context))
-
-    @staticmethod
-    def grid_areas():
-        for i in itertools.count(1):
-            for p in itertools.product(string.ascii_lowercase, repeat=i):
-                yield "".join(p)
-
-
 class DashboardType(type):
     def __new__(mcs, cls, bases, attrs):
         dashboard_class = super().__new__(mcs, cls, bases, attrs)
@@ -80,7 +26,7 @@ class DashboardType(type):
         return dashboard_class
 
 
-class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
+class Dashboard(metaclass=DashboardType):
     include_in_graphql: bool = True
     permission_classes: list[BasePermission] = []
 
@@ -101,38 +47,41 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         """
         attributes_to_class = []
         attributes_to_class.extend(
-            [list(vars(bc).keys()) for bc in cls.__mro__ if issubclass(bc, Dashboard)]
+            [list(vars(bc).keys()) for bc in cls.mro() if issubclass(bc, Dashboard)]
         )
         attributes_to_class.sort(reverse=True)
         return [a for nested in attributes_to_class for a in nested]
 
     @classmethod
-    def get_components(cls) -> list[Component]:
+    def get_component_attributes(cls):
         attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)))
+        components = [(k, c) for k, c in attributes if isinstance(c, Component)]
+        components.sort(key=lambda t: cls.get_attributes_order().index(t[0]))
+        return components
+
+    @classmethod
+    def get_components(cls) -> list[Component]:
+        component_attributes = cls.get_component_attributes()
 
         components_to_keys = {}
         awaiting_dependents = {}
-        for key, component in attributes:
-            if isinstance(component, Component):
-                component.dashboard_class = cls.__name__
-                if not component.key:
-                    component.key = key
-                if not component.render_type:
-                    component.render_type = component.__class__.__name__
-                components_to_keys[key] = component
+        for key, component in component_attributes:
+            component.dashboard_class = cls.__name__
+            if not component.key:
+                component.key = key
+            if not component.render_type:
+                component.render_type = component.__class__.__name__
+            components_to_keys[key] = component
 
-                if component.dependents:
-                    awaiting_dependents[key] = component.dependents
+            if component.dependents:
+                awaiting_dependents[key] = component.dependents
 
         for component, dependents in awaiting_dependents.items():
             components_to_keys[component].dependent_components = [
                 components_to_keys.get(d) for d in dependents  # type: ignore
             ]
 
-        components = list(components_to_keys.values())
-        components.sort(key=lambda c: cls.get_attributes_order().index(c.key))
-
-        return components
+        return list(components_to_keys.values())
 
     def get_dashboard_permissions(self):
         """
@@ -184,6 +133,70 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
     def urls(self):
         urls = self.get_urls()
         return urls
+
+    template_name: Optional[str] = None
+
+    class Layout:
+        """
+        Components classes to define layout
+
+        components = ComponentLayout(
+            Div(
+                Div(
+                    "a",
+                    "b",
+                    c="text_group_div",
+                ),
+                Div(
+                    "d",
+                    "e",
+                    "f",
+                ),
+            ),
+            'g',
+            'h'
+        )
+        """
+
+        components: Optional[ComponentLayout] = None
+
+    def get_context(self):
+        context = {"dashboard": self}
+        return context
+
+    def render(self, request: HttpRequest, template_name=None):
+        """
+        Renders 3 ways
+        - if template is provided - use custom template
+        - else if layout is set use layout.
+        - else render a generic layout by wrapping all components.
+        """
+        context = self.get_context()
+        context["request"] = request
+
+        layout = self.Layout
+
+        # Render with template
+        if template_name:
+            return mark_safe(render_to_string(template_name, context))
+
+        # No layout, so create default one, copying any LayoutOptions elements from the component to the card
+        # TODO Card as the default should be an option
+        # TODO make width/css_classes generic, for now tho we don't need template.
+        if not layout.components:
+
+            def _get_layout(c: Component) -> dict:
+                return {
+                    "width": c.width,
+                    "css_classes": f"{c.css_classes if c.css_classes else ''} {Card.css_classes}",
+                }
+
+            layout.components = ComponentLayout(
+                *[Card(k, **_get_layout(c)) for k, c in self.get_component_attributes()]
+            )
+
+        context["call_deferred"] = False
+        return layout.components.render(dashboard=self, context=context)
 
     class Meta:
         name: str

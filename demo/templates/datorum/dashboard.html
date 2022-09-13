@@ -7,5 +7,7 @@
 
 {% block content %}
     <h2>{{ dashboard.Meta.name }}</h2>
-    {% render_dashboard dashboard %}
+    <div class="dashboard-container">
+        {% render_dashboard dashboard %}
+    </div>
 {% endblock %}

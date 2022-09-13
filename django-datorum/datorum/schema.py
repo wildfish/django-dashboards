@@ -16,8 +16,6 @@ class ComponentSchema:
     key: Optional[str]
     render_type: Optional[str]
     width: Optional[int]
-    group: Optional[str]
-    group_width: Optional[int]
 
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:

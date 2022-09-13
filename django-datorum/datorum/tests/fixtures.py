@@ -5,8 +5,8 @@ from datorum.component import HTML, Chart, Table, Text
 from datorum.component.chart import ChartData
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
-from datorum.layout import HTML as LayoutHTML
-from datorum.layout import Div, LayoutComponent
+from datorum.component.layout import HTML as LayoutHTML
+from datorum.component.layout import Div, ComponentLayout
 from datorum.schema import DashboardQuery
 
 
@@ -65,20 +65,17 @@ def test_dashboard_with_layout(test_dashboard):
             name = "Test Dashboard with Layout"
 
         class Layout:
-            components = LayoutComponent(
+            components = ComponentLayout(
                 LayoutHTML("Some text....."),
                 Div(
                     Div(
                         "component_1",
-                        element_id="c1",
-                        css_class_names="css_style",
+                        css_classes="css_style",
                     ),
                     Div(
                         "component_2",
-                        element_id="c2",
-                        css_class_names="css_style",
+                        css_classes="css_style",
                     ),
-                    element_id="wrapper",
                 ),
             )
 
