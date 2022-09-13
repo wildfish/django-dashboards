@@ -6,10 +6,5 @@
     {# -inner will be replaced if a filter is applied. #}
     <div id="component-{{ component.key }}-inner" class="dashboard-component-inner fade-in">
         {% include component.template %}
-        {% if component.cta %}
-          <div>
-            {% include component.cta.template with component=component.cta %}
-          </div>
-        {% endif %}
     </div>
 {% endif %}

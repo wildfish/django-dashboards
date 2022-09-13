@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_dashboard__render_layout 1"
-] = """
+snapshots['test_dashboard__render_layout 1'] = '''
 
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +44,6 @@ snapshots[
         
 value
 
-        
     </div>
 
 </div><div class="div css_style" id="c2">
@@ -61,13 +58,11 @@ value
     
     
 </body>
-</html>"""
+</html>'''
 
-snapshots["test_html__render 1"] = "some text...."
+snapshots['test_html__render 1'] = 'some text....'
 
-snapshots[
-    "test_html_component__render[Card] 1"
-] = """<div class="card css_class">
+snapshots['test_html_component__render[Card] 1'] = '''<div class="card css_class" id="e1">
   
   <div class="card-body">
     
@@ -79,15 +74,12 @@ snapshots[
         
 value
 
-        
     </div>
 
   </div>
-</div>"""
+</div>'''
 
-snapshots[
-    "test_html_component__render[Div] 1"
-] = """<div class="div css_class" id="e1">
+snapshots['test_html_component__render[Div] 1'] = '''<div class="div css_class" id="e1">
   
     
 
@@ -97,22 +89,17 @@ snapshots[
         
 value
 
-        
     </div>
 
-</div>"""
+</div>'''
 
-snapshots[
-    "test_html_component__render[Tab] 1"
-] = """<div x-show="tab === \'e1\'">
+snapshots['test_html_component__render[Tab] 1'] = '''<div x-show="tab === \'e1\'">
     <div class="tab-pane fade css_class" id="e1">
   
 </div>
-</div>"""
+</div>'''
 
-snapshots[
-    "test_layout_component__render 1"
-] = """
+snapshots['test_layout_component__render 1'] = '''
     
 
 
@@ -121,15 +108,12 @@ snapshots[
         
 value
 
-        
     </div>
 
     <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
-"""
+'''
 
-snapshots[
-    "test_layout_component__unknown_component_ignored 1"
-] = """
+snapshots['test_layout_component__unknown_component_ignored 1'] = '''
     
 
 
@@ -138,19 +122,16 @@ snapshots[
         
 value
 
-        
     </div>
 
     <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
-"""
+'''
 
-snapshots[
-    "test_tab_container__render 1"
-] = """<div x-data="{ tab: \'e1\' }">
+snapshots['test_tab_container__render 1'] = '''<div x-data="{ tab: \'e1\' }">
     <ul id="e2" class="tabs" >
         <li class="tab-link">
   <a :class="{ \'active\': tab === \'e1\' }" x-on:click.prevent="tab = \'e1\'" href="#">
-    &lt;datorum.layout.HTML object at 0x293028250&gt;
+    &lt;datorum.layout.HTML object at 0x294dc3df0&gt;
   </a>
 </li>
     </ul>
@@ -162,4 +143,4 @@ snapshots[
 </div>
 </div>
     </div>
-</div>"""
+</div>'''

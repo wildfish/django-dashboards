@@ -20,18 +20,14 @@ from demo.demo_app.style import H1
 
 
 class DemoDashboardOne(Dashboard):
+    text_example = Text(
+        value="<p>Rendered on load</p>",
+        css_classes=[H1],
+        mark_safe=True,
+    )
     link = CTA(
         href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
         text="Find out more!",
-    )
-    text_example = Text(
-        value="<p>Rendered on load</p>",
-        cta=CTA(
-            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-            text="Find out more!",
-        ),
-        css_classes=[H1],
-        mark_safe=True,
     )
     html_example = Text(
         value="<strong>HTML also rendered on load</strong>", mark_safe=True
@@ -163,11 +159,11 @@ class DemoDashboardGridTemplate(Dashboard):
 
     text_example = Text(
         value="Rendered on load",
-        cta=CTA(
-            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-            text="Find out more!",
-        ),
-    )
+    ),
+    link = CTA(
+        href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+        text="Find out more!",
+    ),
     html_example = Text(
         value="<strong>HTML also rendered on load</strong>", mark_safe=True
     )

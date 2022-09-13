@@ -19,7 +19,6 @@ class Component:
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[list[str]] = None
-    cta: Optional["CTA"] = None
     css_classes: Optional[list[str]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
