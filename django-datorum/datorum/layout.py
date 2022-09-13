@@ -50,7 +50,7 @@ class HTMLComponent(ComponentHolder):
     template_name: str
     css_class_names: str = ""
 
-    def __init__(self, *components, element_id: str, css_class_names: str = ""):
+    def __init__(self, *components, element_id: str = "", css_class_names: str = ""):
         self.element_id = element_id
         self.css_class_names += f" {css_class_names}"
         super().__init__(*components)
@@ -76,7 +76,7 @@ class Card(HTMLComponent):
     def __init__(
         self,
         *components,
-        element_id: str,
+        element_id: str = "",
         image_url: str = None,
         css_class_names: str = "",
     ):

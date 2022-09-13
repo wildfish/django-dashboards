@@ -1,6 +1,6 @@
-<div class="{{ css_class }}">
+<div{% if css_class %} class="{{ css_class }}"{% endif %}{% if element_id %} id="{{ element_id }}"{% endif %}>
   {% if image_url %}
-  <img class="card-img-top" src="{{image_url}}" alt="">
+  <img class="card-img-top" src="{{image_url}}" alt="{{ element_id }}">
   {% endif %}
   <div class="card-body">
     {{ components }}

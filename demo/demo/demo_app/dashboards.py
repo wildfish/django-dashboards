@@ -1,7 +1,16 @@
 from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
-from datorum.layout import HTML, HR, Card, Div, Header, LayoutComponent, Tab, TabContainer
+from datorum.layout import (
+    HTML,
+    HR,
+    Card,
+    Div,
+    Header,
+    LayoutComponent,
+    Tab,
+    TabContainer,
+)
 from datorum.permissions import IsAdminUser
 from django.urls import reverse_lazy
 
@@ -24,7 +33,9 @@ class DemoDashboardOne(Dashboard):
         css_classes=[H1],
         mark_safe=True,
     )
-    html_example = Text(value="<strong>HTML also rendered on load</strong>", mark_safe=True)
+    html_example = Text(
+        value="<strong>HTML also rendered on load</strong>", mark_safe=True
+    )
     calculated_example = Text(defer=lambda _: "Deferred text")
     form_example = Form(
         form=AnimalForm,
@@ -100,15 +111,13 @@ class DemoDashboardOneVary(DemoDashboardOne):
             Card(
                 "text_example",
                 "html_example",
-                element_id="text_group_div",
             ),
             Div(
-                Div("stat_one", element_id="stat_group_div", css_class_names="span-4"),
-                Div("stat_two", element_id="stat_group_div", css_class_names="span-4"),
+                Div("stat_one", css_class_names="span-4"),
+                Div("stat_two", css_class_names="span-4"),
                 Div(
                     "stat_three", element_id="stat_group_div", css_class_names="span-4"
                 ),
-                element_id="stat_group_div",
                 css_class_names="dashboard-container",
             ),
             HR(),
@@ -159,7 +168,9 @@ class DemoDashboardGridTemplate(Dashboard):
             text="Find out more!",
         ),
     )
-    html_example = Text(value="<strong>HTML also rendered on load</strong>", mark_safe=True)
+    html_example = Text(
+        value="<strong>HTML also rendered on load</strong>", mark_safe=True
+    )
     calculated_example = Text(defer=lambda _: "Deferred text")
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
     stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data)
