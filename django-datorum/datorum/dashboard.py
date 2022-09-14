@@ -1,7 +1,5 @@
 import inspect
-import itertools
 import logging
-import string
 from typing import List, Optional
 
 from django.http import HttpRequest
@@ -36,9 +34,7 @@ class Dashboard(metaclass=DashboardType):
         super().__init__()
 
     def get_context(self):
-        context = super().get_context()
-        context["components"] = self.get_components()
-        return context
+        return {"dashboard": self, "components": self.get_components()}
 
     @classmethod
     def get_attributes_order(cls):
@@ -160,10 +156,6 @@ class Dashboard(metaclass=DashboardType):
         """
 
         components: Optional[ComponentLayout] = None
-
-    def get_context(self):
-        context = {"dashboard": self}
-        return context
 
     def render(self, request: HttpRequest, template_name=None):
         """

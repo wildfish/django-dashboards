@@ -5,7 +5,7 @@ import pytest
 
 from datorum.views import DashboardView
 
-from ..component.layout import HTML, Card, Div, ComponentLayout, Tab, TabContainer
+from ..component.layout import HTML, Card, ComponentLayout, Div, Tab, TabContainer
 from . import urls
 
 
@@ -59,7 +59,7 @@ def test_layout_component__render(rf, test_dashboard, snapshot):
     context = Context({"request": rf.get("/")})
 
     snapshot.assert_match(
-        Layout(
+        ComponentLayout(
             "component_1",
             "component_2",
         ).render(dashboard=test_dashboard, context=context)
@@ -71,7 +71,7 @@ def test_layout_component__unknown_component_ignored(rf, test_dashboard, snapsho
     context = Context({"request": rf.get("/")})
 
     snapshot.assert_match(
-        Layout(
+        ComponentLayout(
             "component_1",
             "component_2",
             "component_3",

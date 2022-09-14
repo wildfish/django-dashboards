@@ -21,10 +21,6 @@ from demo.demo_app.forms import AnimalForm, ExampleForm
 
 
 class DemoDashboardOne(Dashboard):
-    text_example = Text(
-        value="<p>Rendered on load</p>",
-        mark_safe=True,
-    )
     link = CTA(
         href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
         text="Find out more!",

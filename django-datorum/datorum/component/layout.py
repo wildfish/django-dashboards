@@ -1,6 +1,4 @@
-import inspect
 import logging
-import uuid
 from dataclasses import dataclass
 from typing import Dict, Optional
 
@@ -8,18 +6,22 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from .base import Component
-
 
 logger = logging.getLogger(__name__)
 
 
 class LayoutBase:
-    layout_components: Optional[list[str]] = None
+    template_name: Optional[str] = None
     css_classes: Optional[str] = None
     width: Optional[int] = 6
+    image_url: Optional[str] = None
 
-    def __init__(self, *layout_components, css_classes=None, width=None):
+    def __init__(
+        self, *layout_components, css_classes=None, width=None, image_url=None
+    ):
+        if not layout_components:
+            layout_components = []
+
         self.layout_components = layout_components
 
         if css_classes:
@@ -28,7 +30,10 @@ class LayoutBase:
         if width:
             self.width = width
 
-    def get_components_rendered(self, dashboard, context: Dict):
+        if image_url:
+            self.image_url = image_url
+
+    def get_components_rendered(self, dashboard, context: Dict) -> str:
         html = ""
         dashboard_components = dict([(x.key, x) for x in dashboard.get_components()])
 
@@ -61,7 +66,7 @@ class HTMLComponentLayout(ComponentLayout):
     template wrapper for components
     """
 
-    def render(self, dashboard, context: Dict, **kwargs):
+    def render(self, dashboard, context: Dict, **kwargs) -> str:
         components = self.get_components_rendered(dashboard, context)
         request = context.get("request")
         component_context = {
@@ -77,7 +82,6 @@ class HTMLComponentLayout(ComponentLayout):
 class Card(HTMLComponentLayout):
     template_name: str = "datorum/layout/components/card.html"
     css_classes: str = "dashboard-component"
-    image_url: str = None
 
 
 class Div(HTMLComponentLayout):
@@ -88,7 +92,7 @@ class TabContainer(HTMLComponentLayout):
     template_name: str = "datorum/layout/components/tabs/container.html"
     css_classes: str = "tab-content"
 
-    def render(self, dashboard, context: Dict, **kwargs):
+    def render(self, dashboard, context: Dict, **kwargs) -> str:
         tab_panels = self.get_components_rendered(dashboard, context)
         # make tab links for each tab
         links = "".join(tab.render_link() for tab in self.layout_components)
@@ -136,7 +140,7 @@ class HTML:
 
 @dataclass
 class HR(HTML):
-    html: Optional[str] = "<hr />"
+    html = "<hr />"
 
 
 @dataclass

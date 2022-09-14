@@ -4,7 +4,6 @@ import strawberry
 from datorum import permissions
 from datorum.component import Chart, Table, Text
 from datorum.component.chart import ChartData
-from datorum.component.layout import HTML as LayoutHTML
 from datorum.component.layout import ComponentLayout, Div
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard
@@ -66,8 +65,7 @@ def test_dashboard_with_layout(test_dashboard):
             name = "Test Dashboard with Layout"
 
         class Layout:
-            components = LayoutComponent(
-                HTML("Some text....."),
+            components = ComponentLayout(
                 Div(
                     Div(
                         "component_1",

@@ -35,21 +35,10 @@ snapshots[
 </h1>
     <div class="content">
         
+    <div class="span-6  dashboard-component">
+  
+  <div class="card-body">
     
-
-  
-  
-  
-    
-    <div class="dashboard-container">
-      
-      
-        
-          
-            <div id="component-component_1"
-                 class="dashboard-component span-12 grid-a
-                                 None">
-              
     
 
 
@@ -60,23 +49,15 @@ value
 
     </div>
 
-            </div>
-          
-            <div id="component-component_2"
-                 class="dashboard-component span-12 grid-b
-                                 None">
-              
+  </div>
+</div><div class="span-6  dashboard-component">
+  
+  <div class="card-body">
+    
     <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
 
-            </div>
-          
-        
-      
-    </div>
-    
-  
-  
-
+  </div>
+</div>
 
     </div>
     

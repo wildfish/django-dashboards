@@ -13,7 +13,7 @@ from datorum.types import ValueData
 
 @dataclass
 class Component:
-    template_name: str = None
+    template_name: Optional[str] = None
     value: Optional[ValueData] = None
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None

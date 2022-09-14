@@ -35,8 +35,8 @@ snapshots[
 </h1>
     <div class="content">
         
-    Some text.....<div class="div " id="wrapper">
-  <div class="div css_style" id="c1">
+    <div class="span-6 None">
+  <div class="span-6 css_style">
   
     
 
@@ -48,7 +48,7 @@ value
 
     </div>
 
-</div><div class="div css_style" id="c2">
+</div><div class="span-6 css_style">
   
     <div hx-get="/TestDashboardWithLayout/component_2/?key=component_2" hx-trigger="intersect once"></div>
 
@@ -66,7 +66,7 @@ snapshots["test_html__render 1"] = "some text...."
 
 snapshots[
     "test_html_component__render[Card] 1"
-] = """<div class="card css_class" id="e1">
+] = """<div class="span-6 css_class">
   
   <div class="card-body">
     
@@ -85,7 +85,7 @@ value
 
 snapshots[
     "test_html_component__render[Div] 1"
-] = """<div class="div css_class" id="e1">
+] = """<div class="span-6 css_class">
   
     
 
@@ -101,9 +101,19 @@ value
 
 snapshots[
     "test_html_component__render[Tab] 1"
-] = """<div x-show="tab === \'e1\'">
-    <div class="tab-pane fade css_class" id="e1">
+] = """<div x-show="tab === \'\'">
+    <div class="span-6 css_class">
   
+    
+
+
+    
+    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        
+value
+
+    </div>
+
 </div>
 </div>"""
 
@@ -141,19 +151,19 @@ value
 
 snapshots[
     "test_tab_container__render 1"
-] = """<div x-data="{ tab: \'e1\' }">
-    <ul id="e2" class="tabs" >
+] = """<div x-data="{ tab: \'\' }">
+    <ul id="" class="tabs" >
         <li class="tab-link">
-  <a :class="{ \'active\': tab === \'e1\' }" x-on:click.prevent="tab = \'e1\'" href="#">
-    &lt;datorum.layout.HTML object at 0x294dc3df0&gt;
+  <a :class="{ \'active\': tab === \'\' }" x-on:click.prevent="tab = \'\'" href="#">
+    
   </a>
 </li>
     </ul>
 
-    <div class="tab-content ">
-        <div x-show="tab === \'e1\'">
-    <div class="tab-pane fade " id="e1">
-  
+    <div class="">
+        <div x-show="tab === \'\'">
+    <div class="span-6 tab-pane fade">
+  some text....
 </div>
 </div>
     </div>
