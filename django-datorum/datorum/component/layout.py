@@ -140,7 +140,7 @@ class HTML:
 
 @dataclass
 class HR(HTML):
-    html = "<hr />"
+    html: str = "<hr />"
 
 
 @dataclass
