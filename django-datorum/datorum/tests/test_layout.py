@@ -1,10 +1,13 @@
-import pytest
-from datorum.views import DashboardView
 from django.template import Context
 from django.test.utils import override_settings
 
-from ..layout import HTML, Card, Div, Layout, Tab, TabContainer
+import pytest
+
+from datorum.views import DashboardView
+
+from ..component.layout import HTML, Card, Div, ComponentLayout, Tab, TabContainer
 from . import urls
+
 
 pytest_plugins = [
     "datorum.tests.fixtures",

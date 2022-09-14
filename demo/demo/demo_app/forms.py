@@ -1,5 +1,6 @@
-from datorum.forms import DatorumFilterForm, DatorumForm
 from django import forms
+
+from datorum.forms import DatorumFilterForm, DatorumForm
 
 
 class ExampleForm(DatorumFilterForm):

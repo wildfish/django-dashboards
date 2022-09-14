@@ -6,11 +6,7 @@ from .base import Component
 @dataclass
 class Text(Component):
     template: str = "datorum/components/text/text.html"
-
-
-@dataclass
-class HTML(Component):
-    template: str = "datorum/components/text/html.html"
+    mark_safe: bool = False
 
 
 @dataclass

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional, Type
 
-from datorum.forms import DatorumForm
 from django.http import HttpRequest
+
+from datorum.forms import DatorumForm
 
 from .base import Component
 

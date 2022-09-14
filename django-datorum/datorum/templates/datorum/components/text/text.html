@@ -1,1 +1,5 @@
+{% if component.mark_safe %}
+{{ rendered_value|safe }}
+{% else %}
 {{ rendered_value }}
+{% endif %}

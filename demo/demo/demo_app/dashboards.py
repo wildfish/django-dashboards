@@ -1,23 +1,30 @@
-from datorum.component import CTA, HTML, Chart, Form, Map, Stat, Table, Text
-from datorum.dashboard import Dashboard
+from django.urls import reverse_lazy
+
+from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
 from datorum.component.layout import HR
+from datorum.component.layout import HTML
 from datorum.component.layout import HTML as LayoutHTML
 from datorum.component.layout import (
     Card,
+    ComponentLayout,
     Div,
     Header,
-    ComponentLayout,
     Tab,
     TabContainer,
 )
+from datorum.component.table import TableData
+from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
-from django.urls import reverse_lazy
 
 from demo.demo_app.data import DashboardData
 from demo.demo_app.forms import AnimalForm, ExampleForm
 
 
 class DemoDashboardOne(Dashboard):
+    text_example = Text(
+        value="<p>Rendered on load</p>",
+        mark_safe=True,
+    )
     link = CTA(
         href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
         text="Find out more!",
@@ -31,7 +38,9 @@ class DemoDashboardOne(Dashboard):
         ),
         width=6,
     )
-    html_example = HTML(value="<strong>HTML also rendered on load</strong>")
+    html_example = Text(
+        value="<strong>HTML also rendered on load</strong>", mark_safe=True
+    )
     calculated_example = Text(defer=lambda _: "Deferred text")
     form_example = Form(
         form=AnimalForm,
@@ -55,7 +64,7 @@ class DemoDashboardOne(Dashboard):
             "sub_text": request.GET.get("country", "all"),
         }
     )
-    free_text_example = HTML(defer=DashboardData.fetch_html)
+    free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True)
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     # table_example = Table(defer=DashboardData.fetch_table_data)
@@ -83,7 +92,6 @@ class DemoDashboardOne(Dashboard):
         name = "Dashboard One"
 
 
-
 class DemoDashboardOneCustom(DemoDashboardOne):
     template_name = "demo/custom.html"
 
@@ -99,8 +107,8 @@ class DemoDashboardOneVary(DemoDashboardOne):
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
             Header("Header", size=2),
-            LayoutHTML(
-                html="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            HTML(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
             ),
             Card(
                 "text_example",
@@ -110,11 +118,6 @@ class DemoDashboardOneVary(DemoDashboardOne):
                 Div("stat_one"),
                 Div("stat_two"),
                 Div("stat_three"),
-                Div(
-                    "stat_one",
-                    "stat_two",
-                    "stat_three",
-                ),
             ),
             HR(),
             Header("Tab Example", size=3),

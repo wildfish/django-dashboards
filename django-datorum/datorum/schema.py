@@ -1,11 +1,14 @@
 import logging
 from typing import List, Optional
 
+from django.utils.text import slugify
+
 import strawberry
+from strawberry.types import Info
+
 from datorum.component import Component
 from datorum.registry import registry
-from django.utils.text import slugify
-from strawberry.types import Info
+
 
 logger = logging.getLogger(__name__)
 

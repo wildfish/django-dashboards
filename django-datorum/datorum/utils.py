@@ -1,6 +1,7 @@
-from datorum.registry import registry
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpRequest
+
+from datorum.registry import registry
 
 
 def get_dashboard(dashboard_class: str, request: HttpRequest, check_permission=True):

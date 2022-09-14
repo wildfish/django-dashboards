@@ -1,14 +1,15 @@
 import inspect
-import uuid
 import logging
-from typing import Dict, Optional
+import uuid
 from dataclasses import dataclass
-
-from .base import Component
+from typing import Dict, Optional
 
 from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+
+from .base import Component
+
 
 logger = logging.getLogger(__name__)
 

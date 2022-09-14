@@ -6,6 +6,7 @@ import sentry_sdk
 from configurations import Configuration
 from sentry_sdk.integrations.django import DjangoIntegration
 
+
 # Common settings
 BASE_DIR = Path(__file__).absolute().parent.parent
 PROJECT_NAME = "demo"

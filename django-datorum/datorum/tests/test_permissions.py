@@ -1,6 +1,9 @@
-import pytest
-from datorum.views import DashboardView
 from django.core.exceptions import PermissionDenied
+
+import pytest
+
+from datorum.views import DashboardView
+
 
 pytest_plugins = [
     "datorum.tests.fixtures",

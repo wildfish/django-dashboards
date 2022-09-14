@@ -2,19 +2,20 @@ import inspect
 import itertools
 import logging
 import string
-from typing import Optional
+from typing import List, Optional
+
+from django.http import HttpRequest
+from django.template.loader import render_to_string
+from django.utils.module_loading import import_string
+from django.utils.safestring import mark_safe
 
 from datorum import config
 from datorum.component import Component
 from datorum.component.layout import Card, ComponentLayout
 from datorum.exceptions import ComponentNotFoundError
-from datorum.component.layout import ComponentLayout
 from datorum.permissions import BasePermission
 from datorum.registry import registry
-from django.http import HttpRequest
-from django.template.loader import render_to_string
-from django.utils.module_loading import import_string
-from django.utils.safestring import mark_safe
+
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class DashboardType(type):
 
 class Dashboard(metaclass=DashboardType):
     include_in_graphql: bool = True
-    permission_classes: list[BasePermission] = []
+    permission_classes: Optional[List[BasePermission]] = None
 
     def __init__(self, **kwargs):
         self._components_cache = {}

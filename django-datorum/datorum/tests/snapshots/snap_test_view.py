@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
+
 snapshots = Snapshot()
 
 snapshots[
@@ -54,9 +55,9 @@ snapshots[
 
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        value
-
         
+value
+
     </div>
 
             </div>
@@ -65,7 +66,7 @@ snapshots[
                  class="dashboard-component span-12 grid-b
                                  None">
               
-    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="load"></div>
+    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
 
             </div>
           
@@ -96,9 +97,9 @@ snapshots[
 
     
     <div id="component-component_2-inner" class="dashboard-component-inner fade-in">
-        value
-
         
+value
+
     </div>
 
 
