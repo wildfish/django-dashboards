@@ -102,9 +102,12 @@ class DemoDashboardOneVary(DemoDashboardOne):
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
-            Header("Header", size=2),
+            Header(heading="Header", size=2, width=12),
             HTML(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend "
+                "diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum "
+                "dolor sit amet, consectetur adipiscing elit.",
+                width=12,
             ),
             Card(
                 "text_example",

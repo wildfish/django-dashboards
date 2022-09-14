@@ -10,6 +10,10 @@ from django.utils.safestring import mark_safe
 logger = logging.getLogger(__name__)
 
 
+def css_template(width: int, css_classes: list):
+    return f"span-{width} {css_classes}"
+
+
 class LayoutBase:
     template_name: Optional[str] = None
     css_classes: Optional[str] = None
@@ -71,7 +75,7 @@ class HTMLComponentLayout(ComponentLayout):
         request = context.get("request")
         component_context = {
             "components": components,
-            "css": f"span-{self.width} {self.css_classes}",
+            "css": css_template(self.width, self.css_classes),
         }
 
         return render_to_string(
@@ -99,7 +103,7 @@ class TabContainer(HTMLComponentLayout):
 
         request = context.get("request")
         component_context = {
-            "css": f"span-{self.width} {self.css_classes}",
+            "css": css_template(self.width, self.css_classes),
             "links": links,
             "tab_panels": tab_panels,
             "first": self.layout_components[0],
@@ -133,9 +137,11 @@ class Tab(HTMLComponentLayout):
 @dataclass
 class HTML:
     html: str
+    width: Optional[int] = 6
 
     def render(self, dashboard, context: Dict, **kwargs):
-        return Template(str(self.html)).render(Context(context))
+        to_render = f'<div class="{css_template(self.width, [])}">{self.html}</div>'
+        return Template(to_render).render(Context(context))
 
 
 @dataclass
@@ -145,5 +151,9 @@ class HR(HTML):
 
 @dataclass
 class Header(HTML):
-    def __init__(self, heading: str, size: int = 1):
-        self.html = f"<h{size}>{heading}</h{size}>"
+    html: str = ""
+    heading: str = ""
+    size: int = 1
+
+    def __post_init__(self):
+        self.html = f"<h{self.size}>{self.heading}</h{self.size}>"

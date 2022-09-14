@@ -86,3 +86,31 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
   transition: opacity 1s ease-out;
 }
+
+.tabs{
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.tab-link {
+  background-color: #ffffff;
+  list-style: none;
+  padding: 1rem;
+}
+
+a{
+  color: #000000;
+  font-size: 1.1rem;
+  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+}
+
+a.active {
+  border-bottom: 1px solid green;
+}
+
+
+.tab-content {
+  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+  padding: 1rem 2rem;
+}

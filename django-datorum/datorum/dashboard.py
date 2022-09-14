@@ -167,7 +167,7 @@ class Dashboard(metaclass=DashboardType):
         context = self.get_context()
         context["request"] = request
 
-        layout = self.Layout
+        layout = self.Layout()
 
         # Render with template
         if template_name:
