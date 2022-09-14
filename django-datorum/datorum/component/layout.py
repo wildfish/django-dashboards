@@ -51,7 +51,7 @@ class LayoutBase:
             if hasattr(layout_component, "render"):
                 html += layout_component.render(dashboard, context)
             elif dashboard_component:
-                html += str(dashboard_component)
+                html += dashboard_component.render(**context)
 
         return mark_safe(html)
 

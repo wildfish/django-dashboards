@@ -11,16 +11,14 @@ from datorum.dashboard import Dashboard
 register = template.Library()
 
 
-@register.inclusion_tag("datorum/components/component.html", takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_component(context: RequestContext, component: Component, htmx: bool):
-    request = context["request"]
-    rendered_value = component.for_render(request=request, call_deferred=not htmx)
-    return {
-        "request": context["request"],
-        "component": component,
-        "htmx": htmx,
-        "rendered_value": rendered_value,
-    }
+    render_context = {}
+    render_context["request"] = context["request"]
+    render_context['htmx'] = htmx
+    render_context['call_deferred'] = not htmx
+
+    return component.render(**render_context)
 
 
 @register.simple_tag(takes_context=True)

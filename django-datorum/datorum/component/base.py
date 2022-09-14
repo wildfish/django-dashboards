@@ -18,7 +18,6 @@ class Component:
     defer: Optional[Callable[[HttpRequest], ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[list[str]] = None
-    cta: Optional["CTA"] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
@@ -37,7 +36,7 @@ class Component:
     def is_deferred(self) -> bool:
         return True if self.defer else False
 
-    def for_render(self, request: HttpRequest, call_deferred=False) -> ValueData:
+    def for_render(self, request: HttpRequest = None, call_deferred=False) -> ValueData:
         if self.is_deferred and self.defer and call_deferred:
             value = self.defer(request)
         else:
@@ -56,14 +55,19 @@ class Component:
             "datorum:dashboard_component", args=[self.dashboard_class, self.key]
         )
 
-    def __str__(self):
+    def render(self, **kwargs) -> str:
+        request = kwargs.get("request")
         context = {
+            "request": request,
             "component": self,
-            "rendered_value": self.value,
-            "htmx": self.is_deferred,
+            "rendered_value": self.for_render(request, kwargs.get("call_deferred", False)),
+            "htmx": kwargs.get("htmx", self.is_deferred),
         }
 
         return mark_safe(render_to_string("datorum/components/component.html", context))
+
+    def __str__(self):
+        return self.render()
 
     def __repr__(self):
         return f"{self.key}={self.value}"

@@ -267,7 +267,7 @@ class DashboardData:
                     line={"width": 2, "color": "blue"},
                 )
             ],
-            layout=MapData.MapLayout(
+            layout=dict(
                 title="London to NYC Great Circle",
                 showlegend=False,
                 geo={

@@ -28,10 +28,6 @@ class DemoDashboardOne(Dashboard):
     )
     text_example = Text(
         value="Rendered on load",
-        cta=CTA(
-            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-            text="Find out more!",
-        ),
         width=6,
     )
     html_example = Text(
@@ -63,24 +59,24 @@ class DemoDashboardOne(Dashboard):
     free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True)
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
-    # table_example = Table(defer=DashboardData.fetch_table_data)
-    # table_example_not_deferred = Table(
-    #     value=TableData(
-    #         headers=[],
-    #         rows=[
-    #             {
-    #                 "id": 1,
-    #                 "name": "Oli Bob",
-    #                 "progress": 12,
-    #                 "gender": "male",
-    #                 "rating": 1,
-    #                 "col": "red",
-    #                 "dob": "19/02/1984",
-    #                 "car": 1,
-    #             }
-    #         ],
-    #     )
-    # )
+    table_example = Table(defer=DashboardData.fetch_table_data)
+    table_example_not_deferred = Table(
+        value=TableData(
+            headers=[],
+            rows=[
+                {
+                    "id": 1,
+                    "name": "Oli Bob",
+                    "progress": 12,
+                    "gender": "male",
+                    "rating": 1,
+                    "col": "red",
+                    "dob": "19/02/1984",
+                    "car": 1,
+                }
+            ],
+        )
+    )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
 
