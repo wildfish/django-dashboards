@@ -31,11 +31,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dashboard-container, .tab-content {
-  /*box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);*/
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 10px;
-  padding: 1rem 2rem;
   text-align: center;
 }
 
