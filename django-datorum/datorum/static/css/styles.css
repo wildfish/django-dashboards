@@ -30,24 +30,23 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -.02em;
 }
 
-.dashboard-container, .dashboard-component-grouped {
+.dashboard-container, .tab-content {
+  /*box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);*/
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 10px;
-}
-
-.dashboard-component-grouped {
-  justify-items: center;
-}
-
-.dashboard-component {
-  border: 1px solid #CCCCCC;
+  padding: 1rem 2rem;
   text-align: center;
+}
+
+.dashboard-component{
+  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
 }
 
 .dashboard-component-inner {
   padding: 1em;
 }
+
 .dashboard-component-cta {
   background-color: #c4d9e3;
   color: #FFF;
@@ -107,10 +106,4 @@ a{
 
 a.active {
   border-bottom: 1px solid green;
-}
-
-
-.tab-content {
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
-  padding: 1rem 2rem;
 }

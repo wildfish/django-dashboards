@@ -15,8 +15,8 @@ register = template.Library()
 def render_component(context: RequestContext, component: Component, htmx: bool):
     render_context = {}
     render_context["request"] = context["request"]
-    render_context['htmx'] = htmx
-    render_context['call_deferred'] = not htmx
+    render_context["htmx"] = htmx
+    render_context["call_deferred"] = not htmx
 
     return component.render(**render_context)
 

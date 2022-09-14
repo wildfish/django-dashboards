@@ -10,8 +10,9 @@ from django.utils.safestring import mark_safe
 logger = logging.getLogger(__name__)
 
 
-def css_template(width: int, css_classes: list):
-    return f"span-{width} {css_classes}"
+def css_template(width: int = None, css_classes: list = None):
+    span_width = f"span-{width}" if width else ""
+    return f"{span_width} {css_classes if css_classes else ''}"
 
 
 class LayoutBase:
@@ -74,6 +75,7 @@ class HTMLComponentLayout(ComponentLayout):
         components = self.get_components_rendered(dashboard, context)
         request = context.get("request")
         component_context = {
+            "layout_component": self,
             "components": components,
             "css": css_template(self.width, self.css_classes),
         }
@@ -94,17 +96,18 @@ class Div(HTMLComponentLayout):
 
 class TabContainer(HTMLComponentLayout):
     template_name: str = "datorum/layout/components/tabs/container.html"
-    css_classes: str = "tab-content"
+    css_classes: str = "tab-container"
+    width: int = 12
 
     def render(self, dashboard, context: Dict, **kwargs) -> str:
         tab_panels = self.get_components_rendered(dashboard, context)
         # make tab links for each tab
-        links = "".join(tab.render_link() for tab in self.layout_components)
+        tabs = "".join(tab.render_tab() for tab in self.layout_components)
 
         request = context.get("request")
         component_context = {
             "css": css_template(self.width, self.css_classes),
-            "links": links,
+            "tabs": tabs,
             "tab_panels": tab_panels,
             "first": self.layout_components[0],
         }
@@ -117,21 +120,23 @@ class TabContainer(HTMLComponentLayout):
 
 class Tab(HTMLComponentLayout):
     tab_label: str = ""
-    template_name: str = "datorum/layout/components/tabs/component.html"
-    css_classes: str = "tab-pane fade"
+    template_name: str = "datorum/layout/components/tabs/content.html"
+    css_classes: str = "tab-content"
+    width: Optional[int] = None
 
-    def render_link(self):
+    def __init__(self, tab_label, *layout_components, **kwargs):
+        self.tab_label = tab_label
+        super().__init__(*layout_components, **kwargs)
+
+    def render_tab(self):
         return mark_safe(
             render_to_string(
-                "datorum/layout/components/tabs/link.html",
+                "datorum/layout/components/tabs/tab.html",
                 {
-                    "link": self.tab_label,
+                    "tab_label": self.tab_label,
                 },
             )
         )
-
-    def render(self, dashboard, context: Dict, **kwargs):
-        return super().render(dashboard, context, **kwargs)
 
 
 @dataclass
@@ -140,7 +145,7 @@ class HTML:
     width: Optional[int] = 6
 
     def render(self, dashboard, context: Dict, **kwargs):
-        to_render = f'<div class="{css_template(self.width, [])}">{self.html}</div>'
+        to_render = f'<div class="{css_template(self.width)}">{self.html}</div>'
         return Template(to_render).render(Context(context))
 
 

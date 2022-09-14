@@ -60,7 +60,9 @@ class Component:
         context = {
             "request": request,
             "component": self,
-            "rendered_value": self.for_render(request, kwargs.get("call_deferred", False)),
+            "rendered_value": self.for_render(
+                request, kwargs.get("call_deferred", False)
+            ),
             "htmx": kwargs.get("htmx", self.is_deferred),
         }
 
