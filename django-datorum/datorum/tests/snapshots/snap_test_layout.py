@@ -35,7 +35,7 @@ snapshots[
 </h1>
     <div class="content">
         
-    <div class="span-6 None">
+    <div class="span-6 ">
   <div class="span-6 css_style">
   
     
@@ -62,7 +62,7 @@ value
 </body>
 </html>"""
 
-snapshots["test_html__render 1"] = "some text...."
+snapshots["test_html__render 1"] = '<div class="span-6 ">some text....</div>'
 
 snapshots[
     "test_html_component__render[Card] 1"
@@ -101,19 +101,9 @@ value
 
 snapshots[
     "test_html_component__render[Tab] 1"
-] = """<div x-show="tab === \'\'">
-    <div class="span-6 css_class">
+] = """<div x-show="tab === \'component_1\'">
+    <div class=" css_class">
   
-    
-
-
-    
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-
 </div>
 </div>"""
 
@@ -151,19 +141,19 @@ value
 
 snapshots[
     "test_tab_container__render 1"
-] = """<div x-data="{ tab: \'\' }">
+] = """<div class="span-12 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width6\' }">
     <ul id="" class="tabs" >
         <li class="tab-link">
-  <a :class="{ \'active\': tab === \'\' }" x-on:click.prevent="tab = \'\'" href="#">
-    
+  <a :class="{ \'active\': tab === \'htmlhtmlsome-text-width6\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text-width6\'" href="#">
+    HTML(html=&#x27;some text....&#x27;, width=6)
   </a>
 </li>
     </ul>
 
-    <div class="">
-        <div x-show="tab === \'\'">
-    <div class="span-6 tab-pane fade">
-  some text....
+    <div>
+        <div x-show="tab === \'htmlhtmlsome-text-width6\'">
+    <div class=" tab-content">
+  
 </div>
 </div>
     </div>

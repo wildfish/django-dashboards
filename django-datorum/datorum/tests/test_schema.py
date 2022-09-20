@@ -13,6 +13,7 @@ DASHBOARD_GQL = """
         Meta {
           name
           slug
+          layoutJson
         }
         components {
           key
@@ -36,13 +37,14 @@ COMPONENT_GQL = """
 
 
 @pytest.fixture()
-def schema_with_dashboards(schema, test_dashboard, test_complex_dashboard):
+def schema_with_dashboards(schema, dashboard, complex_dashboard, dashboard_with_layout):
     with patch(
         "datorum.registry.Registry.get_graphql_dashboards",
         return_value={
-            "TestDashboard": test_dashboard,
-            "ComplexDashboard": test_complex_dashboard,
-            "TestAdminDashboard": test_dashboard,
+            "TestDashboard": dashboard,
+            "ComplexDashboard": complex_dashboard,
+            "TestAdminDashboard": dashboard,
+            "DashboardWithLayout": dashboard_with_layout,
         },
     ):
         return schema
@@ -97,6 +99,19 @@ def test_view__dashboard__not_found(rf, admin_user, schema_with_dashboards, snap
     result = schema_with_dashboards.execute_sync(
         DASHBOARD_GQL,
         variable_values={"slug": "not-test-dashboard"},
+        context_value={"request": request},
+    )
+    assert result.errors is None
+    snapshot.assert_match(result.data["dashboard"])
+
+
+def test_view__dashboard__with_layout(rf, admin_user, schema_with_dashboards, snapshot):
+    request = rf.get("/")
+    request.user = admin_user
+
+    result = schema_with_dashboards.execute_sync(
+        DASHBOARD_GQL,
+        variable_values={"slug": "test-dashboard"},
         context_value={"request": request},
     )
     assert result.errors is None

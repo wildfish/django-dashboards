@@ -13,12 +13,7 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def render_component(context: RequestContext, component: Component, htmx: bool):
-    render_context = {}
-    render_context["request"] = context["request"]
-    render_context["htmx"] = htmx
-    render_context["call_deferred"] = not htmx
-
-    return component.render(**render_context)
+    return component.render(context=context, htmx=htmx, call_deferred=not htmx)
 
 
 @register.simple_tag(takes_context=True)

@@ -3,6 +3,7 @@ import logging
 from typing import List, Optional
 
 from django.http import HttpRequest
+from django.template import Context
 from django.template.loader import render_to_string
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
@@ -33,8 +34,8 @@ class Dashboard(metaclass=DashboardType):
         self._components_cache = {}
         super().__init__()
 
-    def get_context(self):
-        return {"dashboard": self, "components": self.get_components()}
+    def get_context(self) -> Context:
+        return Context({"dashboard": self, "components": self.get_components()})
 
     @classmethod
     def get_attributes_order(cls):

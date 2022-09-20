@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Optional
 
 from django.template import Context, Template
 from django.template.loader import render_to_string
@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 logger = logging.getLogger(__name__)
 
 
-def css_template(width: int = None, css_classes: list = None):
+def css_template(width: int = None, css_classes: Optional[str] = None):
     span_width = f"span-{width}" if width else ""
     return f"{span_width} {css_classes if css_classes else ''}"
 
@@ -38,7 +38,7 @@ class LayoutBase:
         if image_url:
             self.image_url = image_url
 
-    def get_components_rendered(self, dashboard, context: Dict) -> str:
+    def get_components_rendered(self, dashboard, context: Context) -> str:
         html = ""
         dashboard_components = dict([(x.key, x) for x in dashboard.get_components()])
 
@@ -50,9 +50,9 @@ class LayoutBase:
                 dashboard_component = dashboard_components.get(layout_component)
 
             if hasattr(layout_component, "render"):
-                html += layout_component.render(dashboard, context)
+                html += layout_component.render(dashboard=dashboard, context=context)
             elif dashboard_component:
-                html += dashboard_component.render(**context)
+                html += dashboard_component.render(context=context)
 
         return mark_safe(html)
 
@@ -62,8 +62,8 @@ class ComponentLayout(LayoutBase):
     holder for the components in the layout
     """
 
-    def render(self, dashboard, context: Dict):
-        return self.get_components_rendered(dashboard, context)
+    def render(self, dashboard, context: Context):
+        return self.get_components_rendered(dashboard=dashboard, context=context)
 
 
 class HTMLComponentLayout(ComponentLayout):
@@ -71,8 +71,8 @@ class HTMLComponentLayout(ComponentLayout):
     template wrapper for components
     """
 
-    def render(self, dashboard, context: Dict, **kwargs) -> str:
-        components = self.get_components_rendered(dashboard, context)
+    def render(self, dashboard, context: Context, **kwargs) -> str:
+        components = self.get_components_rendered(dashboard=dashboard, context=context)
         request = context.get("request")
         component_context = {
             "layout_component": self,
@@ -99,7 +99,7 @@ class TabContainer(HTMLComponentLayout):
     css_classes: str = "tab-container"
     width: int = 12
 
-    def render(self, dashboard, context: Dict, **kwargs) -> str:
+    def render(self, dashboard, context: Context, **kwargs) -> str:
         tab_panels = self.get_components_rendered(dashboard, context)
         # make tab links for each tab
         tabs = "".join(tab.render_tab() for tab in self.layout_components)
@@ -144,9 +144,9 @@ class HTML:
     html: str
     width: Optional[int] = 6
 
-    def render(self, dashboard, context: Dict, **kwargs):
+    def render(self, dashboard, context: Context, **kwargs):
         to_render = f'<div class="{css_template(self.width)}">{self.html}</div>'
-        return Template(to_render).render(Context(context))
+        return Template(to_render).render(context=Context(context))
 
 
 @dataclass

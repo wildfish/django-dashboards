@@ -11,7 +11,7 @@ from datorum.schema import DashboardQuery
 
 
 @pytest.fixture
-def test_dashboard():
+def dashboard():
     class TestDashboard(Dashboard):
         component_1 = Text(value="value")
         component_2 = Text(defer=lambda _: "value")
@@ -23,8 +23,8 @@ def test_dashboard():
 
 
 @pytest.fixture
-def test_complex_dashboard(test_dashboard):
-    class TestComplexDashboard(test_dashboard):
+def complex_dashboard(dashboard):
+    class TestComplexDashboard(dashboard):
         component_3 = Text(defer=lambda _: "value")
         component_2 = Text(defer=lambda _: "value")
         component_4 = Text(value="<div></div>", mark_safe=True)
@@ -42,7 +42,7 @@ def test_complex_dashboard(test_dashboard):
 
 
 @pytest.fixture
-def test_admin_dashboard():
+def admin_dashboard():
     class TestAdminDashboard(Dashboard):
         permission_classes = [permissions.IsAdminUser]
         component_1 = Text(value="admin value")
@@ -59,8 +59,8 @@ def schema():
 
 
 @pytest.fixture
-def test_dashboard_with_layout(test_dashboard):
-    class TestDashboardWithLayout(test_dashboard):
+def dashboard_with_layout(dashboard):
+    class TestDashboardWithLayout(dashboard):
         class Meta:
             name = "Test Dashboard with Layout"
 

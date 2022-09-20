@@ -105,10 +105,7 @@ class DemoDashboardOneVary(DemoDashboardOne):
                 "dolor sit amet, consectetur adipiscing elit.",
                 width=12,
             ),
-            Card(
-                "text_example",
-                "html_example",
-            ),
+            Card("text_example", "html_example", width=4),
             Card(
                 Div("stat_one"),
                 Div("stat_two"),

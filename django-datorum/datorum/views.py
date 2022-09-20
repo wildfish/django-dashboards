@@ -57,7 +57,9 @@ class ComponentView(TemplateView):
         if self.is_ajax() and component:
             # Return json, calling the deferred value.
             return HttpResponse(
-                json.dumps(component.for_render(self.request, call_deferred=True)),
+                json.dumps(
+                    component.get_value(request=self.request, call_deferred=True)
+                ),
                 content_type="application/json",
             )
         else:
@@ -107,7 +109,7 @@ class FormComponentView(ComponentView):
             response = []
             for c in dependant_components:
                 # Return json, calling deferred value on dependant components.
-                response.append(c.for_render(self.request))
+                response.append(c.get_value(request=self.request))
             return HttpResponse(response, content_type="application/json")
         else:
             context = self.get_context_data(

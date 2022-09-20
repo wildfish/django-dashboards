@@ -15,7 +15,7 @@ snapshots["test_view__component__not_deferred 1"] = {
 }
 
 snapshots["test_view__dashboard 1"] = {
-    "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
+    "Meta": {"layoutJson": None, "name": "Test Dashboard", "slug": "test-dashboard"},
     "components": [
         {
             "isDeferred": False,
@@ -35,6 +35,26 @@ snapshots["test_view__dashboard 1"] = {
 }
 
 snapshots["test_view__dashboard__not_found 1"] = None
+
+snapshots["test_view__dashboard__with_layout 1"] = {
+    "Meta": {"layoutJson": None, "name": "Test Dashboard", "slug": "test-dashboard"},
+    "components": [
+        {
+            "isDeferred": False,
+            "key": "component_1",
+            "renderType": "Text",
+            "value": "value",
+            "width": 6,
+        },
+        {
+            "isDeferred": True,
+            "key": "component_2",
+            "renderType": "Text",
+            "value": None,
+            "width": 6,
+        },
+    ],
+}
 
 snapshots["test_view__dashboards 1"] = [
     {
@@ -128,6 +148,28 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {
+            "name": "Test Dashboard with Layout",
+            "slug": "test-dashboard-with-layout",
+        },
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
                 "width": 6,
             },
         ],

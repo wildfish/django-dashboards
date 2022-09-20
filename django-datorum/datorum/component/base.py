@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Callable, Optional, Type, Union
 
 from django.http import HttpRequest
+from django.template import Context
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -36,16 +37,31 @@ class Component:
     def is_deferred(self) -> bool:
         return True if self.defer else False
 
-    def for_render(self, request: HttpRequest = None, call_deferred=False) -> ValueData:
+    def get_value(self, request: HttpRequest = None, call_deferred=False) -> ValueData:
         if self.is_deferred and self.defer and call_deferred:
             value = self.defer(request)
         else:
             value = self.value
 
         if is_dataclass(value):
-            value = asdict(value, dict_factory=dataclass_encoder)
+            value = asdict(value, dict_factory=value_render_encoder)
 
         return value
+
+    def render(
+        self, context: Context, htmx: Optional[bool] = None, call_deferred: bool = False
+    ) -> str:
+        request = context.get("request")
+        context = {
+            "request": request,
+            "component": self,
+            "rendered_value": self.get_value(
+                request=request, call_deferred=call_deferred
+            ),
+            "htmx": self.is_deferred if htmx is None else htmx,
+        }
+
+        return mark_safe(render_to_string("datorum/components/component.html", context))
 
     def has_form(self):
         return True if self.filter_form else False
@@ -54,19 +70,6 @@ class Component:
         return reverse(
             "datorum:dashboard_component", args=[self.dashboard_class, self.key]
         )
-
-    def render(self, **kwargs) -> str:
-        request = kwargs.get("request")
-        context = {
-            "request": request,
-            "component": self,
-            "rendered_value": self.for_render(
-                request, kwargs.get("call_deferred", False)
-            ),
-            "htmx": kwargs.get("htmx", self.is_deferred),
-        }
-
-        return mark_safe(render_to_string("datorum/components/component.html", context))
 
     def __str__(self):
         return self.render()
@@ -81,11 +84,11 @@ class CTA(Component):
     href: str = ""
     text: str = ""
 
-    def for_render(self, request: HttpRequest, call_deferred=False) -> str:
+    def get_value(self, request: HttpRequest = None, call_deferred=False) -> str:
         return str(self.text)
 
 
-def dataclass_encoder(data):
+def value_render_encoder(data) -> dict:
     def encode(o):
         if is_dataclass(o):
             return asdict(o)
