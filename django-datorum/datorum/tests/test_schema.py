@@ -42,9 +42,9 @@ def schema_with_dashboards(schema, dashboard, complex_dashboard, dashboard_with_
         "datorum.registry.Registry.get_graphql_dashboards",
         return_value={
             "TestDashboard": dashboard,
-            "ComplexDashboard": complex_dashboard,
+            "TestComplexDashboard": complex_dashboard,
             "TestAdminDashboard": dashboard,
-            "DashboardWithLayout": dashboard_with_layout,
+            "TestDashboardWithLayout": dashboard_with_layout,
         },
     ):
         return schema
@@ -98,7 +98,7 @@ def test_view__dashboard__not_found(rf, admin_user, schema_with_dashboards, snap
 
     result = schema_with_dashboards.execute_sync(
         DASHBOARD_GQL,
-        variable_values={"slug": "not-test-dashboard"},
+        variable_values={"slug": "test-not-dashboard"},
         context_value={"request": request},
     )
     assert result.errors is None
@@ -111,10 +111,12 @@ def test_view__dashboard__with_layout(rf, admin_user, schema_with_dashboards, sn
 
     result = schema_with_dashboards.execute_sync(
         DASHBOARD_GQL,
-        variable_values={"slug": "test-dashboard"},
+        variable_values={"slug": "test-dashboard-with-layout"},
         context_value={"request": request},
     )
     assert result.errors is None
+    print(result.data)
+    assert result.data["dashboard"]["Meta"]["layoutJson"]
     snapshot.assert_match(result.data["dashboard"])
 
 

@@ -70,6 +70,7 @@ def dashboard_with_layout(dashboard):
                     Div(
                         "component_1",
                         css_classes="css_style",
+                        width=99,
                     ),
                     Div(
                         "component_2",
