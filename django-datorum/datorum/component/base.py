@@ -72,7 +72,7 @@ class Component:
         )
 
     def __str__(self):
-        return self.render()
+        return self.render(context=Context({}))
 
     def __repr__(self):
         return f"{self.key}={self.value}"

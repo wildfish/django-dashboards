@@ -34,8 +34,8 @@ class Dashboard(metaclass=DashboardType):
         self._components_cache = {}
         super().__init__()
 
-    def get_context(self) -> Context:
-        return Context({"dashboard": self, "components": self.get_components()})
+    def get_context(self) -> dict:
+        return {"dashboard": self, "components": self.get_components()}
 
     @classmethod
     def get_attributes_order(cls):
@@ -190,7 +190,7 @@ class Dashboard(metaclass=DashboardType):
             )
 
         context["call_deferred"] = False
-        return layout.components.render(dashboard=self, context=context)
+        return layout.components.render(dashboard=self, context=Context(context))
 
     class Meta:
         name: str
