@@ -1,6 +1,6 @@
 import {Data} from "plotly.js";
 
-export enum ComponentTypes {
+export enum DashboardComponentTypes {
     Text = "Text",
     SomeCalculateText =  "SomeCalculateText",
     HTML =  "HTML",
@@ -9,6 +9,17 @@ export enum ComponentTypes {
     Table =  "Table",
     Map =  "Map",
 }
+
+export enum HTMLComponentTypes {
+    Header = "Header",
+    HTML = "HTML",
+}
+
+export enum LayoutComponentTypes {
+    Div = "Div",
+    Card = "Card",
+}
+
 
 export type Value = {
     data: Data[]
@@ -19,12 +30,19 @@ export type Component = {
   value: Value | string
   width: number
   isDeferred: boolean
-  renderType: ComponentTypes
+  renderType: DashboardComponentTypes
+}
+
+export type HTMLComponent = {
+  html: string
+  renderType: HTMLComponentTypes
+  width?: number
 }
 
 export type DashboardMeta = {
   name: string,
   slug: string,
+  layoutJson: any
 }
 
 export type Dashboard = {

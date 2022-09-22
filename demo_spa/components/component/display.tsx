@@ -1,33 +1,35 @@
 import React from "react";
-import {Component, Dashboard, ComponentTypes} from "@/types";
+import {Component as ComponentType, HTMLComponent as HTMLComponentType, Dashboard, DashboardComponentTypes, LayoutComponentTypes} from "@/types";
 import {gql, useQuery} from "@apollo/client";
-import {HTML, Stat, Text} from "@/components/component/text";
+import {Stat, Text} from "@/components/component/text";
 import {Plotly} from "@/components/component/charts";
 import {Tabulator} from "@/components/component/table";
+import {HTML} from "@/components/component/html";
+import * as styles from './index.module.scss'
 
 /*
   We'd want something a bit more complex here/with the gql for a prod system, renderType
   is the component, but the nature of the `SomeCalculateText`/deferred ones is that they
   will often override. You can set `render_type` in be also but not much thought has gone into that yet.
  */
-const ComponentToDisplay = {
-    [ComponentTypes.Text]: Text,
-    [ComponentTypes.SomeCalculateText]: Text,
-    [ComponentTypes.HTML]: HTML,
-    [ComponentTypes.Chart]: Plotly,
-    [ComponentTypes.Table]: Tabulator,
-    [ComponentTypes.Stat]: Stat,
-    [ComponentTypes.Map]: Plotly,
+const DashboardComponentMap = {
+    [DashboardComponentTypes.Text]: Text,
+    [DashboardComponentTypes.SomeCalculateText]: Text,
+    [DashboardComponentTypes.HTML]: HTML,
+    [DashboardComponentTypes.Chart]: Plotly,
+    [DashboardComponentTypes.Table]: Tabulator,
+    [DashboardComponentTypes.Stat]: Stat,
+    [DashboardComponentTypes.Map]: Plotly,
 }
 
 type LazyComponentProps = {
     dashboard: Dashboard
-    component: Component
-    Display: React.FC<{value: string}>
+    component: ComponentType
+    Component: React.FC<{value: string}>
 }
 
 
-const LazyComponent: React.FC<LazyComponentProps> = ({dashboard, component, Display}) => {
+const LazyComponent: React.FC<LazyComponentProps> = ({dashboard, component, Component}) => {
     const { loading, data } = useQuery(gql`
       {
         component(slug:"${dashboard.Meta.slug}", key: "${component.key}") {
@@ -35,27 +37,97 @@ const LazyComponent: React.FC<LazyComponentProps> = ({dashboard, component, Disp
         }
       }
     `);
+
     return <>
-       {loading ? <>Loading...</> : <Display value={data?.component.value}/>}
+       {loading || !data ? <>Loading...</> : <Component value={data.component.value}/>}
     </>
 };
 
-type DisplayComponentProps = {
+type DashboardComponentProps = {
     dashboard: Dashboard
-    component: Component
+    component: ComponentType
     className?: string
 }
 
-export const DisplayComponent: React.FC<DisplayComponentProps> = ({dashboard, component}) => {
-    const Display = ComponentToDisplay[component.renderType]
-    return <>
-        {Object.keys(ComponentTypes).includes(component.renderType) ?
+export const DashboardComponent: React.FC<DashboardComponentProps> = ({dashboard, component}) => {
+    const Component = DashboardComponentMap[component.renderType]
+    return <div className={styles.dashboardComponent}>
+        {Object.keys(DashboardComponentMap).includes(component.renderType) ?
             !component.isDeferred ?
-                <Display value={component.value}/>
+                <Component value={component.value}/>
             :
-                <LazyComponent dashboard={dashboard} component={component} Display={Display}/>
+                <LazyComponent dashboard={dashboard} component={component} Component={Component}/>
         :
-            <div>Missing component mapping</div>
+            <div>Missing dashboard component mapping</div>
         }
+    </div>
+}
+
+
+type HTMLComponentProps = {
+    dashboard: Dashboard
+    component: HTMLComponentType
+}
+
+export const HTMLComponent: React.FC<HTMLComponentProps> = ({dashboard, component}) => (
+    <HTML value={component.html}/>
+)
+
+type LayoutComponentsWrapperProps = {
+    dashboard: Dashboard
+    layoutComponents: []
+}
+
+
+export const LayoutComponentsWrapper: React.FC<LayoutComponentsWrapperProps> = ({dashboard, layoutComponents}) => {
+    return <>
+        {layoutComponents.map(lc => (
+            <LayoutComponentWrapper dashboard={dashboard} layoutComponent={lc}/>
+        ))}
     </>
+}
+
+
+type LayoutComponentWrapperProps = {
+    dashboard: Dashboard
+    layoutComponent: Object | string | HTMLComponentType
+}
+
+
+const LayoutComponentWrapperStyle = {
+    [LayoutComponentTypes.Div]: styles.card,
+    [LayoutComponentTypes.Card]: styles.card,
+}
+
+const ConditionalLayoutComponentWrapper = ({ condition, wrapper, children }) =>
+  condition ? wrapper(children) : children;
+
+
+export const LayoutComponentWrapper: React.FC<LayoutComponentWrapperProps> = ({dashboard, layoutComponent}) => {
+    const isLayoutComponent = typeof layoutComponent === "object"
+    const isDashboardComponent = typeof layoutComponent === "string" || layoutComponent instanceof String
+    const hasNested = isLayoutComponent && layoutComponent?.layout_components
+    /*
+        - Renders DashboardComponent when we are down to a string i.e the ref to put a component here.
+        - else, Renders the outer LayoutComponent's class for style to be added
+            - followed by nested LayoutComponentsWrapper if more nested layout_components are present
+            - else, this is an HTML Component so render that.
+    */
+    return <ConditionalLayoutComponentWrapper
+        condition={hasNested}
+        wrapper={children => <div className={LayoutComponentWrapperStyle[layoutComponent.renderType]}>{children}</div>}
+      >
+        {isDashboardComponent ?
+            <DashboardComponent dashboard={dashboard} component={dashboard.components.find(c => c.key == layoutComponent)}/>
+            :
+            <>
+                {
+                    hasNested ?
+                        <LayoutComponentsWrapper dashboard={dashboard} layoutComponents={layoutComponent.layout_components}/>
+                        :
+                        <HTMLComponent dashboard={dashboard} component={layoutComponent}/>
+                }
+            </>
+        }
+    </ConditionalLayoutComponentWrapper>
 }

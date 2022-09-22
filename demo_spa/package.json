@@ -24,6 +24,7 @@
     "plotly.js": "^2.13.3",
     "react-plotly.js": "^2.5.1",
     "react-tabulator": "^0.18.1",
+    "sass": "^1.55.0",
     "typescript": "4.7.4",
     "@types/react-plotly.js": "^2.5.1"
   }

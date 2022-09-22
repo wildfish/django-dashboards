@@ -31,9 +31,13 @@ class LayoutJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         name = obj.__class__.__name__
         if is_dataclass(obj):
-            return {name: asdict(obj)}
+            base = asdict(obj)
+            base["renderType"] = name
+            return base
         if isinstance(obj, HTMLComponentLayout):
-            return {name: obj.__dict__}
+            base = obj.__dict__
+            base["renderType"] = name
+            return base
         return json.JSONEncoder.default(self, obj)
 
 

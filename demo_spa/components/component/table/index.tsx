@@ -10,7 +10,7 @@ export const Tabulator: React.FC<{ value: any }> = ({value}) => {
     * We probably want to use something else like ReactTable, this was thrown in so MPA and SPA could quickly use the same
     * thing i.e Tabulator, but it's not great.
     * */
-    let data = JSON.parse(JSON.stringify(value))
+    let data = JSON.parse(JSON.stringify(value));
     let rows = data.rows;
     const columns: ColumnDefinition[] = Object.keys(rows[0]).map(k => {return {title: k, field: k}})
     return <ReactTabulator
