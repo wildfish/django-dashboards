@@ -1,3 +1,5 @@
+import {Data} from "plotly.js";
+
 export enum ComponentTypes {
     Text = "Text",
     SomeCalculateText =  "SomeCalculateText",
@@ -5,11 +7,16 @@ export enum ComponentTypes {
     Chart =  "Chart",
     Stat =  "Stat",
     Table =  "Table",
+    Map =  "Map",
+}
+
+export type Value = {
+    data: Data[]
 }
 
 export type Component = {
   key: string
-  value: any
+  value: Value | string
   width: number
   isDeferred: boolean
   renderType: ComponentTypes

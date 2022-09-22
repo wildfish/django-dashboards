@@ -3,7 +3,7 @@
     <script>
         var data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
         Plotly.newPlot(
-            'component-chart-{{ component.key }}',
+            'component-map-{{ component.key }}',
             data_{{ component.key }}.data,
             data_{{ component.key }}.layout,
             {showLink: false},
@@ -11,5 +11,5 @@
     </script>
 {% endwith %}
 
-<div id="component-chart-{{ component.key }}"></div>
+<div id="component-map-{{ component.key }}"></div>
 

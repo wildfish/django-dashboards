@@ -7,8 +7,8 @@ export const Tabulator: React.FC<{ value: any }> = ({value}) => {
     /* TODO Would need some custom hooks for the pagination here, MPA is via the request/ajax but we'd need to pass
     *  into gql
     *
-    * autoLayout doesn't seem to work and we need columns so copy and define from fields otherwise it crashes out,
-    * likely we'd want to pass this in, or even from the component itself in gql
+    * We probably want to use something else like ReactTable, this was thrown in so MPA and SPA could quickly use the same
+    * thing i.e Tabulator, but it's not great.
     * */
     let data = JSON.parse(JSON.stringify(value))
     let rows = data.rows;

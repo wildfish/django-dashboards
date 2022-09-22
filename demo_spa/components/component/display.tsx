@@ -17,6 +17,7 @@ const ComponentToDisplay = {
     [ComponentTypes.Chart]: Plotly,
     [ComponentTypes.Table]: Tabulator,
     [ComponentTypes.Stat]: Stat,
+    [ComponentTypes.Map]: Plotly,
 }
 
 type LazyComponentProps = {
@@ -34,7 +35,6 @@ const LazyComponent: React.FC<LazyComponentProps> = ({dashboard, component, Disp
         }
       }
     `);
-
     return <>
        {loading ? <>Loading...</> : <Display value={data?.component.value}/>}
     </>
