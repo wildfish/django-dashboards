@@ -36,7 +36,7 @@ snapshots[
     <div class="content">
         
     <div class="span-6 ">
-  <div class="span-6 css_style">
+  <div class="span-99 css_style">
   
     
 
@@ -50,7 +50,7 @@ value
 
 </div><div class="span-6 css_style">
   
-    <div hx-get="/TestDashboardWithLayout/component_2/?key=component_2" hx-trigger="intersect once"></div>
+    <div hx-get="/TestDashboardWithLayout/component/component_2/" hx-trigger="intersect once"></div>
 
 </div>
 </div>
@@ -120,7 +120,7 @@ value
 
     </div>
 
-    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
+    <div hx-get="/TestDashboard/component/component_2/" hx-trigger="intersect once"></div>
 """
 
 snapshots[
@@ -136,7 +136,7 @@ value
 
     </div>
 
-    <div hx-get="/TestDashboard/component_2/?key=component_2" hx-trigger="intersect once"></div>
+    <div hx-get="/TestDashboard/component/component_2/" hx-trigger="intersect once"></div>
 """
 
 snapshots[

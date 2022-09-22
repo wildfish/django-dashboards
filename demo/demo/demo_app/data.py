@@ -1,11 +1,34 @@
 import csv
+from collections import namedtuple
 
 import requests
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
 from datorum.component.table import TableData
+from datorum.component.text import StatData
+from django.db.models import Max
+from django.utils.safestring import mark_safe
 
-from demo.demo_app.models import FlatText
+from demo.demo_app.models import Data, FlatText, Parameter, Vehicle
+
+
+def dict_to_table(d: dict):
+    html = "<table border='1'>"
+    for k, v in d.items():
+        html += "<tr><th>%s</th><td>%s</td></tr>" % (k, v or "-")
+
+    html += "</table>"
+
+    return mark_safe(html)
+
+
+def convert_coord(value):
+    coord = value[1:-1]
+    coord = coord.split(",")
+    lon = float(coord[0].strip())
+    lat = float(coord[1].strip())
+    Coord = namedtuple("Coord", ["lon", "lat"])
+    return Coord(lon=lon, lat=lat)
 
 
 class DashboardData:
@@ -13,11 +36,11 @@ class DashboardData:
         pass
 
     @staticmethod
-    def fetch_html(request) -> str:
+    def fetch_html(*args, **kwargs) -> str:
         return FlatText.objects.all().first().text
 
     @staticmethod
-    def fetch_gauge_chart_data(request) -> ChartData:
+    def fetch_gauge_chart_data(*args, **kwargs) -> ChartData:
         return ChartData(
             data=[
                 ChartData.Gauge(
@@ -30,7 +53,7 @@ class DashboardData:
         )
 
     @staticmethod
-    def fetch_gauge_chart_data_two(request) -> ChartData:
+    def fetch_gauge_chart_data_two(*args, **kwargs) -> ChartData:
         return ChartData(
             data=[
                 ChartData.Gauge(
@@ -56,7 +79,7 @@ class DashboardData:
         )
 
     @staticmethod
-    def fetch_bar_chart_data(request) -> ChartData:
+    def fetch_bar_chart_data(request, **kwargs) -> ChartData:
         data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}
         if "animal" in request.GET and request.GET["animal"] in data:
             animal = request.GET["animal"]
@@ -73,7 +96,7 @@ class DashboardData:
         )
 
     @staticmethod
-    def fetch_stacked_bar_chart_data(request) -> ChartData:
+    def fetch_stacked_bar_chart_data(request, **kwargs) -> ChartData:
         sf_data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}
         la_data = {"giraffes": 12, "orangutans": 18, "monkeys": 29}
         if "animal" in request.GET:
@@ -100,7 +123,7 @@ class DashboardData:
         )
 
     @staticmethod
-    def fetch_bubble_chart_data(request) -> ChartData:
+    def fetch_bubble_chart_data(*args, **kwargs) -> ChartData:
         return ChartData(
             data=[
                 ChartData.Trace(
@@ -113,7 +136,7 @@ class DashboardData:
         )
 
     @staticmethod
-    def fetch_scatter_chart_data(request) -> ChartData:
+    def fetch_scatter_chart_data(request, **kwargs) -> ChartData:
         na = ChartData.Trace(
             x=[52698, 43117],
             y=[53, 31],
@@ -176,7 +199,7 @@ class DashboardData:
         return ChartData(data=[na, europe, asia])
 
     @staticmethod
-    def fetch_table_data(request) -> TableData:
+    def fetch_table_data(*args, **kwargs) -> TableData:
         """
         Mock return some results for tabular.
         """
@@ -257,7 +280,7 @@ class DashboardData:
         return data
 
     @staticmethod
-    def fetch_scatter_map_data(request) -> MapData:
+    def fetch_scatter_map_data(*args, **kwargs) -> MapData:
         return MapData(
             data=[
                 MapData.ScatterGeo(
@@ -296,7 +319,7 @@ class DashboardData:
         )
 
     @staticmethod
-    def fetch_choropleth_map_data(request) -> MapData:
+    def fetch_choropleth_map_data(*args, **kwargs) -> MapData:
         url = "https://raw.githubusercontent.com/plotly/datasets/master/2014_usa_states.csv"
         r = requests.get(url)
         lines = [line.decode("utf-8") for line in r.iter_lines()]
@@ -334,3 +357,159 @@ class DashboardData:
                 },
             },
         )
+
+
+class VehicleData:
+    @staticmethod
+    def get_queryset(request):
+        qs = Vehicle.objects.all()
+        if "vehicle_type" in request.GET:
+            if request.GET["vehicle_type"] != "":
+                qs = qs.for_type(request.GET["vehicle_type"])
+
+        return qs
+
+    @staticmethod
+    def get_vehicle(request):
+        try:
+            return Vehicle.objects.get(
+                number_plate="OmfGAVOoIa"
+            )  # request.GET["number_plate"]
+        except Vehicle.DoesNotExist:
+            return Vehicle()
+
+    @staticmethod
+    def fetch_vehicle_count(request, **kwargs):
+        qs = VehicleData.get_queryset(request)
+        return StatData(text=str(qs.total_vehicle_count()), sub_text="TOTAL VEHICLES")
+
+    @staticmethod
+    def fetch_in_use_count(request, **kwargs):
+        qs = VehicleData.get_queryset(request)
+        return StatData(text=str(qs.in_use_count()), sub_text="IN USE")
+
+    @staticmethod
+    def fetch_out_of_service_count(request, **kwargs):
+        qs = VehicleData.get_queryset(request)
+        return StatData(text=str(qs.out_of_service_count()), sub_text="NOT AVAILABLE")
+
+    @staticmethod
+    def fetch_service_count(request, **kwargs):
+        qs = VehicleData.get_queryset(request)
+        return StatData(
+            text=str(qs.requires_service().count()),
+            sub_text="REQUIRES SERVICE",
+        )
+
+    @staticmethod
+    def fetch_vehicles(request, **kwargs):
+        def yes_no(d):
+            return "Yes" if d else "No"
+
+        qs = VehicleData.get_queryset(request)
+
+        return TableData(
+            headers=[],
+            rows=[
+                {
+                    "Reg": v.number_plate,  # f"<a href='?number_plate={v.number_plate}'>{v.number_plate}</a>",
+                    "Type": v.get_type_display(),
+                    "In Use": yes_no(v.in_use),
+                    "Available": yes_no(v.available),
+                    "Last Job": str(v.last_job_date or "-"),
+                }
+                for v in qs
+            ],
+        )
+
+    @staticmethod
+    def fetch_vehicle_details(*args, **kwargs):
+        dashboard = kwargs.get("dashboard")
+        vehicle = dashboard.object
+        return StatData(
+            text=dict_to_table(
+                {
+                    "number_plate": vehicle.number_plate,
+                    "current_mileage": vehicle.current_mileage,
+                    "last_service": vehicle.last_service,
+                    "next_mot_due": vehicle.next_mot_due,
+                    "purchase_date": vehicle.purchase_date,
+                    "last_job_date": vehicle.last_job_date,
+                    "in_use": vehicle.in_use,
+                    "available": vehicle.available,
+                }
+            )
+        )
+
+    @staticmethod
+    def fetch_last_route(*args, **kwargs):
+        dashboard = kwargs.get("dashboard")
+        vehicle = dashboard.object
+        locations = vehicle.get_locations_for_last_job()
+        lat_coords = [location.lat for location in locations]
+        lon_coords = [location.lon for location in locations]
+
+        return MapData(
+            data=[
+                MapData.ScatterGeo(
+                    lat=lat_coords,
+                    lon=lon_coords,
+                    line={"width": 2, "color": "red"},
+                )
+            ],
+            layout=dict(
+                title="Map of Last Job",
+                showlegend=False,
+                geo={
+                    "showland": True,
+                    "showlakes": True,
+                    "landcolor": "rgb(204, 204, 204)",
+                    "countrycolor": "rgb(204, 204, 204)",
+                    "lakecolor": "rgb(255, 255, 255)",
+                    "fitbounds": "locations",
+                },
+            ),
+        )
+
+    @staticmethod
+    def fetch_current_locations(*args, **kwargs):
+        qs = (
+            Data.objects.filter(
+                parameter=Parameter.objects.get(name="Current Location")
+            )
+            .values("vehicle")
+            .order_by("vehicle")
+            .annotate(current_position=Max("timestamp"))
+            .values("vehicle", "value")
+        )
+
+        vehicle_list = [x["vehicle"] for x in qs]
+        locations = map(lambda x: convert_coord(x["value"]), qs)
+        lat_coords = [location.lat for location in locations]
+        lon_coords = [location.lon for location in locations]
+
+        w = MapData(
+            data=[
+                MapData.ScatterGeo(
+                    text=vehicle_list,
+                    lat=lat_coords,
+                    lon=lon_coords,
+                    mode="markers+text",
+                    line={"width": 2, "color": "red"},
+                )
+            ],
+            layout=dict(
+                title="Map of Last Job",
+                showlegend=False,
+                geo={
+                    "showland": True,
+                    "showlakes": True,
+                    "landcolor": "rgb(204, 204, 204)",
+                    "countrycolor": "rgb(204, 204, 204)",
+                    "lakecolor": "rgb(255, 255, 255)",
+                    "fitbounds": "locations",
+                },
+            ),
+        )
+
+        return w

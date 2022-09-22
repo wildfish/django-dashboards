@@ -10,10 +10,11 @@ from .base import Component
 class MapData:
     @dataclass
     class ScatterGeo:
-        lon: float
-        lat: float
+        lon: Optional[list[float]]
+        lat: Optional[list[float]]
         line: Optional[dict]
         locationmode = Optional[str]
+        text: Optional[list] = None
         type: str = "scattergeo"
         mode: str = "lines"
 

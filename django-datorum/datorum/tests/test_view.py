@@ -22,7 +22,7 @@ def test_view__get_template_names__default(rf, dashboard):
 
 @override_settings(ROOT_URLCONF=urls)
 def test_view__get_template_names__partial(rf, dashboard):
-    view = ComponentView()
+    view = ComponentView(dashboard_class=dashboard)
     view.setup(rf.get("/TestDashboard/component_1/"))
 
     assert view.get_template_names() == ["datorum/components/partial.html"]
@@ -32,20 +32,20 @@ def test_view__get_template_names__partial(rf, dashboard):
 def test_view__get_partial__htmx__component_found(rf, dashboard):
     request = rf.get("/TestDashboard/component_1/")
     request.htmx = True
-    view = ComponentView()
+    view = ComponentView(dashboard_class=dashboard)
     view.setup(request, dashboard="TestDashboard", component="component_1")
 
-    assert view.get_partial_component(dashboard) == dashboard.component_1
+    assert view.get_partial_component(dashboard()) == dashboard.component_1
 
 
 @override_settings(ROOT_URLCONF=urls)
 def test_view__get_partial__component_not_found(rf, dashboard):
     request = rf.get("/TestDashboard/component_10/")
-    view = ComponentView()
+    view = ComponentView(dashboard_class=dashboard)
     view.setup(request, dashboard="TestDashboard", component="component_10")
 
     with pytest.raises(Http404):
-        view.get_partial_component(dashboard)
+        view.get_partial_component(dashboard())
 
 
 @override_settings(ROOT_URLCONF=urls)
@@ -53,7 +53,7 @@ def test_view__get__json(rf, dashboard, snapshot):
     request = rf.get("/TestDashboard/component_2/")
     request.htmx = False
     request.headers = {"x-requested-with": "XMLHttpRequest"}
-    view = ComponentView()
+    view = ComponentView(dashboard_class=dashboard)
     view.setup(request, dashboard="TestDashboard", component="component_2")
 
     snapshot.assert_match(view.get(request).content)
@@ -63,7 +63,7 @@ def test_view__get__json(rf, dashboard, snapshot):
 def test_view__get__partial_template(rf, dashboard, snapshot):
     request = rf.get("/TestDashboard/component_2/")
     request.htmx = True
-    view = ComponentView()
+    view = ComponentView(dashboard_class=dashboard)
     view.setup(request, dashboard="TestDashboard", component="component_2")
 
     snapshot.assert_match(view.get(request).rendered_content)
@@ -77,3 +77,33 @@ def test_view__get__all(rf, dashboard, snapshot):
     view.setup(request)
 
     snapshot.assert_match(view.get(request).rendered_content)
+
+
+@pytest.mark.django_db
+@override_settings(ROOT_URLCONF=urls)
+def test_view__with_model(rf, model_dashboard, user, snapshot):
+    request = rf.get("/")
+    request.htmx = False
+    view = DashboardView(dashboard_class=model_dashboard)
+    view.setup(request, lookup=user.pk)
+
+    snapshot.assert_match(view.get(request).rendered_content)
+    assert view.get(request).context_data["dashboard"].object == user
+
+
+@pytest.mark.django_db
+@override_settings(ROOT_URLCONF=urls)
+def test_component_view__with_model(rf, model_dashboard, user, snapshot):
+    request = rf.get("/")
+    request.htmx = False
+    view = ComponentView(dashboard_class=model_dashboard)
+    view.setup(
+        request,
+        dashboard=model_dashboard.__name__,
+        lookup=user.pk,
+        component="component_1",
+    )
+    snapshot.assert_match(view.get(request).rendered_content)
+
+    snapshot.assert_match(view.get(request).rendered_content)
+    assert view.get(request).context_data["dashboard"].object == user

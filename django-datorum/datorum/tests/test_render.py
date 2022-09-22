@@ -15,7 +15,7 @@ from . import urls
     "component_kwargs",
     [
         {"value": "value"},
-        {"defer": lambda _: "value"},
+        {"defer": lambda request, dashboard: "value"},
         {"value": "value", "css_classes": ["a", "b"]},
     ],
 )
@@ -55,7 +55,7 @@ def test_cta_component__renders_value(htmx, rf, snapshot):
     "component_kwargs",
     [
         {"value": {"text": "100%", "sub_text": "increase"}},
-        {"defer": lambda _: {"text": "100%", "sub_text": "increase"}},
+        {"defer": lambda request, dashboard: {"text": "100%", "sub_text": "increase"}},
     ],
 )
 @pytest.mark.parametrize("htmx", [True, False])

@@ -4,8 +4,9 @@ class Registry(object):
         self.dashboards = {}
 
     def register(self, cls):
-        if (
-            cls.__name__ != "Dashboard"
+        if cls.__name__ not in (
+            "ModelDashboard",
+            "Dashboard",
         ):  # TODO needs better way to exclude the base class?
             self.dashboards[cls.__name__] = cls()
 

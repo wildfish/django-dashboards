@@ -3,6 +3,7 @@ import logging
 from typing import List, Optional
 
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
 from django.template import Context
 from django.template.loader import render_to_string
 from django.utils.module_loading import import_string
@@ -20,8 +21,21 @@ logger = logging.getLogger(__name__)
 
 
 class DashboardType(type):
-    def __new__(mcs, cls, bases, attrs):
-        dashboard_class = super().__new__(mcs, cls, bases, attrs)
+    def __new__(mcs, name, bases, attrs):
+        dashboard_class = super().__new__(mcs, name, bases, attrs)
+        attr_meta = attrs.get("Meta", None)
+        meta = attr_meta or getattr(dashboard_class, "Meta", None)
+        base_meta = getattr(dashboard_class, "_meta", None)
+        setattr(dashboard_class, "_meta", meta)
+
+        if base_meta:
+            if not hasattr(meta, "model"):
+                dashboard_class._meta.model = base_meta.model
+            if not hasattr(meta, "lookup_kwarg"):
+                dashboard_class._meta.lookup_kwarg = base_meta.lookup_kwarg
+            if not hasattr(meta, "lookup_field"):
+                dashboard_class._meta.lookup_field = base_meta.lookup_field
+
         registry.register(dashboard_class)
         return dashboard_class
 
@@ -29,9 +43,11 @@ class DashboardType(type):
 class Dashboard(metaclass=DashboardType):
     include_in_graphql: bool = True
     permission_classes: Optional[List[BasePermission]] = None
+    template_name: Optional[str] = None
 
     def __init__(self, **kwargs):
         self._components_cache = {}
+        self.kwargs = kwargs
         super().__init__()
 
     def get_context(self) -> dict:
@@ -57,14 +73,14 @@ class Dashboard(metaclass=DashboardType):
         components.sort(key=lambda t: cls.get_attributes_order().index(t[0]))
         return components
 
-    @classmethod
-    def get_components(cls) -> list[Component]:
-        component_attributes = cls.get_component_attributes()
+    def get_components(self) -> list[Component]:
+        component_attributes = self.get_component_attributes()
 
         components_to_keys = {}
         awaiting_dependents = {}
         for key, component in component_attributes:
-            component.dashboard_class = cls.__name__
+            if not component.dashboard:
+                component.dashboard = self
             if not component.key:
                 component.key = key
             if not component.render_type:
@@ -81,12 +97,13 @@ class Dashboard(metaclass=DashboardType):
 
         return list(components_to_keys.values())
 
-    def get_dashboard_permissions(self):
+    @classmethod
+    def get_dashboard_permissions(cls):
         """
         Returns a list of permissions attached to a dashboard.
         """
-        if self.permission_classes:
-            permissions_classes = self.permission_classes
+        if cls.permission_classes:
+            permissions_classes = cls.permission_classes
         else:
             permissions_classes = []
             for (
@@ -102,12 +119,13 @@ class Dashboard(metaclass=DashboardType):
 
         return [permission() for permission in permissions_classes]
 
-    def has_permissions(self, request: HttpRequest) -> bool:
+    @classmethod
+    def has_permissions(cls, request: HttpRequest) -> bool:
         """
         Check if the request should be permitted.
         Raises exception if the request is not permitted.
         """
-        for permission in self.get_dashboard_permissions():
+        for permission in cls.get_dashboard_permissions():
             if not permission.has_permission(request):
                 return False
         return True
@@ -118,12 +136,13 @@ class Dashboard(metaclass=DashboardType):
 
         from .views import DashboardView
 
-        name = slugify(self.__class__.__name__)
+        name = str(self.__class__.__name__)
+
         return [
             path(
                 "%s/" % name,
                 DashboardView.as_view(dashboard_class=self.__class__),
-                name="%s_dashboard" % name,
+                name="%s_dashboard" % slugify(name),
             ),
         ]
 
@@ -132,7 +151,11 @@ class Dashboard(metaclass=DashboardType):
         urls = self.get_urls()
         return urls
 
-    template_name: Optional[str] = None
+    class Meta:
+        model = None
+        name: str
+        lookup_kwarg: str = "lookup"  # url parameter name
+        lookup_field: str = "pk"  # model field
 
     class Layout:
         """
@@ -192,9 +215,6 @@ class Dashboard(metaclass=DashboardType):
         context["call_deferred"] = False
         return layout.components.render(dashboard=self, context=Context(context))
 
-    class Meta:
-        name: str
-
     def __str__(self):
         return self.Meta.name
 
@@ -214,3 +234,44 @@ class Dashboard(metaclass=DashboardType):
                 raise ComponentNotFoundError
 
         return value
+
+
+class ModelDashboard(Dashboard):
+    @property
+    def object(self):
+        return self.get_object()
+
+    def get_queryset(self):
+        if self._meta.model is None:
+            raise AttributeError("model is not set on Meta")
+
+        return self._meta.model.objects.all()
+
+    def get_object(self):
+        """
+        Get django object based on lookup params
+        """
+        qs = self.get_queryset()
+
+        if self._meta.lookup_kwarg not in self.kwargs:
+            raise AttributeError(f"{self._meta.lookup_kwarg} not in kwargs")
+
+        lookup = self.kwargs[self._meta.lookup_kwarg]
+
+        return get_object_or_404(qs, **{self._meta.lookup_field: lookup})
+
+    def get_urls(self):
+        from django.template.defaultfilters import slugify
+        from django.urls import path
+
+        from .views import DashboardView
+
+        name = str(self.__class__.__name__)
+
+        return [
+            path(
+                "%s/<str:%s>/" % (name, self._meta.lookup_kwarg),
+                DashboardView.as_view(dashboard_class=self.__class__),
+                name="%s_dashboard_detail" % slugify(name),
+            ),
+        ]

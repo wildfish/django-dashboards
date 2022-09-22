@@ -138,7 +138,7 @@ snapshots[
         const table_test = new Tabulator("#component-table-test", {
             
             "sortMode": "remote",
-            "ajaxURL":"/None/test/?key=test",
+            "ajaxURL":"/NoneType/component/test/?key=test",
             "paginationMode": "remote",
             "ajaxResponse": function(url, params, response){
                 return {"data": response.rows, "last_page": response.last_page};
@@ -338,19 +338,19 @@ value
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Chart] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Table] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Text] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
 """
 
 snapshots[
@@ -443,8 +443,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <h2>100%</h2>
-<small>increase</small>
+        
+  <h2>100%</h2>
+  <small>increase</small>
 
     </div>
 """
@@ -457,8 +458,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <h2>100%</h2>
-<small>increase</small>
+        
+  <h2>100%</h2>
+  <small>increase</small>
 
     </div>
 """
@@ -471,8 +473,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <h2>100%</h2>
-<small>increase</small>
+        
+  <h2>100%</h2>
+  <small>increase</small>
 
     </div>
 """
@@ -480,7 +483,7 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs1] 1"
 ] = """
-    <div hx-get="/None/test/?key=test" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
 """
 
 snapshots[

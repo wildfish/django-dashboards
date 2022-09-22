@@ -1,2 +1,9 @@
+{% if component.href %}
+<a href="{{ component.href }}">
 <h2>{{ rendered_value.text }}</h2>
 <small>{{ rendered_value.sub_text }}</small>
+</a>
+{% else %}
+  <h2>{{ rendered_value.text }}</h2>
+  <small>{{ rendered_value.sub_text }}</small>
+{% endif %}

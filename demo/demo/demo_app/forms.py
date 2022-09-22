@@ -1,6 +1,7 @@
+from datorum.forms import DatorumFilterForm, DatorumForm
 from django import forms
 
-from datorum.forms import DatorumFilterForm, DatorumForm
+from .models import Vehicle
 
 
 class ExampleForm(DatorumFilterForm):
@@ -22,4 +23,11 @@ class AnimalForm(DatorumForm):
             ("orangutans", "Orangutan"),
             ("monkeys", "Monkey"),
         )
+    )
+
+
+class VehicleTypeFilterForm(DatorumForm):
+    vehicle_type = forms.ChoiceField(
+        choices=[("", "all")] + Vehicle.TruckType.choices,
+        required=False,
     )

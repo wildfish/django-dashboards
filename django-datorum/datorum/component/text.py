@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from .base import Component
 
@@ -10,5 +11,12 @@ class Text(Component):
 
 
 @dataclass
+class StatData:
+    text: str
+    sub_text: Optional[str] = ""
+
+
+@dataclass
 class Stat(Component):
     template: str = "datorum/components/text/stat.html"
+    href: Optional[str] = None

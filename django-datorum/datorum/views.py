@@ -8,39 +8,46 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from datorum.dashboard import Dashboard
-from datorum.utils import get_dashboard
+from datorum.utils import get_dashboard_class
 
 
-class DashboardView(TemplateView):
-    """
-    Dashboard view, allows a single Dashboard to be auto rendered.
-    """
-
+class DashboardObjectMixin:
     dashboard_class: Optional[Dashboard] = None
-    template_name: str = "datorum/dashboard.html"
-
-    def get(self, request, *args, **kwargs):
-        self.dashboard = self.get_dashboard()
-
-        context = self.get_context_data(**{"dashboard": self.dashboard})
-
-        return self.render_to_response(context)
 
     def get_dashboard_kwargs(self):
         kwargs = {}
+        if self.dashboard_class:
+            kwargs[self.dashboard_class._meta.lookup_kwarg] = self.kwargs.get(
+                self.dashboard_class._meta.lookup_kwarg
+            )
+
         return kwargs
 
     def get_dashboard(self):
         return self.dashboard_class(**self.get_dashboard_kwargs())
 
+
+class DashboardView(DashboardObjectMixin, TemplateView):
+    """
+    Dashboard view, allows a single Dashboard to be auto rendered.
+    """
+
+    template_name: str = "datorum/dashboard.html"
+
+    def get(self, request, *args, **kwargs):
+        self.dashboard = self.get_dashboard()
+        context = self.get_context_data(**{"dashboard": self.dashboard})
+        return self.render_to_response(context)
+
     def dispatch(self, request: HttpRequest, *args, **kwargs):
-        has_permissions = self.get_dashboard().has_permissions(request=self.request)
-        if not has_permissions:
-            raise PermissionDenied()
+        if self.dashboard_class:
+            has_permissions = self.dashboard_class.has_permissions(request=request)
+            if not has_permissions:
+                raise PermissionDenied()
         return super().dispatch(request, *args, **kwargs)
 
 
-class ComponentView(TemplateView):
+class ComponentView(DashboardObjectMixin, TemplateView):
     """
     Component view, partial rendering of a single component to support HTMX calls.
     """
@@ -49,6 +56,14 @@ class ComponentView(TemplateView):
 
     def is_ajax(self):
         return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
+        self.dashboard_class = get_dashboard_class(self.kwargs["dashboard"])
+        if self.dashboard_class:
+            has_permissions = self.dashboard_class.has_permissions(request=request)
+            if not has_permissions:
+                raise PermissionDenied()
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard()
@@ -68,9 +83,6 @@ class ComponentView(TemplateView):
             )
 
             return self.render_to_response(context)
-
-    def get_dashboard(self):
-        return get_dashboard(self.kwargs["dashboard"], request=self.request)
 
     def get_partial_component(self, dashboard):
         for component in dashboard.get_components():

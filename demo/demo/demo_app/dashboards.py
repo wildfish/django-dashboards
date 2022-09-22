@@ -1,23 +1,17 @@
-from django.urls import reverse_lazy
-
 from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
 from datorum.component.layout import HR
 from datorum.component.layout import HTML
 from datorum.component.layout import HTML as LayoutHTML
-from datorum.component.layout import (
-    Card,
-    ComponentLayout,
-    Div,
-    Header,
-    Tab,
-    TabContainer,
-)
+from datorum.component.layout import (Card, ComponentLayout, Div, Header, Tab,
+                                      TabContainer)
 from datorum.component.table import TableData
-from datorum.dashboard import Dashboard
+from datorum.dashboard import Dashboard, ModelDashboard
 from datorum.permissions import IsAdminUser
+from django.urls import reverse_lazy
 
-from demo.demo_app.data import DashboardData
-from demo.demo_app.forms import AnimalForm, ExampleForm
+from demo.demo_app.data import DashboardData, VehicleData
+from demo.demo_app.forms import AnimalForm, ExampleForm, VehicleTypeFilterForm
+from demo.demo_app.models import Vehicle
 
 
 class DemoDashboardOne(Dashboard):
@@ -33,7 +27,7 @@ class DemoDashboardOne(Dashboard):
     html_example = Text(
         value="<strong>HTML also rendered on load</strong>", mark_safe=True
     )
-    calculated_example = Text(defer=lambda _: "Deferred text")
+    calculated_example = Text(defer=lambda request, dashboard: "Deferred text")
     form_example = Form(
         form=AnimalForm,
         method="get",
@@ -51,7 +45,7 @@ class DemoDashboardOne(Dashboard):
     stat_one = Stat(value={"text": "100%", "sub_text": "increase"})
     stat_two = Stat(value={"text": "88%", "sub_text": "increase"})
     stat_three = Stat(
-        defer=lambda request: {
+        defer=lambda request, dashboard: {
             "text": "33%",
             "sub_text": request.GET.get("country", "all"),
         }
@@ -90,7 +84,9 @@ class DemoDashboardOneCustom(DemoDashboardOne):
 
 class DemoDashboardOneVary(DemoDashboardOne):
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=12)
-    calculated_example = Text(defer=lambda _: "some calculated text", width=3)
+    calculated_example = Text(
+        defer=lambda request, dashboard: "some calculated text", width=3
+    )
     table_example = Table(defer=DashboardData.fetch_table_data, width=12)
 
     class Meta:
@@ -136,3 +132,60 @@ class DemoDashboardAdmin(Dashboard):
 
     class Meta:
         name = "Admin Dashboard"
+
+
+class VehicleOverviewDashboard(Dashboard):
+    filter_form = Form(
+        form=VehicleTypeFilterForm,
+        method="get",
+        dependents=[
+            "no_vehicles",
+            "in_use",
+            "available",
+            "requires_service",
+            "vehicles",
+        ],
+        width=3,
+    )
+    no_vehicles = Stat(defer=VehicleData.fetch_vehicle_count, href="?type=c1", width=4)
+    in_use = Stat(defer=VehicleData.fetch_in_use_count, width=4)
+    available = Stat(defer=VehicleData.fetch_out_of_service_count, width=4)
+    requires_service = Stat(defer=VehicleData.fetch_service_count, width=4)
+    map = Map(defer=VehicleData.fetch_current_locations, width=12)
+    vehicles = Table(defer=VehicleData.fetch_vehicles, width=12)
+
+    class Meta:
+        name = "Vehicle Dashboard"
+
+    class Layout(Dashboard.Layout):
+        components = ComponentLayout(
+            HTML(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend "
+                "diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum "
+                "dolor sit amet, consectetur adipiscing elit.",
+                width=12,
+            ),
+            "filter_form",
+            Div(
+                Card("no_vehicles", width=3),
+                Card("in_use", width=3),
+                Card("available", width=3),
+                Card("requires_service", width=3),
+                css_classes="dashboard-container",
+                width=12,
+            ),
+            Card(
+                "map",
+                "vehicles",
+                width=12,
+            ),
+        )
+
+
+class VehicleDetailDashboard(ModelDashboard):
+    vehicle_details = Stat(defer=VehicleData.fetch_vehicle_details, width=6)
+    map = Map(defer=VehicleData.fetch_last_route, width=6)
+
+    class Meta(Dashboard.Meta):
+        name = "Vehicle Detail Dashboard"
+        model = Vehicle

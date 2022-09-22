@@ -15,3 +15,13 @@ def get_dashboard(dashboard_class: str, request: HttpRequest, check_permission=T
         raise PermissionDenied()
 
     return dashboard
+
+
+def get_dashboard_class(dashboard_class: str):
+    try:
+        dashboards = registry.get_all_dashboards()
+        dashboard = dashboards[dashboard_class]
+    except KeyError:
+        raise Http404(f"Dashboard {dashboard_class} does not exist")
+
+    return dashboard.__class__

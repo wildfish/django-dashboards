@@ -31,7 +31,7 @@ def test_html_component__render(rf, component_class, dashboard, snapshot):
 
     snapshot.assert_match(
         component_class("component_1", css_classes="css_class").render(
-            dashboard=dashboard, context=context
+            dashboard=dashboard(), context=context
         )
     )
 
@@ -42,7 +42,7 @@ def test_tab_container__render(rf, dashboard, snapshot):
     snapshot.assert_match(
         TabContainer(
             Tab(HTML("some text....")),
-        ).render(dashboard=dashboard, context=context)
+        ).render(dashboard=dashboard(), context=context)
     )
 
 
@@ -62,7 +62,7 @@ def test_layout_component__render(rf, dashboard, snapshot):
         ComponentLayout(
             "component_1",
             "component_2",
-        ).render(dashboard=dashboard, context=context)
+        ).render(dashboard=dashboard(), context=context)
     )
 
 
@@ -75,5 +75,5 @@ def test_layout_component__unknown_component_ignored(rf, dashboard, snapshot):
             "component_1",
             "component_2",
             "component_3",
-        ).render(dashboard=dashboard, context=context)
+        ).render(dashboard=dashboard(), context=context)
     )

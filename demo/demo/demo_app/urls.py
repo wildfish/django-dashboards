@@ -1,10 +1,8 @@
-from django.urls import path
-
 from datorum.views import DashboardView
+from django.urls import path
 
 from demo.demo_app import dashboards
 from demo.demo_app.views import NormalView
-
 
 urlpatterns = [
     path(

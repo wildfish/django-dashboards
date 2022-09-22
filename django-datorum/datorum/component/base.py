@@ -16,13 +16,13 @@ from datorum.types import ValueData
 class Component:
     template_name: Optional[str] = None
     value: Optional[ValueData] = None
-    defer: Optional[Callable[[HttpRequest], ValueData]] = None
+    defer: Optional[Callable[..., ValueData]] = None
     filter_form: Optional[Type[Union[DatorumFilterForm, DatorumModelFilterForm]]] = None
     dependents: Optional[list[str]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
-    dashboard_class: Optional[str] = None
+    dashboard: Optional[ValueData] = None
     render_type: Optional[str] = None
     serializable: bool = True
 
@@ -37,9 +37,13 @@ class Component:
     def is_deferred(self) -> bool:
         return True if self.defer else False
 
+    @property
+    def dashboard_class(self):
+        return str(self.dashboard.__class__.__name__)
+
     def get_value(self, request: HttpRequest = None, call_deferred=False) -> ValueData:
         if self.is_deferred and self.defer and call_deferred:
-            value = self.defer(request)
+            value = self.defer(request=request, dashboard=self.dashboard)
         else:
             value = self.value
 
@@ -67,9 +71,16 @@ class Component:
         return True if self.filter_form else False
 
     def get_absolute_url(self):
-        return reverse(
-            "datorum:dashboard_component", args=[self.dashboard_class, self.key]
-        )
+        kwargs = {}
+        kwargs["dashboard"] = self.dashboard_class
+        kwargs["component"] = self.key
+
+        if hasattr(self.dashboard, "object"):
+            kwargs[self.dashboard._meta.lookup_kwarg] = getattr(
+                self.dashboard.object, self.dashboard._meta.lookup_field
+            )
+
+        return reverse("datorum:dashboard_component", kwargs=kwargs)
 
     def __str__(self):
         return self.render(context=Context({}))

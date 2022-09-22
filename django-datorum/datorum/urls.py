@@ -15,7 +15,12 @@ urlpatterns = [
         name="form_component",
     ),
     path(
-        "<str:dashboard>/<str:component>/",
+        "<str:dashboard>/component/<str:component>/",
+        views.ComponentView.as_view(),
+        name="dashboard_component",
+    ),
+    path(
+        "<str:dashboard>/<str:lookup>/component/<str:component>/",  # todo: does not work if lookup_kwarg changed
         views.ComponentView.as_view(),
         name="dashboard_component",
     ),

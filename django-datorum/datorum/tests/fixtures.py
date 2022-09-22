@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 import pytest
 import strawberry
 
@@ -6,7 +8,7 @@ from datorum.component import Chart, Table, Text
 from datorum.component.chart import ChartData
 from datorum.component.layout import ComponentLayout, Div
 from datorum.component.table import TableData
-from datorum.dashboard import Dashboard
+from datorum.dashboard import Dashboard, ModelDashboard
 from datorum.schema import DashboardQuery
 
 
@@ -14,7 +16,7 @@ from datorum.schema import DashboardQuery
 def dashboard():
     class TestDashboard(Dashboard):
         component_1 = Text(value="value")
-        component_2 = Text(defer=lambda _: "value")
+        component_2 = Text(defer=lambda request, dashboard: "value")
 
         class Meta:
             name = "Test Dashboard"
@@ -25,8 +27,8 @@ def dashboard():
 @pytest.fixture
 def complex_dashboard(dashboard):
     class TestComplexDashboard(dashboard):
-        component_3 = Text(defer=lambda _: "value")
-        component_2 = Text(defer=lambda _: "value")
+        component_3 = Text(defer=lambda request, dashboard: "value")
+        component_2 = Text(defer=lambda request, dashboard: "value")
         component_4 = Text(value="<div></div>", mark_safe=True)
         component_5 = Table(
             value=TableData(headers=["a", "b"], rows=[{"a": "Value", "b": "Value b"}])
@@ -51,6 +53,18 @@ def admin_dashboard():
             name = "Test Admin Dashboard"
 
     return TestAdminDashboard
+
+
+@pytest.fixture
+def model_dashboard():
+    class TestModelDashboard(ModelDashboard):
+        component_1 = Text(value="value")
+
+        class Meta:
+            name = "Test Model Dashboard"
+            model = User
+
+    return TestModelDashboard
 
 
 @pytest.fixture
@@ -80,3 +94,13 @@ def dashboard_with_layout(dashboard):
             )
 
     return TestDashboardWithLayout
+
+
+@pytest.fixture
+def user():
+    user = User.objects.create(
+        username="tester", is_active=True, email="tester@test.com"
+    )
+    user.set_password("password")
+    user.save()
+    return user
