@@ -1,7 +1,7 @@
 import React from "react";
-import {Component as ComponentType, Dashboard, DashboardComponentTypes} from "@/types";
+import {Component as ComponentType, Dashboard, DashboardComponentTypes, Value} from "@/types";
 import {gql, useQuery} from "@apollo/client";
-import {Stat, Text} from "@/components/component/text";
+import {Stat} from "@/components/component/text";
 import {Plotly} from "@/components/component/charts";
 import {Tabulator} from "@/components/component/table";
 import {HTML} from "@/components/component/html";
@@ -13,8 +13,8 @@ import * as styles from "@/components/component/index.module.scss";
   will often override. You can set `render_type` in be also but not much thought has gone into that yet.
  */
 const DashboardComponentMap = {
-    [DashboardComponentTypes.Text]: Text,
-    [DashboardComponentTypes.SomeCalculateText]: Text,
+    [DashboardComponentTypes.Text]: HTML,
+    [DashboardComponentTypes.SomeCalculateText]: HTML,
     [DashboardComponentTypes.HTML]: HTML,
     [DashboardComponentTypes.Chart]: Plotly,
     [DashboardComponentTypes.Table]: Tabulator,
@@ -25,11 +25,11 @@ const DashboardComponentMap = {
 type LazyComponentProps = {
     dashboard: Dashboard
     component: ComponentType
-    Component: React.FC<{value: string}>
+    Component: React.FC<{value: Value}>
 }
 
 
-const LazyComponent: React.FC<LazyComponentProps> = ({dashboard, component, Component}) => {
+const LazyComponent = ({dashboard, component, Component}: LazyComponentProps) => {
     const { loading, data } = useQuery(gql`
       {
         component(slug:"${dashboard.Meta.slug}", key: "${component.key}") {
@@ -49,7 +49,7 @@ type DashboardComponentProps = {
     className?: string
 }
 
-export const DashboardComponent: React.FC<DashboardComponentProps> = ({dashboard, component}) => {
+export const DashboardComponent = ({dashboard, component}: DashboardComponentProps) => {
     const Component = DashboardComponentMap[component.renderType]
     return <div className={styles.componentInner}>
         {Object.keys(DashboardComponentMap).includes(component.renderType) ?

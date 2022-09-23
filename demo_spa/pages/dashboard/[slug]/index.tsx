@@ -45,7 +45,7 @@ type DashboardProps = {
 };
 
 
-const DashboardPage: React.FC<DashboardProps> = ({dashboard}) => {
+const DashboardPage = ({dashboard}: DashboardProps) => {
     const Wrapper = dashboard.Meta.layoutJson ? DashboardWithLayout : DashboardGrid
     return <Wrapper dashboard={dashboard}/>
 };

@@ -1,5 +1,6 @@
 import React from "react";
+import {Value} from "@/types";
 
-export const HTML: React.FC<{value: string}> = ({value}) => (
-  <div dangerouslySetInnerHTML={{ __html: value }}/>
-)
+export const HTML = ({value}: {value: Value}) => {
+  return <div dangerouslySetInnerHTML={{ __html: value as string }}/>
+}

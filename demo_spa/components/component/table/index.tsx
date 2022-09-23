@@ -3,7 +3,7 @@ import 'react-tabulator/lib/styles.css';
 import 'react-tabulator/lib/css/tabulator.min.css'
 import {ColumnDefinition, ReactTabulator} from 'react-tabulator'
 
-export const Tabulator: React.FC<{ value: any }> = ({value}) => {
+export const Tabulator = ({value}: { value: any }) => {
     /* TODO Would need some custom hooks for the pagination here, MPA is via the request/ajax but we'd need to pass
     *  into gql
     *
