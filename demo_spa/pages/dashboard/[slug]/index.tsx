@@ -2,8 +2,7 @@ import {GetServerSideProps} from "next";
 import client from "../../../apollo_client";
 import {gql} from "@apollo/client";
 import {Dashboard} from "@/types";
-import {DashboardGrid} from "@/components/dashboard";
-import {DashboardWithLayout} from "@/components/dashboard/layout";
+import {DashboardGrid, DashboardWithLayout} from "@/components/dashboard";
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

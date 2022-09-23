@@ -1,14 +1,16 @@
 import {DashboardComponent} from "@/components";
 import React from "react";
 import {Dashboard} from "@/types";
+import * as styles from "@/components/dashboard/index.module.scss";
+import * as componentStyles from "@/components/component/index.module.scss";
 
 
 export const DashboardGrid: React.FC<{dashboard: Dashboard}> = ({dashboard}) => (
     <>
         <h1>{dashboard.Meta.name} (Grid applied)</h1>
-        <div className="dashboard-container">
+        <div className={styles.dashboardContainer}>
         {dashboard.components.map(c =>
-            <div className={`dashboard-component span-${c.width || 4}`} key={c.key} >
+            <div className={`${componentStyles.component} ${styles[`span${c.width}`]}`} >
                 <DashboardComponent dashboard={dashboard} component={c}/>
             </div>
         )}

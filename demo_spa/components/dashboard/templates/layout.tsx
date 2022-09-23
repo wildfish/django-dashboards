@@ -1,7 +1,7 @@
 import {LayoutComponentsWrapper} from "@/components";
 import React from "react";
 import {Dashboard} from "@/types";
-import * as styles from './index.module.scss'
+import * as styles from "@/components/dashboard/index.module.scss";
 
 export const DashboardWithLayout: React.FC<{dashboard: Dashboard}> = ({dashboard}) => {
     return <div>
