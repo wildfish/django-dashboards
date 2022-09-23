@@ -1,4 +1,4 @@
-.dashboardContainer {
+.dashboardContainer, .tabContainer {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 10px;
@@ -10,5 +10,8 @@
       grid-column-end: span #{$i};
       grid-auto-rows: min-content;
   }
+}
+
+.tabContainer{
 }
 

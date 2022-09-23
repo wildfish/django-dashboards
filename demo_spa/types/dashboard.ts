@@ -18,6 +18,8 @@ export enum HTMLComponentTypes {
 export enum LayoutComponentTypes {
     Div = "Div",
     Card = "Card",
+    TabContainer = "TabContainer",
+    Tab = "Tab",
 }
 
 

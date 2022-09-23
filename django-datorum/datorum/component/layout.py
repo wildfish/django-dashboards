@@ -97,7 +97,6 @@ class Div(HTMLComponentLayout):
 class TabContainer(HTMLComponentLayout):
     template_name: str = "datorum/layout/components/tabs/container.html"
     css_classes: str = "tab-container"
-    width: int = 12
 
     def render(self, dashboard, context: Context, **kwargs) -> str:
         tab_panels = self.get_components_rendered(dashboard, context)
@@ -122,7 +121,6 @@ class Tab(HTMLComponentLayout):
     tab_label: str = ""
     template_name: str = "datorum/layout/components/tabs/content.html"
     css_classes: str = "tab-content"
-    width: Optional[int] = None
 
     def __init__(self, tab_label, *layout_components, **kwargs):
         self.tab_label = tab_label

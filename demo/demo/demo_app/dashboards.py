@@ -108,18 +108,21 @@ class DemoDashboardOneVary(DemoDashboardOne):
                 Div("stat_three"),
             ),
             HR(width=12),
-            Header("Tab Example", size=3),
+            Header(heading="Tab Example", size=3, width=12),
             TabContainer(
                 Tab(
                     "Calculated Example",
                     Card("calculated_example"),
                     Card("chart_example"),
+                    width=12,
                 ),
                 Tab(
                     "Table Example",
                     Card("table_example"),
                     Card("gauge_two"),
+                    width=12,
                 ),
+                width=12,
             ),
         )
 

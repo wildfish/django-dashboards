@@ -20,3 +20,16 @@
   padding: 5px;
   border-top: 2px solid #b7c8d2;
 }
+
+.tab{
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+
+.tab-link {
+  background-color: #ffffff;
+  list-style: none;
+  padding: 1rem;
+}
