@@ -1,19 +1,26 @@
-from dataclasses import dataclass
-from typing import Optional, Type
+from dataclasses import dataclass, asdict
+from typing import Any, Optional, Type
 
 from django.http import HttpRequest
 
 from datorum.forms import DatorumForm
 
-from .base import Component
+from .base import Component, value_render_encoder
+
+
+@dataclass
+class FormData:
+    action: list[str]
+    form: list[dict[str, Any]]
+    method: str
+    dependents: Optional[list[str]] = None
 
 
 @dataclass
 class Form(Component):
-    form: Optional[Type[DatorumForm]] = None
     template: str = "datorum/components/form/form.html"
+    form: Optional[Type[DatorumForm]] = None
     method: str = "get"
-    serializable: bool = False
 
     def get_absolute_url(self):
         return self.get_form().get_submit_url()
@@ -35,8 +42,12 @@ class Form(Component):
         return form
 
     def get_value(
-        self, request: HttpRequest = None, call_deferred: bool = False
+            self, request: HttpRequest = None, **kwargs
     ) -> DatorumForm:
         form = self.get_form(request=request)
+        dependents = self.dependents
 
-        return form
+        value = FormData(method=self.method, form=form, action=self.get_absolute_url(), dependents=dependents)
+        value = asdict(value, dict_factory=value_render_encoder)
+
+        return value

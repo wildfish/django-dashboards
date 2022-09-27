@@ -8,6 +8,7 @@ export enum DashboardComponentTypes {
     Stat =  "Stat",
     Table =  "Table",
     Map =  "Map",
+    Form =  "Form",
 }
 
 export enum HTMLComponentTypes {
