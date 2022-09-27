@@ -1,3 +1,5 @@
+from typing import Any, Dict, List
+
 from django import forms
 from django.urls import reverse
 
@@ -19,7 +21,7 @@ class DatorumFormMixin:
 
 
 class DatorumForm(DatorumFormMixin, forms.Form):
-    def asdict(self) -> dict:
+    def asdict(self) -> List[Dict[str, Any]]:
         fields = []
         for field in self:
             fields.append(

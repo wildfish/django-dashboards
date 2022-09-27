@@ -11,9 +11,6 @@ snapshots[
     "test_component__renders_value[False-component_kwargs0-Chart] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
     <script id="data_test" type="application/json">"value"</script>
@@ -37,9 +34,6 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs0-Table] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="component-table-test"></div>
@@ -79,9 +73,6 @@ snapshots[
     "test_component__renders_value[False-component_kwargs0-Text] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -92,9 +83,6 @@ value
 snapshots[
     "test_component__renders_value[False-component_kwargs1-Chart] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -119,9 +107,6 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs1-Table] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="component-table-test"></div>
@@ -161,9 +146,6 @@ snapshots[
     "test_component__renders_value[False-component_kwargs1-Text] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -174,9 +156,6 @@ value
 snapshots[
     "test_component__renders_value[False-component_kwargs2-Chart] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -201,9 +180,6 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs2-Table] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="component-table-test"></div>
@@ -243,9 +219,6 @@ snapshots[
     "test_component__renders_value[False-component_kwargs2-Text] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -256,9 +229,6 @@ value
 snapshots[
     "test_component__renders_value[True-component_kwargs0-Chart] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -283,9 +253,6 @@ snapshots[
 snapshots[
     "test_component__renders_value[True-component_kwargs0-Table] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="component-table-test"></div>
@@ -325,9 +292,6 @@ snapshots[
     "test_component__renders_value[True-component_kwargs0-Text] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -357,9 +321,6 @@ snapshots[
     "test_component__renders_value[True-component_kwargs2-Chart] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
     <script id="data_test" type="application/json">"value"</script>
@@ -383,9 +344,6 @@ snapshots[
 snapshots[
     "test_component__renders_value[True-component_kwargs2-Table] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="component-table-test"></div>
@@ -425,9 +383,6 @@ snapshots[
     "test_component__renders_value[True-component_kwargs2-Text] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -438,9 +393,6 @@ value
 snapshots[
     "test_component__renders_value__stat[False-component_kwargs0] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -454,9 +406,6 @@ snapshots[
     "test_component__renders_value__stat[False-component_kwargs1] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
   <h2>100%</h2>
@@ -468,9 +417,6 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs0] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -490,9 +436,6 @@ snapshots[
     "test_cta_component__renders_value[False] 1"
 ] = """
     
-
-
-    
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <a href="/" class="dashboard-component-cta">
   click here
@@ -504,9 +447,6 @@ snapshots[
 snapshots[
     "test_cta_component__renders_value[True] 1"
 ] = """
-    
-
-
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <a href="/" class="dashboard-component-cta">

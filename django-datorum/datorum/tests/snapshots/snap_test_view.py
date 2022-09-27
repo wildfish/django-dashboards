@@ -13,9 +13,6 @@ snapshots[
 
 
     
-
-
-    
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -29,9 +26,6 @@ value
 snapshots[
     "test_component_view__with_model 2"
 ] = """
-
-
-    
 
 
     
@@ -78,9 +72,6 @@ snapshots[
   <div class="card-body">
     
     
-
-
-    
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -109,9 +100,6 @@ snapshots["test_view__get__json 1"] = b'"value"'
 snapshots[
     "test_view__get__partial_template 1"
 ] = """
-
-
-    
 
 
     
@@ -157,9 +145,6 @@ snapshots[
   
   <div class="card-body">
     
-    
-
-
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         

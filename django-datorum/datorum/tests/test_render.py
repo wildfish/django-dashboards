@@ -4,6 +4,7 @@ from django.test.utils import override_settings
 import pytest
 
 from datorum.component import CTA, Chart, Stat, Table, Text
+from datorum.component.text import CTAData
 from datorum.tests.utils import render_component_test
 
 from . import urls
@@ -15,7 +16,7 @@ from . import urls
     "component_kwargs",
     [
         {"value": "value"},
-        {"defer": lambda request, dashboard: "value"},
+        {"defer": lambda **kwargs: "value"},
         {"value": "value", "css_classes": ["a", "b"]},
     ],
 )
@@ -38,7 +39,7 @@ def test_component__renders_value(
 @override_settings(ROOT_URLCONF=urls)
 @pytest.mark.parametrize("htmx", [True, False])
 def test_cta_component__renders_value(htmx, rf, snapshot):
-    component = CTA(text="click here", href="/")
+    component = CTA(value=CTAData(text="click here", href="/"))
     component.key = "test"
     context = Context(
         {
@@ -55,7 +56,7 @@ def test_cta_component__renders_value(htmx, rf, snapshot):
     "component_kwargs",
     [
         {"value": {"text": "100%", "sub_text": "increase"}},
-        {"defer": lambda request, dashboard: {"text": "100%", "sub_text": "increase"}},
+        {"defer": lambda **kwargs: {"text": "100%", "sub_text": "increase"}},
     ],
 )
 @pytest.mark.parametrize("htmx", [True, False])
