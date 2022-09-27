@@ -20,3 +20,15 @@ class StatData:
 class Stat(Component):
     template: str = "datorum/components/text/stat.html"
     href: Optional[str] = None
+
+
+@dataclass
+class CTAData:
+    text: str
+    href: str
+
+
+@dataclass
+class CTA(Component):
+    template: str = "datorum/components/cta.html"
+    value: Optional[CTAData] = None

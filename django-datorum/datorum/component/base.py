@@ -1,6 +1,6 @@
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
-from typing import Callable, Optional, Type, Union, Dict, Any
+from typing import Any, Callable, Dict, Optional
 
 from django.http import HttpRequest
 from django.template import Context
@@ -39,9 +39,16 @@ class Component:
     def dashboard_class(self):
         return str(self.dashboard.__class__.__name__)
 
-    def get_value(self, request: HttpRequest = None, call_deferred=False, filters: Optional[Dict[str, Any]] = None) -> ValueData:
+    def get_value(
+        self,
+        request: HttpRequest = None,
+        call_deferred=False,
+        filters: Optional[Dict[str, Any]] = None,
+    ) -> ValueData:
         if self.is_deferred and self.defer and call_deferred:
-            value = self.defer(request=request, dashboard=self.dashboard, filters=filters)
+            value = self.defer(
+                request=request, dashboard=self.dashboard, filters=filters
+            )
         else:
             value = self.value
 
@@ -87,16 +94,6 @@ class Component:
 
     def __repr__(self):
         return f"{self.key}={self.value}"
-
-
-@dataclass
-class CTA(Component):
-    template: str = "datorum/components/cta.html"
-    href: str = ""
-    text: str = ""
-
-    def get_value(self, **kwargs) -> str:
-        return str(self.text)
 
 
 def value_render_encoder(data) -> dict:

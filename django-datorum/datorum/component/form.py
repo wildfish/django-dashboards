@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from typing import Any, Optional, Type
 
 from django.http import HttpRequest
@@ -22,9 +22,6 @@ class Form(Component):
     form: Optional[Type[DatorumForm]] = None
     method: str = "get"
 
-    def get_absolute_url(self):
-        return self.get_form().get_submit_url()
-
     def get_form(self, request: HttpRequest = None) -> DatorumForm:
         if not self.form:
             raise NotImplementedError(
@@ -41,13 +38,14 @@ class Form(Component):
         form = self.form(dashboard_class=self.dashboard_class, key=self.key, data=data)
         return form
 
-    def get_value(
-            self, request: HttpRequest = None, **kwargs
-    ) -> DatorumForm:
+    def get_value(self, request: HttpRequest = None, **kwargs) -> DatorumForm:
         form = self.get_form(request=request)
-        dependents = self.dependents
-
-        value = FormData(method=self.method, form=form, action=self.get_absolute_url(), dependents=dependents)
+        value = FormData(
+            method=self.method,
+            form=form,
+            action=form.get_submit_url(),
+            dependents=self.dependents,
+        )
         value = asdict(value, dict_factory=value_render_encoder)
 
         return value

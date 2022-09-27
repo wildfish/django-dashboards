@@ -74,7 +74,9 @@ class ComponentView(DashboardObjectMixin, TemplateView):
             # Return json, calling the deferred value.
             return HttpResponse(
                 json.dumps(
-                    component.get_value(request=self.request, call_deferred=True, filters=filters)
+                    component.get_value(
+                        request=self.request, call_deferred=True, filters=filters
+                    )
                 ),
                 content_type="application/json",
             )

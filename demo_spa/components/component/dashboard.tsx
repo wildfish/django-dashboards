@@ -4,7 +4,7 @@ import {gql, useQuery} from "@apollo/client";
 import {Stat} from "@/components/component/text";
 import {Plotly} from "@/components/component/charts";
 import {Tabulator} from "@/components/component/table";
-import {HTML} from "@/components/component/html";
+import {HTML, CTA} from "@/components/component/html";
 import {Form} from "@/components/component/forms";
 import * as styles from "@/components/component/index.module.scss";
 import {FilterContext} from "../../appContext";
@@ -23,6 +23,7 @@ const DashboardComponentMap = {
     [DashboardComponentTypes.Stat]: Stat,
     [DashboardComponentTypes.Map]: Plotly,
     [DashboardComponentTypes.Form]: Form,
+    [DashboardComponentTypes.CTA]: CTA,
 }
 
 type LazyComponentProps = {
@@ -33,7 +34,7 @@ type LazyComponentProps = {
 
 
 const LazyComponent = ({dashboard, component, Component}: LazyComponentProps) => {
-    const [filter] = useContext(FilterContext)
+    const [filters, setFilter] = useContext(FilterContext)
     const { loading, data } = useQuery(gql`
       query ($slug: String!, $key: String!, $filters: JSON) {
         component(slug: $slug, key: $key, filters: $filters) {
@@ -45,7 +46,7 @@ const LazyComponent = ({dashboard, component, Component}: LazyComponentProps) =>
             variables: {
                 slug:dashboard.Meta.slug,
                 key: component.key,
-                filters: filter
+                filters: filters
             }
         }
     );

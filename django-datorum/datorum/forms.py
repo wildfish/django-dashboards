@@ -23,9 +23,16 @@ class DatorumForm(DatorumFormMixin, forms.Form):
         fields = []
         for field in self:
             fields.append(
-                {"name": field.name, "label": field.label, "value": field.field.initial, "help_text": field.help_text,
-                 "id": field.id_for_label, "field_type": field.field.widget.__class__.__name__,
-                 "required": field.field.required, "choices": getattr(field.field.widget, "choices", [])}
+                {
+                    "name": field.name,
+                    "label": field.label,
+                    "value": field.field.initial,
+                    "help_text": field.help_text,
+                    "id": field.id_for_label,
+                    "field_type": field.field.widget.__class__.__name__,
+                    "required": field.field.required,
+                    "choices": getattr(field.field.widget, "choices", []),
+                }
             )
 
         return fields

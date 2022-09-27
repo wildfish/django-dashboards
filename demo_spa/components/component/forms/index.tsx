@@ -35,12 +35,13 @@ const FormFieldComponent = ({element, onChange} : FormFieldComponentProps) => {
 }
 
 export const Form = ({value}: { value: Value }) => {
-    const [filter, setFilter] = useContext(FilterContext)
+    const [filters, setFilter] = useContext(FilterContext)
     const data = JSON.parse(JSON.stringify(value))
     const method = data.method
+    const dependents = data.dependents
 
     const onChange = event => {
-        setFilter(filter => ({ ...filter, [event.target.name]: event.target.value }))
+        setFilter(filters => ({ ...filters, [event.target.name]: event.target.value }))
     }
 
     const onSubmit = event => {
@@ -52,7 +53,7 @@ export const Form = ({value}: { value: Value }) => {
             {data.form.map((field: Field) => (
                 <p key={field.id}>
                     <label>
-                        {field.label}
+                        {field.label}:
                         <FormFieldComponent element={field} onChange={onChange}/>
                         {field.help_text != "" && <div>{field.help_text}</div>}
                     </label>

@@ -1,7 +1,7 @@
 import json
 import logging
 from dataclasses import asdict, is_dataclass
-from typing import List, Optional, NewType, Any, Dict
+from typing import List, Optional
 
 from django.utils.text import slugify
 
@@ -51,7 +51,9 @@ class ComponentSchema:
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
         filters = info.variable_values.get("filters", {})
-        value = root.get_value(request=info.context.get("request"), call_deferred=False, filters=filters)
+        value = root.get_value(
+            request=info.context.get("request"), call_deferred=False, filters=filters
+        )
         if isinstance(value, dict) and "form" in value:
             value["form"] = value["form"].asdict()
 
@@ -63,7 +65,9 @@ class DeferredComponentSchema(ComponentSchema):
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
         filters = info.variable_values.get("filters", {})
-        return root.get_value(request=info.context.get("request"), call_deferred=True, filters=filters)
+        return root.get_value(
+            request=info.context.get("request"), call_deferred=True, filters=filters
+        )
 
 
 @strawberry.type
@@ -120,7 +124,11 @@ class DashboardQuery:
 
     @strawberry.field
     def component(
-        self, slug: str, key: str, info: Info, filters: Optional[strawberry.scalars.JSON] = None
+        self,
+        slug: str,
+        key: str,
+        info: Info,
+        filters: Optional[strawberry.scalars.JSON] = None,
     ) -> Optional[DeferredComponentSchema]:
 
         try:

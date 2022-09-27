@@ -115,7 +115,6 @@ def test_view__dashboard__with_layout(rf, admin_user, schema_with_dashboards, sn
         context_value={"request": request},
     )
     assert result.errors is None
-    print(result.data)
     assert result.data["dashboard"]["Meta"]["layoutJson"]
     snapshot.assert_match(result.data["dashboard"])
 

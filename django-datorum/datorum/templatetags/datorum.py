@@ -1,7 +1,4 @@
-from typing import Optional
-
 from django import template
-from django.forms import Form
 from django.template import RequestContext
 
 from datorum.component import Component

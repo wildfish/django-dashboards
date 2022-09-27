@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 const FilterContext = React.createContext([{}, () => {}]);
 
 const FilterProvider = (props) => {
-  const [filter, setFilter] = useState({});
+  const [filters, setFilter] = useState({});
   return (
-    <FilterContext.Provider value={[filter, setFilter]}>
+    <FilterContext.Provider value={[filters, setFilter]}>
       {props.children}
     </FilterContext.Provider>
   );

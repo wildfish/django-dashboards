@@ -1,4 +1,5 @@
 from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
+from datorum.component.text import CTAData
 from datorum.component.layout import HR
 from datorum.component.layout import HTML
 from datorum.component.layout import HTML as LayoutHTML
@@ -16,8 +17,10 @@ from demo.demo_app.models import Vehicle
 
 class DemoDashboardOne(Dashboard):
     link = CTA(
-        href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-        text="Find out more!",
+        value=CTAData(
+            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+            text="Find out more!"
+        ),
         width=3,
     )
     text_example = Text(
