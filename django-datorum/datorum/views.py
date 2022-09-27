@@ -70,10 +70,13 @@ class ComponentView(DashboardObjectMixin, TemplateView):
         component = self.get_partial_component(dashboard)
 
         if self.is_ajax() and component:
+            filters = request.GET.dict()
             # Return json, calling the deferred value.
             return HttpResponse(
                 json.dumps(
-                    component.get_value(request=self.request, call_deferred=True)
+                    component.get_value(
+                        request=self.request, call_deferred=True, filters=filters
+                    )
                 ),
                 content_type="application/json",
             )
@@ -119,9 +122,10 @@ class FormComponentView(ComponentView):
 
         if self.is_ajax():
             response = []
+            filters = request.GET.dict()
             for c in dependant_components:
                 # Return json, calling deferred value on dependant components.
-                response.append(c.get_value(request=self.request))
+                response.append(c.get_value(request=self.request, filters=filters))
             return HttpResponse(response, content_type="application/json")
         else:
             context = self.get_context_data(
@@ -140,6 +144,9 @@ class FormComponentView(ComponentView):
         form = component.get_form(request=request)
         if form.is_valid():
             form.save()
+            if self.is_ajax():
+                return HttpResponse({"success": True}, content_type="application/json")
+
             return HttpResponseRedirect(self.get_success_url())
 
         return self.get(request, *args, **kwargs)

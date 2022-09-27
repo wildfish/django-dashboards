@@ -8,6 +8,8 @@ export enum DashboardComponentTypes {
     Stat =  "Stat",
     Table =  "Table",
     Map =  "Map",
+    Form =  "Form",
+    CTA = "CTA",
 }
 
 export enum HTMLComponentTypes {
@@ -32,8 +34,12 @@ export type StatValue = {
     text: string, sub_text: string
 }
 
+export type CTAValue = {
+    text: string, href: string
+}
 
-export type Value = DataValue | StatValue | string
+
+export type Value = DataValue | StatValue | CTAValue | string
 
 
 export type Component = {

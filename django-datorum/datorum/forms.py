@@ -1,3 +1,5 @@
+from typing import Any, Dict, List
+
 from django import forms
 from django.urls import reverse
 
@@ -18,19 +20,21 @@ class DatorumFormMixin:
         return
 
 
-class DatorumFilterMixin:
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
-        super().__init__(*args, **kwargs)
-
-
 class DatorumForm(DatorumFormMixin, forms.Form):
-    pass
+    def asdict(self) -> List[Dict[str, Any]]:
+        fields = []
+        for field in self:
+            fields.append(
+                {
+                    "name": field.name,
+                    "label": field.label,
+                    "value": field.field.initial,
+                    "help_text": field.help_text,
+                    "id": field.id_for_label,
+                    "field_type": field.field.widget.__class__.__name__,
+                    "required": field.field.required,
+                    "choices": getattr(field.field.widget, "choices", []),
+                }
+            )
 
-
-class DatorumFilterForm(DatorumFilterMixin, forms.Form):
-    pass
-
-
-class DatorumModelFilterForm(DatorumFilterMixin, forms.ModelForm):
-    pass
+        return fields

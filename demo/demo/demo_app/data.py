@@ -81,8 +81,9 @@ class DashboardData:
     @staticmethod
     def fetch_bar_chart_data(request, **kwargs) -> ChartData:
         data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}
-        if "animal" in request.GET and request.GET["animal"] in data:
-            animal = request.GET["animal"]
+        filters = kwargs.get("filters") or {}
+        if "animal" in filters and filters["animal"] in data:
+            animal = filters["animal"]
             data = {animal: data[animal]}
 
         return ChartData(
@@ -99,8 +100,9 @@ class DashboardData:
     def fetch_stacked_bar_chart_data(request, **kwargs) -> ChartData:
         sf_data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}
         la_data = {"giraffes": 12, "orangutans": 18, "monkeys": 29}
-        if "animal" in request.GET:
-            animal = request.GET["animal"]
+        filters = kwargs.get("filters") or {}
+        if "animal" in filters:
+            animal = filters["animal"]
             sf_data = {animal: sf_data[animal]} if animal in sf_data else sf_data
             la_data = {animal: la_data[animal]} if animal in la_data else la_data
 
@@ -190,7 +192,8 @@ class DashboardData:
         )
 
         # Very noddy example of filtering, should and could validate against the form class itself :)
-        filter_country = request.GET.get("country")
+        filters = kwargs.get("filters") or {}
+        filter_country = filters.get("country")
         if filter_country and filter_country != "all":
             return ChartData(
                 data={"na": [na], "europe": [europe], "asia": [asia]}[filter_country]
@@ -361,11 +364,11 @@ class DashboardData:
 
 class VehicleData:
     @staticmethod
-    def get_queryset(request):
+    def get_queryset(filters):
         qs = Vehicle.objects.all()
-        if "vehicle_type" in request.GET:
-            if request.GET["vehicle_type"] != "":
-                qs = qs.for_type(request.GET["vehicle_type"])
+        if "vehicle_type" in filters:
+            if filters["vehicle_type"] != "":
+                qs = qs.for_type(filters["vehicle_type"])
 
         return qs
 
@@ -374,28 +377,32 @@ class VehicleData:
         try:
             return Vehicle.objects.get(
                 number_plate="OmfGAVOoIa"
-            )  # request.GET["number_plate"]
+            )
         except Vehicle.DoesNotExist:
             return Vehicle()
 
     @staticmethod
     def fetch_vehicle_count(request, **kwargs):
-        qs = VehicleData.get_queryset(request)
+        filters = kwargs.get("filters") or {}
+        qs = VehicleData.get_queryset(filters)
         return StatData(text=str(qs.total_vehicle_count()), sub_text="TOTAL VEHICLES")
 
     @staticmethod
     def fetch_in_use_count(request, **kwargs):
-        qs = VehicleData.get_queryset(request)
+        filters = kwargs.get("filters") or {}
+        qs = VehicleData.get_queryset(filters)
         return StatData(text=str(qs.in_use_count()), sub_text="IN USE")
 
     @staticmethod
     def fetch_out_of_service_count(request, **kwargs):
-        qs = VehicleData.get_queryset(request)
+        filters = kwargs.get("filters") or {}
+        qs = VehicleData.get_queryset(filters)
         return StatData(text=str(qs.out_of_service_count()), sub_text="NOT AVAILABLE")
 
     @staticmethod
     def fetch_service_count(request, **kwargs):
-        qs = VehicleData.get_queryset(request)
+        filters = kwargs.get("filters") or {}
+        qs = VehicleData.get_queryset(filters)
         return StatData(
             text=str(qs.requires_service().count()),
             sub_text="REQUIRES SERVICE",
@@ -406,7 +413,8 @@ class VehicleData:
         def yes_no(d):
             return "Yes" if d else "No"
 
-        qs = VehicleData.get_queryset(request)
+        filters = kwargs.get("filters") or {}
+        qs = VehicleData.get_queryset(filters)
 
         return TableData(
             headers=[],

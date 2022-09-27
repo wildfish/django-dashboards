@@ -41,23 +41,20 @@ snapshots["test_view__dashboard__with_layout 1"] = {
         "layoutJson": {
             "layout_components": [
                 {
-                    "Div": {
-                        "layout_components": [
-                            {
-                                "Div": {
-                                    "css_classes": "css_style",
-                                    "layout_components": ["component_1"],
-                                    "width": 99,
-                                }
-                            },
-                            {
-                                "Div": {
-                                    "css_classes": "css_style",
-                                    "layout_components": ["component_2"],
-                                }
-                            },
-                        ]
-                    }
+                    "layout_components": [
+                        {
+                            "css_classes": "css_style",
+                            "layout_components": ["component_1"],
+                            "renderType": "Div",
+                            "width": 99,
+                        },
+                        {
+                            "css_classes": "css_style",
+                            "layout_components": ["component_2"],
+                            "renderType": "Div",
+                        },
+                    ],
+                    "renderType": "Div",
                 }
             ]
         },

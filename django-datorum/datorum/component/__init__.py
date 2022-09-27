@@ -1,9 +1,9 @@
-from .base import CTA, Component
+from .base import Component
 from .chart import Chart
 from .form import Form
 from .map import Map
 from .table import Table
-from .text import Stat, Text
+from .text import CTA, Stat, Text
 
 
 __all__ = ["Component", "CTA", "Chart", "Form", "Map", "Stat", "Text", "Table"]

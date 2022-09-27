@@ -1,8 +1,6 @@
 {% if component.is_deferred and htmx %}
     <div hx-get="{{ component.get_absolute_url }}" hx-trigger="intersect once"></div>
 {% else %}
-    {% include "datorum/components/filter.html" %}
-
     {# -inner will be replaced if a filter is applied. #}
     <div id="component-{{ component.key }}-inner" class="dashboard-component-inner fade-in">
         {% include component.template %}

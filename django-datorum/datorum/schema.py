@@ -50,14 +50,30 @@ class ComponentSchema:
 
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
-        return root.get_value(request=info.context.get("request"), call_deferred=False)
+        filters = info.variable_values.get("filters", {})
+        value = root.get_value(
+            request=info.context.get("request"), call_deferred=False, filters=filters
+        )
+        # convert a django form into a list of field dicts
+        if isinstance(value, dict) and "form" in value:
+            value["form"] = value["form"].asdict()
+
+        return value
 
 
 @strawberry.type
 class DeferredComponentSchema(ComponentSchema):
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
-        return root.get_value(request=info.context.get("request"), call_deferred=True)
+        filters = info.variable_values.get("filters", {})
+        value = root.get_value(
+            request=info.context.get("request"), call_deferred=True, filters=filters
+        )
+        # convert a django form into a list of field dicts
+        if isinstance(value, dict) and "form" in value:
+            value["form"] = value["form"].asdict()
+
+        return value
 
 
 @strawberry.type
@@ -114,8 +130,13 @@ class DashboardQuery:
 
     @strawberry.field
     def component(
-        self, slug: str, key: str, info: Info
+        self,
+        slug: str,
+        key: str,
+        info: Info,
+        filters: Optional[strawberry.scalars.JSON] = None,
     ) -> Optional[DeferredComponentSchema]:
+
         try:
             dashboard = [
                 d for d in get_dashboards(info) if slug == slugify(d.Meta.name)

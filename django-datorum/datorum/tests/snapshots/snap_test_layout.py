@@ -39,9 +39,6 @@ snapshots[
   <div class="span-99 css_style">
   
     
-
-
-    
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -71,9 +68,6 @@ snapshots[
   <div class="card-body">
     
     
-
-
-    
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -88,9 +82,6 @@ snapshots[
 ] = """<div class="span-6 css_class">
   
     
-
-
-    
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -102,7 +93,7 @@ value
 snapshots[
     "test_html_component__render[Tab] 1"
 ] = """<div x-show="tab === \'component_1\'">
-    <div class=" css_class">
+    <div class="span-6 css_class">
   
 </div>
 </div>"""
@@ -110,9 +101,6 @@ snapshots[
 snapshots[
     "test_layout_component__render 1"
 ] = """
-    
-
-
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -127,9 +115,6 @@ snapshots[
     "test_layout_component__unknown_component_ignored 1"
 ] = """
     
-
-
-    
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
 value
@@ -141,7 +126,7 @@ value
 
 snapshots[
     "test_tab_container__render 1"
-] = """<div class="span-12 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width6\' }">
+] = """<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width6\' }">
     <ul id="" class="tabs" >
         <li class="tab-link">
   <a :class="{ \'active\': tab === \'htmlhtmlsome-text-width6\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text-width6\'" href="#">
@@ -152,7 +137,7 @@ snapshots[
 
     <div>
         <div x-show="tab === \'htmlhtmlsome-text-width6\'">
-    <div class=" tab-content">
+    <div class="span-6 tab-content">
   
 </div>
 </div>

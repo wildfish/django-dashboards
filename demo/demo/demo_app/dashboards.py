@@ -1,4 +1,5 @@
 from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
+from datorum.component.text import CTAData
 from datorum.component.layout import HR
 from datorum.component.layout import HTML
 from datorum.component.layout import HTML as LayoutHTML
@@ -16,8 +17,10 @@ from demo.demo_app.models import Vehicle
 
 class DemoDashboardOne(Dashboard):
     link = CTA(
-        href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-        text="Find out more!",
+        value=CTAData(
+            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+            text="Find out more!"
+        ),
         width=3,
     )
     text_example = Text(
@@ -27,29 +30,33 @@ class DemoDashboardOne(Dashboard):
     html_example = Text(
         value="<strong>HTML also rendered on load</strong>", mark_safe=True
     )
-    calculated_example = Text(defer=lambda request, dashboard: "Deferred text")
+    calculated_example = Text(defer=lambda **kwargs: "Deferred text")
     form_example = Form(
         form=AnimalForm,
         method="get",
         dependents=["chart_example", "stacked_chart_example"],
-        width=3,
+        width=4,
     )
-    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
-    stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data)
+    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=4)
+    stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data, width=4)
     bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
+    filter_form = Form(
+        form=ExampleForm,
+        method="get",
+        dependents=["line_chart_example", "stat_three"],
+        width=12,
+    )
     line_chart_example = Chart(
         defer=DashboardData.fetch_scatter_chart_data,
-        filter_form=ExampleForm,
-        dependents=["stat_three"],
+    )
+    stat_three = Stat(
+        defer=lambda **kwargs: {
+            "text": "33%",
+            "sub_text": kwargs.get('filters', {}).get("country", "all"),
+        }
     )
     stat_one = Stat(value={"text": "100%", "sub_text": "increase"})
     stat_two = Stat(value={"text": "88%", "sub_text": "increase"})
-    stat_three = Stat(
-        defer=lambda request, dashboard: {
-            "text": "33%",
-            "sub_text": request.GET.get("country", "all"),
-        }
-    )
     free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True)
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
@@ -85,7 +92,7 @@ class DemoDashboardOneCustom(DemoDashboardOne):
 class DemoDashboardOneVary(DemoDashboardOne):
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=12)
     calculated_example = Text(
-        defer=lambda request, dashboard: "some calculated text", width=3
+        defer=lambda **kwargs: "some calculated text", width=3
     )
     table_example = Table(defer=DashboardData.fetch_table_data, width=12)
 

@@ -16,7 +16,7 @@ from datorum.schema import DashboardQuery
 def dashboard():
     class TestDashboard(Dashboard):
         component_1 = Text(value="value")
-        component_2 = Text(defer=lambda request, dashboard: "value")
+        component_2 = Text(defer=lambda **kwargs: "value")
 
         class Meta:
             name = "Test Dashboard"
@@ -27,8 +27,8 @@ def dashboard():
 @pytest.fixture
 def complex_dashboard(dashboard):
     class TestComplexDashboard(dashboard):
-        component_3 = Text(defer=lambda request, dashboard: "value")
-        component_2 = Text(defer=lambda request, dashboard: "value")
+        component_3 = Text(defer=lambda **kwargs: "value")
+        component_2 = Text(defer=lambda **kwargs: "value")
         component_4 = Text(value="<div></div>", mark_safe=True)
         component_5 = Table(
             value=TableData(headers=["a", "b"], rows=[{"a": "Value", "b": "Value b"}])

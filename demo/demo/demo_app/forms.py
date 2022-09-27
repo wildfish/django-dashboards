@@ -1,10 +1,10 @@
-from datorum.forms import DatorumFilterForm, DatorumForm
+from datorum.forms import DatorumForm
 from django import forms
 
 from .models import Vehicle
 
 
-class ExampleForm(DatorumFilterForm):
+class ExampleForm(DatorumForm):
     country = forms.ChoiceField(
         choices=(
             ("all", "All"),

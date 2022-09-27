@@ -1,7 +1,4 @@
-from typing import Optional
-
 from django import template
-from django.forms import Form
 from django.template import RequestContext
 
 from datorum.component import Component
@@ -14,14 +11,6 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def render_component(context: RequestContext, component: Component, htmx: bool):
     return component.render(context=context, htmx=htmx, call_deferred=not htmx)
-
-
-@register.simple_tag(takes_context=True)
-def get_filter_form(context: RequestContext, component: Component) -> Optional[Form]:
-    """Render a component, passing request"""
-    if component.filter_form:
-        return component.filter_form(request=context["request"])
-    return None
 
 
 @register.simple_tag(takes_context=True)

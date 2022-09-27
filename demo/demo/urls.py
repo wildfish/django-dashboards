@@ -16,7 +16,7 @@ urlpatterns = [
             namespace="demo_app",
         ),
     ),
-    path("dashboards/", include("datorum.urls")),
+    path("dashboard/", include("datorum.urls")),
     path("admin/", admin.site.urls),
     path("graphql/", GraphQLView.as_view(schema=schema)),
 ]
