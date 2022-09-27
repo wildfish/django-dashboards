@@ -8,13 +8,16 @@ from django.template import Context
 from django.template.loader import render_to_string
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
+
+from django_eventstream import send_event
 
 from datorum import config
 from datorum.component import Component
 from datorum.component.layout import Card, ComponentLayout
 from datorum.exceptions import ComponentNotFoundError
 from datorum.permissions import BasePermission
-from datorum.registry import registry
+from datorum.registry import Registry, registry
 
 
 logger = logging.getLogger(__name__)
@@ -49,6 +52,9 @@ class Dashboard(metaclass=DashboardType):
         self._components_cache = {}
         self.kwargs = kwargs
         super().__init__()
+
+    def get_slug(self):
+        return f"{slugify(self.__class__.__name__)}_dashboard"
 
     def get_context(self) -> dict:
         return {"dashboard": self, "components": self.get_components()}
@@ -131,7 +137,6 @@ class Dashboard(metaclass=DashboardType):
         return True
 
     def get_urls(self):
-        from django.template.defaultfilters import slugify
         from django.urls import path
 
         from .views import DashboardView
@@ -140,9 +145,9 @@ class Dashboard(metaclass=DashboardType):
 
         return [
             path(
-                "%s/" % name,
+                f"{name}/",
                 DashboardView.as_view(dashboard_class=self.__class__),
-                name="%s_dashboard" % slugify(name),
+                name=self.get_slug(),
             ),
         ]
 
@@ -261,7 +266,6 @@ class ModelDashboard(Dashboard):
         return get_object_or_404(qs, **{self._meta.lookup_field: lookup})
 
     def get_urls(self):
-        from django.template.defaultfilters import slugify
         from django.urls import path
 
         from .views import DashboardView
@@ -270,8 +274,8 @@ class ModelDashboard(Dashboard):
 
         return [
             path(
-                "%s/<str:%s>/" % (name, self._meta.lookup_kwarg),
+                f"{name}/<str:{self._meta.lookup_kwarg}>/",
                 DashboardView.as_view(dashboard_class=self.__class__),
-                name="%s_dashboard_detail" % slugify(name),
+                name=f"{self.get_slug()}_dashboard_detail",
             ),
         ]

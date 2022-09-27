@@ -113,3 +113,7 @@ yarn dev
 ```
 
 Docker is in the repo as per our template, but I've not been using it so far so likely needs some work. It also would need the spa adding. 
+
+### SSE / Websockets 
+
+See datorum/README.md

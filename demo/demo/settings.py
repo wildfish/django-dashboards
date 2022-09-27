@@ -6,6 +6,7 @@ import sentry_sdk
 from configurations import Configuration
 from sentry_sdk.integrations.django import DjangoIntegration
 
+
 # Common settings
 BASE_DIR = Path(__file__).absolute().parent.parent
 PROJECT_NAME = "demo"
@@ -129,11 +130,14 @@ class Common(Configuration):
         "django_htmx",
         "strawberry.django",
         "datorum",
+        "django_eventstream",
         # Project
         "demo.demo_app",
     ]
 
     MIDDLEWARE = [
+        # django_htmx required for datorum/eventstream
+        "django_grip.GripMiddleware",
         "django.middleware.security.SecurityMiddleware",
         "corsheaders.middleware.CorsMiddleware",
         "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -143,7 +147,7 @@ class Common(Configuration):
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
-        # required for datorum
+        # django_htmx required for datorum
         "django_htmx.middleware.HtmxMiddleware",
     ]
 
@@ -252,7 +256,10 @@ class Common(Configuration):
         },
     }
 
-    CORS_ALLOW_ALL_ORIGINS = True
+    # CORS_ALLOW_ALL_ORIGINS = True
+
+    GRIP_URL = "http://localhost:5561"
+    EVENTSTREAM_ALLOW_ORIGIN = "http://127.0.0.1:8000"
 
 
 class RedisCache:

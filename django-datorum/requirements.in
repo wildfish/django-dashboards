@@ -5,6 +5,7 @@
 # Core
 django-cors-headers
 django_htmx
+dramtiq
 strawberry-graphql[debug-server]
 
 # Testing
