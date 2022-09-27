@@ -75,6 +75,7 @@ class DeferredComponentSchema(ComponentSchema):
 
         return value
 
+
 @strawberry.type
 class DashboardMetaSchema:
     name: str
