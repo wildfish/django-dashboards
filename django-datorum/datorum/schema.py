@@ -54,6 +54,7 @@ class ComponentSchema:
         value = root.get_value(
             request=info.context.get("request"), call_deferred=False, filters=filters
         )
+        # convert a django form into a list of field dicts
         if isinstance(value, dict) and "form" in value:
             value["form"] = value["form"].asdict()
 
@@ -65,10 +66,14 @@ class DeferredComponentSchema(ComponentSchema):
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:
         filters = info.variable_values.get("filters", {})
-        return root.get_value(
+        value = root.get_value(
             request=info.context.get("request"), call_deferred=True, filters=filters
         )
+        # convert a django form into a list of field dicts
+        if isinstance(value, dict) and "form" in value:
+            value["form"] = value["form"].asdict()
 
+        return value
 
 @strawberry.type
 class DashboardMetaSchema:
