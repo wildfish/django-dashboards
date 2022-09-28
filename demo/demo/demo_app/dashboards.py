@@ -5,7 +5,7 @@ from datorum.component.layout import HTML
 from datorum.component.layout import HTML as LayoutHTML
 from datorum.component.layout import (Card, ComponentLayout, Div, Header, Tab,
                                       TabContainer)
-from datorum.component.table import TableData
+from datorum.component.table import TableData, TablePaging
 from datorum.dashboard import Dashboard, ModelDashboard
 from datorum.permissions import IsAdminUser
 from django.urls import reverse_lazy
@@ -74,8 +74,19 @@ class DemoDashboardOne(Dashboard):
                     "col": "red",
                     "dob": "19/02/1984",
                     "car": 1,
+                },
+                {
+                    "id": 2,
+                    "name": "Bob Oli",
+                    "progress": 2,
+                    "gender": "male",
+                    "rating": 5,
+                    "col": "blue",
+                    "dob": "21/04/1995",
+                    "car": 0,
                 }
             ],
+            paging=TablePaging(total_items=2, limit=1, page_count=2)
         )
     )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)

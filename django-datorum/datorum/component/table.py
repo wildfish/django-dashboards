@@ -8,10 +8,20 @@ from .base import Component
 
 
 @dataclass
+class TablePaging:
+    ssr: bool = False
+    page: int = 0
+    limit: int = 999
+    page_count: int = 1
+    total_items: int = 0
+    sortby: Optional[list[dict[str, Any]]] = None
+
+
+@dataclass
 class TableData:
     headers: list[str]
     rows: list[dict[str, Any]]
-    last_page: int = 1
+    paging: Optional[TablePaging] = None
 
     @classmethod
     def get_request_data(cls, request, fields):

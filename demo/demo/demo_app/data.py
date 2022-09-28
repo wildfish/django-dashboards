@@ -1,10 +1,11 @@
 import csv
+import math
 from collections import namedtuple
 
 import requests
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
-from datorum.component.table import TableData
+from datorum.component.table import TableData, TablePaging
 from datorum.component.text import StatData
 from django.db.models import Max
 from django.utils.safestring import mark_safe
@@ -206,19 +207,7 @@ class DashboardData:
         """
         Mock return some results for tabular.
         """
-
-        data = TableData(
-            headers=[
-                "Id",
-                "Name",
-                "Progress",
-                "Gender",
-                "Rating",
-                "Colour",
-                "DOB",
-                "Car",
-            ],
-            rows=[
+        data = [
                 {
                     "id": 1,
                     "name": "Oli Bob",
@@ -277,10 +266,60 @@ class DashboardData:
                     "dob": "12/05/1966",
                     "car": 1,
                 },
-            ],
+            ]
+
+        data = data * 20
+        total = len(data)  # total number of items before pagination
+        # defaults
+        limit = 10  # items per page
+        page = 0  # current page starting 0
+        sort_by = list(data[0].keys())[0]  # column to sort on
+        direction = "asc"  # sort order
+
+        filters = kwargs.get("filters")
+
+        # are we paginating?
+        if filters:
+            limit = filters.get("limit", limit)
+            page = filters.get("page", page)
+            sort_by = filters.get("sortby", sort_by)
+            direction = filters.get("direction", direction)
+
+        # sort the data
+        data = sorted(data, key=lambda x: x[sort_by], reverse=direction == "desc")
+
+        page_count = math.ceil(total / limit)
+        page_offset = page * limit
+        data = data[page_offset:page_offset+limit]
+
+        paging = TablePaging(
+            ssr=True,
+            page=page,
+            limit=limit,
+            page_count=page_count,
+            total_items=total,
+            sortby=[{
+                "id": sort_by,
+                "desc": direction == 'desc'
+            }],
         )
 
-        return data
+        table_data = TableData(
+            headers=[
+                "Id",
+                "Name",
+                "Progress",
+                "Gender",
+                "Rating",
+                "Colour",
+                "DOB",
+                "Car",
+            ],
+            rows=data,
+            paging=paging
+        )
+
+        return table_data
 
     @staticmethod
     def fetch_scatter_map_data(*args, **kwargs) -> MapData:

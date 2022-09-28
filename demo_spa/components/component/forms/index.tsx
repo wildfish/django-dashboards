@@ -22,7 +22,7 @@ type FormFieldComponentProps = {
 
 const FormFieldComponent = ({element, onChange} : FormFieldComponentProps) => {
     if (element.field_type === 'Select') {
-        const choices = element.choices.map((choice) => <option value={choice[0]}>{choice[1]}</option>)
+        const choices = element.choices.map((choice) => <option value={choice[0]} key={choice[0]}>{choice[1]}</option>)
         return <select id={element.id} name={element.name} value={element.value} onChange={onChange}>
             {choices}
         </select>

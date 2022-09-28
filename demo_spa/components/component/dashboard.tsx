@@ -3,7 +3,7 @@ import {Component as ComponentType, Dashboard, DashboardComponentTypes, Value} f
 import {gql, useQuery} from "@apollo/client";
 import {Stat} from "@/components/component/text";
 import {Plotly} from "@/components/component/charts";
-import {Tabulator} from "@/components/component/table";
+import {ReactTable, Tabulator} from "@/components/component/table";
 import {HTML, CTA} from "@/components/component/html";
 import {Form} from "@/components/component/forms";
 import * as styles from "@/components/component/index.module.scss";
@@ -19,7 +19,7 @@ const DashboardComponentMap = {
     [DashboardComponentTypes.SomeCalculateText]: HTML,
     [DashboardComponentTypes.HTML]: HTML,
     [DashboardComponentTypes.Chart]: Plotly,
-    [DashboardComponentTypes.Table]: Tabulator,
+    [DashboardComponentTypes.Table]: ReactTable, //Tabulator,
     [DashboardComponentTypes.Stat]: Stat,
     [DashboardComponentTypes.Map]: Plotly,
     [DashboardComponentTypes.Form]: Form,
