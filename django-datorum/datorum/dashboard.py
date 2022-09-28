@@ -10,14 +10,12 @@ from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
-from django_eventstream import send_event
-
 from datorum import config
 from datorum.component import Component
 from datorum.component.layout import Card, ComponentLayout
 from datorum.exceptions import ComponentNotFoundError
 from datorum.permissions import BasePermission
-from datorum.registry import Registry, registry
+from datorum.registry import registry
 
 
 logger = logging.getLogger(__name__)

@@ -19,7 +19,7 @@ from datorum.component.text import CTAData
 from datorum.dashboard import Dashboard, ModelDashboard
 from datorum.permissions import IsAdminUser
 
-from demo.demo_app.components import SSEStat
+from demo.demo_app.components import SSEChart, SSEStat
 from demo.demo_app.data import DashboardData, VehicleData
 from demo.demo_app.forms import AnimalForm, ExampleForm, VehicleTypeFilterForm
 from demo.demo_app.models import Vehicle
@@ -224,6 +224,8 @@ class SSEDashboard(Dashboard):
         poll_rate=3,
     )
     sse_stat = SSEStat()
+    standard_chart = Chart(defer=DashboardData.fetch_sse_chart_data, poll_rate=None)
+    sse_chart = SSEChart(defer=DashboardData.fetch_sse_chart_data)
 
     class Meta(Dashboard.Meta):
         name = "Server Sent Events Example"

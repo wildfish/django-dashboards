@@ -20,8 +20,8 @@ class ChartData:
             BAR = "bar"
             SCATTER = "scatter"
 
-        x: list[Any]
-        y: list[Any]
+        x: Optional[list[Any]] = None
+        y: Optional[list[Any]] = None
         text: Optional[list] = None
         type: Optional[Type] = None
         mode: Optional[Mode] = None

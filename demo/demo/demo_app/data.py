@@ -364,6 +364,18 @@ class DashboardData:
             },
         )
 
+    @staticmethod
+    def fetch_sse_chart_data(*args, **kwargs) -> ChartData:
+        return ChartData(
+            data=[
+                ChartData.Trace(
+                    y=list([1, 2, 3]),
+                    type=ChartData.Trace.Type.SCATTER,
+                    mode=ChartData.Trace.Mode.LINE,
+                )
+            ]
+        )
+
 
 class VehicleData:
     @staticmethod

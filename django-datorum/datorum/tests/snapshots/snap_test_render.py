@@ -15,9 +15,9 @@ snapshots[
         
     <script id="data_test" type="application/json">"value"</script>
     <script>
-        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
+            // TODO this name should be from component
             'component-chart-test',
             data_test.data,
             data_test.layout,
@@ -50,7 +50,6 @@ snapshots[
 
         /*
         TODO for more control, the data provided to the component could be
-        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
         */
         const table_test = new Tabulator("#component-table-test", {
             
@@ -88,9 +87,9 @@ snapshots[
         
     <script id="data_test" type="application/json">"value"</script>
     <script>
-        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
+            // TODO this name should be from component
             'component-chart-test',
             data_test.data,
             data_test.layout,
@@ -118,7 +117,6 @@ snapshots[
 
         /*
         TODO for more control, the data provided to the component could be
-        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
         */
         const table_test = new Tabulator("#component-table-test", {
             
@@ -161,9 +159,9 @@ snapshots[
         
     <script id="data_test" type="application/json">"value"</script>
     <script>
-        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
+            // TODO this name should be from component
             'component-chart-test',
             data_test.data,
             data_test.layout,
@@ -196,7 +194,6 @@ snapshots[
 
         /*
         TODO for more control, the data provided to the component could be
-        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
         */
         const table_test = new Tabulator("#component-table-test", {
             
@@ -234,9 +231,9 @@ snapshots[
         
     <script id="data_test" type="application/json">"value"</script>
     <script>
-        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
+            // TODO this name should be from component
             'component-chart-test',
             data_test.data,
             data_test.layout,
@@ -269,7 +266,6 @@ snapshots[
 
         /*
         TODO for more control, the data provided to the component could be
-        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
         */
         const table_test = new Tabulator("#component-table-test", {
             
@@ -302,19 +298,19 @@ value
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Chart] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Table] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Text] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[
@@ -325,9 +321,9 @@ snapshots[
         
     <script id="data_test" type="application/json">"value"</script>
     <script>
-        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
+            // TODO this name should be from component
             'component-chart-test',
             data_test.data,
             data_test.layout,
@@ -360,7 +356,6 @@ snapshots[
 
         /*
         TODO for more control, the data provided to the component could be
-        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
         */
         const table_test = new Tabulator("#component-table-test", {
             
@@ -429,7 +424,7 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs1] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once"></div>
+    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[

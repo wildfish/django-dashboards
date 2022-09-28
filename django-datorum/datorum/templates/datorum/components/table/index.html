@@ -12,7 +12,6 @@
 
         /*
         TODO for more control, the data provided to the component could be
-        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
         */
         const table_{{ component.key }} = new Tabulator("#component-table-{{ component.key }}", {
             {% if component.is_deferred %}
