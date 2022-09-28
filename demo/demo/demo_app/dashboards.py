@@ -1,15 +1,25 @@
+from random import randint
+
+from django.urls import reverse_lazy
+
 from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
-from datorum.component.text import CTAData
 from datorum.component.layout import HR
 from datorum.component.layout import HTML
 from datorum.component.layout import HTML as LayoutHTML
-from datorum.component.layout import (Card, ComponentLayout, Div, Header, Tab,
-                                      TabContainer)
+from datorum.component.layout import (
+    Card,
+    ComponentLayout,
+    Div,
+    Header,
+    Tab,
+    TabContainer,
+)
 from datorum.component.table import TableData
+from datorum.component.text import CTAData
 from datorum.dashboard import Dashboard, ModelDashboard
 from datorum.permissions import IsAdminUser
-from django.urls import reverse_lazy
 
+from demo.demo_app.components import SSEChart, SSEStat
 from demo.demo_app.data import DashboardData, VehicleData
 from demo.demo_app.forms import AnimalForm, ExampleForm, VehicleTypeFilterForm
 from demo.demo_app.models import Vehicle
@@ -19,7 +29,7 @@ class DemoDashboardOne(Dashboard):
     link = CTA(
         value=CTAData(
             href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
-            text="Find out more!"
+            text="Find out more!",
         ),
         width=3,
     )
@@ -38,7 +48,9 @@ class DemoDashboardOne(Dashboard):
         width=4,
     )
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=4)
-    stacked_chart_example = Chart(defer=DashboardData.fetch_stacked_bar_chart_data, width=4)
+    stacked_chart_example = Chart(
+        defer=DashboardData.fetch_stacked_bar_chart_data, width=4
+    )
     bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
     filter_form = Form(
         form=ExampleForm,
@@ -52,7 +64,7 @@ class DemoDashboardOne(Dashboard):
     stat_three = Stat(
         defer=lambda **kwargs: {
             "text": "33%",
-            "sub_text": kwargs.get('filters', {}).get("country", "all"),
+            "sub_text": kwargs.get("filters", {}).get("country", "all"),
         }
     )
     stat_one = Stat(value={"text": "100%", "sub_text": "increase"})
@@ -91,9 +103,7 @@ class DemoDashboardOneCustom(DemoDashboardOne):
 
 class DemoDashboardOneVary(DemoDashboardOne):
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=12)
-    calculated_example = Text(
-        defer=lambda **kwargs: "some calculated text", width=3
-    )
+    calculated_example = Text(defer=lambda **kwargs: "some calculated text", width=3)
     table_example = Table(defer=DashboardData.fetch_table_data, width=12)
 
     class Meta:
@@ -199,3 +209,23 @@ class VehicleDetailDashboard(ModelDashboard):
     class Meta(Dashboard.Meta):
         name = "Vehicle Detail Dashboard"
         model = Vehicle
+
+
+class SSEDashboard(Dashboard):
+    """
+    Example of dashboard with Server send events, see README for more details.
+    """
+
+    standard_stat = Stat(
+        defer=lambda *args, **kwargs: {
+            "text": f"{randint(1, 100)}%",
+            "sub_text": "Via poll",
+        },
+        poll_rate=3,
+    )
+    sse_stat = SSEStat()
+    standard_chart = Chart(defer=DashboardData.fetch_sse_chart_data, poll_rate=None)
+    sse_chart = SSEChart(defer=DashboardData.fetch_sse_chart_data)
+
+    class Meta(Dashboard.Meta):
+        name = "Server Sent Events Example"

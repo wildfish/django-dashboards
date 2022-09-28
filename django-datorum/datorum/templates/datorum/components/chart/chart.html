@@ -1,15 +1,14 @@
 {% with "data_"|add:component.key as data_key %}
     {{ rendered_value|json_script:data_key }}
     <script>
-        /* Temp - In Sandvik plots are always called rather then passed, but maybe these will work like this, needs some through. */
         var data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
         Plotly.newPlot(
-            'component-chart-{{ component.key }}',
+            '{{ component.key }}',
             data_{{ component.key }}.data,
             data_{{ component.key }}.layout,
         );
     </script>
 {% endwith %}
 
-<div id="component-chart-{{ component.key }}"></div>
+<div id="{{ component.key }}"></div>
 

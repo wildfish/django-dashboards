@@ -72,7 +72,9 @@ django-clear-cache==0.3
 django-configurations==2.3.2
     # via -r requirements.in
 django-cors-headers==3.13.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   django-datorum
 django-debug-toolbar==3.5.0
     # via -r requirements.in
 django-extensions==3.2.0
@@ -80,7 +82,9 @@ django-extensions==3.2.0
 django-filter==22.1
     # via -r requirements.in
 django-htmx==1.12.1
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   django-datorum
 django-model-utils==4.2.0
     # via -r requirements.in
 django-redis==5.2.0

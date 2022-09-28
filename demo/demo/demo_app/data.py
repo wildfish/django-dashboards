@@ -1,13 +1,16 @@
+import asyncio
 import csv
 from collections import namedtuple
+from random import randint
+
+from django.db.models import Max
+from django.utils.safestring import mark_safe
 
 import requests
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
 from datorum.component.table import TableData
 from datorum.component.text import StatData
-from django.db.models import Max
-from django.utils.safestring import mark_safe
 
 from demo.demo_app.models import Data, FlatText, Parameter, Vehicle
 
@@ -361,6 +364,18 @@ class DashboardData:
             },
         )
 
+    @staticmethod
+    def fetch_sse_chart_data(*args, **kwargs) -> ChartData:
+        return ChartData(
+            data=[
+                ChartData.Trace(
+                    y=list([1, 2, 3]),
+                    type=ChartData.Trace.Type.SCATTER,
+                    mode=ChartData.Trace.Mode.LINE,
+                )
+            ]
+        )
+
 
 class VehicleData:
     @staticmethod
@@ -375,9 +390,7 @@ class VehicleData:
     @staticmethod
     def get_vehicle(request):
         try:
-            return Vehicle.objects.get(
-                number_plate="OmfGAVOoIa"
-            )
+            return Vehicle.objects.get(number_plate="OmfGAVOoIa")
         except Vehicle.DoesNotExist:
             return Vehicle()
 

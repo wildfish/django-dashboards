@@ -1,5 +1,6 @@
-from datorum.forms import DatorumForm
 from django import forms
+
+from datorum.forms import DatorumForm
 
 from .models import Vehicle
 

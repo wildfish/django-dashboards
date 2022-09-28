@@ -51,6 +51,9 @@ snapshots[
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <script src="/static/js/htmx.min.js"></script>
+    <script src="/static/js/htmx.debug.min.js"></script>
+    <script src="/static/js/htmx.sse.min.js"></script>
+    <script src="/static/js/hyperscript-0.9.7.min.js"></script>
     <script src="/static/js/alpine-3.10.3.js" defer></script>
     <script src="/static/js/plotly-2.12.1.min.js"></script>
     <script src="/static/js/tabulator.min.js"></script>
@@ -83,7 +86,7 @@ value
   
   <div class="card-body">
     
-    <div hx-get="/TestDashboard/component/component_2/" hx-trigger="intersect once"></div>
+    <div hx-get="/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
 
   </div>
 </div>
@@ -125,6 +128,9 @@ snapshots[
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <script src="/static/js/htmx.min.js"></script>
+    <script src="/static/js/htmx.debug.min.js"></script>
+    <script src="/static/js/htmx.sse.min.js"></script>
+    <script src="/static/js/hyperscript-0.9.7.min.js"></script>
     <script src="/static/js/alpine-3.10.3.js" defer></script>
     <script src="/static/js/plotly-2.12.1.min.js"></script>
     <script src="/static/js/tabulator.min.js"></script>
