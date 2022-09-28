@@ -1,4 +1,4 @@
-<div id="component-table-{{ component.key }}"></div>
+<div id="{{ component.key }}"></div>
 
 {% with "data_"|add:component.key as data_key %}
     {% if not component.is_deferred %}
@@ -13,7 +13,7 @@
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_{{ component.key }} = new Tabulator("#component-table-{{ component.key }}", {
+        const table_{{ component.key }} = new Tabulator("#{{ component.key }}", {
             {% if component.is_deferred %}
             "sortMode": "remote",
             "ajaxURL":"{{ component.get_absolute_url }}?key={{ component.key }}",

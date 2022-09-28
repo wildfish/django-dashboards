@@ -17,15 +17,14 @@ snapshots[
     <script>
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
-            // TODO this name should be from component
-            'component-chart-test',
+            'test',
             data_test.data,
             data_test.layout,
         );
     </script>
 
 
-<div id="component-chart-test"></div>
+<div id="test"></div>
 
 
     </div>
@@ -36,7 +35,7 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="component-table-test"></div>
+        <div id="test"></div>
 
 
     
@@ -51,7 +50,7 @@ snapshots[
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#component-table-test", {
+        const table_test = new Tabulator("#test", {
             
             "data": rows_test,
             
@@ -89,15 +88,14 @@ snapshots[
     <script>
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
-            // TODO this name should be from component
-            'component-chart-test',
+            'test',
             data_test.data,
             data_test.layout,
         );
     </script>
 
 
-<div id="component-chart-test"></div>
+<div id="test"></div>
 
 
     </div>
@@ -108,7 +106,7 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="component-table-test"></div>
+        <div id="test"></div>
 
 
     
@@ -118,7 +116,7 @@ snapshots[
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#component-table-test", {
+        const table_test = new Tabulator("#test", {
             
             "sortMode": "remote",
             "ajaxURL":"/NoneType/component/test/?key=test",
@@ -161,15 +159,14 @@ snapshots[
     <script>
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
-            // TODO this name should be from component
-            'component-chart-test',
+            'test',
             data_test.data,
             data_test.layout,
         );
     </script>
 
 
-<div id="component-chart-test"></div>
+<div id="test"></div>
 
 
     </div>
@@ -180,7 +177,7 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="component-table-test"></div>
+        <div id="test"></div>
 
 
     
@@ -195,7 +192,7 @@ snapshots[
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#component-table-test", {
+        const table_test = new Tabulator("#test", {
             
             "data": rows_test,
             
@@ -233,15 +230,14 @@ snapshots[
     <script>
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
-            // TODO this name should be from component
-            'component-chart-test',
+            'test',
             data_test.data,
             data_test.layout,
         );
     </script>
 
 
-<div id="component-chart-test"></div>
+<div id="test"></div>
 
 
     </div>
@@ -252,7 +248,7 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="component-table-test"></div>
+        <div id="test"></div>
 
 
     
@@ -267,7 +263,7 @@ snapshots[
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#component-table-test", {
+        const table_test = new Tabulator("#test", {
             
             "data": rows_test,
             
@@ -323,15 +319,14 @@ snapshots[
     <script>
         var data_test = JSON.parse(document.getElementById('data_test').textContent);
         Plotly.newPlot(
-            // TODO this name should be from component
-            'component-chart-test',
+            'test',
             data_test.data,
             data_test.layout,
         );
     </script>
 
 
-<div id="component-chart-test"></div>
+<div id="test"></div>
 
 
     </div>
@@ -342,7 +337,7 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="component-table-test"></div>
+        <div id="test"></div>
 
 
     
@@ -357,7 +352,7 @@ snapshots[
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#component-table-test", {
+        const table_test = new Tabulator("#test", {
             
             "data": rows_test,
             

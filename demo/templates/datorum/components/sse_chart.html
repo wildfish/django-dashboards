@@ -10,7 +10,7 @@
     function updateTrace() {
         let value = document.getElementById("sse-value-{{ component.key }}").innerText
 
-        Plotly.extendTraces('component-chart-{{ component.key }}', {
+        Plotly.extendTraces('{{ component.key }}', {
             y: [[value]]
         }, [0], 25)
     }
