@@ -13,6 +13,12 @@ class Registry(object):
     def get_all_dashboards(self):
         return self.dashboards
 
+    def get_by_slug(self, slug):
+        for _, dashboard in self.dashboards.items():
+            if dashboard.get_slug() == slug:
+                return slug
+        raise ValueError
+
     def get_graphql_dashboards(self):
         return {
             name: dashboard
@@ -23,7 +29,7 @@ class Registry(object):
     def get_urls(self):
         urlpatterns = []
 
-        for name, dashboard in self.get_all_dashboards().items():
+        for dashboard in self.get_all_dashboards().values():
             urlpatterns += dashboard.urls
 
         return urlpatterns

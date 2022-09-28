@@ -27,6 +27,7 @@ class Component:
     # replicated on LayoutBase TODO need to handle this better
     css_classes: Optional[str] = None
     width: Optional[int] = 6
+    poll_rate: Optional[int] = 10  # In seconds, TODO make default a seting
 
     # attrs below should not be changed
     dependent_components: Optional[list["Component"]] = None
@@ -38,6 +39,9 @@ class Component:
     @property
     def dashboard_class(self):
         return str(self.dashboard.__class__.__name__)
+
+    def htmx_poll_rate(self):
+        return f"every {self.poll_rate}s"
 
     def get_value(
         self,

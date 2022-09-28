@@ -1,9 +1,10 @@
 import datetime
 from collections import namedtuple
 
-from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models import Q, QuerySet
+
+from dateutil.relativedelta import relativedelta
 
 
 class FlatText(models.Model):
