@@ -58,7 +58,7 @@ const Table = ({columns, data, paging}) => {
             data,
             initialState: {
                 pageIndex: paging?.page ?? 0,
-                pageSize: paging?.limit ?? 1,
+                pageSize: paging?.limit ?? 10,
                 sortBy: paging?.sortby ?? [],
             },
             manualPagination: paging?.ssr ?? false,
@@ -76,7 +76,7 @@ const Table = ({columns, data, paging}) => {
     // only save filters if we are using ssr
     if (paging?.ssr) {
         React.useEffect(() => {
-            setFilter(filters => ({...filters, limit: pageSize, page: pageIndex}))
+            setFilter(filters => ({...filters, size: pageSize, page: pageIndex}))
         }, [pageIndex, pageSize]);
 
         React.useEffect(() => {

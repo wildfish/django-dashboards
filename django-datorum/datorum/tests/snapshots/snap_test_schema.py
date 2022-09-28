@@ -153,7 +153,7 @@ snapshots["test_view__dashboards 1"] = [
                 "renderType": "Table",
                 "value": {
                     "headers": ["a", "b"],
-                    "last_page": 1,
+                    "paging": None,
                     "rows": [{"a": "Value", "b": "Value b"}],
                 },
                 "width": 6,

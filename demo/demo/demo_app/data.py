@@ -280,8 +280,9 @@ class DashboardData:
 
         # are we paginating?
         if filters:
-            limit = filters.get("limit", limit)
-            page = filters.get("page", page)
+            # based on react-table - todo: can these be generic for tabulator too?
+            limit = int(filters.get("size", limit))
+            page = int(filters.get("page", page))
             sort_by = filters.get("sortby", sort_by)
             direction = filters.get("direction", direction)
 
