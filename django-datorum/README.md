@@ -9,20 +9,20 @@ The dashboard example of this can b seen at http://127.0.0.1:8000/dashboards/SSE
 In order for the demo to run, you will also need to start pushpin. This allows the sending of events via background tasks, aids with 
 event distribution
 
-* Create a config file to tell pushpin where to route events.
-   
-        echo '* localhost:8000' > config
-   
 * Start a docker instance with:  
     
         docker run \
           -d \
           -p 7999:7999 \
           -p 5560-5563:5560-5563 \
-          -v routes:/etc/pushpin/routes \
+          -e target='host.docker.internal:8000' \
           --rm \
           --name pushpin \
           fanout/pushpin
+
+* On the pushpin container, amend /etc/pushpin/routes to contain only: 
+
+        * 127.0.0.1:8000
 
 * Start a management command to push some data (this could be a async task/celery etc also)
 

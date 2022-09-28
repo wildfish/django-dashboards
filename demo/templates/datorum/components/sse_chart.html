@@ -2,7 +2,7 @@
     Use SSE to stream data from a chart.
 
     - Values are added inside the sse-swap element
-    - Hyperscript then triggers updateTrace() which appends data to the chart.
+    - Hyperscript then triggers updateTrace() which appends data to the chart. Update trace only keeps the latest 25
     - Initial chart is called simply by including the base chart template.
 {% endcomment %}
 
@@ -12,7 +12,7 @@
 
         Plotly.extendTraces('component-chart-{{ component.key }}', {
             y: [[value]]
-        }, [0])
+        }, [0], 25)
     }
 </script>
 

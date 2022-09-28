@@ -136,7 +136,7 @@ class Common(Configuration):
     ]
 
     MIDDLEWARE = [
-        # django_htmx required for datorum/eventstream
+        # django_grip required for datorum/eventstream
         "django_grip.GripMiddleware",
         "django.middleware.security.SecurityMiddleware",
         "corsheaders.middleware.CorsMiddleware",
@@ -260,6 +260,8 @@ class Common(Configuration):
 
     GRIP_URL = "http://localhost:5561"
     EVENTSTREAM_ALLOW_ORIGIN = "http://127.0.0.1:8000"
+    EVENTSTREAM_ALLOW_CREDENTIALS = True
+    EVENTSTREAM_ALLOW_HEADERS = "Authorization"
 
 
 class RedisCache:

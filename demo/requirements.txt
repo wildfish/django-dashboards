@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
--e file:///Users/james/code/wildfish/django-datorum/datorum/django-datorum
+-e ../django-datorum
     # via -r requirements.in
 alabaster==0.7.12
     # via sphinx

@@ -5,10 +5,8 @@ from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from django.utils.html import strip_spaces_between_tags
 
-from datorum.component import Chart, Stat
+from datorum.component import Stat
 from django_eventstream import send_event
-
-from demo.demo_app.data import DashboardData
 
 
 class Command(BaseCommand):
