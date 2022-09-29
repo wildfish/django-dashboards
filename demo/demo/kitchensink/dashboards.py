@@ -13,7 +13,7 @@ from datorum.component.layout import (
     Tab,
     TabContainer,
 )
-from datorum.component.table import TableData
+from datorum.component.table import TableData, TablePaging
 from datorum.component.text import CTAData
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
@@ -42,7 +42,7 @@ class DemoDashboardOne(Dashboard):
     form_example = Form(
         form=AnimalForm,
         method="get",
-        dependents=["chart_example", "stacked_chart_example"],
+        dependents=["chart_example", "stacked_chart_example", "stat_three"],
         width=4,
     )
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=4)
@@ -71,23 +71,34 @@ class DemoDashboardOne(Dashboard):
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     table_example = Table(defer=DashboardData.fetch_table_data)
-    table_example_not_deferred = Table(
-        value=TableData(
-            headers=[],
-            rows=[
-                {
-                    "id": 1,
-                    "name": "Oli Bob",
-                    "progress": 12,
-                    "gender": "male",
-                    "rating": 1,
-                    "col": "red",
-                    "dob": "19/02/1984",
-                    "car": 1,
-                }
-            ],
-        )
-    )
+    # table_example_not_deferred = Table(
+    #     value=TableData(
+    #         headers=["id"],
+    #         rows=[
+    #             {
+    #                 "id": 1,
+    #                 "name": "Oli Bob",
+    #                 "progress": 12,
+    #                 "gender": "male",
+    #                 "rating": 1,
+    #                 "col": "red",
+    #                 "dob": "19/02/1984",
+    #                 "car": 1,
+    #             },
+    #             {
+    #                 "id": 2,
+    #                 "name": "Bob Oli",
+    #                 "progress": 2,
+    #                 "gender": "male",
+    #                 "rating": 5,
+    #                 "col": "blue",
+    #                 "dob": "21/04/1995",
+    #                 "car": 0,
+    #             }
+    #         ],
+    #         paging=TablePaging(total_items=2, limit=1, page_count=2)
+    #     )
+    # )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
 
