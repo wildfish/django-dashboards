@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from demo.demo_app.dashboards import DemoDashboardOne
+from demo.kitchensink.dashboards import DemoDashboardOne
 
 
 class NormalView(TemplateView):

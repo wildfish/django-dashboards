@@ -7,12 +7,15 @@ export const ReactTable = ({componentKey, value}: { componentKey: string, value:
     let valueJson = JSON.parse(JSON.stringify(value));
     let data = valueJson.rows;
     let paging = valueJson.paging;
-    const columns = useMemo(
-        () => Object.keys(data[0]).map(k => {
-            return {Header: k, accessor: k}
-        }),
-        [data]
-    )
+    let columns = [];
+    if (data.length > 0) {
+        columns = useMemo(
+            () => Object.keys(data[0]).map(k => {
+                return {Header: k, accessor: k}
+            }),
+            [data]
+        )
+    }
 
     return <Table componentKey={componentKey} columns={columns} data={data} paging={paging}/>
 }

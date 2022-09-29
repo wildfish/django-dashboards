@@ -2,8 +2,6 @@ from django import forms
 
 from datorum.forms import DatorumForm
 
-from .models import Vehicle
-
 
 class ExampleForm(DatorumForm):
     country = forms.ChoiceField(
@@ -24,11 +22,4 @@ class AnimalForm(DatorumForm):
             ("orangutans", "Orangutan"),
             ("monkeys", "Monkey"),
         )
-    )
-
-
-class VehicleTypeFilterForm(DatorumForm):
-    vehicle_type = forms.ChoiceField(
-        choices=[("", "all")] + Vehicle.TruckType.choices,
-        required=False,
     )

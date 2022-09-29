@@ -132,7 +132,8 @@ class Common(Configuration):
         "datorum",
         "django_eventstream",
         # Project
-        "demo.demo_app",
+        "demo.vehicle.apps.VehicleConfig",
+        "demo.kitchensink.apps.KitchenSinkConfig",
     ]
 
     MIDDLEWARE = [
