@@ -83,6 +83,7 @@ class Component:
 
     def get_absolute_url(self):
         kwargs = {}
+        kwargs["app_label"] = self.dashboard.Meta.app_label
         kwargs["dashboard"] = self.dashboard_class
         kwargs["component"] = self.key
 

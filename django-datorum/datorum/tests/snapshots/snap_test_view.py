@@ -86,7 +86,7 @@ value
   
   <div class="card-body">
     
-    <div hx-get="/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
 
   </div>
 </div>
