@@ -132,10 +132,10 @@ class Common(Configuration):
         "datorum",
         "django_eventstream",
         # Project
-        "demo.vehicle.apps.VehicleConfig",
         "demo.kitchensink.apps.KitchenSinkConfig",
+        "demo.vehicle.apps.VehicleConfig",
+        "demo.churn.apps.ChurnConfig",
     ]
-
     MIDDLEWARE = [
         # django_grip required for datorum/eventstream
         "django_grip.GripMiddleware",

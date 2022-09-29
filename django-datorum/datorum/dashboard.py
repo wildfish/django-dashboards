@@ -139,8 +139,11 @@ class Dashboard(metaclass=DashboardType):
 
         from .views import DashboardView
 
-        name = str(self.__class__.__name__)
+        name = str(self.__class__.__name__).lower()
 
+        # TODO should we make this app based somehow? So when registry.urls is added it can be added as sub sections
+        # e.g for the demo /churn/dashboard... /vehicle/dashboard... we could probably do this via ready() in app
+        # config, making registration of dashboards explicit to an app? Nice to have for now.
         return [
             path(
                 f"{name}/",
