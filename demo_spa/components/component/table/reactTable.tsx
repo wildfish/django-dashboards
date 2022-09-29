@@ -3,39 +3,52 @@ import {useTable, useSortBy, usePagination} from 'react-table'
 import * as styles from "@/components/component/table/index.module.scss";
 import {FilterContext} from "../../../appContext";
 
-export const ReactTable = ({value}: { value: any }) => {
+export const ReactTable = ({componentKey, value}: { componentKey: string, value: any }) => {
     let valueJson = JSON.parse(JSON.stringify(value));
     let data = valueJson.rows;
     let paging = valueJson.paging;
     const columns = useMemo(
-     () => Object.keys(data[0]).map(k => {return {Header: k, accessor: k}}),
-     []
+        () => Object.keys(data[0]).map(k => {
+            return {Header: k, accessor: k}
+        }),
+        [data]
     )
 
-    return <Table columns={columns} data={data} paging={paging} />
+    return <Table componentKey={componentKey} columns={columns} data={data} paging={paging}/>
 }
 
-const PaginationButtons = ({gotoPage, canPreviousPage, previousPage, nextPage, canNextPage, pageCount, pageIndex, pageOptions}) => {
+const PaginationButtons = ({
+                               gotoPage,
+                               canPreviousPage,
+                               previousPage,
+                               nextPage,
+                               canNextPage,
+                               pageCount,
+                               pageIndex,
+                               pageOptions
+                           }: { gotoPage: any, canPreviousPage: boolean, previousPage: any, nextPage: any, canNextPage: boolean, pageCount: number, pageIndex: number, pageOptions: any }) => {
     return (
         <div className={styles.pagination}>
             <button onClick={() => previousPage()} disabled={!canPreviousPage}>
                 Previous
-            </button>{" "}
+            </button>
+            {" "}
             <button onClick={() => nextPage()} disabled={!canNextPage}>
-            Next
-            </button>{" "}
+                Next
+            </button>
+            {" "}
             <span>
             Page{" "}
-            <strong>
+                <strong>
         {pageIndex + 1} of {pageCount}
             </strong>{" "}
             </span>
-      </div>
+        </div>
 
     )
 }
 
-const Table = ({columns, data, paging}) => {
+const Table = ({componentKey, columns, data, paging}: { componentKey: string, columns: [], data: [], paging: any }) => {
     const {
         getTableProps,
         getTableBodyProps,
@@ -70,24 +83,28 @@ const Table = ({columns, data, paging}) => {
         usePagination
     )
 
-    const { pageIndex, pageSize, sortBy } = state;
+    const {pageIndex, pageSize, sortBy} = state;
     const [filters, setFilter] = useContext(FilterContext)
 
-    // only save filters if we are using ssr
-    if (paging?.ssr) {
-        React.useEffect(() => {
-            setFilter(filters => ({...filters, size: pageSize, page: pageIndex}))
-        }, [pageIndex, pageSize]);
+    React.useEffect(() => {
+        const newFilters = [componentKey].reduce((a, b) => {
+            a[b] = {...a[b], size: pageSize, page: pageIndex}
+            return a
+        }, {...filters})
+        // update the filters for the table
+        setFilter(newFilters)
+    }, [componentKey, pageIndex, pageSize]);
 
-        React.useEffect(() => {
-            if (sortBy.length > 0) {
-                const sortParams = sortBy[0];
-                let sortById = sortParams.id
-                const sortyByDir = sortParams.desc ? 'desc' : 'asc'
-                setFilter(filters => ({...filters, sortby: sortById, direction: sortyByDir}))
-            }
-        }, [sortBy]);
-    }
+    React.useEffect(() => {
+        if (sortBy.length > 0) {
+            const sortParams = sortBy[0];
+            let sortById = sortParams.id
+            const sortyByDir = sortParams.desc ? 'desc' : 'asc'
+            const newFilters = {[componentKey]: {...filters[componentKey], sortby: sortById, direction: sortyByDir}}
+            // update the filters for the table
+            setFilter(newFilters)
+        }
+    }, [componentKey, sortBy]);
 
     return (
         <>

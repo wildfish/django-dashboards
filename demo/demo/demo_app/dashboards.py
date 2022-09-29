@@ -44,7 +44,7 @@ class DemoDashboardOne(Dashboard):
     form_example = Form(
         form=AnimalForm,
         method="get",
-        dependents=["chart_example", "stacked_chart_example"],
+        dependents=["chart_example", "stacked_chart_example", "stat_three"],
         width=4,
     )
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=4)

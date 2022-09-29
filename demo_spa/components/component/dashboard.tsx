@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useMemo} from "react";
 import {Component as ComponentType, Dashboard, DashboardComponentTypes, Value} from "@/types";
 import {gql, useQuery} from "@apollo/client";
 import {Stat} from "@/components/component/text";
@@ -35,7 +35,8 @@ type LazyComponentProps = {
 
 const LazyComponent = ({dashboard, component, Component}: LazyComponentProps) => {
     const [filters, setFilter] = useContext(FilterContext)
-    const { loading, data } = useQuery(gql`
+    const componentFilters = useMemo(() => filters[component.key], [filters, component.key])
+    const { loading, data, previousData } = useQuery(gql`
       query ($slug: String!, $key: String!, $filters: JSON) {
         component(slug: $slug, key: $key, filters: $filters) {
           value
@@ -46,13 +47,13 @@ const LazyComponent = ({dashboard, component, Component}: LazyComponentProps) =>
             variables: {
                 slug:dashboard.Meta.slug,
                 key: component.key,
-                filters: filters
+                filters: componentFilters
             }
         }
     );
 
     return <>
-       {loading || !data ? <>Loading...</> : <Component value={data.component.value}/>}
+       {loading && previousData === null || (!data && !previousData) ? <>Loading...</> : <Component componentKey={component.key} value={(data || previousData).component.value}/>}
     </>
 };
 
@@ -67,7 +68,7 @@ export const DashboardComponent = ({dashboard, component}: DashboardComponentPro
     return <div className={styles.componentInner}>
         {Object.keys(DashboardComponentMap).includes(component.renderType) ?
             !component.isDeferred ?
-                <Component value={component.value}/>
+                <Component componentKey={component.key} value={component.value}/>
             :
                 <LazyComponent dashboard={dashboard} component={component} Component={Component}/>
         :

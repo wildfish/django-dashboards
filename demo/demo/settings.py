@@ -256,7 +256,7 @@ class Common(Configuration):
         },
     }
 
-    # CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_ALL_ORIGINS = True
 
     GRIP_URL = "http://localhost:5561"
     EVENTSTREAM_ALLOW_ORIGIN = "http://127.0.0.1:8000"

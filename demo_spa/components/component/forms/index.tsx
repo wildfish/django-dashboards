@@ -23,29 +23,40 @@ type FormFieldComponentProps = {
 const FormFieldComponent = ({element, onChange} : FormFieldComponentProps) => {
     if (element.field_type === 'Select') {
         const choices = element.choices.map((choice) => <option value={choice[0]} key={choice[0]}>{choice[1]}</option>)
-        return <select id={element.id} name={element.name} value={element.value} onChange={onChange}>
+        return <select id={element.id} name={element.name} defaultValue={element.value} onChange={onChange}>
             {choices}
         </select>
 
     } else if (element.field_type === 'Textarea') {
-        return <textarea name={element.name} id={element.id} onChange={onChange}>{element.value}</textarea>
+        return <textarea name={element.name} id={element.id} onChange={onChange} defaultValue={element.value} />
     } else {
-        return <input type={"text"} id={element.id} name={element.name} value={element.value} onChange={onChange} />
+        return <input type={"text"} id={element.id} name={element.name} defaultValue={element.value} onChange={onChange} />
     }
 }
 
-export const Form = ({value}: { value: Value }) => {
+type FormProps = {
+    componentKey: string
+    value: Value
+}
+
+export const Form = ({componentKey, value}: FormProps) => {
     const [filters, setFilter] = useContext(FilterContext)
     const data = JSON.parse(JSON.stringify(value))
     const method = data.method
     const dependents = data.dependents
 
     const onChange = event => {
-        setFilter(filters => ({ ...filters, [event.target.name]: event.target.value }))
+        const newFilters = [...dependents, componentKey].reduce((a, b) => {
+            a[b] = {...a[b], [event.target.name]: event.target.value}
+            return a
+        }, {...filters})
+        // update the filters for the depentent components
+        setFilter(newFilters)
     }
 
     const onSubmit = event => {
         event.preventDefault()
+        // todo: handle form submit here
     }
 
     return (
