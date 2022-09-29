@@ -1,6 +1,6 @@
 [
 {
-    "model": "demo_app.flattext",
+    "model": "kicthensink.flattext",
     "pk": 1,
     "fields": {
         "slug": "test",

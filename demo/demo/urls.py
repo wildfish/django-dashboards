@@ -6,7 +6,7 @@ from django.urls import include, path
 import django_eventstream
 from strawberry.django.views import GraphQLView
 
-from .demo_app.schema import schema
+from .schema import schema
 
 
 admin.autodiscover()
@@ -15,8 +15,8 @@ urlpatterns = [
     path(
         "",
         include(
-            "demo.demo_app.urls",
-            namespace="demo_app",
+            "demo.kitchensink.urls",
+            namespace="kicthensink",
         ),
     ),
     path("dashboard/", include("datorum.urls")),

@@ -7,14 +7,6 @@ from django.db.models import Q, QuerySet
 from dateutil.relativedelta import relativedelta
 
 
-class FlatText(models.Model):
-    slug = models.SlugField()
-    text = models.TextField()
-
-    def __str__(self):
-        return self.slug
-
-
 class VehicleQueryset(QuerySet):
     def for_type(self, vehicle_type: str):
         return self.filter(type=vehicle_type)
