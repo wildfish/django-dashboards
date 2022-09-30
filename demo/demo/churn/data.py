@@ -1,12 +1,27 @@
 import csv
 
+from django.contrib.humanize.templatetags.humanize import intcomma
+
 import requests
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
 from datorum.component.table import TableData, TablePaging
+from datorum.component.text import StatData
+
+from demo.churn.models import Customer
 
 
 class ChurnSummaryData:
+    @staticmethod
+    def fetch_monthly_gross_margin(*args, **kwargs) -> StatData:
+        mgm = Customer.objects.monthly_gross_margin()
+        return StatData(text=f"£{intcomma(mgm)}", sub_text="Monthly Gross Margin")
+
+    @staticmethod
+    def fetch_actual_churn_rate(*args, **kwargs) -> StatData:
+        rate = Customer.objects.actual_churn_rate()
+        return StatData(text=f"{rate}%", sub_text="Actual Churn Rate")
+
     @staticmethod
     def fetch_churn_risk_predictor(*args, **kwargs) -> ChartData:
         data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}

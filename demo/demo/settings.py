@@ -291,17 +291,18 @@ class Dev(Common):
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = "/tmp/app-emails"
     INTERNAL_IPS = ["127.0.0.1"]
+    ENABLE_SILK = True
 
     @property
     def INSTALLED_APPS(self):
         INSTALLED_APPS = super().INSTALLED_APPS
-        INSTALLED_APPS.append("debug_toolbar")
+        INSTALLED_APPS.append("silk")
         return INSTALLED_APPS
 
     @property
     def MIDDLEWARE(self):
         MIDDLEWARE = super().MIDDLEWARE
-        MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
+        MIDDLEWARE.append("silk.middleware.SilkyMiddleware")
         return MIDDLEWARE
 
 
@@ -345,9 +346,7 @@ class Deployed(RedisCache, Common):
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     SESSION_CACHE_ALIAS = "default"
 
-    # django-debug-toolbar will throw an ImproperlyConfigured exception if DEBUG is
-    # ever turned on when run with a WSGI server
-    DEBUG_TOOLBAR_PATCH_SETTINGS = False
+    ENABLE_SILK = False
 
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = "smtp.sendgrid.net"

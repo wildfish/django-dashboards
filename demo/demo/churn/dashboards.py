@@ -13,10 +13,8 @@ class SummaryDashboard(Dashboard):
     number_risky_customers = Stat(
         value=StatData(text="2", sub_text="# Risky customers")
     )
-    monthly_gross_margin = Stat(
-        value=StatData(text=f"£{intcomma(12345678)}", sub_text="Monthly Gross Margin")
-    )
-    actual_churn_rate = Stat(value=StatData(text="1.6%", sub_text="Rate"))
+    monthly_gross_margin = Stat(defer=ChurnSummaryData.fetch_monthly_gross_margin)
+    actual_churn_rate = Stat(defer=ChurnSummaryData.fetch_actual_churn_rate)
 
     actual_churn_data = Text(value="actual_churn_data")
     churn_risk_predictor = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
