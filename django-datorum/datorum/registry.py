@@ -17,6 +17,9 @@ class Registry(object):
                 return dashboard
         raise IndexError
 
+    def get_by_app_label(self, app_label: str):
+        return [d for d in self.dashboards if d.Meta.app_label == app_label]
+
     def get_by_slug(self, slug):
         for dashboard in self.dashboards:
             if dashboard.get_slug() == slug:

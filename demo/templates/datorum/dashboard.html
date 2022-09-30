@@ -2,11 +2,10 @@
 {% load datorum %}
 
 {% block content_title %}
-  <h1>Demo App</h1>
-{% endblock %}
+    <h2>{{ dashboard.Meta.name }}</h2>
+{% endblock content_title %}
 
 {% block content %}
-    <h2>{{ dashboard.Meta.name }}</h2>
     <div class="dashboard-container">
         {% render_dashboard dashboard %}
     </div>

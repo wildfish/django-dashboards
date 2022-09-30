@@ -43,14 +43,14 @@ snapshots[
     
     <script>
         
-        const data_test = JSON.parse(document.getElementById('data_test').textContent);
-        const rows_test = data_test.rows;
+        let data_test = JSON.parse(document.getElementById('data_test').textContent);
+        let rows_test = data_test.rows;
         
 
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#test", {
+        let table_test = new Tabulator("#test", {
             
             "data": rows_test,
             
@@ -116,7 +116,7 @@ snapshots[
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#test", {
+        let table_test = new Tabulator("#test", {
             
             "sortMode": "remote",
             "ajaxURL":"/app1/DashboardType/component/test/?key=test",
@@ -185,14 +185,14 @@ snapshots[
     
     <script>
         
-        const data_test = JSON.parse(document.getElementById('data_test').textContent);
-        const rows_test = data_test.rows;
+        let data_test = JSON.parse(document.getElementById('data_test').textContent);
+        let rows_test = data_test.rows;
         
 
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#test", {
+        let table_test = new Tabulator("#test", {
             
             "data": rows_test,
             
@@ -256,14 +256,14 @@ snapshots[
     
     <script>
         
-        const data_test = JSON.parse(document.getElementById('data_test').textContent);
-        const rows_test = data_test.rows;
+        let data_test = JSON.parse(document.getElementById('data_test').textContent);
+        let rows_test = data_test.rows;
         
 
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#test", {
+        let table_test = new Tabulator("#test", {
             
             "data": rows_test,
             
@@ -345,14 +345,14 @@ snapshots[
     
     <script>
         
-        const data_test = JSON.parse(document.getElementById('data_test').textContent);
-        const rows_test = data_test.rows;
+        let data_test = JSON.parse(document.getElementById('data_test').textContent);
+        let rows_test = data_test.rows;
         
 
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_test = new Tabulator("#test", {
+        let table_test = new Tabulator("#test", {
             
             "data": rows_test,
             

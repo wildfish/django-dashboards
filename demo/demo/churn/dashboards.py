@@ -4,6 +4,7 @@ from datorum.component import Chart, Map, Stat, Table, Text
 from datorum.component.layout import HTML, Card, ComponentLayout
 from datorum.component.text import StatData
 from datorum.dashboard import Dashboard
+from datorum.registry import registry
 
 from demo.churn.data import ChurnSummaryData
 
@@ -43,3 +44,9 @@ class SummaryDashboard(Dashboard):
             Card("churn_factors", width=6),
             Card("churn_table", width=12),
         )
+
+    class Meta:
+        name = "Summary"
+
+
+registry.register(SummaryDashboard)

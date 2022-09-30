@@ -27,7 +27,7 @@ from demo.kitchensink.forms import AnimalForm, ExampleForm
 class DemoDashboardOne(Dashboard):
     link = CTA(
         value=CTAData(
-            href=reverse_lazy("datorum:dashboards:demodashboardonecustom_dashboard"),
+            href=reverse_lazy("datorum:dashboards:kitchensink_demodashboardonecustom"),
             text="Find out more!",
         ),
         width=3,
@@ -104,11 +104,14 @@ class DemoDashboardOne(Dashboard):
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
 
     class Meta:
-        name = "Dashboard One"
+        name = "Basic"
 
 
 class DemoDashboardOneCustom(DemoDashboardOne):
     template_name = "demo/custom.html"
+
+    class Meta:
+        name = "Custom Template"
 
 
 class DemoDashboardOneVary(DemoDashboardOne):
@@ -117,7 +120,7 @@ class DemoDashboardOneVary(DemoDashboardOne):
     table_example = Table(defer=DashboardData.fetch_table_data, width=12)
 
     class Meta:
-        name = "Dashboard One Vary"
+        name = "With Layout"
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
@@ -161,7 +164,7 @@ class DemoDashboardAdmin(Dashboard):
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
 
     class Meta:
-        name = "Admin Dashboard"
+        name = "Admin Only"
 
 
 class SSEDashboard(Dashboard):
@@ -181,7 +184,7 @@ class SSEDashboard(Dashboard):
     sse_chart = SSEChart(defer=DashboardData.fetch_sse_chart_data)
 
     class Meta:
-        name = "Server Sent Events Example"
+        name = "SSE Example"
 
 
 # register the dashboards

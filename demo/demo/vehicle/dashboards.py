@@ -29,7 +29,7 @@ class VehicleOverviewDashboard(Dashboard):
     vehicles = Table(defer=VehicleData.fetch_vehicles, width=12)
 
     class Meta:
-        name = "Vehicle Dashboard"
+        name = "Summary"
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
@@ -61,7 +61,7 @@ class VehicleDetailDashboard(ModelDashboard):
     map = Map(defer=VehicleData.fetch_last_route, width=6)
 
     class Meta:
-        name = "Vehicle Detail Dashboard"
+        name = "Vehicle Detail"
         model = Vehicle
 
 
