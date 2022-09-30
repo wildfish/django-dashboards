@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from datorum.dashboard import Dashboard
+from datorum.exceptions import DashboardNotFoundError
 from datorum.utils import get_dashboard_class
 
 
@@ -23,7 +24,11 @@ class DashboardObjectMixin:
 
         return kwargs
 
-    def get_dashboard(self):
+    def get_dashboard(self, request):
+        has_permissions = self.dashboard_class.has_permissions(request=request)
+        if not has_permissions:
+            raise PermissionDenied()
+
         return self.dashboard_class(**self.get_dashboard_kwargs())
 
 
@@ -35,16 +40,9 @@ class DashboardView(DashboardObjectMixin, TemplateView):
     template_name: str = "datorum/dashboard.html"
 
     def get(self, request, *args, **kwargs):
-        self.dashboard = self.get_dashboard()
+        self.dashboard = self.get_dashboard(request)
         context = self.get_context_data(**{"dashboard": self.dashboard})
         return self.render_to_response(context)
-
-    def dispatch(self, request: HttpRequest, *args, **kwargs):
-        if self.dashboard_class:
-            has_permissions = self.dashboard_class.has_permissions(request=request)
-            if not has_permissions:
-                raise PermissionDenied()
-        return super().dispatch(request, *args, **kwargs)
 
 
 class ComponentView(DashboardObjectMixin, TemplateView):
@@ -57,16 +55,18 @@ class ComponentView(DashboardObjectMixin, TemplateView):
     def is_ajax(self):
         return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
 
-    def dispatch(self, request: HttpRequest, *args, **kwargs):
-        self.dashboard_class = get_dashboard_class(self.kwargs["dashboard"])
-        if self.dashboard_class:
-            has_permissions = self.dashboard_class.has_permissions(request=request)
-            if not has_permissions:
-                raise PermissionDenied()
-        return super().dispatch(request, *args, **kwargs)
+    def get_dashboard(self, request):
+        try:
+            self.dashboard_class = get_dashboard_class(
+                self.kwargs["app_label"], self.kwargs["dashboard"]
+            )
+        except DashboardNotFoundError as e:
+            raise Http404(str(e))
+
+        return super().get_dashboard(request)
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        dashboard = self.get_dashboard()
+        dashboard = self.get_dashboard(request)
         component = self.get_partial_component(dashboard)
 
         if self.is_ajax() and component:
@@ -109,14 +109,8 @@ class FormComponentView(ComponentView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get_success_url(self):
-        dashboard = self.get_dashboard()
-        component = self.get_partial_component(dashboard)
-
-        return component.get_absolute_url()
-
     def get(self, request: HttpRequest, *args, **kwargs):
-        dashboard = self.get_dashboard()
+        dashboard = self.get_dashboard(request)
         component = self.get_partial_component(dashboard)
         dependant_components = component.dependent_components
 
@@ -139,7 +133,7 @@ class FormComponentView(ComponentView):
             return self.render_to_response(context)
 
     def post(self, request: HttpRequest, *args, **kwargs):
-        dashboard = self.get_dashboard()
+        dashboard = self.get_dashboard(request)
         component = self.get_partial_component(dashboard)
         form = component.get_form(request=request)
         if form.is_valid():
@@ -147,6 +141,6 @@ class FormComponentView(ComponentView):
             if self.is_ajax():
                 return HttpResponse({"success": True}, content_type="application/json")
 
-            return HttpResponseRedirect(self.get_success_url())
+            return HttpResponseRedirect(component.get_absolute_url())
 
         return self.get(request, *args, **kwargs)

@@ -2,6 +2,7 @@ import inspect
 import logging
 from typing import List, Optional
 
+from django.apps import apps
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.template import Context
@@ -15,7 +16,6 @@ from datorum.component import Component
 from datorum.component.layout import Card, ComponentLayout
 from datorum.exceptions import ComponentNotFoundError
 from datorum.permissions import BasePermission
-from datorum.registry import registry
 
 
 logger = logging.getLogger(__name__)
@@ -24,10 +24,28 @@ logger = logging.getLogger(__name__)
 class DashboardType(type):
     def __new__(mcs, name, bases, attrs):
         dashboard_class = super().__new__(mcs, name, bases, attrs)
+        module = attrs.pop("__module__")
         attr_meta = attrs.get("Meta", None)
         meta = attr_meta or getattr(dashboard_class, "Meta", None)
         base_meta = getattr(dashboard_class, "_meta", None)
         setattr(dashboard_class, "_meta", meta)
+        if getattr(meta, "app_label", None) is None:
+            # Look for an application configuration to attach the model to.
+            app_config = apps.get_containing_app_config(module)
+
+            if app_config is None:
+                if name not in (
+                    "ModelDashboard",
+                    "Dashboard",
+                ):  # TODO needs better way to exclude the base class?
+
+                    raise RuntimeError(
+                        "Model class %s.%s doesn't declare an explicit "
+                        "app_label and isn't in an application in "
+                        "INSTALLED_APPS." % (module, name)
+                    )
+            else:
+                dashboard_class._meta.app_label = app_config.label
 
         if base_meta:
             if not hasattr(meta, "model"):
@@ -37,7 +55,6 @@ class DashboardType(type):
             if not hasattr(meta, "lookup_field"):
                 dashboard_class._meta.lookup_field = base_meta.lookup_field
 
-        registry.register(dashboard_class)
         return dashboard_class
 
 
@@ -146,7 +163,7 @@ class Dashboard(metaclass=DashboardType):
         # config, making registration of dashboards explicit to an app? Nice to have for now.
         return [
             path(
-                f"{name}/",
+                f"{self._meta.app_label}/{name}/",
                 DashboardView.as_view(dashboard_class=self.__class__),
                 name=self.get_slug(),
             ),
@@ -275,7 +292,7 @@ class ModelDashboard(Dashboard):
 
         return [
             path(
-                f"{name}/<str:{self._meta.lookup_kwarg}>/",
+                f"{self._meta.app_label}/{name}/<str:{self._meta.lookup_kwarg}>/",
                 DashboardView.as_view(dashboard_class=self.__class__),
                 name=f"{self.get_slug()}_dashboard_detail",
             ),

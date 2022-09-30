@@ -268,7 +268,7 @@ class DashboardData:
 
         page_count = math.ceil(total / limit)
         page_offset = page * limit
-        data = data[page_offset : page_offset + limit]
+        data = data[page_offset: page_offset + limit]
 
         paging = TablePaging(
             ssr=True,

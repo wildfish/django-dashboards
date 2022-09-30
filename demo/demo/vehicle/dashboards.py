@@ -1,8 +1,7 @@
-from random import randint
-
-from datorum.component import Chart, Form, Map, Stat, Table
+from datorum.component import Form, Map, Stat, Table
 from datorum.component.layout import HTML, Card, ComponentLayout, Div
 from datorum.dashboard import Dashboard, ModelDashboard
+from datorum.registry import registry
 
 from demo.vehicle.data import VehicleData
 from demo.vehicle.forms import VehicleTypeFilterForm
@@ -61,6 +60,10 @@ class VehicleDetailDashboard(ModelDashboard):
     vehicle_details = Stat(defer=VehicleData.fetch_vehicle_details, width=6)
     map = Map(defer=VehicleData.fetch_last_route, width=6)
 
-    class Meta(Dashboard.Meta):
+    class Meta:
         name = "Vehicle Detail Dashboard"
         model = Vehicle
+
+
+registry.register(VehicleOverviewDashboard)
+registry.register(VehicleDetailDashboard)

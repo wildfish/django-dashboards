@@ -22,9 +22,10 @@ from . import urls
 )
 @pytest.mark.parametrize("htmx", [True, False])
 def test_component__renders_value(
-    component_class, component_kwargs, htmx, rf, snapshot
+    component_class, dashboard, component_kwargs, htmx, rf, snapshot
 ):
     component = component_class(**component_kwargs)
+    component.dashboard = dashboard
     component.key = "test"
     context = Context(
         {
@@ -38,9 +39,10 @@ def test_component__renders_value(
 
 @override_settings(ROOT_URLCONF=urls)
 @pytest.mark.parametrize("htmx", [True, False])
-def test_cta_component__renders_value(htmx, rf, snapshot):
+def test_cta_component__renders_value(htmx, dashboard, rf, snapshot):
     component = CTA(value=CTAData(text="click here", href="/"))
     component.key = "test"
+    component.dashboard = dashboard
     context = Context(
         {
             "component": component,
@@ -60,8 +62,11 @@ def test_cta_component__renders_value(htmx, rf, snapshot):
     ],
 )
 @pytest.mark.parametrize("htmx", [True, False])
-def test_component__renders_value__stat(component_kwargs, htmx, rf, snapshot):
+def test_component__renders_value__stat(
+    component_kwargs, dashboard, htmx, rf, snapshot
+):
     component = Stat(**component_kwargs)
+    component.dashboard = dashboard
     component.key = "test"
     context = Context(
         {

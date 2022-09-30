@@ -17,6 +17,7 @@ from datorum.component.table import TableData, TablePaging
 from datorum.component.text import CTAData
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
+from datorum.registry import registry
 
 from demo.kitchensink.components import SSEChart, SSEStat
 from demo.kitchensink.data import DashboardData
@@ -71,34 +72,34 @@ class DemoDashboardOne(Dashboard):
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     table_example = Table(defer=DashboardData.fetch_table_data)
-    # table_example_not_deferred = Table(
-    #     value=TableData(
-    #         headers=["id"],
-    #         rows=[
-    #             {
-    #                 "id": 1,
-    #                 "name": "Oli Bob",
-    #                 "progress": 12,
-    #                 "gender": "male",
-    #                 "rating": 1,
-    #                 "col": "red",
-    #                 "dob": "19/02/1984",
-    #                 "car": 1,
-    #             },
-    #             {
-    #                 "id": 2,
-    #                 "name": "Bob Oli",
-    #                 "progress": 2,
-    #                 "gender": "male",
-    #                 "rating": 5,
-    #                 "col": "blue",
-    #                 "dob": "21/04/1995",
-    #                 "car": 0,
-    #             }
-    #         ],
-    #         paging=TablePaging(total_items=2, limit=1, page_count=2)
-    #     )
-    # )
+    table_example_not_deferred = Table(
+        value=TableData(
+            headers=["id"],
+            rows=[
+                {
+                    "id": 1,
+                    "name": "Oli Bob",
+                    "progress": 12,
+                    "gender": "male",
+                    "rating": 1,
+                    "col": "red",
+                    "dob": "19/02/1984",
+                    "car": 1,
+                },
+                {
+                    "id": 2,
+                    "name": "Bob Oli",
+                    "progress": 2,
+                    "gender": "male",
+                    "rating": 5,
+                    "col": "blue",
+                    "dob": "21/04/1995",
+                    "car": 0,
+                },
+            ],
+            paging=TablePaging(total_items=2, limit=1, page_count=2),
+        )
+    )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
 
@@ -179,5 +180,13 @@ class SSEDashboard(Dashboard):
     standard_chart = Chart(defer=DashboardData.fetch_sse_chart_data, poll_rate=None)
     sse_chart = SSEChart(defer=DashboardData.fetch_sse_chart_data)
 
-    class Meta(Dashboard.Meta):
+    class Meta:
         name = "Server Sent Events Example"
+
+
+# register the dashboards
+registry.register(DemoDashboardOne)
+registry.register(DemoDashboardOneCustom)
+registry.register(DemoDashboardOneVary)
+registry.register(DemoDashboardAdmin)
+registry.register(SSEDashboard)

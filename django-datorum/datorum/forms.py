@@ -5,14 +5,16 @@ from django.urls import reverse
 
 
 class DatorumFormMixin:
-    def __init__(self, dashboard_class, key, *args, **kwargs):
+    def __init__(self, app_label, dashboard_class, key, *args, **kwargs):
+        self.app_label = app_label
         self.dashboard_class = dashboard_class
         self.component_key = key
         super().__init__(*args, **kwargs)
 
     def get_submit_url(self):
         return reverse(
-            "datorum:form_component", args=[self.dashboard_class, self.component_key]
+            "datorum:form_component",
+            args=[self.app_label, self.dashboard_class, self.component_key],
         )
 
     def save(self, **kwargs):
