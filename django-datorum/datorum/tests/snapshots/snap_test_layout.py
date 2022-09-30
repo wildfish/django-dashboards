@@ -50,7 +50,7 @@ value
 
 </div><div class="span-6 css_style">
   
-    <div hx-get="/TestDashboardWithLayout/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/TestDashboardWithLayout/component/component_2/" hx-trigger="intersect once, every 10s"></div>
 
 </div>
 </div>
@@ -111,7 +111,7 @@ value
 
     </div>
 
-    <div hx-get="/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[
@@ -124,7 +124,7 @@ value
 
     </div>
 
-    <div hx-get="/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[

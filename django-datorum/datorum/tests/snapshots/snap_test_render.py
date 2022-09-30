@@ -119,7 +119,7 @@ snapshots[
         const table_test = new Tabulator("#test", {
             
             "sortMode": "remote",
-            "ajaxURL":"/NoneType/component/test/?key=test",
+            "ajaxURL":"/app1/DashboardType/component/test/?key=test",
             "paginationMode": "remote",
             "ajaxResponse": function(url, params, response){
                 return {"data": response.rows, "last_page": response.last_page};
@@ -294,19 +294,19 @@ value
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Chart] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Table] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Text] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[
@@ -419,7 +419,7 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs1] 1"
 ] = """
-    <div hx-get="/NoneType/component/test/" hx-trigger="intersect once, every 10s"></div>
+    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
 """
 
 snapshots[

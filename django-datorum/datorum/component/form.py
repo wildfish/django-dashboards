@@ -36,7 +36,12 @@ class Form(Component):
         else:
             data = None
 
-        form = self.form(dashboard_class=self.dashboard_class, key=self.key, data=data)
+        form = self.form(
+            app_label=self.dashboard.Meta.app_label if self.dashboard else "",
+            dashboard_class=self.dashboard_class,
+            key=self.key,
+            data=data,
+        )
         return form
 
     def get_value(

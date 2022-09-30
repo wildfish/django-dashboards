@@ -9,6 +9,7 @@ from datorum.component.chart import ChartData
 from datorum.component.layout import ComponentLayout, Div
 from datorum.component.table import TableData
 from datorum.dashboard import Dashboard, ModelDashboard
+from datorum.registry import registry
 from datorum.schema import DashboardQuery
 
 
@@ -20,7 +21,9 @@ def dashboard():
 
         class Meta:
             name = "Test Dashboard"
+            app_label = "app1"
 
+    registry.register(TestDashboard)
     return TestDashboard
 
 
@@ -39,7 +42,9 @@ def complex_dashboard(dashboard):
 
         class Meta:
             name = "Test Complex Dashboard"
+            app_label = "app1"
 
+    registry.register(TestComplexDashboard)
     return TestComplexDashboard
 
 
@@ -51,7 +56,9 @@ def admin_dashboard():
 
         class Meta:
             name = "Test Admin Dashboard"
+            app_label = "app1"
 
+    registry.register(TestAdminDashboard)
     return TestAdminDashboard
 
 
@@ -63,7 +70,9 @@ def model_dashboard():
         class Meta:
             name = "Test Model Dashboard"
             model = User
+            app_label = "app1"
 
+    registry.register(TestModelDashboard)
     return TestModelDashboard
 
 
@@ -77,6 +86,7 @@ def dashboard_with_layout(dashboard):
     class TestDashboardWithLayout(dashboard):
         class Meta:
             name = "Test Dashboard with Layout"
+            app_label = "app1"
 
         class Layout:
             components = ComponentLayout(
@@ -93,6 +103,7 @@ def dashboard_with_layout(dashboard):
                 ),
             )
 
+    registry.register(TestDashboardWithLayout)
     return TestDashboardWithLayout
 
 
