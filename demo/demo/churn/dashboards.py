@@ -13,8 +13,9 @@ class SummaryDashboard(Dashboard):
     number_risky_customers = Stat(
         value=StatData(text="2", sub_text="# Risky customers")
     )
-    monthly_gross_margin = Stat(defer=ChurnSummaryData.fetch_monthly_gross_margin)
-    actual_churn_rate = Stat(defer=ChurnSummaryData.fetch_actual_churn_rate)
+
+    monthly_gross_margin = Stat(value=ChurnSummaryData.fetch_monthly_gross_margin)
+    actual_churn_rate = Stat(value=ChurnSummaryData.fetch_actual_churn_rate)
 
     actual_churn_data = Table(defer=ChurnSummaryData.fetch_actual_churn_data)
     churn_by_geography = Map(defer=ChurnSummaryData.fetch_churn_by_geography)
