@@ -1,7 +1,10 @@
+import json
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.template import Context
 from django.template.loader import render_to_string
@@ -107,6 +110,8 @@ def value_render_encoder(data) -> dict:
             return asdict(o)
         if isinstance(o, Enum):
             return o.value
+        if isinstance(o, QuerySet):
+            return list(o)
         return o
 
     return dict((k, encode(v)) for k, v in data)

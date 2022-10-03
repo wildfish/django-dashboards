@@ -33,6 +33,6 @@ fake_customer = Recipe(
     contract_end_date=lambda: fake.date_time_this_year()
     if randint(0, 20) > 1
     else None,
-    recurring_revenue=lambda: randint(5000, 200000),
-    non_recurring_revenue=lambda: randint(500, 10000),
+    recurring_revenue=lambda: randint(5000, 20000),
+    non_recurring_revenue=lambda: randint(500, 5000),
 )

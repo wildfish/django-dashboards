@@ -1,14 +1,14 @@
-import csv
-
 from django.contrib.humanize.templatetags.humanize import intcomma
 
-import requests
+from django.db.models import Count
+
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
-from datorum.component.table import TableData, TablePaging
+from datorum.component.table import TableData
 from datorum.component.text import StatData
 
 from demo.churn.models import Customer
+from demo.churn.utils import us_state_to_abbrev
 
 
 class ChurnSummaryData:
@@ -38,25 +38,24 @@ class ChurnSummaryData:
 
     @staticmethod
     def fetch_churn_by_geography(*args, **kwargs) -> MapData:
-        url = "https://raw.githubusercontent.com/plotly/datasets/master/2014_usa_states.csv"
-        r = requests.get(url)
-        lines = [line.decode("utf-8") for line in r.iter_lines()]
-        reader = csv.reader(lines, delimiter=",")
+        data = Customer.objects.churned().values("location").annotate(churned=Count("pk")).values("location", "churned")
+
         locations = []
-        z = []
-        text = []
-        for r in reader:
-            locations.append(r[2])
-            z.append(r[3])
-            text.append(r[1])
+        locations_text = []
+        churned = []
+
+        for d in data:
+            locations.append(us_state_to_abbrev[d["location"]])
+            locations_text.append(d["location"])
+            churned.append(d["churned"])
 
         return MapData(
             data=[
                 MapData.Choropleth(
                     locationmode="USA-states",
-                    locations=locations[1:],
-                    z=z[1:],
-                    text=text[1:],
+                    locations=locations,
+                    z=churned,
+                    text=locations_text,
                     autocolorscale=True,
                 )
             ],
@@ -68,6 +67,22 @@ class ChurnSummaryData:
             },
         )
 
+    @staticmethod
+    def fetch_actual_churn_data(*args, **kwargs) -> TableData:
+        data = Customer.objects.churned().values(
+            "reference", "product_cloud", "product_connectivity",
+            "product_licenses", "product_managed_services",
+            "product_backup", "product_hardware",
+            "recurring_revenue", "non_recurring_revenue"
+        )
+        table_data = TableData(
+            headers=[
+                "Reference",
+            ],
+            rows=data,
+        )
+
+        return table_data
     @staticmethod
     def fetch_churn_table(*args, **kwargs) -> TableData:
         """

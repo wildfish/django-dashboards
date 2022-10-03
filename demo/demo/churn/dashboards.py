@@ -16,14 +16,13 @@ class SummaryDashboard(Dashboard):
     monthly_gross_margin = Stat(defer=ChurnSummaryData.fetch_monthly_gross_margin)
     actual_churn_rate = Stat(defer=ChurnSummaryData.fetch_actual_churn_rate)
 
-    actual_churn_data = Text(value="actual_churn_data")
-    churn_risk_predictor = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
+    actual_churn_data = Table(defer=ChurnSummaryData.fetch_actual_churn_data)
     churn_by_geography = Map(defer=ChurnSummaryData.fetch_churn_by_geography)
 
-    forecast_analysis = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
-    churn_factors = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
-
-    churn_table = Table(defer=ChurnSummaryData.fetch_churn_table)
+    # forecast_analysis = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
+    # churn_factors = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
+    #
+    # churn_table = Table(defer=ChurnSummaryData.fetch_churn_table)
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
@@ -35,12 +34,11 @@ class SummaryDashboard(Dashboard):
             Card("number_risky_customers", width=4),
             Card("monthly_gross_margin", width=4),
             Card("actual_churn_rate", width=4),
-            Card("actual_churn_data", width=4),
-            Card("churn_risk_predictor", width=4),
+            Card("actual_churn_data", width=8),
             Card("churn_by_geography", width=4),
-            Card("forecast_analysis", width=6),
-            Card("churn_factors", width=6),
-            Card("churn_table", width=12),
+            # Card("forecast_analysis", width=6),
+            # Card("churn_factors", width=6),
+            # Card("churn_table", width=12),
         )
 
     class Meta:
