@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import Count, DecimalField, ExpressionWrapper, Q, Sum
+from django.db.models import Avg, Count, DecimalField, ExpressionWrapper, Q, Sum
+from django.db.models.functions import ExtractMonth, Round
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -22,6 +23,15 @@ class CustomerQuerySet(models.QuerySet):
             )
             / Count("pk")
         )["churn"]
+
+    def average_values(self):
+        return self.churned().aggregate(
+            average_months_as_customer=Round(Avg(ExtractMonth("contract_start_date"))),
+            average_faults=Round(Avg("faults")),
+            average_sla_breaches=Round(Avg("sla_breaches")),
+            average_ownership_changes=Round(Avg("ownership_changes")),
+            average_non_recurring_revenue=Round(Avg("non_recurring_revenue")),
+        )
 
 
 class Customer(TimeStampedModel):
@@ -52,3 +62,24 @@ class Customer(TimeStampedModel):
 
     def __str__(self):
         return f"{self.reference}: {self.name}"
+
+
+class Scenario(TimeStampedModel):
+    name = models.CharField(max_length=255)
+
+    months_as_customer = models.IntegerField()
+
+    product_cloud = models.BooleanField(default=False)
+    product_connectivity = models.BooleanField(default=False)
+    product_licenses = models.BooleanField(default=False)
+    product_managed_services = models.BooleanField(default=False)
+    product_backup = models.BooleanField(default=False)
+    product_hardware = models.BooleanField(default=False)
+
+    faults = models.IntegerField(default=0)
+    sla_breaches = models.IntegerField(default=0)
+    ownership_changes = models.IntegerField(default=0)
+    non_recurring_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name

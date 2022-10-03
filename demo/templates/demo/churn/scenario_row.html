@@ -1,0 +1,19 @@
+<tr>
+    <td>{{ scenario.name }}</td>
+    <td>{{ scenario.months_as_customer }}</td>
+    <td>{{ scenario.product_cloud|yesno }}</td>
+    <td>{{ scenario.product_connectivity|yesno }}</td>
+    <td>{{ scenario.product_licenses|yesno }}</td>
+    <td>{{ scenario.product_managed_services|yesno }}</td>
+    <td>{{ scenario.product_backup|yesno }}</td>
+    <td>{{ scenario.product_hardware|yesno }}</td>
+    <td>{{ scenario.faults }}</td>
+    <td>{{ scenario.sla_breaches }}</td>
+    <td>{{ scenario.ownership_changes }}</td>
+    <td>{{ scenario.non_recurring_revenue }}</td>
+    <td>
+        <button class="btn btn-danger" hx-get="{% url "churn:scenario_edit" scenario.pk %}">
+            Edit
+        </button>
+    </td>
+</tr>

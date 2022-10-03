@@ -1,0 +1,44 @@
+{% extends "datorum/base.html" %}
+{% load humanize %}
+
+{% block content %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Months as customer</th>
+            <th>Cloud</th>
+            <th>Connectivity</th>
+            <th>Licenses</th>
+            <th>Managed Services</th>
+            <th>Backup</th>
+            <th>Hardware</th>
+            <th>Faults</th>
+            <th>SLA Breaches</th>
+            <th>Ownership Changes</th>
+            <th>Non recurring revenue</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody hx-target="closest tr" hx-swap="outerHTML">
+            <tr>
+                <td><strong>Current averages</strong></td>
+                <td>{{ averages.average_months_as_customer|floatformat:"0" }}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>{{ averages.average_faults|floatformat:"0" }}</td>
+                <td>{{ averages.average_sla_breaches|floatformat:"0" }}</td>
+                <td>{{ averages.average_ownership_changes|floatformat:"0" }}</td>
+                <td>{{ averages.average_non_recurring_revenue }}</td>
+                <td></td>
+            </tr>
+            {% for scenario in object_list %}
+                {% include "demo/churn/scenario_row.html" %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

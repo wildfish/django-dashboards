@@ -120,6 +120,7 @@ class Common(Configuration):
         "django.contrib.contenttypes",
         "django.contrib.sessions",
         "django.contrib.messages",
+        "django.contrib.humanize",
         # Third party
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",

@@ -1,8 +1,8 @@
-from django.contrib.humanize.templatetags.humanize import intcomma
+from django.urls import reverse_lazy
 
-from datorum.component import Chart, Map, Stat, Table, Text
+from datorum.component import CTA, Chart, Map, Stat, Table
 from datorum.component.layout import HTML, Card, ComponentLayout
-from datorum.component.text import StatData
+from datorum.component.text import CTAData, StatData
 from datorum.dashboard import Dashboard
 from datorum.registry import registry
 
@@ -19,7 +19,13 @@ class SummaryDashboard(Dashboard):
     actual_churn_data = Table(defer=ChurnSummaryData.fetch_actual_churn_data)
     churn_by_geography = Map(defer=ChurnSummaryData.fetch_churn_by_geography)
 
-    # forecast_analysis = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
+    edit_scenarios = CTA(
+        value=CTAData(
+            href=reverse_lazy("churn:scenario_list"),
+            text="Edit Scenarios",
+        ),
+    )
+    forecast_analysis = Chart(defer=ChurnSummaryData.fetch_forecast_analysis)
     # churn_factors = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
     #
     # churn_table = Table(defer=ChurnSummaryData.fetch_churn_table)
@@ -36,6 +42,8 @@ class SummaryDashboard(Dashboard):
             Card("actual_churn_rate", width=4),
             Card("actual_churn_data", width=8),
             Card("churn_by_geography", width=4),
+            Card("edit_scenarios", width=3),
+            Card("forecast_analysis", width=9),
             # Card("forecast_analysis", width=6),
             # Card("churn_factors", width=6),
             # Card("churn_table", width=12),

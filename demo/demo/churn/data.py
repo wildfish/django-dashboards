@@ -1,5 +1,6 @@
-from django.contrib.humanize.templatetags.humanize import intcomma
+from random import randint
 
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.db.models import Count
 
 from datorum.component.chart import ChartData
@@ -7,11 +8,33 @@ from datorum.component.map import MapData
 from datorum.component.table import TableData
 from datorum.component.text import StatData
 
-from demo.churn.models import Customer
+from demo.churn.models import Customer, Scenario
 from demo.churn.utils import us_state_to_abbrev
 
 
 class ChurnSummaryData:
+    @staticmethod
+    def fetch_forecast_analysis(*args, **kwargs) -> ChartData:
+        """
+        Build a for now arbitrary calculation against each scenario as a forecast of MGM.
+        """
+        current_mgm = Customer.objects.monthly_gross_margin()
+
+        scenario_traces = []
+        for scenario in Scenario.objects.all():
+            forecast = randint(950, 1500) / 1000
+
+            trace = ChartData.Trace(
+                x=["Current MGM", "Forecast MGM"],
+                y=[current_mgm, float(current_mgm) * forecast],
+                mode=ChartData.Trace.Mode.LINE,
+                name=scenario.name,
+                type=ChartData.Trace.Type.SCATTER,
+            )
+            scenario_traces.append(trace)
+
+        return ChartData(data=scenario_traces)
+
     @staticmethod
     def fetch_monthly_gross_margin(*args, **kwargs) -> StatData:
         mgm = Customer.objects.monthly_gross_margin()
@@ -38,7 +61,12 @@ class ChurnSummaryData:
 
     @staticmethod
     def fetch_churn_by_geography(*args, **kwargs) -> MapData:
-        data = Customer.objects.churned().values("location").annotate(churned=Count("pk")).values("location", "churned")
+        data = (
+            Customer.objects.churned()
+            .values("location")
+            .annotate(churned=Count("pk"))
+            .values("location", "churned")
+        )
 
         locations = []
         locations_text = []
@@ -70,11 +98,16 @@ class ChurnSummaryData:
     @staticmethod
     def fetch_actual_churn_data(*args, **kwargs) -> TableData:
         data = Customer.objects.churned().values(
-            "reference", "product_cloud", "product_connectivity",
-            "product_licenses", "product_managed_services",
-            "product_backup", "product_hardware",
-            "recurring_revenue", "non_recurring_revenue"
-        )
+            "reference",
+            "product_cloud",
+            "product_connectivity",
+            "product_licenses",
+            "product_managed_services",
+            "product_backup",
+            "product_hardware",
+            "recurring_revenue",
+            "non_recurring_revenue",
+        )[:10]
         table_data = TableData(
             headers=[
                 "Reference",
@@ -83,6 +116,7 @@ class ChurnSummaryData:
         )
 
         return table_data
+
     @staticmethod
     def fetch_churn_table(*args, **kwargs) -> TableData:
         """

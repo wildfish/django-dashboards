@@ -1,0 +1,13 @@
+<tr hx-trigger='cancel' class='editing' hx-get="{% url "churn:scenario_row" object.pk %}">
+    {% for field in form %}
+        <td>{{ field }}</td>
+    {% endfor %}
+    <td>
+        <button class="btn btn-danger" hx-get="{% url "churn:scenario_row" object.pk %}">
+            Cancel
+        </button>
+        <button class="btn btn-danger" hx-post="{% url "churn:scenario_edit" object.pk %}" hx-include="closest tr">
+            Save
+        </button>
+    </td>
+</tr>

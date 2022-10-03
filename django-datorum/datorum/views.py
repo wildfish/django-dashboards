@@ -78,7 +78,7 @@ class ComponentView(DashboardObjectMixin, TemplateView):
                     component.get_value(
                         request=self.request, call_deferred=True, filters=filters
                     ),
-                    cls=DjangoJSONEncoder
+                    cls=DjangoJSONEncoder,
                 ),
                 content_type="application/json",
             )
