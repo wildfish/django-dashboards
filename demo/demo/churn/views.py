@@ -3,6 +3,7 @@ from django.db.models.functions import ExtractMonth, Round
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, UpdateView
 
+from demo.churn.dashboards import ForecastDashboard
 from demo.churn.forms import ScenarioForm
 from demo.churn.models import Customer, Scenario
 
@@ -14,16 +15,8 @@ class ScenarioListView(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["averages"] = Customer.objects.average_values()
+        context["forecast_dashboard"] = ForecastDashboard()
         return context
-
-
-"""
-    faults = models.IntegerField(default=0)
-    sla_breaches = models.IntegerField(default=0)
-    ownership_changes = models.IntegerField(default=0)
-    non_recurring_revenue = models.DecimalField(max_digits=10, decimal_places=2)
-
-"""
 
 
 class ScenarioRowView(DetailView):

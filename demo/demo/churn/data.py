@@ -33,7 +33,11 @@ class ChurnSummaryData:
             )
             scenario_traces.append(trace)
 
-        return ChartData(data=scenario_traces)
+        return ChartData(
+            data=scenario_traces,
+            layout={
+                "title": "Forecast Analysis",
+            })
 
     @staticmethod
     def fetch_monthly_gross_margin(*args, **kwargs) -> StatData:

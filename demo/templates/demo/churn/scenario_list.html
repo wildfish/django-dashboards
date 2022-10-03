@@ -1,5 +1,5 @@
 {% extends "datorum/base.html" %}
-{% load humanize %}
+{% load datorum %}
 
 {% block content %}
     <table class="table">
@@ -41,4 +41,6 @@
             {% endfor %}
         </tbody>
     </table>
+
+    {% render_dashboard forecast_dashboard %}
 {% endblock %}

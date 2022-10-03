@@ -53,4 +53,13 @@ class SummaryDashboard(Dashboard):
         name = "Summary"
 
 
+class ForecastDashboard(Dashboard):
+    forecast_analysis = Chart(defer=ChurnSummaryData.fetch_forecast_analysis)
+
+    class Meta:
+        name = "Forecast"
+
+
 registry.register(SummaryDashboard)
+registry.register(ForecastDashboard)
+
