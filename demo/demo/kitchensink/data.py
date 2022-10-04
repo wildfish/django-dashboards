@@ -5,6 +5,7 @@ import requests
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
 from datorum.component.table import TableData, TablePaging
+from datorum.utils import ToTable, DatatablesFilter, DatatablesSort, ReactTablesSort
 
 from demo.kitchensink.models import FlatText
 
@@ -246,51 +247,55 @@ class DashboardData:
         ]
 
         data = data * 20
-        total = len(data)  # total number of items before pagination
+        filters = kwargs["filters"]
+
         # defaults
-        limit = 10  # items per page
-        page = 0  # current page starting 0
-        sort_by = list(data[0].keys())[0]  # column to sort on
-        direction = "asc"  # sort order
+        draw = filters.get("draw", 0)
+        start = int(filters.get("start", 0))
+        length = int(filters.get("length", 25))
+        # page = math.ceil(start / length)
 
-        filters = kwargs.get("filters")
+        field_to_name = {
+            "id": "Id",
+            "name": "Name",
+            "progress": "Progress",
+            "gender": "Gender",
+            "rating": "Rating",
+            "col": "Colour",
+            "dob": "DOB",
+            "car": "Car",
+        }
 
-        # are we paginating?
-        if filters:
-            # based on react-table - todo: can these be generic for tabulator too?
-            limit = int(filters.get("size", limit))
-            page = int(filters.get("page", page))
-            sort_by = filters.get("sortby", sort_by)
-            direction = filters.get("direction", direction)
+        # todo: can this be done better i.e. if mpa do x if spa do y?
+        if "draw" in filters:  # assume its datatables request (mpa) if draw in filters
+            filter_class = DatatablesFilter
+            sort_class = DatatablesSort
+        else:
+            filter_class = None
+            sort_class = ReactTablesSort
 
-        # sort the data
-        data = sorted(data, key=lambda x: x[sort_by], reverse=direction == "desc")
+        # filter the data
+        data = ToTable(
+            data=data,
+            filters=filters,
+            count_func=lambda x: len(x),
+            field_to_name=field_to_name,
+            filter_class=filter_class,
+            sort_class=sort_class,
 
-        page_count = math.ceil(total / limit)
-        page_offset = page * limit
-        data = data[page_offset : page_offset + limit]
+        ).filter_data(start, length)
 
         paging = TablePaging(
             ssr=True,
-            page=page,
-            limit=limit,
-            page_count=page_count,
-            total_items=total,
-            sortby=[{"id": sort_by, "desc": direction == "desc"}],
+            limit=length,
+            page=data["page"],
+            page_count=data["page_count"],
+            total_items=data["recordsTotal"],
         )
 
         table_data = TableData(
-            headers=[
-                "Id",
-                "Name",
-                "Progress",
-                "Gender",
-                "Rating",
-                "Colour",
-                "DOB",
-                "Car",
-            ],
-            rows=data,
+            **data,
+            draw=draw,
             paging=paging,
         )
 

@@ -19,8 +19,14 @@ class TablePaging:
 
 @dataclass
 class TableData:
-    headers: list[str]
-    rows: list[dict[str, Any]]
+    data: list[dict[str, Any]]
+    # todo: these are for datatables in the mpa only.  need to update FE so can be shared
+    draw: int = 0  # datatables only
+    recordsTotal: int = 0  # datatables only
+    recordsFiltered: int = 0  # datatables only
+    page_count: int = 0
+    page: int = 0
+    # todo: these are for reacttable and spa only.  need to update FE so can be shared
     paging: Optional[TablePaging] = None
 
     @classmethod
@@ -63,6 +69,7 @@ class Table(Component):
 
     template: str = "datorum/components/table/index.html"
     page_size: int = 10
+    columns: Optional[list] = None
 
     # Expect tables to return table data
     value: Optional[TableData] = None

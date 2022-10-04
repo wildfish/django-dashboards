@@ -71,11 +71,28 @@ class DemoDashboardOne(Dashboard):
     free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True)
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
-    table_example = Table(defer=DashboardData.fetch_table_data)
+    table_example = Table(
+        page_size=10,
+        columns=[
+            {"data": "id", "title": "ID"},
+            {"data": "name", "title": "Name"},
+            {"data": "progress", "title": "Progress"},
+            {"data": "gender", "title": "Gender"},
+            {"data": "dob", "title": "DOB"},
+        ],
+        defer=DashboardData.fetch_table_data
+    )
     table_example_not_deferred = Table(
+        page_size=10,
+        columns=[
+            {"data": "id", "title": "ID"},
+            {"data": "name", "title": "Name"},
+            {"data": "progress", "title": "Progress"},
+            {"data": "gender", "title": "Gender"},
+            {"data": "dob", "title": "DOB"},
+        ],
         value=TableData(
-            headers=["id"],
-            rows=[
+            data=[
                 {
                     "id": 1,
                     "name": "Oli Bob",

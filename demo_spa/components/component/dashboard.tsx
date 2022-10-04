@@ -53,7 +53,7 @@ const LazyComponent = ({dashboard, component, Component}: LazyComponentProps) =>
     );
 
     return <>
-       {loading && previousData === null || (!data && !previousData) ? <>Loading...</> : <Component componentKey={component.key} value={(data || previousData).component.value}/>}
+       {loading && previousData === null || (!data && !previousData) ? <>Loading...</> : <Component component={component} value={(data || previousData).component.value}/>}
     </>
 };
 
@@ -68,7 +68,7 @@ export const DashboardComponent = ({dashboard, component}: DashboardComponentPro
     return <div className={styles.componentInner}>
         {Object.keys(DashboardComponentMap).includes(component.renderType) ?
             !component.isDeferred ?
-                <Component componentKey={component.key} value={component.value}/>
+                <Component component={component} value={component.value}/>
             :
                 <LazyComponent dashboard={dashboard} component={component} Component={Component}/>
         :

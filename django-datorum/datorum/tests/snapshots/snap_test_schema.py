@@ -154,7 +154,7 @@ snapshots["test_view__dashboards 1"] = [
                 "value": {
                     "headers": ["a", "b"],
                     "paging": None,
-                    "rows": [{"a": "Value", "b": "Value b"}],
+                    "data": [{"a": "Value", "b": "Value b"}],
                 },
                 "width": 6,
             },

@@ -82,8 +82,7 @@ class VehicleData:
         qs = VehicleData.get_queryset(filters)
 
         return TableData(
-            headers=[],
-            rows=[
+            data=[
                 {
                     "Reg": v.number_plate,  # f"<a href='?number_plate={v.number_plate}'>{v.number_plate}</a>",
                     "Type": v.get_type_display(),
