@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_component_view__with_model 1"
-] = """
+snapshots['test_component_view__with_model 1'] = '''
 
 
     
@@ -21,11 +19,9 @@ value
 
 
 
-"""
+'''
 
-snapshots[
-    "test_component_view__with_model 2"
-] = """
+snapshots['test_component_view__with_model 2'] = '''
 
 
     
@@ -37,11 +33,9 @@ value
 
 
 
-"""
+'''
 
-snapshots[
-    "test_view__get__all 1"
-] = """
+snapshots['test_view__get__all 1'] = '''
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,13 +50,15 @@ snapshots[
     <script src="/static/js/hyperscript-0.9.7.min.js"></script>
     <script src="/static/js/alpine-3.10.3.js" defer></script>
     <script src="/static/js/plotly-2.12.1.min.js"></script>
-    <script src="/static/js/tabulator.min.js"></script>
 
-    <link rel="stylesheet" href="/static/css/tabulator.min.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="">
+<body class="" hx-headers=\'{"X-CSRFToken": "VUR3JL6B52WijYZ9ZdazsVCjthg5AYOjR9QdiyPDbEyeBzCF87VfXoIpTzueJwRS"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -89,6 +85,18 @@ value
     <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
 
   </div>
+</div><div class="span-6  dashboard-component">
+  
+  <div class="card-body">
+    
+    
+    <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
+        
+value from callable
+
+    </div>
+
+  </div>
 </div>
 
     </div>
@@ -96,13 +104,11 @@ value
     
     
 </body>
-</html>"""
+</html>'''
 
-snapshots["test_view__get__json 1"] = b'"value"'
+snapshots['test_view__get__json 1'] = b'"value"'
 
-snapshots[
-    "test_view__get__partial_template 1"
-] = """
+snapshots['test_view__get__partial_template 1'] = '''
 
 
     
@@ -114,11 +120,9 @@ value
 
 
 
-"""
+'''
 
-snapshots[
-    "test_view__with_model 1"
-] = """
+snapshots['test_view__with_model 1'] = '''
 
 <!DOCTYPE html>
 <html lang="en">
@@ -133,13 +137,15 @@ snapshots[
     <script src="/static/js/hyperscript-0.9.7.min.js"></script>
     <script src="/static/js/alpine-3.10.3.js" defer></script>
     <script src="/static/js/plotly-2.12.1.min.js"></script>
-    <script src="/static/js/tabulator.min.js"></script>
 
-    <link rel="stylesheet" href="/static/css/tabulator.min.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="">
+<body class="" hx-headers=\'{"X-CSRFToken": "7qbPY8wps7jBK1lwTdymF8sE0xthdUATGKe5HJHv7IwGB90GjM8GJHkVOFvuVRdW"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -166,4 +172,4 @@ value
     
     
 </body>
-</html>"""
+</html>'''

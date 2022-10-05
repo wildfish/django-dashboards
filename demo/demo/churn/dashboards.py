@@ -17,7 +17,16 @@ class SummaryDashboard(Dashboard):
     monthly_gross_margin = Stat(value=ChurnSummaryData.fetch_monthly_gross_margin)
     actual_churn_rate = Stat(value=ChurnSummaryData.fetch_actual_churn_rate)
 
-    actual_churn_data = Table(defer=ChurnSummaryData.fetch_actual_churn_data)
+    actual_churn_data = Table(
+        defer=ChurnSummaryData.fetch_actual_churn_data,
+        columns=[
+            {"data": "reference", "title": "Reference"},
+            {"data": "product_cloud", "title": "Product Cloud"},
+            {"data": "product_connectivity", "title": "Product Connectivity"},
+            {"data": "product_licenses", "title": "Product Licenses"},
+        ],
+        page_size=10,
+    )
     churn_by_geography = Map(defer=ChurnSummaryData.fetch_churn_by_geography)
 
     edit_scenarios = CTA(
@@ -29,7 +38,17 @@ class SummaryDashboard(Dashboard):
     forecast_analysis = Chart(defer=ChurnSummaryData.fetch_forecast_analysis)
     # churn_factors = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
     #
-    # churn_table = Table(defer=ChurnSummaryData.fetch_churn_table)
+    churn_table = Table(
+        defer=ChurnSummaryData.fetch_churn_table,
+        columns=[
+            {"data": "reference", "title": "Reference"},
+            {"data": "name", "title": "Name"},
+            {"data": "phone", "title": "Phone"},
+            {"data": "email", "title": "Email"},
+            {"data": "link_to_cms", "title": "CMS"},
+        ],
+        page_size=10,
+    )
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
@@ -47,7 +66,7 @@ class SummaryDashboard(Dashboard):
             Card("forecast_analysis", width=9),
             # Card("forecast_analysis", width=6),
             # Card("churn_factors", width=6),
-            # Card("churn_table", width=12),
+            Card("churn_table", width=12),
         )
 
     class Meta:
@@ -63,4 +82,3 @@ class ForecastDashboard(Dashboard):
 
 registry.register(SummaryDashboard)
 registry.register(ForecastDashboard)
-

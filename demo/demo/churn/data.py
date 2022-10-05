@@ -5,7 +5,14 @@ from django.db.models import Count
 
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
-from datorum.component.table import TableData
+from datorum.component.table import (
+    DatatablesQuerysetFilter,
+    DatatablesQuerysetSort,
+    ReactTablesQuerysetSort,
+    TableData,
+    TablePaging,
+    ToTable,
+)
 from datorum.component.text import StatData
 
 from demo.churn.models import Customer, Scenario
@@ -37,7 +44,8 @@ class ChurnSummaryData:
             data=scenario_traces,
             layout={
                 "title": "Forecast Analysis",
-            })
+            },
+        )
 
     @staticmethod
     def fetch_monthly_gross_margin(*args, **kwargs) -> StatData:
@@ -101,7 +109,14 @@ class ChurnSummaryData:
 
     @staticmethod
     def fetch_actual_churn_data(*args, **kwargs) -> TableData:
-        data = Customer.objects.churned().values(
+        # filtering, sorting
+        filters = kwargs["filters"]
+        # pagination
+        start = int(filters.get("start", 0))
+        length = int(filters.get("length", 10))
+
+        # todo: can these be gotten from Table columns?
+        fields = [
             "reference",
             "product_cloud",
             "product_connectivity",
@@ -111,94 +126,56 @@ class ChurnSummaryData:
             "product_hardware",
             "recurring_revenue",
             "non_recurring_revenue",
-        )[:10]
-        table_data = TableData(
-            headers=[
-                "Reference",
-            ],
-            rows=data,
-        )
+        ]
+
+        # todo: can this be done better i.e. if mpa do x if spa do y?
+        if "draw" in filters:  # assume its datatables request (mpa) if draw in filters
+            filter_class = DatatablesQuerysetFilter
+            sort_class = DatatablesQuerysetSort
+        else:
+            filter_class = None  # no search in react tables
+            sort_class = ReactTablesQuerysetSort
+
+        table_data = ToTable(
+            data=Customer.objects.churned(),
+            filters=filters,
+            count_func=lambda qs: qs.count(),
+            fields=fields,
+            filter_class=filter_class,
+            sort_class=sort_class,
+        ).get_data(start, length)
 
         return table_data
 
     @staticmethod
     def fetch_churn_table(*args, **kwargs) -> TableData:
         """
-        Mock return some results for tabular.
+        Customer in the system.
         """
-        data = [
-            {
-                "id": 1,
-                "name": "Oli Bob",
-                "progress": 12,
-                "gender": "male",
-                "rating": 1,
-                "col": "red",
-                "dob": "19/02/1984",
-                "car": 1,
-            },
-            {
-                "id": 2,
-                "name": "Mary May",
-                "progress": 1,
-                "gender": "female",
-                "rating": 2,
-                "col": "blue",
-                "dob": "14/05/1982",
-                "car": True,
-            },
-            {
-                "id": 3,
-                "name": "Christine Lobowski",
-                "progress": 42,
-                "gender": "female",
-                "rating": 0,
-                "col": "green",
-                "dob": "22/05/1982",
-                "car": "true",
-            },
-            {
-                "id": 4,
-                "name": "Brendon Philips",
-                "progress": 100,
-                "gender": "male",
-                "rating": 1,
-                "col": "orange",
-                "dob": "01/08/1980",
-            },
-            {
-                "id": 5,
-                "name": "Margret Marmajuke",
-                "progress": 16,
-                "gender": "female",
-                "rating": 5,
-                "col": "yellow",
-                "dob": "31/01/1999",
-            },
-            {
-                "id": 6,
-                "name": "Frank Harbours",
-                "progress": 38,
-                "gender": "male",
-                "rating": 4,
-                "col": "red",
-                "dob": "12/05/1966",
-                "car": 1,
-            },
-        ]
+        # filtering, sorting
+        filters = kwargs["filters"]
+        # pagination
+        start = int(filters.get("start", 0))
+        length = int(filters.get("length", 10))
 
-        table_data = TableData(
-            headers=[
-                "Id",
-                "Name",
-                "Progress",
-                "Gender",
-                "Rating",
-                "Colour",
-                "DOB",
-                "Car",
-            ],
-            rows=data,
-        )
+        # todo: can these be gotten from Table columns?
+        fields = ["reference", "name", "phone", "email", "link_to_cms"]
+
+        # todo: can this be done better i.e. if mpa do x if spa do y?
+        if "draw" in filters:  # assume its datatables request (mpa) if draw in filters
+            filter_class = DatatablesQuerysetFilter
+            sort_class = DatatablesQuerysetSort
+        else:
+            filter_class = None  # no search in react tables
+            sort_class = ReactTablesQuerysetSort
+
+        table_data = ToTable(
+            data=Customer.objects.churned(),
+            filters=filters,
+            count_func=lambda qs: qs.count(),
+            fields=fields,
+            filter_class=filter_class,
+            sort_class=sort_class,
+        ).get_data(start, length)
 
         return table_data

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Avg, Count, DecimalField, ExpressionWrapper, Q, Sum
 from django.db.models.functions import ExtractMonth, Round
+from django.utils.html import format_html
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -62,6 +63,12 @@ class Customer(TimeStampedModel):
 
     def __str__(self):
         return f"{self.reference}: {self.name}"
+
+    @property
+    def link_to_cms(self):
+        return format_html(
+            '<a href="http://cms/{0}/" class="btn">View</a>&nbsp;', self.reference
+        )
 
 
 class Scenario(TimeStampedModel):

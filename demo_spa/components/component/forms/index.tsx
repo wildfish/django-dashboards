@@ -35,11 +35,12 @@ const FormFieldComponent = ({element, onChange} : FormFieldComponentProps) => {
 }
 
 type FormProps = {
-    componentKey: string
+    component: any
     value: Value
 }
 
-export const Form = ({componentKey, value}: FormProps) => {
+export const Form = ({component, value}: FormProps) => {
+    const componentKey = component.key
     const [filters, setFilter] = useContext(FilterContext)
     const data = JSON.parse(JSON.stringify(value))
     const method = data.method

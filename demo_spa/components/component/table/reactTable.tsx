@@ -3,9 +3,10 @@ import {useTable, useSortBy, usePagination} from 'react-table'
 import * as styles from "@/components/component/table/index.module.scss";
 import {FilterContext} from "../../../appContext";
 
-export const ReactTable = ({componentKey, value}: { componentKey: string, value: any }) => {
+export const ReactTable = ({component, value}: { component: any, value: any }) => {
+    const componentKey = component.key;
     let valueJson = JSON.parse(JSON.stringify(value));
-    let data = valueJson.rows;
+    let data = valueJson.data;
     let paging = valueJson.paging;
     let columns = [];
     if (data.length > 0) {
@@ -73,9 +74,7 @@ const Table = ({componentKey, columns, data, paging}: { componentKey: string, co
             columns,
             data,
             initialState: {
-                pageIndex: paging?.page ?? 0,
                 pageSize: paging?.limit ?? 10,
-                sortBy: paging?.sortby ?? [],
             },
             manualPagination: paging?.ssr ?? false,
             manualSortBy: paging?.ssr ?? false,
@@ -91,7 +90,7 @@ const Table = ({componentKey, columns, data, paging}: { componentKey: string, co
 
     React.useEffect(() => {
         const newFilters = [componentKey].reduce((a, b) => {
-            a[b] = {...a[b], size: pageSize, page: pageIndex}
+            a[b] = {...a[b], length: pageSize, start: pageIndex * pageSize}
             return a
         }, {...filters})
         // update the filters for the table
