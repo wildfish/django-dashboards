@@ -74,9 +74,7 @@ const Table = ({componentKey, columns, data, paging}: { componentKey: string, co
             columns,
             data,
             initialState: {
-                pageIndex: paging?.page ?? 0,
                 pageSize: paging?.limit ?? 10,
-                sortBy: paging?.sortby ?? [],
             },
             manualPagination: paging?.ssr ?? false,
             manualSortBy: paging?.ssr ?? false,

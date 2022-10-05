@@ -1,3 +1,5 @@
+from random import randint
+
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.db.models import Count
 
@@ -13,11 +15,37 @@ from datorum.component.table import (
 )
 from datorum.component.text import StatData
 
-from demo.churn.models import Customer
+from demo.churn.models import Customer, Scenario
 from demo.churn.utils import us_state_to_abbrev
 
 
 class ChurnSummaryData:
+    @staticmethod
+    def fetch_forecast_analysis(*args, **kwargs) -> ChartData:
+        """
+        Build a for now arbitrary calculation against each scenario as a forecast of MGM.
+        """
+        current_mgm = Customer.objects.monthly_gross_margin()
+
+        scenario_traces = []
+        for scenario in Scenario.objects.all():
+            forecast = randint(950, 1500) / 1000
+
+            trace = ChartData.Trace(
+                x=["Current MGM", "Forecast MGM"],
+                y=[current_mgm, float(current_mgm) * forecast],
+                mode=ChartData.Trace.Mode.LINE,
+                name=scenario.name,
+                type=ChartData.Trace.Type.SCATTER,
+            )
+            scenario_traces.append(trace)
+
+        return ChartData(
+            data=scenario_traces,
+            layout={
+                "title": "Forecast Analysis",
+            })
+
     @staticmethod
     def fetch_monthly_gross_margin(*args, **kwargs) -> StatData:
         mgm = Customer.objects.monthly_gross_margin()
@@ -80,65 +108,78 @@ class ChurnSummaryData:
 
     @staticmethod
     def fetch_actual_churn_data(*args, **kwargs) -> TableData:
+        # filtering, sorting
         filters = kwargs["filters"]
-        # defaults
-        draw = filters.get("draw", 0)
+        # pagination
         start = int(filters.get("start", 0))
-        length = int(filters.get("length", 25))
+        length = int(filters.get("length", 10))
 
-        field_to_name = {
-            "reference": "reference",
-            "product_cloud": "product_cloud",
-            "product_connectivity": "product_connectivity",
-            "product_licenses": "product_licenses",
-        }
+        # todo: can these be gotten from Table columns?
+        fields = [
+            "reference",
+            "product_cloud",
+            "product_connectivity",
+            "product_licenses",
+            "product_managed_services",
+            "product_backup",
+            "product_hardware",
+            "recurring_revenue",
+            "non_recurring_revenue",
+        ]
 
         # todo: can this be done better i.e. if mpa do x if spa do y?
         if "draw" in filters:  # assume its datatables request (mpa) if draw in filters
             filter_class = DatatablesQuerysetFilter
             sort_class = DatatablesQuerysetSort
         else:
-            filter_class = None
+            filter_class = None  # no search in react tables
             sort_class = ReactTablesQuerysetSort
 
-        data = ToTable(
+        table_data = ToTable(
             data=Customer.objects.churned(),
             filters=filters,
-            count_func=lambda x: x.count(),
-            field_to_name=field_to_name,
+            count_func=lambda qs: qs.count(),
+            fields=fields,
             filter_class=filter_class,
             sort_class=sort_class,
         ).get_data(start, length)
-
-        paging = TablePaging(
-            ssr=True,
-            limit=length,
-            page=data["page"],
-            page_count=data["page_count"],
-        )
-
-        table_data = TableData(**data, draw=draw, paging=paging)
 
         return table_data
 
     @staticmethod
     def fetch_churn_table(*args, **kwargs) -> TableData:
         """
-        Mock return some results for tabular.
+        Customer in the system.
         """
-        request = kwargs["request"]
-        field_to_name = {
-            "id": "ID",
-            "reference": "Reference",
-            "phone": "Phone",
-            "email": "Email",
-        }
-        data = ToTable(
-            qs=Customer.objects.all(), request=request, field_to_name=field_to_name
-        ).filter_data(0, 25)
+        # filtering, sorting
+        filters = kwargs["filters"]
+        # pagination
+        start = int(filters.get("start", 0))
+        length = int(filters.get("length", 10))
 
-        table_data = TableData(
-            data=data,
-        )
+        # todo: can these be gotten from Table columns?
+        fields = [
+            "id",
+            "reference",
+            "phone",
+            "email",
+        ]
+
+        # todo: can this be done better i.e. if mpa do x if spa do y?
+        if "draw" in filters:  # assume its datatables request (mpa) if draw in filters
+            filter_class = DatatablesQuerysetFilter
+            sort_class = DatatablesQuerysetSort
+        else:
+            filter_class = None  # no search in react tables
+            sort_class = ReactTablesQuerysetSort
+
+        table_data = ToTable(
+            data=Customer.objects.churned(),
+            filters=filters,
+            count_func=lambda qs: qs.count(),
+            fields=fields,
+            filter_class=filter_class,
+            sort_class=sort_class,
+        ).get_data(start, length)
 
         return table_data

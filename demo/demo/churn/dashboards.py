@@ -1,9 +1,8 @@
-from django.contrib.humanize.templatetags.humanize import intcomma
+from django.urls import reverse_lazy
 
-from datorum.component import Chart, Map, Stat, Table, Text
+from datorum.component import CTA, Chart, Map, Stat, Table
 from datorum.component.layout import HTML, Card, ComponentLayout
-from datorum.component.table import TableData, TablePaging
-from datorum.component.text import StatData
+from datorum.component.text import CTAData, StatData
 from datorum.dashboard import Dashboard
 from datorum.registry import registry
 
@@ -14,8 +13,9 @@ class SummaryDashboard(Dashboard):
     number_risky_customers = Stat(
         value=StatData(text="2", sub_text="# Risky customers")
     )
-    monthly_gross_margin = Stat(defer=ChurnSummaryData.fetch_monthly_gross_margin)
-    actual_churn_rate = Stat(defer=ChurnSummaryData.fetch_actual_churn_rate)
+
+    monthly_gross_margin = Stat(value=ChurnSummaryData.fetch_monthly_gross_margin)
+    actual_churn_rate = Stat(value=ChurnSummaryData.fetch_actual_churn_rate)
 
     actual_churn_data = Table(
         defer=ChurnSummaryData.fetch_actual_churn_data,
@@ -25,49 +25,20 @@ class SummaryDashboard(Dashboard):
             {"data": "product_connectivity", "title": "Product Connectivity"},
             {"data": "product_licenses", "title": "Product Licenses"},
         ],
-        page_size=25,
+        page_size=10,
     )
     churn_by_geography = Map(defer=ChurnSummaryData.fetch_churn_by_geography)
 
-    # forecast_analysis = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
-    # churn_factors = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
-    #
-    # churn_table = Table(defer=ChurnSummaryData.fetch_churn_table)
-    table_test = Table(
-        columns=[
-            {"data": "id", "title": "ID"},
-            {"data": "name", "title": "Name"},
-            {"data": "progress", "title": "Progress"},
-            {"data": "gender", "title": "Gender"},
-            {"data": "dob", "title": "DOB"},
-        ],
-        page_size=10,
-        value=TableData(
-            data=[
-                {
-                    "id": 1,
-                    "name": "Oli Bob",
-                    "progress": 12,
-                    "gender": "male",
-                    "rating": 1,
-                    "col": "red",
-                    "dob": "19/02/1984",
-                    "car": 1,
-                },
-                {
-                    "id": 2,
-                    "name": "Bob Oli",
-                    "progress": 2,
-                    "gender": "male",
-                    "rating": 5,
-                    "col": "blue",
-                    "dob": "21/04/1995",
-                    "car": 0,
-                },
-            ],
-            paging=TablePaging(total_items=2, limit=10, page_count=2),
+    edit_scenarios = CTA(
+        value=CTAData(
+            href=reverse_lazy("churn:scenario_list"),
+            text="Edit Scenarios",
         ),
     )
+    forecast_analysis = Chart(defer=ChurnSummaryData.fetch_forecast_analysis)
+    # churn_factors = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
+    #
+    churn_table = Table(defer=ChurnSummaryData.fetch_churn_table)
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
@@ -75,19 +46,30 @@ class SummaryDashboard(Dashboard):
                 "This is the Churn Summary Dashboard Demo",
                 width=12,
             ),
-            Card("table_test", width=12),
-            # Card("number_risky_customers", width=4),
-            # Card("monthly_gross_margin", width=4),
-            # Card("actual_churn_rate", width=4),
-            Card("actual_churn_data", width=12),
-            # Card("churn_by_geography", width=4),
+            "filter_form",
+            Card("number_risky_customers", width=4),
+            Card("monthly_gross_margin", width=4),
+            Card("actual_churn_rate", width=4),
+            Card("actual_churn_data", width=8),
+            Card("churn_by_geography", width=4),
+            Card("edit_scenarios", width=3),
+            Card("forecast_analysis", width=9),
             # Card("forecast_analysis", width=6),
             # Card("churn_factors", width=6),
-            # Card("churn_table", width=12),
+            Card("churn_table", width=12),
         )
 
     class Meta:
         name = "Summary"
 
 
+class ForecastDashboard(Dashboard):
+    forecast_analysis = Chart(defer=ChurnSummaryData.fetch_forecast_analysis)
+
+    class Meta:
+        name = "Forecast"
+
+
 registry.register(SummaryDashboard)
+registry.register(ForecastDashboard)
+

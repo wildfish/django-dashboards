@@ -251,25 +251,24 @@ class DashboardData:
             },
         ]
 
-        data = data * 20
+        # data = data * 20
+
+        # searching and sorting params
         filters = kwargs["filters"]
-
-        # defaults
-        draw = filters.get("draw", 0)
+        # pagination
         start = int(filters.get("start", 0))
-        length = int(filters.get("length", 25))
-        # page = math.ceil(start / length)
+        length = int(filters.get("length", 5))
 
-        field_to_name = {
-            "id": "Id",
-            "name": "Name",
-            "progress": "Progress",
-            "gender": "Gender",
-            "rating": "Rating",
-            "col": "Colour",
-            "dob": "DOB",
-            "car": "Car",
-        }
+        fields = [
+            "id",
+            "name",
+            "progress",
+            "gender",
+            "rating",
+            "col",
+            "dob",
+            "car",
+        ]
 
         # todo: can this be done better i.e. if mpa do x if spa do y?
         if "draw" in filters:  # assume its datatables request (mpa) if draw in filters
@@ -280,27 +279,14 @@ class DashboardData:
             sort_class = ReactTablesSort
 
         # filter the data
-        data = ToTable(
+        table_data = ToTable(
             data=data,
             filters=filters,
             count_func=lambda x: len(x),
-            field_to_name=field_to_name,
+            fields=fields,
             filter_class=filter_class,
             sort_class=sort_class,
         ).get_data(start, length)
-
-        paging = TablePaging(
-            ssr=True,
-            limit=length,
-            page=data["page"],
-            page_count=data["page_count"],
-        )
-
-        table_data = TableData(
-            **data,
-            draw=draw,
-            paging=paging,
-        )
 
         return table_data
 

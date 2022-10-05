@@ -1,3 +1,9 @@
+:root {
+  --shadow: rgba(154, 161, 171, 0.15);
+  --off-black: #1e1e1e;
+  --grey: #ececec;
+}
+
 * {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -38,7 +44,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dashboard-component{
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+  box-shadow: 0 0 35px 0 var(--shadow);
 }
 
 .dashboard-component-inner {
@@ -46,11 +52,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dashboard-component-cta {
-  background-color: #c4d9e3;
-  color: #FFF;
+  background-color: var(--shadow);
+  color: var(--off-black);
   text-decoration: none;
-  padding: 5px;
-  border-top: 2px solid #b7c8d2;
+  font-size: 1.3rem;
 }
 
 /* use a lib or generate all the variants with scss for... */
@@ -72,6 +77,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .span-8 {
   grid-column-end: span 8;
+  grid-auto-rows: min-content;
+}
+
+.span-9 {
+  grid-column-end: span 9;
   grid-auto-rows: min-content;
 }
 
@@ -104,7 +114,7 @@ h1, h2, h3, h4, h5, h6 {
 a{
   color: #000000;
   font-size: 1.1rem;
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+  box-shadow: 0 0 35px 0 var(--shadow);
 }
 
 a.active {
@@ -121,8 +131,8 @@ a.active {
 }
 
 .menu li {
-  color: #1e1e1e;
-  background: #ececec;
+  color: var(--off-black);
+  background: var(--grey);
   display: block;
   float: left;
   padding: 0.5rem 2rem;
@@ -179,4 +189,25 @@ a.active {
 .menu ul li ul li a {
   display: block;
   padding: 0.5rem 2rem;
+}
+
+
+.table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    font-size: 0.8rem;
+}
+.table thead th {
+    background-color: var(--grey);
+    border: solid 1px var(--shadow);
+    color: var(--off-black);
+    padding: 1rem;
+    text-align: left;
+    text-shadow: 1px 1px 1px #fff;
+}
+.table tbody td {
+    border: solid 1px var(--shadow);
+    color: var(--off-black);
+    padding: 10px;
 }

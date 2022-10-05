@@ -55,7 +55,12 @@ class Component:
                 request=request, dashboard=self.dashboard, filters=filters
             )
         else:
-            value = self.value
+            if callable(self.value):
+                value = self.value(
+                    request=request, dashboard=self.dashboard, filters=filters
+                )
+            else:
+                value = self.value
 
         if is_dataclass(value):
             value = asdict(value, dict_factory=value_render_encoder)

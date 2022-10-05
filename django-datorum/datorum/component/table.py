@@ -8,7 +8,6 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.paginator import Paginator
 from django.db.models import F, Q, QuerySet
 from django.http import HttpRequest
-from django.utils.functional import cached_property
 
 from .base import Component
 
@@ -16,7 +15,7 @@ from .base import Component
 @dataclass
 class TablePaging:
     ssr: bool = False
-    page: int = 0
+    page: int = 1
     limit: int = 999
     page_count: int = 1
     sortby: Optional[list[dict[str, Any]]] = None
@@ -29,8 +28,8 @@ class TableData:
     draw: int = 0  # datatables only
     recordsTotal: int = 0  # datatables only
     recordsFiltered: int = 0  # datatables only
-    page_count: int = 0
-    page: int = 0
+    # page_count: int = 0
+    # page: int = 0
     # todo: these are for reacttable and spa only.
     paging: Optional[TablePaging] = None
 
@@ -228,7 +227,7 @@ class ToTable:
         self,
         data: Union[QuerySet, List],
         filters: Dict[str, Any],
-        field_to_name: Dict[str, str],
+        fields: List[str],
         count_func: Callable,
         first_as_absolute_url: bool = False,
         filter_class: Optional[
@@ -245,7 +244,7 @@ class ToTable:
     ):
         self.data = data
         self.filters = filters
-        self.field_to_name = field_to_name
+        self.fields = fields
         self.first_as_absolute_url = first_as_absolute_url
         self.count_func = count_func
         self.filter_class = filter_class
@@ -255,14 +254,6 @@ class ToTable:
         paginator = Paginator(self.data, length)
         page_number = (int(start) / int(length)) + 1
         return paginator.get_page(page_number), paginator.count
-
-    @cached_property
-    def field_def(self):
-        return self.field_to_name
-
-    @cached_property
-    def fields(self):
-        return list(self.field_def.keys())
 
     def get_data(self, start: int, length: int):
         """
@@ -314,10 +305,18 @@ class ToTable:
 
             data.append(values)
 
-        return {
+        data = {
             "recordsTotal": initial_count,
             "recordsFiltered": filtered_count,
             "data": data,
-            "page_count": page_obj.paginator.num_pages,
-            "page": page_obj.number,
+            "draw": self.filters.get("draw", 1),
         }
+
+        paging = TablePaging(
+            ssr=True,
+            limit=length,
+            page=page_obj.number,
+            page_count=page_obj.paginator.num_pages,
+        )
+
+        return TableData(**data, paging=paging)

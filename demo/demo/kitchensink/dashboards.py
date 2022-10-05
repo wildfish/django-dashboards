@@ -72,7 +72,7 @@ class DemoDashboardOne(Dashboard):
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
     table_example = Table(
-        page_size=10,
+        page_size=5,
         columns=[
             {"data": "id", "title": "ID"},
             {"data": "name", "title": "Name"},
@@ -83,7 +83,7 @@ class DemoDashboardOne(Dashboard):
         defer=DashboardData.fetch_table_data,
     )
     table_example_not_deferred = Table(
-        page_size=10,
+        page_size=1,
         columns=[
             {"data": "id", "title": "ID"},
             {"data": "name", "title": "Name"},
@@ -114,7 +114,7 @@ class DemoDashboardOne(Dashboard):
                     "car": 0,
                 },
             ],
-            paging=TablePaging(total_items=2, limit=1, page_count=2),
+            paging=TablePaging(limit=1, page=1, page_count=2),
         ),
     )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)

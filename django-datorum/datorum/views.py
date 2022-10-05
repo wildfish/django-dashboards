@@ -73,12 +73,13 @@ class ComponentView(DashboardObjectMixin, TemplateView):
         if self.is_ajax() and component:
             filters = request.GET.dict()
             # Return json, calling the deferred value.
-            data = component.get_value(
-                request=self.request, call_deferred=True, filters=filters
-            )
-
             return HttpResponse(
-                json.dumps(data, cls=DjangoJSONEncoder),
+                json.dumps(
+                    component.get_value(
+                        request=self.request, call_deferred=True, filters=filters
+                    ),
+                    cls=DjangoJSONEncoder,
+                ),
                 content_type="application/json",
             )
         else:
