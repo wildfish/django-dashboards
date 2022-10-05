@@ -26,6 +26,7 @@ class MapData:
         locationmode: Optional[str]
         autocolorscale: bool = True
         type: str = "choropleth"
+        geojson: Optional[str] = None
 
     @dataclass
     class ScatterMapbox:

@@ -18,6 +18,7 @@ def dashboard():
     class TestDashboard(Dashboard):
         component_1 = Text(value="value")
         component_2 = Text(defer=lambda **kwargs: "value")
+        component_3 = Text(value=lambda **kwargs: "value from callable")
 
         class Meta:
             name = "Test Dashboard"

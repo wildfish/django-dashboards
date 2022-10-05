@@ -1,12 +1,45 @@
 {% extends "datorum/base.html" %}
-{% load static %}
+{% load static datorum %}
 
 {% block menu %}
-  <small>
-    <a href="{% url "datorum:dashboards:demodashboardone_dashboard" %}">As grid</a> :
-    <a href="{% url "datorum:dashboards:demodashboardonevary_dashboard" %}">As layout</a> :
-        <a href="{% url "datorum:dashboards:demodashboardonecustom_dashboard" %}">Custom template</a> :
-        <a href="{% url "datorum:dashboards:demodashboardadmin_dashboard" %}">Admin Only</a>
-    </small>
+    {% dashboards_for_app "kitchensink" as kitchensink %}
+    {% dashboards_for_app "vehicle" as vehicle %}
+    {% dashboards_for_app "churn" as churn %}
+
+    <nav role="navigation">
+        <ul class="menu">
+            <li class="{% if  dashboard.Meta.app_label == "kitchensink" %}active{% endif %}">
+                <a href="{{ kitchensink.0.get_absolute_url }}">Kitchen Sink</a>
+                <ul class="dropdown">
+                    {% for dashboard in kitchensink %}
+                        <li class="{% if request.path == dashboard.get_absolute_url %}active{% endif %}">
+                            <a href="{{ dashboard.get_absolute_url }}">{{ dashboard.Meta.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="{% if  dashboard.Meta.app_label == "vehicle" %}active{% endif %}">
+                <a href="{{ vehicle.0.get_absolute_url }}">Vehicle</a>
+                <ul class="dropdown">
+                    {% for dashboard in vehicle %}
+                        <li class="{% if request.path == dashboard.get_absolute_url %}active{% endif %}">
+                            <a href="{{ dashboard.get_absolute_url }}">{{ dashboard.Meta.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="{% if  dashboard.Meta.app_label == "churn" %}active{% endif %}">
+                <a href="{{ churn.0.get_absolute_url }}">Churn</a>
+                <ul class="dropdown">
+                    {% for dashboard in churn %}
+                        <li class="{% if request.path == dashboard.get_absolute_url %}active{% endif %}">
+                            <a href="{{ dashboard.get_absolute_url }}">{{ dashboard.Meta.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+    </nav>
     <hr/>
+
 {% endblock %}

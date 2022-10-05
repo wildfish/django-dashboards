@@ -2,6 +2,7 @@
     {{ rendered_value|json_script:data_key }}
     <script>
         var data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+
         Plotly.newPlot(
             '{{ component.key }}',
             data_{{ component.key }}.data,
@@ -12,4 +13,5 @@
 {% endwith %}
 
 <div id="{{ component.key }}"></div>
+
 

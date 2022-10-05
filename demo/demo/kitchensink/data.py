@@ -1,5 +1,6 @@
 import csv
 import math
+
 import requests
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
@@ -267,7 +268,7 @@ class DashboardData:
 
         page_count = math.ceil(total / limit)
         page_offset = page * limit
-        data = data[page_offset: page_offset + limit]
+        data = data[page_offset : page_offset + limit]
 
         paging = TablePaging(
             ssr=True,

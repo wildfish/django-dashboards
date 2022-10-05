@@ -22,7 +22,12 @@ class LayoutBase:
     image_url: Optional[str] = None
 
     def __init__(
-        self, *layout_components, css_classes=None, width=None, image_url=None
+        self,
+        *layout_components,
+        css_classes=None,
+        width=None,
+        image_url=None,
+        default=None,
     ):
         if not layout_components:
             layout_components = []
@@ -37,6 +42,9 @@ class LayoutBase:
 
         if image_url:
             self.image_url = image_url
+
+        if default:
+            self.default = image_url
 
     def get_components_rendered(self, dashboard, context: Context) -> str:
         html = ""
@@ -60,6 +68,8 @@ class LayoutBase:
 class ComponentLayout(LayoutBase):
     """
     holder for the components in the layout
+
+    include_default: sets anything not show to be shown via the default, it's only applied here at top level.
     """
 
     def render(self, dashboard, context: Context):

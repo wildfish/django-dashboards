@@ -6,14 +6,14 @@
     {% endif %}
     <script>
         {% if not component.is_deferred %}
-        const data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
-        const rows_{{ component.key }} = data_{{ component.key }}.rows;
+        var data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+        var rows_{{ component.key }} = data_{{ component.key }}.rows;
         {% endif %}
 
         /*
         TODO for more control, the data provided to the component could be
         */
-        const table_{{ component.key }} = new Tabulator("#{{ component.key }}", {
+        var table_{{ component.key }} = new Tabulator("#{{ component.key }}", {
             {% if component.is_deferred %}
             "sortMode": "remote",
             "ajaxURL":"{{ component.get_absolute_url }}?key={{ component.key }}",

@@ -7,6 +7,7 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.template import Context
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
@@ -69,7 +70,7 @@ class Dashboard(metaclass=DashboardType):
         super().__init__()
 
     def get_slug(self):
-        return f"{slugify(self.__class__.__name__)}_dashboard"
+        return f"{slugify(self._meta.app_label)}_{slugify(self.__class__.__name__)}"
 
     def get_context(self) -> dict:
         return {"dashboard": self, "components": self.get_components()}
@@ -171,6 +172,9 @@ class Dashboard(metaclass=DashboardType):
         urls = self.get_urls()
         return urls
 
+    def get_absolute_url(self):
+        return reverse(f"datorum:dashboards:{self.get_slug()}")
+
     class Meta:
         model = None
         name: str
@@ -267,6 +271,11 @@ class ModelDashboard(Dashboard):
 
         return self._meta.model.objects.all()
 
+    def get_absolute_url(self):
+        return reverse(
+            f"datorum:dashboards:{self.get_slug()}", kwargs={"pk": self.object.pk}
+        )
+
     def get_object(self):
         """
         Get django object based on lookup params
@@ -285,7 +294,7 @@ class ModelDashboard(Dashboard):
 
         from .views import DashboardView
 
-        name = str(self.__class__.__name__)
+        name = str(self.__class__.__name__).lower()
 
         return [
             path(

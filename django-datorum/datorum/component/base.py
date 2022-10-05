@@ -1,7 +1,10 @@
+import json
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.template import Context
 from django.template.loader import render_to_string
@@ -54,7 +57,12 @@ class Component:
                 request=request, dashboard=self.dashboard, filters=filters
             )
         else:
-            value = self.value
+            if callable(self.value):
+                value = self.value(
+                    request=request, dashboard=self.dashboard, filters=filters
+                )
+            else:
+                value = self.value
 
         if is_dataclass(value):
             value = asdict(value, dict_factory=value_render_encoder)
@@ -107,6 +115,8 @@ def value_render_encoder(data) -> dict:
             return asdict(o)
         if isinstance(o, Enum):
             return o.value
+        if isinstance(o, QuerySet):
+            return list(o)
         return o
 
     return dict((k, encode(v)) for k, v in data)

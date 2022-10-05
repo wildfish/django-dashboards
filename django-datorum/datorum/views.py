@@ -2,6 +2,7 @@ import json
 from typing import Optional
 
 from django.core.exceptions import PermissionDenied
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -76,7 +77,8 @@ class ComponentView(DashboardObjectMixin, TemplateView):
                 json.dumps(
                     component.get_value(
                         request=self.request, call_deferred=True, filters=filters
-                    )
+                    ),
+                    cls=DjangoJSONEncoder,
                 ),
                 content_type="application/json",
             )

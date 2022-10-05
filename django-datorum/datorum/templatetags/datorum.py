@@ -3,6 +3,7 @@ from django.template import RequestContext
 
 from datorum.component import Component
 from datorum.dashboard import Dashboard
+from datorum.registry import registry
 
 
 register = template.Library()
@@ -19,6 +20,9 @@ def render_dashboard(context: RequestContext, dashboard: Dashboard):
     return dashboard.render(request=request, template_name=dashboard.template_name)
 
 
-@register.filter()
-def next_grid_area(gen):
-    return next(gen)
+@register.simple_tag()
+def dashboards_for_app(app_label):
+    """
+    Get top level dashboards (not model/object ones) for an app label
+    """
+    return [d for d in registry.get_by_app_label(app_label) if not d._meta.model]
