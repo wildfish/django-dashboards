@@ -7,9 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_dashboard__render_layout 1"
-] = """
+snapshots['test_dashboard__render_layout 1'] = '''
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +30,7 @@ snapshots[
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "tCvHSJOH2bJi8bKtTJ2zPQuELGVt0rIERQshUy9t4teJCBRasqWrCmzMAGlOyXlk"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "AoKgfIpQmZLGbJHmLycxiX6D6aQJYEi7bNbI0KgBEAMOAlbq8ZeC9Bg8jOVZbSmh"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -62,13 +60,11 @@ value
     
     
 </body>
-</html>"""
+</html>'''
 
-snapshots["test_html__render 1"] = '<div class="span-6 ">some text....</div>'
+snapshots['test_html__render 1'] = '<div class="span-6 ">some text....</div>'
 
-snapshots[
-    "test_html_component__render[Card] 1"
-] = """<div class="span-6 css_class">
+snapshots['test_html_component__render[Card] 1'] = '''<div class="span-6 css_class">
   
   <div class="card-body">
     
@@ -80,11 +76,9 @@ value
     </div>
 
   </div>
-</div>"""
+</div>'''
 
-snapshots[
-    "test_html_component__render[Div] 1"
-] = """<div class="span-6 css_class">
+snapshots['test_html_component__render[Div] 1'] = '''<div class="span-6 css_class">
   
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
@@ -93,19 +87,15 @@ value
 
     </div>
 
-</div>"""
+</div>'''
 
-snapshots[
-    "test_html_component__render[Tab] 1"
-] = """<div x-show="tab === \'component_1\'">
+snapshots['test_html_component__render[Tab] 1'] = '''<div x-show="tab === \'component_1\'">
     <div class="span-6 css_class">
   
 </div>
-</div>"""
+</div>'''
 
-snapshots[
-    "test_layout_component__render 1"
-] = """
+snapshots['test_layout_component__render 1'] = '''
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -114,11 +104,9 @@ value
     </div>
 
     <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
-"""
+'''
 
-snapshots[
-    "test_layout_component__unknown_component_ignored 1"
-] = """
+snapshots['test_layout_component__unknown_component_ignored 1'] = '''
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -134,11 +122,9 @@ value
 value from callable
 
     </div>
-"""
+'''
 
-snapshots[
-    "test_tab_container__render 1"
-] = """<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width6\' }">
+snapshots['test_tab_container__render 1'] = '''<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width6\' }">
     <ul id="" class="tabs" >
         <li class="tab-link">
   <a :class="{ \'active\': tab === \'htmlhtmlsome-text-width6\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text-width6\'" href="#">
@@ -154,4 +140,4 @@ snapshots[
 </div>
 </div>
     </div>
-</div>"""
+</div>'''
