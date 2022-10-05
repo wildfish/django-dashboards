@@ -65,6 +65,10 @@ class Customer(TimeStampedModel):
         return f"{self.reference}: {self.name}"
 
     @property
+    def has_churned(self):
+        return self.contract_end_date is not None
+
+    @property
     def link_to_cms(self):
         return format_html(
             '<a href="http://cms/{0}/" class="btn">View</a>&nbsp;', self.reference

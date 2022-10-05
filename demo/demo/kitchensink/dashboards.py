@@ -114,7 +114,7 @@ class DemoDashboardOne(Dashboard):
                     "car": 0,
                 },
             ],
-            paging=TablePaging(limit=1, page=1, page_count=2),
+            paging=TablePaging(page_size=1, page=1, page_count=2),
         ),
     )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)

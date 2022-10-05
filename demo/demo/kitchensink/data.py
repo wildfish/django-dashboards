@@ -8,7 +8,6 @@ from datorum.component.table import (
     DatatablesSort,
     ReactTablesSort,
     TableData,
-    TablePaging,
     ToTable,
 )
 

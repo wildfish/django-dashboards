@@ -10,7 +10,6 @@ from datorum.component.table import (
     DatatablesQuerysetSort,
     ReactTablesQuerysetSort,
     TableData,
-    TablePaging,
     ToTable,
 )
 from datorum.component.text import StatData
@@ -170,7 +169,7 @@ class ChurnSummaryData:
             sort_class = ReactTablesQuerysetSort
 
         table_data = ToTable(
-            data=Customer.objects.churned(),
+            data=Customer.objects.active(),
             filters=filters,
             count_func=lambda qs: qs.count(),
             fields=fields,

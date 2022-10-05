@@ -7,7 +7,9 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['test_component_view__with_model 1'] = '''
+snapshots[
+    "test_component_view__with_model 1"
+] = """
 
 
     
@@ -19,9 +21,11 @@ value
 
 
 
-'''
+"""
 
-snapshots['test_component_view__with_model 2'] = '''
+snapshots[
+    "test_component_view__with_model 2"
+] = """
 
 
     
@@ -33,9 +37,11 @@ value
 
 
 
-'''
+"""
 
-snapshots['test_view__get__all 1'] = '''
+snapshots[
+    "test_view__get__all 1"
+] = """
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +64,7 @@ snapshots['test_view__get__all 1'] = '''
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "VUR3JL6B52WijYZ9ZdazsVCjthg5AYOjR9QdiyPDbEyeBzCF87VfXoIpTzueJwRS"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "upIJ0diRjXwXGuZyiikRJQPI87CsywbUnd1thKCOSLhVyple8JOjn6jIdE4oJLam"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -104,11 +110,13 @@ value from callable
     
     
 </body>
-</html>'''
+</html>"""
 
-snapshots['test_view__get__json 1'] = b'"value"'
+snapshots["test_view__get__json 1"] = b'"value"'
 
-snapshots['test_view__get__partial_template 1'] = '''
+snapshots[
+    "test_view__get__partial_template 1"
+] = """
 
 
     
@@ -120,9 +128,11 @@ value
 
 
 
-'''
+"""
 
-snapshots['test_view__with_model 1'] = '''
+snapshots[
+    "test_view__with_model 1"
+] = """
 
 <!DOCTYPE html>
 <html lang="en">
@@ -145,7 +155,7 @@ snapshots['test_view__with_model 1'] = '''
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "7qbPY8wps7jBK1lwTdymF8sE0xthdUATGKe5HJHv7IwGB90GjM8GJHkVOFvuVRdW"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "hBzHy42Huy5qtbJld1oeSmAqBOYwfMimW8AjbTEzyCx0Qvb6cg72io8AJ6beKzqU"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -172,4 +182,4 @@ value
     
     
 </body>
-</html>'''
+</html>"""

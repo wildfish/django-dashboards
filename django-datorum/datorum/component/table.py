@@ -16,9 +16,8 @@ from .base import Component
 class TablePaging:
     ssr: bool = False
     page: int = 1
-    limit: int = 999
+    page_size: int = 999
     page_count: int = 1
-    sortby: Optional[list[dict[str, Any]]] = None
 
 
 @dataclass
@@ -93,7 +92,7 @@ class BaseSort:
 
 
 class DatatablesQuerysetFilter(BaseFilter):
-    def filter(self, qs: QuerySet):
+    def filter(self, qs: QuerySet) -> QuerySet:
         """
         Apply filtering on  a queryset based on the search[value] and
         columns[{field}][search][value] column request params.
@@ -118,7 +117,7 @@ class DatatablesQuerysetFilter(BaseFilter):
 
 
 class DatatablesQuerysetSort(BaseSort):
-    def sort(self, qs: QuerySet):
+    def sort(self, qs: QuerySet) -> QuerySet:
         """
         Apply ordering to a queryset based on the order[{field}][column] column request params.
         """
@@ -141,7 +140,7 @@ class DatatablesQuerysetSort(BaseSort):
 
 
 class DatatablesSort(BaseSort):
-    def sort(self, data: List):
+    def sort(self, data: List) -> List:
         """
         Apply ordering to a list based on the order[{field}][column] column request params.
         """
@@ -157,7 +156,7 @@ class DatatablesSort(BaseSort):
 
 
 class DatatablesFilter(BaseFilter):
-    def filter(self, data: List):
+    def filter(self, data: List) -> List:
         """
         Apply filtering to a list based on the search[value] request params.
         """
@@ -177,7 +176,7 @@ class DatatablesFilter(BaseFilter):
 
 
 class ReactTablesQuerysetSort(BaseSort):
-    def sort(self, qs: QuerySet):
+    def sort(self, qs: QuerySet) -> QuerySet:
         """
         Apply ordering to a queryset based on sortby and direction request params.
         """
@@ -201,7 +200,7 @@ class ReactTablesQuerysetSort(BaseSort):
 
 
 class ReactTablesSort(BaseSort):
-    def sort(self, data: List):
+    def sort(self, data: List) -> List:
         """
         Apply ordering to a list based on a sortby and direction param.
         """
@@ -255,7 +254,7 @@ class ToTable:
         page_number = (int(start) / int(length)) + 1
         return paginator.get_page(page_number), paginator.count
 
-    def get_data(self, start: int, length: int):
+    def get_data(self, start: int, length: int) -> TableData:
         """
         return paginated, filtered and ordered data in a format expected by table.
         """
@@ -305,18 +304,17 @@ class ToTable:
 
             data.append(values)
 
-        table_data = {
-            "recordsTotal": initial_count,
-            "recordsFiltered": filtered_count,
-            "data": data,
-            "draw": self.filters.get("draw", 1),
-        }
-
         paging = TablePaging(
             ssr=True,
-            limit=length,
+            page_size=length,
             page=page_obj.number,
             page_count=page_obj.paginator.num_pages,
         )
 
-        return TableData(**table_data, paging=paging)
+        return TableData(
+            data=data,
+            draw=self.filters.get("draw", 1),
+            recordsTotal=initial_count,
+            recordsFiltered=filtered_count,
+            paging=paging,
+        )
