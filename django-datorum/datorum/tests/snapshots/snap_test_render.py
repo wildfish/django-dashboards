@@ -35,31 +35,32 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test"></div>
+        <div id="test">
+  <table id="test_table"></table>
+</div>
 
 
-    
-        <script id="data_test" type="application/json">"value"</script>
-    
-    <script>
-        
-        let data_test = JSON.parse(document.getElementById('data_test').textContent);
-        let rows_test = data_test.rows;
-        
+  
+    <script id="data_test" type="application/json">"value"</script>
+  
+  <script id="columns_test" type="application/json">null</script>
+  <script>
+      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
-        /*
-        TODO for more control, the data provided to the component could be
-        */
-        let table_test = new Tabulator("#test", {
-            
-            "data": rows_test,
-            
-            "pagination": true,
-            "autoColumns": true,
-            "layout": "fitColumns",
-            "paginationSize": 10,
-        });
-    </script>
+      
+          let data_test = JSON.parse(document.getElementById('data_test').textContent);
+          let rows_test = data_test.data;
+
+          var options = {
+              data: rows_test,
+              columns: columns_test,
+              pageLength: 10,
+          }
+
+      
+
+      var table_test = $('#test_table').DataTable(options);
+  </script>
 
 
 
@@ -106,31 +107,33 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test"></div>
+        <div id="test">
+  <table id="test_table"></table>
+</div>
 
 
-    
-    <script>
-        
+  
+  <script id="columns_test" type="application/json">null</script>
+  <script>
+      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
-        /*
-        TODO for more control, the data provided to the component could be
-        */
-        let table_test = new Tabulator("#test", {
-            
-            "sortMode": "remote",
-            "ajaxURL":"/app1/DashboardType/component/test/?key=test",
-            "paginationMode": "remote",
-            "ajaxResponse": function(url, params, response){
-                return {"data": response.rows, "last_page": response.last_page};
-            },
-            
-            "pagination": true,
-            "autoColumns": true,
-            "layout": "fitColumns",
-            "paginationSize": 10,
-        });
-    </script>
+      
+          var options = {
+              destroy: true,
+              responsive: true,
+              processing: true,
+              serverSide: true,
+              columns: columns_test,
+              pageLength: 10,
+              ajax: {
+                  url: "/app1/DashboardType/component/test/",
+                  contentType: "application/json",
+              }
+          }
+      
+
+      var table_test = $('#test_table').DataTable(options);
+  </script>
 
 
 
@@ -177,31 +180,32 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test"></div>
+        <div id="test">
+  <table id="test_table"></table>
+</div>
 
 
-    
-        <script id="data_test" type="application/json">"value"</script>
-    
-    <script>
-        
-        let data_test = JSON.parse(document.getElementById('data_test').textContent);
-        let rows_test = data_test.rows;
-        
+  
+    <script id="data_test" type="application/json">"value"</script>
+  
+  <script id="columns_test" type="application/json">null</script>
+  <script>
+      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
-        /*
-        TODO for more control, the data provided to the component could be
-        */
-        let table_test = new Tabulator("#test", {
-            
-            "data": rows_test,
-            
-            "pagination": true,
-            "autoColumns": true,
-            "layout": "fitColumns",
-            "paginationSize": 10,
-        });
-    </script>
+      
+          let data_test = JSON.parse(document.getElementById('data_test').textContent);
+          let rows_test = data_test.data;
+
+          var options = {
+              data: rows_test,
+              columns: columns_test,
+              pageLength: 10,
+          }
+
+      
+
+      var table_test = $('#test_table').DataTable(options);
+  </script>
 
 
 
@@ -248,31 +252,32 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test"></div>
+        <div id="test">
+  <table id="test_table"></table>
+</div>
 
 
-    
-        <script id="data_test" type="application/json">"value"</script>
-    
-    <script>
-        
-        let data_test = JSON.parse(document.getElementById('data_test').textContent);
-        let rows_test = data_test.rows;
-        
+  
+    <script id="data_test" type="application/json">"value"</script>
+  
+  <script id="columns_test" type="application/json">null</script>
+  <script>
+      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
-        /*
-        TODO for more control, the data provided to the component could be
-        */
-        let table_test = new Tabulator("#test", {
-            
-            "data": rows_test,
-            
-            "pagination": true,
-            "autoColumns": true,
-            "layout": "fitColumns",
-            "paginationSize": 10,
-        });
-    </script>
+      
+          let data_test = JSON.parse(document.getElementById('data_test').textContent);
+          let rows_test = data_test.data;
+
+          var options = {
+              data: rows_test,
+              columns: columns_test,
+              pageLength: 10,
+          }
+
+      
+
+      var table_test = $('#test_table').DataTable(options);
+  </script>
 
 
 
@@ -337,31 +342,32 @@ snapshots[
 ] = """
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test"></div>
+        <div id="test">
+  <table id="test_table"></table>
+</div>
 
 
-    
-        <script id="data_test" type="application/json">"value"</script>
-    
-    <script>
-        
-        let data_test = JSON.parse(document.getElementById('data_test').textContent);
-        let rows_test = data_test.rows;
-        
+  
+    <script id="data_test" type="application/json">"value"</script>
+  
+  <script id="columns_test" type="application/json">null</script>
+  <script>
+      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
-        /*
-        TODO for more control, the data provided to the component could be
-        */
-        let table_test = new Tabulator("#test", {
-            
-            "data": rows_test,
-            
-            "pagination": true,
-            "autoColumns": true,
-            "layout": "fitColumns",
-            "paginationSize": 10,
-        });
-    </script>
+      
+          let data_test = JSON.parse(document.getElementById('data_test').textContent);
+          let rows_test = data_test.data;
+
+          var options = {
+              data: rows_test,
+              columns: columns_test,
+              pageLength: 10,
+          }
+
+      
+
+      var table_test = $('#test_table').DataTable(options);
+  </script>
 
 
 

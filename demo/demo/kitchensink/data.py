@@ -1,11 +1,16 @@
 import csv
-import math
 
 import requests
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
-from datorum.component.table import TableData, TablePaging
-from datorum.utils import ToTable, DatatablesFilter, DatatablesSort, ReactTablesSort
+from datorum.component.table import (
+    DatatablesFilter,
+    DatatablesSort,
+    ReactTablesSort,
+    TableData,
+    TablePaging,
+    ToTable,
+)
 
 from demo.kitchensink.models import FlatText
 
@@ -282,15 +287,13 @@ class DashboardData:
             field_to_name=field_to_name,
             filter_class=filter_class,
             sort_class=sort_class,
-
-        ).filter_data(start, length)
+        ).get_data(start, length)
 
         paging = TablePaging(
             ssr=True,
             limit=length,
             page=data["page"],
             page_count=data["page_count"],
-            total_items=data["recordsTotal"],
         )
 
         table_data = TableData(

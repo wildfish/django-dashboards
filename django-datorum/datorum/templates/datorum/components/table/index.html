@@ -1,5 +1,5 @@
 <div id="{{ component.key }}">
-  <table id="{{ component.key }}_table" class="display" width="100%"></table>
+  <table id="{{ component.key }}_table"></table>
 </div>
 
 {% with data_key="data_"|add:component.key columns_key="columns_"|add:component.key %}
@@ -13,7 +13,6 @@
       {% if not component.is_deferred %}
           let data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
           let rows_{{ component.key }} = data_{{ component.key }}.data;
-          let paging_{{ component.key }} = data_{{ component.key }}.paging;
 
           var options = {
               data: rows_{{ component.key }},
@@ -31,14 +30,12 @@
               pageLength: {{ component.page_size|default:25 }},
               ajax: {
                   url: "{{ component.get_absolute_url }}",
-                  //dataSrc: "data",
                   contentType: "application/json",
               }
           }
       {% endif %}
 
       var table_{{ component.key }} = $('#{{ component.key }}_table').DataTable(options);
-
   </script>
 {% endwith %}
 

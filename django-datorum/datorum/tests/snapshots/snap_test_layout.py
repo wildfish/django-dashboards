@@ -24,9 +24,11 @@ snapshots[
     <script src="/static/js/hyperscript-0.9.7.min.js"></script>
     <script src="/static/js/alpine-3.10.3.js" defer></script>
     <script src="/static/js/plotly-2.12.1.min.js"></script>
-    <script src="/static/js/tabulator.min.js"></script>
 
-    <link rel="stylesheet" href="/static/css/tabulator.min.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>

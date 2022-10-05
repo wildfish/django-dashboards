@@ -66,7 +66,7 @@ class SummaryDashboard(Dashboard):
                 },
             ],
             paging=TablePaging(total_items=2, limit=10, page_count=2),
-        )
+        ),
     )
 
     class Layout(Dashboard.Layout):

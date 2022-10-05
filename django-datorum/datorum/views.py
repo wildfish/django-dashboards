@@ -78,10 +78,7 @@ class ComponentView(DashboardObjectMixin, TemplateView):
             )
 
             return HttpResponse(
-                json.dumps(
-                    data,
-                    cls=DjangoJSONEncoder
-                ),
+                json.dumps(data, cls=DjangoJSONEncoder),
                 content_type="application/json",
             )
         else:

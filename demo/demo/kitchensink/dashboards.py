@@ -80,7 +80,7 @@ class DemoDashboardOne(Dashboard):
             {"data": "gender", "title": "Gender"},
             {"data": "dob", "title": "DOB"},
         ],
-        defer=DashboardData.fetch_table_data
+        defer=DashboardData.fetch_table_data,
     )
     table_example_not_deferred = Table(
         page_size=10,
@@ -115,7 +115,7 @@ class DemoDashboardOne(Dashboard):
                 },
             ],
             paging=TablePaging(total_items=2, limit=1, page_count=2),
-        )
+        ),
     )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)

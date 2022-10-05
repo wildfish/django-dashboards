@@ -1,9 +1,7 @@
-import json
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.template import Context

@@ -34,7 +34,7 @@ def complex_dashboard(dashboard):
         component_2 = Text(defer=lambda **kwargs: "value")
         component_4 = Text(value="<div></div>", mark_safe=True)
         component_5 = Table(
-            value=TableData(headers=["a", "b"], data=[{"a": "Value", "b": "Value b"}])
+            value=TableData(data=[{"a": "Value", "b": "Value b"}]), columns=["a", "b"]
         )
         component_6 = Chart(
             value=ChartData(data=[ChartData.Trace(x=["a"], y=["b"])], layout={})

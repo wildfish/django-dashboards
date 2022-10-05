@@ -1,15 +1,17 @@
-import math
-
 from django.contrib.humanize.templatetags.humanize import intcomma
-
 from django.db.models import Count
 
 from datorum.component.chart import ChartData
 from datorum.component.map import MapData
-from datorum.component.table import TableData, TablePaging
+from datorum.component.table import (
+    DatatablesQuerysetFilter,
+    DatatablesQuerysetSort,
+    ReactTablesQuerysetSort,
+    TableData,
+    TablePaging,
+    ToTable,
+)
 from datorum.component.text import StatData
-from datorum.utils import DatatablesQuerysetFilter, DatatablesQuerysetSort, ToTable, ReactTablesSort, \
-    ReactTablesQuerysetSort
 
 from demo.churn.models import Customer
 from demo.churn.utils import us_state_to_abbrev
@@ -42,7 +44,12 @@ class ChurnSummaryData:
 
     @staticmethod
     def fetch_churn_by_geography(*args, **kwargs) -> MapData:
-        data = Customer.objects.churned().values("location").annotate(churned=Count("pk")).values("location", "churned")
+        data = (
+            Customer.objects.churned()
+            .values("location")
+            .annotate(churned=Count("pk"))
+            .values("location", "churned")
+        )
 
         locations = []
         locations_text = []
@@ -101,22 +108,16 @@ class ChurnSummaryData:
             field_to_name=field_to_name,
             filter_class=filter_class,
             sort_class=sort_class,
-
-        ).filter_data(start, length)
+        ).get_data(start, length)
 
         paging = TablePaging(
             ssr=True,
             limit=length,
             page=data["page"],
             page_count=data["page_count"],
-            total_items=data["recordsTotal"],
         )
 
-        table_data = TableData(
-            **data,
-            draw=draw,
-            paging=paging
-        )
+        table_data = TableData(**data, draw=draw, paging=paging)
 
         return table_data
 
@@ -132,7 +133,9 @@ class ChurnSummaryData:
             "phone": "Phone",
             "email": "Email",
         }
-        data = ToTable(qs=Customer.objects.all(), request=request, field_to_name=field_to_name).filter_data(0, 25)
+        data = ToTable(
+            qs=Customer.objects.all(), request=request, field_to_name=field_to_name
+        ).filter_data(0, 25)
 
         table_data = TableData(
             data=data,
