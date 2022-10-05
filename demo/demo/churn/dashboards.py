@@ -38,7 +38,17 @@ class SummaryDashboard(Dashboard):
     forecast_analysis = Chart(defer=ChurnSummaryData.fetch_forecast_analysis)
     # churn_factors = Chart(defer=ChurnSummaryData.fetch_churn_risk_predictor)
     #
-    churn_table = Table(defer=ChurnSummaryData.fetch_churn_table)
+    churn_table = Table(
+        defer=ChurnSummaryData.fetch_churn_table,
+        columns=[
+            {"data": "reference", "title": "Reference"},
+            {"data": "name", "title": "Name"},
+            {"data": "phone", "title": "Phone"},
+            {"data": "email", "title": "Email"},
+            {"data": "link_to_cms", "title": "CMS"},
+        ],
+        page_size=10,
+    )
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
@@ -72,4 +82,3 @@ class ForecastDashboard(Dashboard):
 
 registry.register(SummaryDashboard)
 registry.register(ForecastDashboard)
-

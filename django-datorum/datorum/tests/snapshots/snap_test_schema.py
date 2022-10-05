@@ -31,6 +31,13 @@ snapshots["test_view__dashboard 1"] = {
             "value": None,
             "width": 6,
         },
+        {
+            "isDeferred": False,
+            "key": "component_3",
+            "renderType": "Text",
+            "value": "value from callable",
+            "width": 6,
+        },
     ],
 }
 
@@ -74,6 +81,13 @@ snapshots["test_view__dashboard__with_layout 1"] = {
             "key": "component_2",
             "renderType": "Text",
             "value": None,
+            "width": 6,
+        },
+        {
+            "isDeferred": False,
+            "key": "component_3",
+            "renderType": "Text",
+            "value": "value from callable",
             "width": 6,
         },
     ],
@@ -121,6 +135,13 @@ snapshots["test_view__dashboards 1"] = [
                 "value": None,
                 "width": 6,
             },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+                "width": 6,
+            },
         ],
     },
     {
@@ -154,8 +175,6 @@ snapshots["test_view__dashboards 1"] = [
                 "value": {
                     "data": [{"a": "Value", "b": "Value b"}],
                     "draw": 0,
-                    "page": 0,
-                    "page_count": 0,
                     "paging": None,
                     "recordsFiltered": 0,
                     "recordsTotal": 0,
@@ -209,6 +228,13 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
                 "width": 6,
             },
         ],

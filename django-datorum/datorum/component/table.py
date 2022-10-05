@@ -305,7 +305,7 @@ class ToTable:
 
             data.append(values)
 
-        data = {
+        table_data = {
             "recordsTotal": initial_count,
             "recordsFiltered": filtered_count,
             "data": data,
@@ -319,4 +319,4 @@ class ToTable:
             page_count=page_obj.paginator.num_pages,
         )
 
-        return TableData(**data, paging=paging)
+        return TableData(**table_data, paging=paging)

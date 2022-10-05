@@ -64,7 +64,7 @@ snapshots[
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="">
+<body class="" hx-headers=\'{"X-CSRFToken": "zHGuqtnyeJBqxrgPN393NWV6Tkc9fUIFTspvEA7PGOor2lc0ioVCAvaxeBdz1v7g"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -89,6 +89,18 @@ value
   <div class="card-body">
     
     <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+
+  </div>
+</div><div class="span-6  dashboard-component">
+  
+  <div class="card-body">
+    
+    
+    <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
+        
+value from callable
+
+    </div>
 
   </div>
 </div>
@@ -143,7 +155,7 @@ snapshots[
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="">
+<body class="" hx-headers=\'{"X-CSRFToken": "JE4fhDWY1Cg0yRxP3aAtxQcZticmGpiHnv2kIUU3vHlwXZdWJKoN5MgV5ztVTonI"}\'>
     
     <div class="menu"></div>
     <h1>

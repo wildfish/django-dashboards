@@ -44,7 +44,8 @@ class ChurnSummaryData:
             data=scenario_traces,
             layout={
                 "title": "Forecast Analysis",
-            })
+            },
+        )
 
     @staticmethod
     def fetch_monthly_gross_margin(*args, **kwargs) -> StatData:
@@ -158,12 +159,7 @@ class ChurnSummaryData:
         length = int(filters.get("length", 10))
 
         # todo: can these be gotten from Table columns?
-        fields = [
-            "id",
-            "reference",
-            "phone",
-            "email",
-        ]
+        fields = ["reference", "name", "phone", "email", "link_to_cms"]
 
         # todo: can this be done better i.e. if mpa do x if spa do y?
         if "draw" in filters:  # assume its datatables request (mpa) if draw in filters

@@ -32,7 +32,7 @@ snapshots[
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="">
+<body class="" hx-headers=\'{"X-CSRFToken": "tCvHSJOH2bJi8bKtTJ2zPQuELGVt0rIERQshUy9t4teJCBRasqWrCmzMAGlOyXlk"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -127,6 +127,13 @@ value
     </div>
 
     <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+
+    
+    <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
+        
+value from callable
+
+    </div>
 """
 
 snapshots[
