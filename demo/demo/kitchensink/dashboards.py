@@ -1,16 +1,24 @@
 from random import randint
 
-from datorum.component import (CTA, Chart, Component, Form, Map, Stat, Table,
-                               Text)
-from datorum.component.layout import (HR, HTML, Card, ComponentLayout, Div,
-                                      Header, Tab, TabContainer)
+from django.http import HttpRequest
+from django.urls import reverse, reverse_lazy
+
+from datorum.component import CTA, Chart, Component, Form, Map, Stat, Table, Text
+from datorum.component.layout import (
+    HR,
+    HTML,
+    Card,
+    ComponentLayout,
+    Div,
+    Header,
+    Tab,
+    TabContainer,
+)
 from datorum.component.table import TableData, TablePaging
 from datorum.component.text import CTAData, StatData
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
 from datorum.registry import registry
-from django.http import HttpRequest
-from django.urls import reverse_lazy
 from plotly.io._orca import psutil
 
 from demo.kitchensink.components import SharedComponent, SSEChart, SSEStat
@@ -18,10 +26,12 @@ from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
 
 
-class DemoDashboardOne(Dashboard):
+class DemoDashboard(Dashboard):
     link = CTA(
         value=CTAData(
-            href=reverse_lazy("datorum:dashboards:kitchensink_demodashboardonecustom"),
+            href=reverse_lazy(
+                "datorum:dashboards:kitchensink_demodashboardcustomtemplate"
+            ),
             text="Find out more!",
         ),
         width=3,
@@ -118,13 +128,13 @@ class DemoDashboardOne(Dashboard):
         name = "Basic"
 
 
-class DemoDashboardOneCustom(DemoDashboardOne):
+class DemoDashboardCustomTemplate(DemoDashboard):
     class Meta:
         name = "Custom Template"
         template_name = "demo/custom.html"
 
 
-class DemoDashboardOneVary(DemoDashboardOne):
+class DemoDashboardWithLayout(DemoDashboard):
     chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=12)
     calculated_example = Text(defer=lambda **kwargs: "some calculated text", width=3)
     table_example = Table(defer=DashboardData.fetch_table_data, width=12)
@@ -167,7 +177,7 @@ class DemoDashboardOneVary(DemoDashboardOne):
         )
 
 
-class DemoDashboardAdmin(Dashboard):
+class AdminDashboard(Dashboard):
     admin_text = Text(value="Admin Only Text")
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
@@ -292,10 +302,57 @@ class SSEDashboard(Dashboard):
         name = "SSE Example"
 
 
+class CustomComponentDashboard(Dashboard):
+    """
+    Example of dashboard with components that use a different defer fetching url.
+
+    For the async example, while this will run with runserver, use daphne
+    for production or to see the demo working fully
+
+        daphne demo.asgi:application
+
+    """
+
+    # Simplistic example which calls it's own view, which in this case just
+    # subclassed ComponentView for a simple response, i.e value/defer is not used.
+    custom_response = Text(
+        defer_url=lambda reverse_kwargs: reverse(
+            "kitchensink:custom-component", kwargs=reverse_kwargs
+        ),
+    )
+
+    # Simplistic example which calls it's own view, but refers back to defer via the
+    # component.
+    custom_response_defer = Text(
+        defer=lambda **kwargs: "Simple Response Via Defer",
+        defer_url=lambda reverse_kwargs: reverse(
+            "kitchensink:custom-component-defer", kwargs=reverse_kwargs
+        ),
+    )
+
+    # Example in which third party is called via sync.
+    sync_httpbin = Text(
+        defer_url=lambda reverse_kwargs: reverse(
+            "kitchensink:sync-component", kwargs=reverse_kwargs
+        ),
+    )
+
+    # Example in which third party is called via async.
+    async_httpbin = Text(
+        defer_url=lambda reverse_kwargs: reverse(
+            "kitchensink:async-component", kwargs=reverse_kwargs
+        ),
+    )
+
+    class Meta:
+        name = "Custom Component Fetch"
+
+
 # register the dashboards
-registry.register(DemoDashboardOne)
-registry.register(DemoDashboardOneCustom)
-registry.register(DemoDashboardOneVary)
-registry.register(DemoDashboardAdmin)
+registry.register(DemoDashboard)
+registry.register(DemoDashboardCustomTemplate)
+registry.register(DemoDashboardWithLayout)
+registry.register(AdminDashboard)
 registry.register(DynamicDashboard)
 registry.register(SSEDashboard)
+registry.register(CustomComponentDashboard)
