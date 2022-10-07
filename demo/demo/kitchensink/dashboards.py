@@ -3,7 +3,7 @@ from random import randint
 from django.http import HttpRequest
 from django.urls import reverse, reverse_lazy
 
-from datorum.component import CTA, Chart, Component, Form, Map, Stat, Table, Text
+from datorum.component import CTA, Chart, Form, Map, Stat, Table, Text
 from datorum.component.layout import (
     HR,
     HTML,
@@ -38,43 +38,42 @@ class DemoDashboard(Dashboard):
     )
     text_example = Text(
         value="Rendered on load",
-        width=6,
+        width=3,
     )
     html_example = Text(
-        value="<strong>HTML also rendered on load</strong>", mark_safe=True
+        value="<strong>HTML also rendered on load</strong>", mark_safe=True, width=3
     )
-    calculated_example = Text(defer=lambda **kwargs: "Deferred text")
+    calculated_example = Text(defer=lambda **kwargs: "Deferred text", width=3)
     form_example = Form(
         form=AnimalForm,
         method="get",
         dependents=["chart_example", "stacked_chart_example", "stat_three"],
-        width=4,
+        width=3,
     )
-    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=4)
+    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=3)
     stacked_chart_example = Chart(
-        defer=DashboardData.fetch_stacked_bar_chart_data, width=4, poll_rate=5
+        defer=DashboardData.fetch_stacked_bar_chart_data, width=3, poll_rate=5
     )
-    bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
+    bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data, width=3)
     filter_form = Form(
         form=ExampleForm,
         method="get",
         dependents=["line_chart_example", "stat_three"],
-        width=12,
+        width=3,
     )
-    line_chart_example = Chart(
-        defer=DashboardData.fetch_scatter_chart_data,
-    )
-    stat_one = Stat(value={"text": "100%", "sub_text": "increase"})
-    stat_two = Stat(value={"text": "88%", "sub_text": "increase"})
+    line_chart_example = Chart(defer=DashboardData.fetch_scatter_chart_data, width=9)
+    stat_one = Stat(value={"text": "100%", "sub_text": "increase"}, width=4)
+    stat_two = Stat(value={"text": "88%", "sub_text": "increase"}, width=4)
     stat_three = Stat(
         defer=lambda **kwargs: {
             "text": "33%",
             "sub_text": kwargs.get("filters", {}).get("country", "all"),
-        }
+        },
+        width=4,
     )
-    free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True)
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
+    free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True, width=12)
     table_example = Table(
         page_size=5,
         columns=[
@@ -151,11 +150,12 @@ class DemoDashboardWithLayout(DemoDashboard):
                 "dolor sit amet, consectetur adipiscing elit.",
                 width=12,
             ),
-            Card("text_example", "html_example", width=4),
+            Card("text_example", "html_example", width=3),
             Card(
                 Div("stat_one"),
                 Div("stat_two"),
                 Div("stat_three"),
+                width=9,
             ),
             HR(width=12),
             Header(heading="Tab Example", size=3, width=12),
