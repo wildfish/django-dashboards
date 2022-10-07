@@ -1,4 +1,2 @@
-export * from "./charts"
-export * from "./table"
-export * from "./text"
-export * from "./display"
+export * from "./dashboard"
+export * from "./layout"

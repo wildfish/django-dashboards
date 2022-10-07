@@ -35,7 +35,7 @@ type DashboardProps = {
   dashboards: Dashboard[]
 };
 
-const Home: React.FC<DashboardProps> = ({dashboards}) => {
+const Home = ({dashboards}: DashboardProps) => {
     return <DashboardGrid dashboard={dashboards[0]}/>
 };
 

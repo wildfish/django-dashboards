@@ -1,36 +1,42 @@
-<div id="component-table-{{ component.key }}"></div>
+<div id="{{ component.key }}">
+  <table id="{{ component.key }}_table"></table>
+</div>
 
-{% with "data_"|add:component.key as data_key %}
-    {% if not component.is_deferred %}
-        {{ rendered_value|json_script:data_key }}
-    {% endif %}
-    <script>
-        {% if not component.is_deferred %}
-        const data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
-        const rows_{{ component.key }} = data_{{ component.key }}.rows;
-        {% endif %}
+{% with data_key="data_"|add:component.key columns_key="columns_"|add:component.key %}
+  {% if not component.is_deferred %}
+    {{ rendered_value|json_script:data_key }}
+  {% endif %}
+  {{ component.columns|json_script:columns_key }}
+  <script>
+      var columns_{{ component.key }} = JSON.parse(document.getElementById('{{ columns_key }}').textContent);
 
-        /*
-        TODO for more control, the data provided to the component could be
-        {"data:..., "options":...} and we pass options like autoColumns down as per Sandvik
-        */
-        const table_{{ component.key }} = new Tabulator("#component-table-{{ component.key }}", {
-            {% if component.is_deferred %}
-            "sortMode": "remote",
-            "ajaxURL":"{{ component.get_absolute_url }}?key={{ component.key }}",
-            "paginationMode": "remote",
-            "ajaxResponse": function(url, params, response){
-                return {"data": response.rows, "last_page": response.last_page};
-            },
-            {% else %}
-            "data": rows_{{ component.key }},
-            {% endif %}
-            "pagination": true,
-            "autoColumns": true,
-            "layout": "fitColumns",
-            "paginationSize": {{ component.page_size }},
-        });
-    </script>
+      {% if not component.is_deferred %}
+          let data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+          let rows_{{ component.key }} = data_{{ component.key }}.data;
+
+          var options = {
+              data: rows_{{ component.key }},
+              columns: columns_{{ component.key }},
+              pageLength: {{ component.page_size|default:25 }},
+          }
+
+      {% else %}
+          var options = {
+              destroy: true,
+              responsive: true,
+              processing: true,
+              serverSide: true,
+              columns: columns_{{ component.key }},
+              pageLength: {{ component.page_size|default:25 }},
+              ajax: {
+                  url: "{{ component.get_absolute_url }}",
+                  contentType: "application/json",
+              }
+          }
+      {% endif %}
+
+      var table_{{ component.key }} = $('#{{ component.key }}_table').DataTable(options);
+  </script>
 {% endwith %}
 
 

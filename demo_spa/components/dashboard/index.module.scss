@@ -1,0 +1,17 @@
+.dashboardContainer, .tabContainer {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+
+@for $i from 1 through 12 {
+  .span#{$i} {
+      grid-column-end: span #{$i};
+      grid-auto-rows: min-content;
+  }
+}
+
+.tabContainer{
+}
+

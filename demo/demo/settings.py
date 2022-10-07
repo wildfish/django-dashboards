@@ -120,6 +120,7 @@ class Common(Configuration):
         "django.contrib.contenttypes",
         "django.contrib.sessions",
         "django.contrib.messages",
+        "django.contrib.humanize",
         # Third party
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
@@ -130,11 +131,15 @@ class Common(Configuration):
         "django_htmx",
         "strawberry.django",
         "datorum",
+        "django_eventstream",
         # Project
-        "demo.demo_app",
+        "demo.kitchensink.apps.KitchenSinkConfig",
+        "demo.vehicle.apps.VehicleConfig",
+        "demo.churn.apps.ChurnConfig",
     ]
-
     MIDDLEWARE = [
+        # django_grip required for datorum/eventstream
+        "django_grip.GripMiddleware",
         "django.middleware.security.SecurityMiddleware",
         "corsheaders.middleware.CorsMiddleware",
         "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -144,7 +149,7 @@ class Common(Configuration):
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
-        # required for datorum
+        # django_htmx required for datorum
         "django_htmx.middleware.HtmxMiddleware",
     ]
 
@@ -255,6 +260,11 @@ class Common(Configuration):
 
     CORS_ALLOW_ALL_ORIGINS = True
 
+    GRIP_URL = "http://localhost:5561"
+    EVENTSTREAM_ALLOW_ORIGIN = "http://127.0.0.1:8000"
+    EVENTSTREAM_ALLOW_CREDENTIALS = True
+    EVENTSTREAM_ALLOW_HEADERS = "Authorization"
+
 
 class RedisCache:
     REDIS_HOST = get_env("DJANGO_REDIS_HOST", required=True)
@@ -282,17 +292,18 @@ class Dev(Common):
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = "/tmp/app-emails"
     INTERNAL_IPS = ["127.0.0.1"]
+    ENABLE_SILK = True
 
     @property
     def INSTALLED_APPS(self):
         INSTALLED_APPS = super().INSTALLED_APPS
-        INSTALLED_APPS.append("debug_toolbar")
+        INSTALLED_APPS.append("silk")
         return INSTALLED_APPS
 
     @property
     def MIDDLEWARE(self):
         MIDDLEWARE = super().MIDDLEWARE
-        MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
+        MIDDLEWARE.append("silk.middleware.SilkyMiddleware")
         return MIDDLEWARE
 
 
@@ -336,9 +347,7 @@ class Deployed(RedisCache, Common):
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     SESSION_CACHE_ALIAS = "default"
 
-    # django-debug-toolbar will throw an ImproperlyConfigured exception if DEBUG is
-    # ever turned on when run with a WSGI server
-    DEBUG_TOOLBAR_PATCH_SETTINGS = False
+    ENABLE_SILK = False
 
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = "smtp.sendgrid.net"

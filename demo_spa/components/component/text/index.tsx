@@ -1,16 +1,9 @@
 import React from "react";
+import {StatValue, Value} from "@/types";
 
-export const Text: React.FC<{value: string}> = ({value}) => (
-  <div>{value}</div>
-)
-
-export const HTML: React.FC<{value: string}> = ({value}) => (
-  <div dangerouslySetInnerHTML={{ __html: value }}/>
-)
-
-export const Stat: React.FC<{value: {text: string, sub_text: string}}> = ({value}) => (
+export const Stat = ({value}: {value: Value}) => (
     <div>
-        <h2>{value.text}</h2>
-        <small>{value.sub_text}</small>
+        <h2>{(value as StatValue).text}</h2>
+        <small>{(value as StatValue).sub_text}</small>
     </div>
 )

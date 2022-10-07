@@ -43,7 +43,7 @@ type DashboardProps = {
 };
 
 
-const DashboardPage: React.FC<DashboardProps> = ({dashboard}) => {
+const DashboardPage = ({dashboard}: DashboardProps) => {
     return <CustomDashboard dashboard={dashboard}/>
 };
 

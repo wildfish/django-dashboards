@@ -2,7 +2,7 @@ import {GetServerSideProps} from "next";
 import client from "../../../apollo_client";
 import {gql} from "@apollo/client";
 import {Dashboard} from "@/types";
-import {DashboardGrid} from "@/components/dashboard";
+import {DashboardGrid, DashboardWithLayout} from "@/components/dashboard";
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -14,6 +14,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             Meta {
               name
               slug
+              layoutJson
             }
             components{
               key
@@ -44,8 +45,9 @@ type DashboardProps = {
 };
 
 
-const DashboardPage: React.FC<DashboardProps> = ({dashboard}) => {
-    return <DashboardGrid dashboard={dashboard}/>
+const DashboardPage = ({dashboard}: DashboardProps) => {
+    const Wrapper = dashboard.Meta.layoutJson ? DashboardWithLayout : DashboardGrid
+    return <Wrapper dashboard={dashboard}/>
 };
 
 export default DashboardPage

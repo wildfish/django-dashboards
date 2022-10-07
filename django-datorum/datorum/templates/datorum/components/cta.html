@@ -1,7 +1,3 @@
-{% if component.cta %}
-    <a href="{{ component.cta.href }}">
-        <div class="dashboard-component-cta">
-            {{ component.cta.text }}
-        </div>
-    </a>
-{% endif %}
+<a href="{{ rendered_value.href }}" class="dashboard-component-cta">
+  {{ rendered_value.text }}
+</a>

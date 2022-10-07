@@ -20,8 +20,8 @@ class ChartData:
             BAR = "bar"
             SCATTER = "scatter"
 
-        x: list[Any]
-        y: list[Any]
+        x: Optional[list[Any]] = None
+        y: Optional[list[Any]] = None
         text: Optional[list] = None
         type: Optional[Type] = None
         mode: Optional[Mode] = None
@@ -42,7 +42,15 @@ class ChartData:
         gauge: Optional[dict] = None
         type: str = "indicator"
 
-    data: list[Union[Gauge, Trace]]
+    @dataclass
+    class Sankey:
+        type: str = "sankey"
+        orientation: str = "h"
+        arrangement: str = "fixed"
+        node: Optional[dict] = None
+        link: Optional[dict] = None
+
+    data: list[Union[Gauge, Trace, Sankey, Any]]
     layout: Optional[dict[str, str]] = None
 
 

@@ -9,3 +9,11 @@ class Config:
             "DATORUM_DEFAULT_PERMISSION_CLASSES",
             ["datorum.permissions.AllowAny"],
         )
+
+    @property
+    def DASHBOARD_URL(cls) -> str:
+        return getattr(
+            settings,
+            "DASHBOARD_URL",
+            "dashboard",
+        )

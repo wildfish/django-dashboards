@@ -1,28 +1,42 @@
 class Registry(object):
     def __init__(self):
         # Register dashboard classes
-        self.dashboards = {}
+        self.dashboards = []
 
     def register(self, cls):
-        if (
-            cls.__name__ != "Dashboard"
-        ):  # TODO needs better way to exclude the base class?
-            self.dashboards[cls.__name__] = cls()
+        self.dashboards.append(cls())
 
     def get_all_dashboards(self):
         return self.dashboards
 
+    def get_by_classname(self, app_label: str, classname: str):
+        for dashboard in self.dashboards:
+            if dashboard.__class__.__name__ == classname and (
+                app_label and dashboard.Meta.app_label == app_label
+            ):
+                return dashboard
+        raise IndexError
+
+    def get_by_app_label(self, app_label: str):
+        return [d for d in self.dashboards if d.Meta.app_label == app_label]
+
+    def get_by_slug(self, slug):
+        for dashboard in self.dashboards:
+            if dashboard.get_slug() == slug:
+                return dashboard
+        raise IndexError
+
     def get_graphql_dashboards(self):
         return {
-            name: dashboard
-            for name, dashboard in self.dashboards.items()
+            dashboard.Meta.name: dashboard
+            for dashboard in self.dashboards
             if dashboard.include_in_graphql
         }
 
     def get_urls(self):
         urlpatterns = []
 
-        for name, dashboard in self.get_all_dashboards().items():
+        for dashboard in self.get_all_dashboards():
             urlpatterns += dashboard.urls
 
         return urlpatterns

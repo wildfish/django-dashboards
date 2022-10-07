@@ -7,6 +7,7 @@ django>=4.0,<4.1
 -e ../django-datorum
 django-configurations
 django-clear-cache
+django_eventstream
 django-redis
 strawberry-graphql[debug-server]
 envdir
@@ -24,15 +25,14 @@ django-model-utils
 django-vanilla-views
 
 # Dev tools
+Faker
 ipython
 ipdb
 pip-tools
-django-debug-toolbar
+django-silk
 
 # Testing
 django-webtest
-# workaround for tholo/pytest-flake8#87
-flake8 < 5
 model-bakery
 pytest
 pytest-black

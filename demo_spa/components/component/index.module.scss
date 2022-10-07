@@ -1,0 +1,35 @@
+.component {
+    box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+    background-color: $white;
+    border-radius: 0.3rem;
+    text-align: center;
+
+    .component {
+      box-shadow: none;
+    }
+}
+
+.componentInner {
+  padding: 1em;
+}
+
+.componentCTA {
+  background-color: #c4d9e3;
+  color: #FFF;
+  text-decoration: none;
+  padding: 5px;
+  border-top: 2px solid #b7c8d2;
+}
+
+.tab{
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+
+.tab-link {
+  background-color: #ffffff;
+  list-style: none;
+  padding: 1rem;
+}

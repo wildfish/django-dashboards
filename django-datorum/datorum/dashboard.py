@@ -1,129 +1,79 @@
 import inspect
-import itertools
 import logging
-import string
-from copy import deepcopy
+from typing import List, Optional
 
+from django.apps import apps
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
+from django.template import Context
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 
 from datorum import config
 from datorum.component import Component
+from datorum.component.layout import Card, ComponentLayout
+from datorum.exceptions import ComponentNotFoundError
 from datorum.permissions import BasePermission
-from datorum.registry import registry
 
 
 logger = logging.getLogger(__name__)
 
 
-class DashboardRenderMixin:
-    template_name: str = "datorum/layout/grid.html"
-
-    class Layout:
-        """
-        Components works a like fields/formsets on contrib forms. e.g.
-
-        components = {
-            "group_one": {
-                "components": ["a", "b", "c"],
-                "component_widths": [3, 6],
-                "group_width": 6,
-            },
-            "group_two": {
-                "components": ["d", "e"],
-                "group_width": 3,
-                # no component_widths so will default to first component.width or Layout.default_component_width
-            },
-            # None can be uses as a catch all for the remaining non grouped ones.
-            None: {
-                "components": ["calculated_example", "chart_example"],
-            }
-        }
-
-        """
-
-        components: dict = {}
-        default_component_width: int = 4
-
-    def get_context(self):
-        context = {"layout": self.Layout()}
-        return context
-
-    def render(self, request: HttpRequest, template_name=None):
-        if not template_name:
-            template_name = self.template_name
-
-        context = self.get_context()
-        context["request"] = request
-        return mark_safe(render_to_string(template_name, context))
-
-    @classmethod
-    def apply_layout(cls, components: list[Component]) -> list[Component]:
-        """
-        If a fixed layout has been defined, order, group and annotate components as needed for rendering.
-        Otherwise return as per the attribute order.
-        """
-        layout = cls.Layout
-        width = layout.default_component_width
-
-        # if we have a defined layout, fields not in this layout are not added/shown.
-        components_with_layout = []
-        if layout.components:
-            components_to_keys = {c.key: c for c in components}
-            for group, attrs in layout.components.items():
-                for i, key in enumerate(attrs.get("components")):
-                    component = components_to_keys.get(key)
-                    if component:
-                        try:
-                            component.width = attrs.get("component_widths", [])[i]
-                        except IndexError:
-                            logger.debug(f"Missing component_widths for {key} at {i}")
-                            if not component.width:  # if not set directly on component
-                                component.width = width
-
-                        component.group_width = attrs.get("group_width")
-                        component.group = attrs.get("group", group)
-                        components_with_layout.append(component)
-                    else:
-                        logger.warning(f"Missing component for {key}")
-
-        # default layout
-        else:
-            for component in components:
-                if not component.width:
-                    component.width = width
-                components_with_layout.append(component)
-
-        return components_with_layout
-
-    @staticmethod
-    def grid_areas():
-        for i in itertools.count(1):
-            for p in itertools.product(string.ascii_lowercase, repeat=i):
-                yield "".join(p)
-
-
 class DashboardType(type):
-    def __new__(mcs, cls, bases, attrs):
-        dashboard_class = super().__new__(mcs, cls, bases, attrs)
-        registry.register(dashboard_class)
+    def __new__(mcs, name, bases, attrs):
+        dashboard_class = super().__new__(mcs, name, bases, attrs)
+        module = attrs.pop("__module__")
+        attr_meta = attrs.get("Meta", None)
+        meta = attr_meta or getattr(dashboard_class, "Meta", None)
+        base_meta = getattr(dashboard_class, "_meta", None)
+        setattr(dashboard_class, "_meta", meta)
+        if getattr(meta, "app_label", None) is None:
+            # Look for an application configuration to attach the model to.
+            app_config = apps.get_containing_app_config(module)
+
+            if app_config is None:
+                if name not in (
+                    "ModelDashboard",
+                    "Dashboard",
+                ):  # TODO needs better way to exclude the base class?
+
+                    raise RuntimeError(
+                        "Model class %s.%s doesn't declare an explicit "
+                        "app_label and isn't in an application in "
+                        "INSTALLED_APPS." % (module, name)
+                    )
+            else:
+                dashboard_class._meta.app_label = app_config.label
+
+        if base_meta:
+            if not hasattr(meta, "model"):
+                dashboard_class._meta.model = base_meta.model
+            if not hasattr(meta, "lookup_kwarg"):
+                dashboard_class._meta.lookup_kwarg = base_meta.lookup_kwarg
+            if not hasattr(meta, "lookup_field"):
+                dashboard_class._meta.lookup_field = base_meta.lookup_field
+
         return dashboard_class
 
 
-class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
+class Dashboard(metaclass=DashboardType):
     include_in_graphql: bool = True
-    permission_classes: list[BasePermission] = []
+    permission_classes: Optional[List[BasePermission]] = None
+    template_name: Optional[str] = None
 
     def __init__(self, **kwargs):
         self._components_cache = {}
+        self.kwargs = kwargs
         super().__init__()
 
-    def get_context(self):
-        context = super().get_context()
-        context.update({"components": self.get_components(), "dashboard": self})
-        return context
+    def get_slug(self):
+        return f"{slugify(self._meta.app_label)}_{slugify(self.__class__.__name__)}"
+
+    def get_context(self) -> dict:
+        return {"dashboard": self, "components": self.get_components()}
 
     @classmethod
     def get_attributes_order(cls):
@@ -133,48 +83,49 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         """
         attributes_to_class = []
         attributes_to_class.extend(
-            [list(vars(bc).keys()) for bc in cls.__mro__ if issubclass(bc, Dashboard)]
+            [list(vars(bc).keys()) for bc in cls.mro() if issubclass(bc, Dashboard)]
         )
         attributes_to_class.sort(reverse=True)
         return [a for nested in attributes_to_class for a in nested]
 
     @classmethod
-    def get_components(cls, with_layout=True) -> list[Component]:
+    def get_component_attributes(cls):
         attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)))
+        components = [(k, c) for k, c in attributes if isinstance(c, Component)]
+        components.sort(key=lambda t: cls.get_attributes_order().index(t[0]))
+        return components
+
+    def get_components(self) -> list[Component]:
+        component_attributes = self.get_component_attributes()
 
         components_to_keys = {}
         awaiting_dependents = {}
-        for key, component in attributes:
-            if isinstance(component, Component):
-                component.dashboard_class = cls.__name__
-                if not component.key:
-                    component.key = key
-                if not component.render_type:
-                    component.render_type = component.__class__.__name__
-                components_to_keys[key] = component
+        for key, component in component_attributes:
+            if not component.dashboard:
+                component.dashboard = self
+            if not component.key:
+                component.key = key
+            if not component.render_type:
+                component.render_type = component.__class__.__name__
+            components_to_keys[key] = component
 
-                if component.dependents:
-                    awaiting_dependents[key] = component.dependents
+            if component.dependents:
+                awaiting_dependents[key] = component.dependents
 
         for component, dependents in awaiting_dependents.items():
             components_to_keys[component].dependent_components = [
                 components_to_keys.get(d) for d in dependents  # type: ignore
             ]
 
-        components = list(components_to_keys.values())
-        components.sort(key=lambda c: cls.get_attributes_order().index(c.key))
+        return list(components_to_keys.values())
 
-        if with_layout:
-            components = cls.apply_layout(components=deepcopy(components))
-
-        return components
-
-    def get_dashboard_permissions(self):
+    @classmethod
+    def get_dashboard_permissions(cls):
         """
         Returns a list of permissions attached to a dashboard.
         """
-        if self.permission_classes:
-            permissions_classes = self.permission_classes
+        if cls.permission_classes:
+            permissions_classes = cls.permission_classes
         else:
             permissions_classes = []
             for (
@@ -190,28 +141,29 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
 
         return [permission() for permission in permissions_classes]
 
-    def has_permissions(self, request: HttpRequest) -> bool:
+    @classmethod
+    def has_permissions(cls, request: HttpRequest) -> bool:
         """
         Check if the request should be permitted.
         Raises exception if the request is not permitted.
         """
-        for permission in self.get_dashboard_permissions():
+        for permission in cls.get_dashboard_permissions():
             if not permission.has_permission(request):
                 return False
         return True
 
     def get_urls(self):
-        from django.template.defaultfilters import slugify
         from django.urls import path
 
         from .views import DashboardView
 
-        name = slugify(self.__class__.__name__)
+        name = str(self.__class__.__name__).lower()
+
         return [
             path(
-                "%s/" % name,
+                f"{self._meta.app_label}/{name}/",
                 DashboardView.as_view(dashboard_class=self.__class__),
-                name="%s_dashboard" % name,
+                name=self.get_slug(),
             ),
         ]
 
@@ -220,20 +172,134 @@ class Dashboard(DashboardRenderMixin, metaclass=DashboardType):
         urls = self.get_urls()
         return urls
 
+    def get_absolute_url(self):
+        return reverse(f"datorum:dashboards:{self.get_slug()}")
+
     class Meta:
+        model = None
         name: str
+        lookup_kwarg: str = "lookup"  # url parameter name
+        lookup_field: str = "pk"  # model field
+
+    class Layout:
+        """
+        Components classes to define layout
+
+        components = ComponentLayout(
+            Div(
+                Div(
+                    "a",
+                    "b",
+                    c="text_group_div",
+                ),
+                Div(
+                    "d",
+                    "e",
+                    "f",
+                ),
+            ),
+            'g',
+            'h'
+        )
+        """
+
+        components: Optional[ComponentLayout] = None
+
+    def render(self, request: HttpRequest, template_name=None):
+        """
+        Renders 3 ways
+        - if template is provided - use custom template
+        - else if layout is set use layout.
+        - else render a generic layout by wrapping all components.
+        """
+        context = self.get_context()
+        context["request"] = request
+
+        layout = self.Layout()
+
+        # Render with template
+        if template_name:
+            return mark_safe(render_to_string(template_name, context))
+
+        # No layout, so create default one, copying any LayoutOptions elements from the component to the card
+        # TODO Card as the default should be an option
+        # TODO make width/css_classes generic, for now tho we don't need template.
+        if not layout.components:
+
+            def _get_layout(c: Component) -> dict:
+                return {
+                    "width": c.width,
+                    "css_classes": f"{c.css_classes if c.css_classes else ''} {Card.css_classes}",
+                }
+
+            layout.components = ComponentLayout(
+                *[Card(k, **_get_layout(c)) for k, c in self.get_component_attributes()]
+            )
+
+        context["call_deferred"] = False
+        return layout.components.render(dashboard=self, context=Context(context))
 
     def __str__(self):
         return self.Meta.name
 
     def __getitem__(self, name):
-        try:
-            value = getattr(self, name)
-        except KeyError:
-            if name not in self._components_cache:
-                components = dict([(x.key, x) for x in self.get_components()])
-                self._components_cache.update(components)
+        # see if this is a component
+        if not self._components_cache:  # do we have a cache?
+            components = dict([(x.key, x) for x in self.get_components()])
+            self._components_cache.update(components)
 
-            value = self._components_cache.get(name)
+        # is it a component
+        try:
+            value = self._components_cache[name]
+        except KeyError:
+            try:
+                value = getattr(self, name)
+            except AttributeError:
+                raise ComponentNotFoundError
 
         return value
+
+
+class ModelDashboard(Dashboard):
+    @property
+    def object(self):
+        return self.get_object()
+
+    def get_queryset(self):
+        if self._meta.model is None:
+            raise AttributeError("model is not set on Meta")
+
+        return self._meta.model.objects.all()
+
+    def get_absolute_url(self):
+        return reverse(
+            f"datorum:dashboards:{self.get_slug()}", kwargs={"pk": self.object.pk}
+        )
+
+    def get_object(self):
+        """
+        Get django object based on lookup params
+        """
+        qs = self.get_queryset()
+
+        if self._meta.lookup_kwarg not in self.kwargs:
+            raise AttributeError(f"{self._meta.lookup_kwarg} not in kwargs")
+
+        lookup = self.kwargs[self._meta.lookup_kwarg]
+
+        return get_object_or_404(qs, **{self._meta.lookup_field: lookup})
+
+    def get_urls(self):
+        from django.urls import path
+
+        from .views import DashboardView
+
+        name = str(self.__class__.__name__).lower()
+
+        return [
+            path(
+                f"{self._meta.app_label}/{name}/<str:{self._meta.lookup_kwarg}>/",
+                DashboardView.as_view(dashboard_class=self.__class__),
+                name=f"{self.get_slug()}_dashboard_detail",
+            ),
+        ]

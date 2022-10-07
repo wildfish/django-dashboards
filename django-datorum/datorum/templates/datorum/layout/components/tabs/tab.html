@@ -1,0 +1,5 @@
+<li class="tab-link">
+  <a :class="{ 'active': tab === '{{ tab_label|slugify }}' }" x-on:click.prevent="tab = '{{ tab_label|slugify }}'" href="#">
+    {{ tab_label }}
+  </a>
+</li>

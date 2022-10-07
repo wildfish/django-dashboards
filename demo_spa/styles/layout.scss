@@ -1,0 +1,50 @@
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: auto;
+}
+
+html {
+  font: $font-normal;
+}
+
+body {
+  padding: 1em;
+  margin: 0 auto;
+  max-width: 95%;
+}
+
+a{
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 .5em 0;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.tabs{
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.tab-link {
+  background-color: #ffffff;
+  list-style: none;
+  padding: 1rem;
+}
+
+a{
+  color: #000000;
+  font-size: 1.1rem;
+  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+}
+
+a.active {
+  border-bottom: 1px solid green;
+}

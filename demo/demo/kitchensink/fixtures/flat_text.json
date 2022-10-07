@@ -1,0 +1,10 @@
+[
+{
+    "model": "kicthensink.flattext",
+    "pk": 1,
+    "fields": {
+        "slug": "test",
+        "text": "this is some text from db"
+    }
+}
+]
