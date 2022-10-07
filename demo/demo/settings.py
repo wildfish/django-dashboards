@@ -135,7 +135,6 @@ class Common(Configuration):
         # Project
         "demo.kitchensink.apps.KitchenSinkConfig",
         "demo.vehicle.apps.VehicleConfig",
-        "demo.churn.apps.ChurnConfig",
     ]
     MIDDLEWARE = [
         # django_grip required for datorum/eventstream
@@ -264,6 +263,27 @@ class Common(Configuration):
     EVENTSTREAM_ALLOW_ORIGIN = "http://127.0.0.1:8000"
     EVENTSTREAM_ALLOW_CREDENTIALS = True
     EVENTSTREAM_ALLOW_HEADERS = "Authorization"
+
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+            },
+        },
+        "root": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+        "loggers": {
+            "datorum": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+        },
+    }
 
 
 class RedisCache:

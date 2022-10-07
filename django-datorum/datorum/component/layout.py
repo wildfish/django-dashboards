@@ -1,13 +1,9 @@
-import logging
 from dataclasses import dataclass
 from typing import Optional
 
 from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-
-
-logger = logging.getLogger(__name__)
 
 
 def css_template(width: int = None, css_classes: Optional[str] = None):

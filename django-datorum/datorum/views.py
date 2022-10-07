@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Callable, Dict, Optional, Protocol, Type
 
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
@@ -13,11 +13,17 @@ from datorum.exceptions import DashboardNotFoundError
 from datorum.utils import get_dashboard_class
 
 
+class HasValueProtocol(Protocol):
+    dashboard_class: Type[Dashboard]
+    kwargs: Dict
+    get_dashboard_kwargs: Callable
+
+
 class DashboardObjectMixin:
     dashboard_class: Optional[Dashboard] = None
 
-    def get_dashboard_kwargs(self):
-        kwargs = {}
+    def get_dashboard_kwargs(self: HasValueProtocol, request: HttpRequest) -> dict:
+        kwargs = {"request": request}
         if self.dashboard_class:
             kwargs[self.dashboard_class._meta.lookup_kwarg] = self.kwargs.get(
                 self.dashboard_class._meta.lookup_kwarg
@@ -25,12 +31,20 @@ class DashboardObjectMixin:
 
         return kwargs
 
-    def get_dashboard(self, request):
+    def get_dashboard(self: HasValueProtocol, request: HttpRequest) -> Dashboard:
+        if not self.dashboard_class:
+            try:
+                self.dashboard_class = get_dashboard_class(
+                    self.kwargs["app_label"], self.kwargs["dashboard"]
+                )
+            except DashboardNotFoundError as e:
+                raise Http404(str(e))
+
         has_permissions = self.dashboard_class.has_permissions(request=request)
         if not has_permissions:
             raise PermissionDenied()
 
-        return self.dashboard_class(**self.get_dashboard_kwargs())
+        return self.dashboard_class(**self.get_dashboard_kwargs(request=request))
 
 
 class DashboardView(DashboardObjectMixin, TemplateView):
@@ -41,8 +55,7 @@ class DashboardView(DashboardObjectMixin, TemplateView):
     template_name: str = "datorum/dashboard.html"
 
     def get(self, request, *args, **kwargs):
-        self.dashboard = self.get_dashboard(request)
-        context = self.get_context_data(**{"dashboard": self.dashboard})
+        context = self.get_context_data(**{"dashboard": self.get_dashboard(request)})
         return self.render_to_response(context)
 
 
@@ -55,16 +68,6 @@ class ComponentView(DashboardObjectMixin, TemplateView):
 
     def is_ajax(self):
         return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
-
-    def get_dashboard(self, request):
-        try:
-            self.dashboard_class = get_dashboard_class(
-                self.kwargs["app_label"], self.kwargs["dashboard"]
-            )
-        except DashboardNotFoundError as e:
-            raise Http404(str(e))
-
-        return super().get_dashboard(request)
 
     def get(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard(request)

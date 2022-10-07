@@ -1,5 +1,4 @@
 import json
-import logging
 from dataclasses import asdict, is_dataclass
 from typing import List, Optional
 
@@ -12,9 +11,6 @@ from datorum.component import Component
 from datorum.component.layout import HTMLComponentLayout
 from datorum.dashboard import Dashboard
 from datorum.registry import registry
-
-
-logger = logging.getLogger(__name__)
 
 
 class LayoutJSONEncoder(json.JSONEncoder):
@@ -103,9 +99,10 @@ class DashboardSchema:
 
 def get_dashboards(info: Info) -> list[DashboardSchema]:
     dashboards = []
-    for instance in registry.get_graphql_dashboards().values():
+    for dashboard_cls in registry.get_graphql_dashboards().values():
         # make sure the current request has access to the dashboard before adding
-        if instance.has_permissions(request=info.context.get("request")):
+        if dashboard_cls.has_permissions(request=info.context.get("request")):
+            instance = dashboard_cls(request=info.context.get("request"))
             schema = DashboardSchema(
                 Meta=DashboardMetaSchema(name=instance.Meta.name, dashboard=instance),
                 components=[c for c in instance.get_components() if c.serializable],

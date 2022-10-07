@@ -32,7 +32,7 @@ snapshots[
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "uIdMm5vpvBty63gAJ7HtUfW0zzpvrARbuCfgKeq0tNdyNOs5dai8Xjl5qbm4LRz2"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "kTqyhwcmWYCWdIPqVBAdCX2bqZZs22ra6hWpnLGngvBNayEI3Ns1iTI0HFb7Zm1F"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -43,6 +43,9 @@ snapshots[
     <div class="span-6 ">
   <div class="span-99 css_style">
   
+
+
+
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -52,7 +55,11 @@ value
 
 </div><div class="span-6 css_style">
   
-    <div hx-get="/app1/TestDashboardWithLayout/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+
+
+
+    <div hx-get="/app1/testdashboardwithlayout/component/component_2/"
+         hx-trigger="intersect once delay:160ms"></div>
 
 </div>
 </div>
@@ -72,6 +79,9 @@ snapshots[
   
   <div class="card-body">
     
+
+
+
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -86,6 +96,9 @@ snapshots[
     "test_html_component__render[Div] 1"
 ] = """<div class="span-6 css_class">
   
+
+
+
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -106,6 +119,9 @@ snapshots[
 snapshots[
     "test_layout_component__render 1"
 ] = """
+
+
+
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -113,12 +129,19 @@ value
 
     </div>
 
-    <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+
+
+
+    <div hx-get="/app1/testdashboard/component/component_2/"
+         hx-trigger="intersect once delay:4ms"></div>
 """
 
 snapshots[
     "test_layout_component__unknown_component_ignored 1"
 ] = """
+
+
+
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
         
@@ -126,7 +149,14 @@ value
 
     </div>
 
-    <div hx-get="/app1/TestDashboard/component/component_2/" hx-trigger="intersect once, every 10s"></div>
+
+
+
+    <div hx-get="/app1/testdashboard/component/component_2/"
+         hx-trigger="intersect once delay:138ms"></div>
+
+
+
 
     
     <div id="component-component_3-inner" class="dashboard-component-inner fade-in">

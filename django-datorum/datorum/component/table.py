@@ -27,8 +27,6 @@ class TableData:
     draw: int = 0  # datatables only
     recordsTotal: int = 0  # datatables only
     recordsFiltered: int = 0  # datatables only
-    # page_count: int = 0
-    # page: int = 0
     # todo: these are for reacttable and spa only.
     paging: Optional[TablePaging] = None
 
@@ -77,6 +75,7 @@ class Table(Component):
     # Expect tables to return table data
     value: Optional[TableData] = None
     defer: Optional[Callable[[HttpRequest], TableData]] = None
+    poll_rate: Optional[int] = None
 
 
 class BaseFilter:

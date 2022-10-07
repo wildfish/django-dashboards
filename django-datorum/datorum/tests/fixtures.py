@@ -52,12 +52,12 @@ def complex_dashboard(dashboard):
 @pytest.fixture
 def admin_dashboard():
     class TestAdminDashboard(Dashboard):
-        permission_classes = [permissions.IsAdminUser]
         component_1 = Text(value="admin value")
 
         class Meta:
             name = "Test Admin Dashboard"
             app_label = "app1"
+            permission_classes = [permissions.IsAdminUser]
 
     registry.register(TestAdminDashboard)
     return TestAdminDashboard

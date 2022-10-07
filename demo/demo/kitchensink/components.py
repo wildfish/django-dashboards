@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from django.contrib.auth.models import User
+
 from datorum.component import Chart, Stat
+from datorum.component.text import StatData
+from datorum.types import ValueData
 
 
 @dataclass
@@ -28,3 +32,16 @@ class SSEChart(Chart):
         Assuming docker pushpin is running, in real world this would be proxied to application.
         """
         return "http://localhost:7999/events/"
+
+
+@dataclass
+class SharedComponent(Stat):
+    """
+    Example of a component, where value is set at a class level so the component can be added simply as
+
+        SharedComponent()
+    """
+
+    value: ValueData = lambda **kwargs: StatData(
+        text=User.objects.count(), sub_text="User Count"
+    )

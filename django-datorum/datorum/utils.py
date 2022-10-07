@@ -11,4 +11,4 @@ def get_dashboard_class(app_label: str, dashboard_class: str):
             f"Dashboard {dashboard_class} not found in registry"
         )
 
-    return dashboard.__class__
+    return dashboard
