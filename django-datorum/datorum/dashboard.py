@@ -99,7 +99,11 @@ class Dashboard(metaclass=DashboardType):
                 logger.debug(f"setting component defer to 'get_{key}_defer' for {key}")
                 component.defer = getattr(self, f"get_{key}_defer")
 
-            if component.value is None and component.defer is None:
+            if (
+                component.value is None
+                and component.defer is None
+                and component.defer_url is None
+            ):
                 logger.warning(f"component {key} has no value or defer set.")
 
         super().__init__()
