@@ -70,7 +70,7 @@ snapshots[
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "aZsMBQxrkoRwUd4T8XA3rfSAWf2SEXlbugdBti6n3TSOIYKM6tsGfRHu69GNfOaI"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "QU09NvLgTvMB0oEZFJAu3ZyPyWCA1wUAc76j4lJWMmp9MFZ9SBpMzGi9QTIQzGGz"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -101,7 +101,7 @@ value
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:47ms"></div>
+         hx-trigger="intersect once delay:118ms"></div>
 
   </div>
 </div><div class="span-6  dashboard-component">

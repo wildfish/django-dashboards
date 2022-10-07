@@ -339,7 +339,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:7ms"></div>
+         hx-trigger="intersect once delay:60ms"></div>
 """
 
 snapshots[
@@ -349,7 +349,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:11ms"></div>
+         hx-trigger="intersect once delay:1ms"></div>
 """
 
 snapshots[
@@ -359,7 +359,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:90ms"></div>
+         hx-trigger="intersect once delay:40ms"></div>
 """
 
 snapshots[
@@ -495,7 +495,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:170ms"></div>
+         hx-trigger="intersect once delay:160ms"></div>
 """
 
 snapshots[

@@ -32,7 +32,7 @@ snapshots[
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "kTqyhwcmWYCWdIPqVBAdCX2bqZZs22ra6hWpnLGngvBNayEI3Ns1iTI0HFb7Zm1F"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "2E3l4NsJhijjhdF19oqYKOFbE4az5CKZHR33bPvZCldKXoy7azGKtuozx9Rivo2y"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -59,7 +59,7 @@ value
 
 
     <div hx-get="/app1/testdashboardwithlayout/component/component_2/"
-         hx-trigger="intersect once delay:160ms"></div>
+         hx-trigger="intersect once delay:117ms"></div>
 
 </div>
 </div>
@@ -133,7 +133,7 @@ value
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:4ms"></div>
+         hx-trigger="intersect once delay:86ms"></div>
 """
 
 snapshots[
@@ -153,7 +153,7 @@ value
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:138ms"></div>
+         hx-trigger="intersect once delay:155ms"></div>
 
 
 

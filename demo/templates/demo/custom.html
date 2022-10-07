@@ -1,16 +1,18 @@
-{{ dashboard.components.text_example }}
-<hr/>
-{{ dashboard.components.html_example }}
-<hr/>
-{{ dashboard.components.calculated_example }}
-<hr/>
-{{ dashboard.components.chart_example }}
-<hr/>
-<div style="display: flex;">
-    <div style="flex: 1;">
+<div class="span-6">
+    {{ dashboard.components.text_example }}
+    {{ dashboard.components.html_example }}
+    {{ dashboard.components.calculated_example }}
+</div>
+
+<div class="span-6">
+    {{ dashboard.components.chart_example }}
+</div>
+
+<div class="span-12" style="display: flex; border: 1px dotted #dddddd; background-color: #dee6e8">
+    <div style="flex: 1">
         {{ dashboard.components.line_chart_example }}
     </div>
-    <div style="flex: 1;">
+    <div style="flex: 1">
         {{ dashboard.components.stat_three }}
     </div>
 </div>
