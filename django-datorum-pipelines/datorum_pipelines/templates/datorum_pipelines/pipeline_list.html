@@ -1,0 +1,12 @@
+{% extends "datorum_pipelines/base.html" %}
+
+{% block content %}
+  <ul>
+    {% for pipeline in pipelines %}
+      <li>
+        {{ pipeline.pipeline_id }} <a href="{% url "datorum_pipelines:start" pipeline.pipeline_id %}">start</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+

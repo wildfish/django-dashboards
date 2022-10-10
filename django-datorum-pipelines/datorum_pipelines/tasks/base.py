@@ -4,6 +4,7 @@ from pydantic import BaseModel, ValidationError
 
 from ..reporters import BasePipelineReporter
 from ..status import PipelineTaskStatus
+from ..log import logger
 from .registry import task_registry
 
 
@@ -18,6 +19,7 @@ class BaseTaskConfig(BaseModel):
 
 
 class BaseTask:
+    task_id: str
     ConfigType: Type[BaseTaskConfig] = BaseTaskConfig
     cleaned_config: Optional[BaseTaskConfig]
 
@@ -62,6 +64,7 @@ class BaseTask:
     def start(self, input_data: Dict[str, Any], reporter: BasePipelineReporter):
         try:
             cleaned_data = self.clean_input_data(input_data)
+            logger.debug(cleaned_data)
 
             reporter.report_task(
                 self.id,
@@ -69,12 +72,18 @@ class BaseTask:
                 "Task is running",
             )
 
-            self.run(cleaned_data)
+            data = self.run(cleaned_data)
 
             reporter.report_task(
                 self.id,
                 PipelineTaskStatus.DONE,
                 "Done",
+            )
+
+            self.save(
+                payload=cleaned_data,
+                status=PipelineTaskStatus.DONE,
+                data=data,
             )
 
             return True
@@ -85,6 +94,7 @@ class BaseTask:
                 PipelineTaskStatus.VALIDATION_ERROR,
                 e.msg,
             )
+
         except Exception as e:
             # If there is an error running the task record the error
             reporter.report_task(self.id, PipelineTaskStatus.RUNTIME_ERROR, str(e))
@@ -96,6 +106,18 @@ class BaseTask:
         cleaned_data: Optional[BaseModel],
     ):  # pragma: no cover
         pass
+
+    def save(self, payload, status, data=None):
+        from ..models import TaskResult
+
+        defaults = dict(payload=payload, status=status, data=data)
+        result, _ = TaskResult.objects.get_or_create(
+            task_id=self.task_id,
+            identifier=self.id,
+            defaults=defaults
+        )
+
+        return result
 
 
 class BaseTaskError(Exception):

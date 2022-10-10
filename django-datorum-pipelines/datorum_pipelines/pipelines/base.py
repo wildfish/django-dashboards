@@ -9,22 +9,24 @@ if TYPE_CHECKING:  # pragma: nocover
 from ..reporters import BasePipelineReporter
 from ..status import PipelineTaskStatus
 from ..tasks import BaseTask, task_registry
+from ..log import logger
 
 
 class PipelineConfigEntry(BaseModel):
     name: str
     id: str
-    config: Dict[str, Any]
+    config: Dict[str, Any]  # payload?
 
 
 PipelineConfig = List[PipelineConfigEntry]
 
 
 class BasePipeline:
-    def __init__(self, pipeline_id: str, config: PipelineConfig):
-        self.config = config
+    pipeline_id: str
+    config: PipelineConfig
+
+    def __init__(self):
         self.cleaned_tasks: List[Optional[BaseTask]] = []
-        self.id = pipeline_id
 
     def clean_parents(
         self, task: BaseTask, all_tasks: List[BaseTask], reporter: BasePipelineReporter
@@ -82,7 +84,7 @@ class BasePipeline:
         reporter: "BasePipelineReporter",
     ) -> bool:
         reporter.report_pipeline(
-            self.id,
+            self.pipeline_id,
             PipelineTaskStatus.PENDING,
             "Pipeline is waiting to start",
         )
@@ -109,4 +111,4 @@ class BasePipeline:
                     "Task is waiting to start",
                 )
 
-        return runner.start(self.id, cleaned_tasks, input_data, reporter)
+        return runner.start(self.pipeline_id, cleaned_tasks, input_data, reporter)

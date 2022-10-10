@@ -2,11 +2,11 @@ from typing import Optional
 
 from datorum_pipelines import BasePipelineReporter
 
+from ..models import PipelineLog, TaskLog
 from ..status import PipelineTaskStatus
-from ..log import logger
 
 
-class LoggingReporter(BasePipelineReporter):
+class ORMReporter(BasePipelineReporter):
     def report(
         self,
         pipeline_id: Optional[str],
@@ -15,10 +15,10 @@ class LoggingReporter(BasePipelineReporter):
         message: str,
     ):
         if pipeline_id:
-            logger.info(
-                f"Pipeline {pipeline_id} changed to state {status.value}: {message}"
-            )
+            PipelineLog.objects.create(pipeline_id=pipeline_id, status=status.value, message=message)
         else:
-            logger.info(
-                f"Task {task_id} changed to state {status.value}: {message}"
+            TaskLog.objects.create(
+                task_id=task_id,
+                status=status.value,
+                message=message,
             )
