@@ -17,6 +17,7 @@ class Component:
     template_name: Optional[str] = None
     value: Optional[ValueData] = None
     defer: Optional[Callable[..., ValueData]] = None
+    defer_url: Optional[Callable[..., str]] = None
     dependents: Optional[list[str]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
@@ -28,21 +29,22 @@ class Component:
     # replicated on LayoutBase TODO need to handle this better
     css_classes: Optional[str] = None
     width: Optional[int] = 6
-    poll_rate: Optional[int] = 10  # In seconds, TODO make default a seting
+    poll_rate: Optional[int] = None  # In seconds, TODO make default a seting
 
     # attrs below should not be changed
     dependent_components: Optional[list["Component"]] = None
 
     @property
     def is_deferred(self) -> bool:
-        return True if self.defer else False
+        return True if self.defer or self.defer_url else False
 
     @property
     def dashboard_class(self):
-        return str(self.dashboard.__class__.__name__)
+        return self.dashboard.class_name()
 
     def htmx_poll_rate(self):
-        return f"every {self.poll_rate}s"
+        if self.poll_rate:
+            return f"every {self.poll_rate}s"
 
     def get_value(
         self,
@@ -88,17 +90,26 @@ class Component:
         return mark_safe(render_to_string("datorum/components/component.html", context))
 
     def get_absolute_url(self):
-        kwargs = {}
-        kwargs["app_label"] = self.dashboard.Meta.app_label
-        kwargs["dashboard"] = self.dashboard_class
-        kwargs["component"] = self.key
+        """
+        Get the absolute or fetch url to be called when a component is deferred.
+        """
+        kwargs = {
+            "app_label": self.dashboard.Meta.app_label,
+            "dashboard": self.dashboard_class,
+            "component": self.key,
+        }
 
         if hasattr(self.dashboard, "object"):
             kwargs[self.dashboard._meta.lookup_kwarg] = getattr(
                 self.dashboard.object, self.dashboard._meta.lookup_field
             )
 
-        return reverse("datorum:dashboard_component", kwargs=kwargs)
+        if self.defer_url:
+            url = self.defer_url(reverse_kwargs=kwargs)
+        else:
+            url = reverse("datorum:dashboard_component", kwargs=kwargs)
+
+        return url
 
     def __str__(self):
         return self.render(context=Context({}))

@@ -23,6 +23,9 @@ class DatorumFormMixin:
 
 
 class DatorumForm(DatorumFormMixin, forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def asdict(self) -> List[Dict[str, Any]]:
         fields = []
         for field in self:

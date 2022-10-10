@@ -1,6 +1,4 @@
-import inspect
-import logging
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Type
 
 from django.apps import apps
 from django.http import HttpRequest
@@ -15,21 +13,40 @@ from django.utils.text import slugify
 from datorum import config
 from datorum.component import Component
 from datorum.component.layout import Card, ComponentLayout
-from datorum.exceptions import ComponentNotFoundError
+from datorum.log import logger
 from datorum.permissions import BasePermission
-
-
-logger = logging.getLogger(__name__)
 
 
 class DashboardType(type):
     def __new__(mcs, name, bases, attrs):
+        # Collect components from current class and remove them from attrs.
+        attrs["components"] = {
+            key: attrs.pop(key)
+            for key, value in list(attrs.items())
+            if isinstance(value, Component)
+        }
+
         dashboard_class = super().__new__(mcs, name, bases, attrs)
+        components = {}
+        for base in reversed(dashboard_class.__mro__):
+            # Collect components from base class.
+            if hasattr(base, "components"):
+                components.update(base.components)
+
+            # Field shadowing.
+            for attr, value in base.__dict__.items():
+                if value is None and attr in components:
+                    components.pop(attr)
+
+        # add components to class.
+        dashboard_class.components = components
+
         module = attrs.pop("__module__")
         attr_meta = attrs.get("Meta", None)
         meta = attr_meta or getattr(dashboard_class, "Meta", None)
         base_meta = getattr(dashboard_class, "_meta", None)
-        setattr(dashboard_class, "_meta", meta)
+        dashboard_class._meta = meta
+
         if getattr(meta, "app_label", None) is None:
             # Look for an application configuration to attach the model to.
             app_config = apps.get_containing_app_config(module)
@@ -55,25 +72,61 @@ class DashboardType(type):
                 dashboard_class._meta.lookup_kwarg = base_meta.lookup_kwarg
             if not hasattr(meta, "lookup_field"):
                 dashboard_class._meta.lookup_field = base_meta.lookup_field
+            if not hasattr(meta, "include_in_graphql"):
+                dashboard_class._meta.include_in_graphql = base_meta.include_in_graphql
+            if not hasattr(meta, "permission_classes"):
+                dashboard_class._meta.permission_classes = base_meta.permission_classes
+            if not hasattr(meta, "template_name"):
+                dashboard_class._meta.template_name = base_meta.template_name
 
         return dashboard_class
 
 
 class Dashboard(metaclass=DashboardType):
-    include_in_graphql: bool = True
-    permission_classes: Optional[List[BasePermission]] = None
-    template_name: Optional[str] = None
+    _meta: Type["Dashboard.Meta"]
+    components: Dict[str, Any]
 
-    def __init__(self, **kwargs):
-        self._components_cache = {}
+    def __init__(self, *args, **kwargs):
+        logger.debug(f"Calling init for {self.class_name()}")
         self.kwargs = kwargs
+        # set component value/defer to be method calls to get_FOO_value, get_FOO_refer if defined on dashboard
+        for key, component in self.components.items():
+            if hasattr(self, f"get_{key}_value"):
+                logger.debug(f"setting component value to 'get_{key}_value' for {key}")
+                component.value = getattr(self, f"get_{key}_value")
+
+            elif hasattr(self, f"get_{key}_defer"):
+                logger.debug(f"setting component defer to 'get_{key}_defer' for {key}")
+                component.defer = getattr(self, f"get_{key}_defer")
+
+            if (
+                component.value is None
+                and component.defer is None
+                and component.defer_url is None
+            ):
+                logger.warning(f"component {key} has no value or defer set.")
+
         super().__init__()
 
-    def get_slug(self):
-        return f"{slugify(self._meta.app_label)}_{slugify(self.__class__.__name__)}"
+    class Meta:
+        name: str
+        include_in_graphql: bool = True
+        permission_classes: Optional[List[BasePermission]] = None
+        template_name: Optional[str] = None
+        model = None
+        lookup_kwarg: str = "lookup"  # url parameter name
+        lookup_field: str = "pk"  # model field
 
-    def get_context(self) -> dict:
-        return {"dashboard": self, "components": self.get_components()}
+    class Layout:
+        components: Optional[ComponentLayout] = None
+
+    @classmethod
+    def class_name(cls):
+        return str(cls.__name__).lower()
+
+    @classmethod
+    def get_slug(cls):
+        return f"{slugify(cls._meta.app_label)}_{slugify(cls.__name__)}"
 
     @classmethod
     def get_attributes_order(cls):
@@ -89,20 +142,12 @@ class Dashboard(metaclass=DashboardType):
         return [a for nested in attributes_to_class for a in nested]
 
     @classmethod
-    def get_component_attributes(cls):
-        attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)))
-        components = [(k, c) for k, c in attributes if isinstance(c, Component)]
-        components.sort(key=lambda t: cls.get_attributes_order().index(t[0]))
-        return components
-
-    def get_components(self) -> list[Component]:
-        component_attributes = self.get_component_attributes()
-
+    def get_components(cls) -> list[Component]:
         components_to_keys = {}
         awaiting_dependents = {}
-        for key, component in component_attributes:
+        for key, component in cls.components.items():
             if not component.dashboard:
-                component.dashboard = self
+                component.dashboard = cls
             if not component.key:
                 component.key = key
             if not component.render_type:
@@ -124,8 +169,8 @@ class Dashboard(metaclass=DashboardType):
         """
         Returns a list of permissions attached to a dashboard.
         """
-        if cls.permission_classes:
-            permissions_classes = cls.permission_classes
+        if cls.Meta.permission_classes:
+            permissions_classes = cls.Meta.permission_classes
         else:
             permissions_classes = []
             for (
@@ -152,58 +197,33 @@ class Dashboard(metaclass=DashboardType):
                 return False
         return True
 
-    def get_urls(self):
+    @classmethod
+    def get_urls(cls):
         from django.urls import path
 
         from .views import DashboardView
 
-        name = str(self.__class__.__name__).lower()
+        name = cls.class_name()
 
         return [
             path(
-                f"{self._meta.app_label}/{name}/",
-                DashboardView.as_view(dashboard_class=self.__class__),
-                name=self.get_slug(),
+                f"{cls._meta.app_label}/{name}/",
+                DashboardView.as_view(dashboard_class=cls),
+                name=cls.get_slug(),
             ),
         ]
 
-    @property
-    def urls(self):
-        urls = self.get_urls()
+    @classmethod
+    def urls(cls):
+        urls = cls.get_urls()
         return urls
 
-    def get_absolute_url(self):
-        return reverse(f"datorum:dashboards:{self.get_slug()}")
+    @classmethod
+    def get_absolute_url(cls):
+        return reverse(f"datorum:dashboards:{cls.get_slug()}")
 
-    class Meta:
-        model = None
-        name: str
-        lookup_kwarg: str = "lookup"  # url parameter name
-        lookup_field: str = "pk"  # model field
-
-    class Layout:
-        """
-        Components classes to define layout
-
-        components = ComponentLayout(
-            Div(
-                Div(
-                    "a",
-                    "b",
-                    c="text_group_div",
-                ),
-                Div(
-                    "d",
-                    "e",
-                    "f",
-                ),
-            ),
-            'g',
-            'h'
-        )
-        """
-
-        components: Optional[ComponentLayout] = None
+    def get_context(self) -> dict:
+        return {"dashboard": self, "components": self.get_components()}
 
     def render(self, request: HttpRequest, template_name=None):
         """
@@ -233,7 +253,7 @@ class Dashboard(metaclass=DashboardType):
                 }
 
             layout.components = ComponentLayout(
-                *[Card(k, **_get_layout(c)) for k, c in self.get_component_attributes()]
+                *[Card(k, **_get_layout(c)) for k, c in self.components.items()]
             )
 
         context["call_deferred"] = False
@@ -241,23 +261,6 @@ class Dashboard(metaclass=DashboardType):
 
     def __str__(self):
         return self.Meta.name
-
-    def __getitem__(self, name):
-        # see if this is a component
-        if not self._components_cache:  # do we have a cache?
-            components = dict([(x.key, x) for x in self.get_components()])
-            self._components_cache.update(components)
-
-        # is it a component
-        try:
-            value = self._components_cache[name]
-        except KeyError:
-            try:
-                value = getattr(self, name)
-            except AttributeError:
-                raise ComponentNotFoundError
-
-        return value
 
 
 class ModelDashboard(Dashboard):
@@ -289,17 +292,18 @@ class ModelDashboard(Dashboard):
 
         return get_object_or_404(qs, **{self._meta.lookup_field: lookup})
 
-    def get_urls(self):
+    @classmethod
+    def get_urls(cls):
         from django.urls import path
 
         from .views import DashboardView
 
-        name = str(self.__class__.__name__).lower()
+        name = cls.class_name()
 
         return [
             path(
-                f"{self._meta.app_label}/{name}/<str:{self._meta.lookup_kwarg}>/",
-                DashboardView.as_view(dashboard_class=self.__class__),
-                name=f"{self.get_slug()}_dashboard_detail",
+                f"{cls._meta.app_label}/{name}/<str:{cls._meta.lookup_kwarg}>/",
+                DashboardView.as_view(dashboard_class=cls),
+                name=f"{cls.get_slug()}_dashboard_detail",
             ),
         ]

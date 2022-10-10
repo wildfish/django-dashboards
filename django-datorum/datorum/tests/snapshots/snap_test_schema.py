@@ -148,15 +148,22 @@ snapshots["test_view__dashboards 1"] = [
         "Meta": {"name": "Test Complex Dashboard", "slug": "test-complex-dashboard"},
         "components": [
             {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
                 "isDeferred": True,
-                "key": "component_3",
+                "key": "component_2",
                 "renderType": "Text",
                 "value": None,
                 "width": 6,
             },
             {
                 "isDeferred": True,
-                "key": "component_2",
+                "key": "component_3",
                 "renderType": "Text",
                 "value": None,
                 "width": 6,
@@ -199,13 +206,6 @@ snapshots["test_view__dashboards 1"] = [
                     ],
                     "layout": {},
                 },
-                "width": 6,
-            },
-            {
-                "isDeferred": False,
-                "key": "component_1",
-                "renderType": "Text",
-                "value": "value",
                 "width": 6,
             },
         ],

@@ -2,86 +2,15 @@
 # snapshottest: v1 - https://goo.gl/zC4yUc
 from __future__ import unicode_literals
 
-from snapshottest import Snapshot
+from snapshottest import GenericRepr, Snapshot
 
 
 snapshots = Snapshot()
 
-snapshots["test__get_attributes_order 1"] = [
-    "__module__",
-    "component_1",
-    "component_2",
-    "component_3",
-    "Meta",
-    "__doc__",
-    "_meta",
-    "__module__",
-    "__annotations__",
-    "include_in_graphql",
-    "permission_classes",
-    "template_name",
-    "__init__",
-    "get_slug",
-    "get_context",
-    "get_attributes_order",
-    "get_component_attributes",
-    "get_components",
-    "get_dashboard_permissions",
-    "has_permissions",
-    "get_urls",
-    "urls",
-    "get_absolute_url",
-    "Meta",
-    "Layout",
-    "render",
-    "__str__",
-    "__getitem__",
-    "__dict__",
-    "__weakref__",
-    "__doc__",
-    "_meta",
-]
+snapshots["test__get_attributes_order 1"] = GenericRepr(
+    "dict_keys(['component_1', 'component_2', 'component_3'])"
+)
 
-snapshots["test__get_attributes_order__with_parent 1"] = [
-    "__module__",
-    "component_3",
-    "component_2",
-    "component_4",
-    "component_5",
-    "component_6",
-    "Meta",
-    "__doc__",
-    "_meta",
-    "__module__",
-    "component_1",
-    "component_2",
-    "component_3",
-    "Meta",
-    "__doc__",
-    "_meta",
-    "__module__",
-    "__annotations__",
-    "include_in_graphql",
-    "permission_classes",
-    "template_name",
-    "__init__",
-    "get_slug",
-    "get_context",
-    "get_attributes_order",
-    "get_component_attributes",
-    "get_components",
-    "get_dashboard_permissions",
-    "has_permissions",
-    "get_urls",
-    "urls",
-    "get_absolute_url",
-    "Meta",
-    "Layout",
-    "render",
-    "__str__",
-    "__getitem__",
-    "__dict__",
-    "__weakref__",
-    "__doc__",
-    "_meta",
-]
+snapshots["test__get_attributes_order__with_parent 1"] = GenericRepr(
+    "dict_keys(['component_1', 'component_2', 'component_3', 'component_4', 'component_5', 'component_6'])"
+)

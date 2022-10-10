@@ -27,22 +27,24 @@ def test_dashboard__render_layout(rf, dashboard_with_layout, snapshot):
 @override_settings(ROOT_URLCONF=urls)
 @pytest.mark.parametrize("component_class", [Div, Tab, Card])
 def test_html_component__render(rf, component_class, dashboard, snapshot):
-    context = Context({"request": rf.get("/")})
+    request = rf.get("/")
+    context = Context({"request": request})
 
     snapshot.assert_match(
         component_class("component_1", css_classes="css_class").render(
-            dashboard=dashboard(), context=context
+            dashboard=dashboard(request=request), context=context
         )
     )
 
 
 def test_tab_container__render(rf, dashboard, snapshot):
-    context = Context({"request": rf.get("/")})
+    request = rf.get("/")
+    context = Context({"request": request})
 
     snapshot.assert_match(
         TabContainer(
             Tab(HTML("some text....")),
-        ).render(dashboard=dashboard(), context=context)
+        ).render(dashboard=dashboard(request=request), context=context)
     )
 
 
@@ -56,24 +58,26 @@ def test_html__render(rf, dashboard, snapshot):
 
 @override_settings(ROOT_URLCONF=urls)
 def test_layout_component__render(rf, dashboard, snapshot):
-    context = Context({"request": rf.get("/")})
+    request = rf.get("/")
+    context = Context({"request": request})
 
     snapshot.assert_match(
         ComponentLayout(
             "component_1",
             "component_2",
-        ).render(dashboard=dashboard(), context=context)
+        ).render(dashboard=dashboard(request=request), context=context)
     )
 
 
 @override_settings(ROOT_URLCONF=urls)
 def test_layout_component__unknown_component_ignored(rf, dashboard, snapshot):
-    context = Context({"request": rf.get("/")})
+    request = rf.get("/")
+    context = Context({"request": request})
 
     snapshot.assert_match(
         ComponentLayout(
             "component_1",
             "component_2",
             "component_3",
-        ).render(dashboard=dashboard(), context=context)
+        ).render(dashboard=dashboard(request=request), context=context)
     )

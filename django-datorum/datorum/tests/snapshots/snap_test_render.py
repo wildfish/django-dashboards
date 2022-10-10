@@ -10,6 +10,9 @@ snapshots = Snapshot()
 snapshots[
     "test_component__renders_value[False-component_kwargs0-Chart] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -33,6 +36,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs0-Table] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
@@ -71,6 +77,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs0-Text] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -82,6 +91,9 @@ value
 snapshots[
     "test_component__renders_value[False-component_kwargs1-Chart] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -105,6 +117,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs1-Table] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
@@ -126,7 +141,7 @@ snapshots[
               columns: columns_test,
               pageLength: 10,
               ajax: {
-                  url: "/app1/DashboardType/component/test/",
+                  url: "/app1/testdashboard/component/test/",
                   contentType: "application/json",
               }
           }
@@ -144,6 +159,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs1-Text] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -155,6 +173,9 @@ value
 snapshots[
     "test_component__renders_value[False-component_kwargs2-Chart] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -178,6 +199,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs2-Table] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
@@ -216,6 +240,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[False-component_kwargs2-Text] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -227,6 +254,9 @@ value
 snapshots[
     "test_component__renders_value[True-component_kwargs0-Chart] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -250,6 +280,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[True-component_kwargs0-Table] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
@@ -288,6 +321,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[True-component_kwargs0-Text] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -299,24 +335,39 @@ value
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Chart] 1"
 ] = """
-    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:60ms"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Table] 1"
 ] = """
-    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:1ms"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Text] 1"
 ] = """
-    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:40ms"></div>
 """
 
 snapshots[
     "test_component__renders_value[True-component_kwargs2-Chart] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -340,6 +391,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[True-component_kwargs2-Table] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
@@ -378,6 +432,9 @@ snapshots[
 snapshots[
     "test_component__renders_value[True-component_kwargs2-Text] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -389,6 +446,9 @@ value
 snapshots[
     "test_component__renders_value__stat[False-component_kwargs0] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -401,6 +461,9 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[False-component_kwargs1] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -413,6 +476,9 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs0] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
@@ -425,12 +491,19 @@ snapshots[
 snapshots[
     "test_component__renders_value__stat[True-component_kwargs1] 1"
 ] = """
-    <div hx-get="/app1/DashboardType/component/test/" hx-trigger="intersect once, every 10s"></div>
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:160ms"></div>
 """
 
 snapshots[
     "test_cta_component__renders_value[False] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <a href="/" class="dashboard-component-cta">
@@ -443,6 +516,9 @@ snapshots[
 snapshots[
     "test_cta_component__renders_value[True] 1"
 ] = """
+
+
+
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <a href="/" class="dashboard-component-cta">

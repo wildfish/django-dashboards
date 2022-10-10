@@ -3,6 +3,7 @@
 #
 
 # Core
+daphne
 django>=4.0,<4.1
 -e ../django-datorum
 django-configurations
