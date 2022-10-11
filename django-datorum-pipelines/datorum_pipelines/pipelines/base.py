@@ -1,4 +1,7 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from graphlib import TopologicalSorter
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
+
+from django.utils import timezone
 
 from pydantic import BaseModel
 
@@ -6,14 +9,15 @@ from pydantic import BaseModel
 if TYPE_CHECKING:  # pragma: nocover
     from ..runners import BasePipelineRunner
 
+from ..log import logger
 from ..reporters import BasePipelineReporter
 from ..status import PipelineTaskStatus
 from ..tasks import BaseTask, task_registry
-from ..log import logger
+from .registry import pipeline_registry
 
 
 class PipelineConfigEntry(BaseModel):
-    name: str
+    task: Type[BaseTask]
     id: str
     config: Dict[str, Any]  # payload?
 
@@ -22,34 +26,53 @@ PipelineConfig = List[PipelineConfigEntry]
 
 
 class BasePipeline:
-    pipeline_id: str
+    title: str = ""
     config: PipelineConfig
+    graph: Dict[str, Any]
+    # todo: add these to control running on schedule(cron)? - copied from airflow
+    # schedule_interval
+    # start_date
 
     def __init__(self):
+        self.slug = pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
         self.cleaned_tasks: List[Optional[BaseTask]] = []
 
     def clean_parents(
-        self, task: BaseTask, all_tasks: List[BaseTask], reporter: BasePipelineReporter
+        self,
+        task_config: PipelineConfigEntry,
+        all_task_configs: List[PipelineConfigEntry],
+        reporter: BasePipelineReporter,
     ):
-        other_labels = list(
+        # load task from registry
+        task = task_registry.load_task_from_slug(
+            task_registry.get_slug(
+                task_config.task.__module__, task_config.task.__name__
+            ),
+            task_config,
+            reporter,
+        )
+
+        # we cannot find task in registry
+        if not task:
+            return None
+
+        other_ids = list(
             map(
-                lambda t: getattr(t.cleaned_config, "label", None),
-                (
-                    t
-                    for t in all_tasks
-                    if t
-                    and t.id != task.id
-                    and getattr(t.cleaned_config, "label", None)
-                ),
+                lambda c: c.id,
+                (c for c in all_task_configs if c and c.id != task_config.id),
             )
         )
 
-        parent_labels = getattr(task.cleaned_config, "parents", []) or []
-        if not all(p in other_labels for p in parent_labels):
+        parent_ids = getattr(task_config.config, "parents", []) or []
+
+        logger.debug(f"id: {task_config.id}")
+        logger.debug(f"other: {other_ids}")
+        logger.debug(f"parents: {parent_ids}")
+        if not all(p in other_ids for p in parent_ids):
             reporter.report_task(
                 task.id,
                 PipelineTaskStatus.CONFIG_ERROR,
-                "One or more of the parent labels are not in the pipeline",
+                "One or more of the parent ids are not in the pipeline",
             )
             return None
 
@@ -58,33 +81,27 @@ class BasePipeline:
     def clean_tasks(
         self, reporter: "BasePipelineReporter"
     ) -> List[Optional["BaseTask"]]:
-        # load all the tasks from the config, if there are any errors they will be reported and None
-        # will be stored for hte task
+        # check that all configs with parents have a task with the parent label present
         tasks = list(
             map(
-                lambda task_config: task_registry.load(
-                    task_config.name, task_config.id, task_config.config, reporter
-                ),
+                lambda c: self.clean_parents(c, self.config, reporter) if c else c,
                 self.config,
             )
         )
 
-        # check that all tasks with parents have a task with the parent label present
-        return list(
-            map(
-                lambda t: self.clean_parents(t, tasks, reporter) if t else t,
-                tasks,
-            )
-        )
+        return tasks
 
     def start(
         self,
+        run_id: str,
         input_data: Dict[str, Any],
         runner: "BasePipelineRunner",
         reporter: "BasePipelineReporter",
     ) -> bool:
+        from ..models import PipelineExecution
+
         reporter.report_pipeline(
-            self.pipeline_id,
+            self.slug,
             PipelineTaskStatus.PENDING,
             "Pipeline is waiting to start",
         )
@@ -95,7 +112,7 @@ class BasePipeline:
             # if any of the tasks have an invalid config cancel all others
             for task in (t for t in self.cleaned_tasks if t is not None):
                 reporter.report_task(
-                    task.id,
+                    task.slug,
                     PipelineTaskStatus.CANCELLED,
                     "Tasks cancelled due to an error in the pipeline config",
                 )
@@ -106,9 +123,21 @@ class BasePipeline:
             # else mark them all as pending
             for task in cleaned_tasks:
                 reporter.report_task(
-                    task.id,
+                    task.slug,
                     PipelineTaskStatus.PENDING,
                     "Task is waiting to start",
                 )
 
-        return runner.start(self.pipeline_id, cleaned_tasks, input_data, reporter)
+        started = runner.start(self.slug, run_id, cleaned_tasks, input_data, reporter)
+        # record when it started
+        if started:
+            PipelineExecution.objects.update_or_create(
+                pipeline_id=self.slug, defaults={"last_run": timezone.now()}
+            )
+
+        return started
+
+    @property
+    def dag(self):
+        ts = TopologicalSorter(self.graph)
+        return tuple(ts.static_order())

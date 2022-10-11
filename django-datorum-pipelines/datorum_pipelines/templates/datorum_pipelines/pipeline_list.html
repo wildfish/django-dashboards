@@ -4,7 +4,8 @@
   <ul>
     {% for pipeline in pipelines %}
       <li>
-        {{ pipeline.pipeline_id }} <a href="{% url "datorum_pipelines:start" pipeline.pipeline_id %}">start</a>
+        {{ pipeline.title }} <a href="{% url "datorum_pipelines:start" pipeline.slug %}">start</a>
+      -{{ pipeline.dag }}-
       </li>
     {% endfor %}
   </ul>

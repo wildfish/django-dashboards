@@ -17,33 +17,41 @@ class TaskRegistry(object):
         self.tasks: Dict[str, Type[BaseTask]] = {}
 
     def register(self, cls):
-        task_name = cls.name or cls.__name__
+        slug = self.get_slug(cls.__module__, cls.__name__)
 
-        if task_name in self.tasks:
+        if slug in self.tasks:
             raise RegistryError(
                 f"Multiple tasks named {task_name} have been registered."
             )
 
-        self.tasks[task_name] = cls
+        self.tasks[slug] = cls
+
+    def get_slug(self, module, class_name):
+        return "{}.{}".format(module, class_name)
 
     def reset(self):
         self.tasks = {}
 
-    def load(self, name, task_id, config, reporter: BasePipelineReporter):
-        cls = self.tasks.get(name)
+    def get_task_class(self, slug):
+        if slug in self.tasks:
+            return self.tasks[slug]
+        return None
+
+    def load_task_from_slug(self, slug, task_config, reporter: BasePipelineReporter):
+        cls = self.get_task_class(slug)
 
         if not cls:
             reporter.report_task(
-                task_id,
+                slug,
                 PipelineTaskStatus.CONFIG_ERROR,
-                f"No task named {name} is registered",
+                f"No task named {slug} is registered",
             )
             return None
 
         try:
-            return cls(task_id, config=config)
+            return cls(task_id=task_config.id, config=task_config.config)
         except Exception as e:
-            reporter.report_task(task_id, PipelineTaskStatus.CONFIG_ERROR, str(e))
+            reporter.report_task(slug, PipelineTaskStatus.CONFIG_ERROR, str(e))
             return None
 
 

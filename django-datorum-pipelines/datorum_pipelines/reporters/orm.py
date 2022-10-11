@@ -15,7 +15,9 @@ class ORMReporter(BasePipelineReporter):
         message: str,
     ):
         if pipeline_id:
-            PipelineLog.objects.create(pipeline_id=pipeline_id, status=status.value, message=message)
+            PipelineLog.objects.create(
+                pipeline_id=pipeline_id, status=status.value, message=message
+            )
         else:
             TaskLog.objects.create(
                 task_id=task_id,

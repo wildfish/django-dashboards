@@ -2,8 +2,8 @@ from typing import Optional
 
 from datorum_pipelines import BasePipelineReporter
 
-from ..status import PipelineTaskStatus
 from ..log import logger
+from ..status import PipelineTaskStatus
 
 
 class LoggingReporter(BasePipelineReporter):
@@ -19,6 +19,4 @@ class LoggingReporter(BasePipelineReporter):
                 f"Pipeline {pipeline_id} changed to state {status.value}: {message}"
             )
         else:
-            logger.info(
-                f"Task {task_id} changed to state {status.value}: {message}"
-            )
+            logger.info(f"Task {task_id} changed to state {status.value}: {message}")

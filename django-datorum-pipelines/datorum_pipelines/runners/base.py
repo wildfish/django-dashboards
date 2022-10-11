@@ -8,6 +8,7 @@ class BasePipelineRunner:
     def start(
         self,
         pipeline_id: str,
+        run_id: str,
         tasks: List[BaseTask],
         input_data: Dict[str, Any],
         reporter: BasePipelineReporter,

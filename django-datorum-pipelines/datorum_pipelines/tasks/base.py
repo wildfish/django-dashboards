@@ -1,28 +1,26 @@
 from typing import Any, Dict, List, Optional, Type
 
+from django.utils import timezone
+
 from pydantic import BaseModel, ValidationError
 
+from ..log import logger
 from ..reporters import BasePipelineReporter
 from ..status import PipelineTaskStatus
-from ..log import logger
 from .registry import task_registry
 
 
 class BaseTaskConfig(BaseModel):
-    title: Optional[str]  # human readable name for displaying
-    label: Optional[str]  # label will be used to specify dependencies
     parents: List[
         str
     ] = (
         []
-    )  # task labels that are required to have finished before this task can be started
+    )  # task ids that are required to have finished before this task can be started
 
 
 class BaseTask:
-    task_id: str
+    title: Optional[str] = ""
     ConfigType: Type[BaseTaskConfig] = BaseTaskConfig
-    cleaned_config: Optional[BaseTaskConfig]
-
     InputType: Optional[Type[BaseModel]] = None
 
     name: Optional[str] = None
@@ -36,7 +34,8 @@ class BaseTask:
         task_id: str,
         config: Dict[str, Any],
     ):
-        self.id = task_id
+        self.task_id = task_id
+        self.slug = task_registry.get_slug(self.__module__, self.__class__.__name__)
         self.cleaned_config = self.clean_config(config)
 
     def clean_config(self, config: Dict[str, Any]):
@@ -61,43 +60,57 @@ class BaseTask:
         except ValidationError as e:
             raise InputValidationError(self, e.json(indent=False))
 
-    def start(self, input_data: Dict[str, Any], reporter: BasePipelineReporter):
+    def start(
+        self,
+        run_id: str,
+        input_data: Dict[str, Any],
+        reporter: BasePipelineReporter,
+    ):
         try:
             cleaned_data = self.clean_input_data(input_data)
             logger.debug(cleaned_data)
 
             reporter.report_task(
-                self.id,
+                self.task_id,
                 PipelineTaskStatus.RUNNING,
                 "Task is running",
             )
 
-            data = self.run(cleaned_data)
-
-            reporter.report_task(
-                self.id,
-                PipelineTaskStatus.DONE,
-                "Done",
+            # record the task is running
+            result = self.save(
+                run_id=run_id,
+                status=PipelineTaskStatus.RUNNING,
+                input_data=cleaned_data.json(),
+                started=timezone.now(),
             )
 
-            self.save(
-                payload=cleaned_data,
-                status=PipelineTaskStatus.DONE,
-                data=data,
+            # run the task
+            output_data = self.run(cleaned_data)
+
+            # update the result
+            result.status = PipelineTaskStatus.DONE
+            result.output_data = output_data
+            result.completed = timezone.now()
+            result.save()
+
+            reporter.report_task(
+                self.task_id,
+                PipelineTaskStatus.DONE,
+                "Done",
             )
 
             return True
         except InputValidationError as e:
             # If there is an error in the input data record the error
             reporter.report_task(
-                self.id,
+                self.slug,
                 PipelineTaskStatus.VALIDATION_ERROR,
                 e.msg,
             )
 
         except Exception as e:
             # If there is an error running the task record the error
-            reporter.report_task(self.id, PipelineTaskStatus.RUNTIME_ERROR, str(e))
+            reporter.report_task(self.slug, PipelineTaskStatus.RUNTIME_ERROR, str(e))
 
         return False
 
@@ -107,14 +120,12 @@ class BaseTask:
     ):  # pragma: no cover
         pass
 
-    def save(self, payload, status, data=None):
+    def save(self, run_id, status, started, input_data=None):
         from ..models import TaskResult
 
-        defaults = dict(payload=payload, status=status, data=data)
-        result, _ = TaskResult.objects.get_or_create(
-            task_id=self.task_id,
-            identifier=self.id,
-            defaults=defaults
+        defaults = dict(status=status, input_data=input_data, started=started)
+        result, _ = TaskResult.objects.update_or_create(
+            task_id=self.task_id, run_id=run_id, defaults=defaults
         )
 
         return result

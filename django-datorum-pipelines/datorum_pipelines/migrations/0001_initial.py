@@ -9,38 +9,102 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='PipelineLog',
+            name="PipelineLog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('pipeline_id', models.CharField(max_length=255)),
-                ('status', models.CharField(choices=[('PENDING', 'PENDING'), ('RUNNING', 'RUNNING'), ('DONE', 'DONE'), ('CONFIG_ERROR', 'CONFIG_ERROR'), ('VALIDATION_ERROR', 'VALIDATION_ERROR'), ('RUNTIME_ERROR', 'RUNTIME_ERROR'), ('CANCELLED', 'CANCELLED')], max_length=255)),
-                ('message', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name="modified"
+                    ),
+                ),
+                ("pipeline_id", models.CharField(max_length=255)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("PENDING", "PENDING"),
+                            ("RUNNING", "RUNNING"),
+                            ("DONE", "DONE"),
+                            ("CONFIG_ERROR", "CONFIG_ERROR"),
+                            ("VALIDATION_ERROR", "VALIDATION_ERROR"),
+                            ("RUNTIME_ERROR", "RUNTIME_ERROR"),
+                            ("CANCELLED", "CANCELLED"),
+                        ],
+                        max_length=255,
+                    ),
+                ),
+                ("message", models.TextField(blank=True)),
             ],
             options={
-                'get_latest_by': 'modified',
-                'abstract': False,
+                "get_latest_by": "modified",
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='TaskLog',
+            name="TaskLog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('task_id', models.CharField(max_length=255)),
-                ('status', models.CharField(choices=[('PENDING', 'PENDING'), ('RUNNING', 'RUNNING'), ('DONE', 'DONE'), ('CONFIG_ERROR', 'CONFIG_ERROR'), ('VALIDATION_ERROR', 'VALIDATION_ERROR'), ('RUNTIME_ERROR', 'RUNTIME_ERROR'), ('CANCELLED', 'CANCELLED')], default=datorum_pipelines.status.PipelineTaskStatus['PENDING'], max_length=255)),
-                ('message', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name="modified"
+                    ),
+                ),
+                ("task_id", models.CharField(max_length=255)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("PENDING", "PENDING"),
+                            ("RUNNING", "RUNNING"),
+                            ("DONE", "DONE"),
+                            ("CONFIG_ERROR", "CONFIG_ERROR"),
+                            ("VALIDATION_ERROR", "VALIDATION_ERROR"),
+                            ("RUNTIME_ERROR", "RUNTIME_ERROR"),
+                            ("CANCELLED", "CANCELLED"),
+                        ],
+                        default=datorum_pipelines.status.PipelineTaskStatus["PENDING"],
+                        max_length=255,
+                    ),
+                ),
+                ("message", models.TextField(blank=True)),
             ],
             options={
-                'get_latest_by': 'modified',
-                'abstract': False,
+                "get_latest_by": "modified",
+                "abstract": False,
             },
         ),
     ]

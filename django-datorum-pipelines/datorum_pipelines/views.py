@@ -23,8 +23,10 @@ class PipelineStartView(LoginRequiredMixin, TemplateView):
     template_name = ""
 
     def get_pipeline_context(self):
+        pipeline_id = "1"  # todo make unique for each run
         return [
-            {},
+            pipeline_id,
+            {"message": "hello"},
             EagerRunner(),  # todo get from settings - either on pipeline or django settings
             LoggingReporter(),  # todo: get from settings - either on pipeline or django settings
         ]
@@ -33,11 +35,11 @@ class PipelineStartView(LoginRequiredMixin, TemplateView):
         return self.post(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        pipeline = registry.get_pipeline_class(kwargs["pipeline_id"])
-        if pipeline is None:
-            raise Http404(f"Pipeline {kwargs['pipeline_id']} not found in registry")
+        pipeline_cls = registry.get_pipeline_class(kwargs["slug"])
+        if pipeline_cls is None:
+            raise Http404(f"Pipeline {kwargs['slug']} not found in registry")
 
         # start the pipeline
-        pipeline().start(*self.get_pipeline_context())
+        pipeline_cls().start(*self.get_pipeline_context())
 
         return HttpResponseRedirect(reverse("datorum_pipelines:list"))

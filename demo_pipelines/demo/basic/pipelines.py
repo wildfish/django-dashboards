@@ -9,39 +9,58 @@ from datorum_pipelines import (
     BaseTaskConfig,
     PipelineConfigEntry,
 )
-
 from datorum_pipelines.pipelines.registry import pipeline_registry
 
 
 class EchoConfigType(BaseTaskConfig):
+    pass
+
+
+class EchoInputType(BaseTaskConfig):
     message: str
 
 
 class Echo(BaseTask):
-    task_id = "echo-task"
+    title = "Echo message"
     ConfigType = EchoConfigType
-    cleaned_config: EchoConfigType
+    InputType = EchoInputType
 
     def run(self, cleaned_data):
-        print(self.cleaned_config.message)
+        print(cleaned_data.message)
 
 
 @pipeline_registry.register
 class BasicPipeline(BasePipeline):
-    pipeline_id = "basic-pipeline"
+    title = "Basic pipline with 2 steps"
     config = [
         PipelineConfigEntry(
-            name="Echo",
             id="first",
-            config={"label": "First Echo", "message": "First"},
+            task=Echo,
+            config={"message": "First"},
         ),
         PipelineConfigEntry(
-            name="Echo",
             id="second",
+            task=Echo,
             config={
-                "parents": ["First Echo"],
-                "label": "Second Echo",
+                "parents": ["first"],
                 "message": "Second",
             },
         ),
+        PipelineConfigEntry(
+            id="third",
+            task=Echo,
+            config={
+                "parents": ["first"],
+                "message": "Third",
+            },
+        ),
+        PipelineConfigEntry(
+            id="fourth",
+            task=Echo,
+            config={
+                "parents": ["first"],
+                "message": "Fourth",
+            },
+        ),
     ]
+    graph = {"second": {"first", "third"}, "fourth": {"first"}, "third": {"fourth"}}  # todo: can parents use this instead?

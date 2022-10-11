@@ -7,31 +7,24 @@ from .base import BasePipelineRunner
 
 
 class EagerRunner(BasePipelineRunner):
-    def _task_can_be_ran(
-        self, task: BaseTask, ran_ids: List[str], ran_labels: List[str]
-    ):
+    def _task_can_be_ran(self, task: BaseTask, ran_ids: List[str]):
         not_all_parents_ran = any(
             map(
-                lambda parent: parent not in ran_labels,
+                lambda parent: parent not in ran_ids,
                 getattr(task.cleaned_config, "parents", []),
             )
         )
 
-        return task.id not in ran_ids and not not_all_parents_ran
+        return task.task_id not in ran_ids and not not_all_parents_ran
 
     def _get_next_task(
         self,
         tasks: List[BaseTask],
         ran_task_ids: List[str],
-        ran_task_labels: List[str],
     ) -> Iterable[BaseTask]:
         while True:
             task = next(
-                (
-                    t
-                    for t in tasks
-                    if self._task_can_be_ran(t, ran_task_ids, ran_task_labels)
-                ),
+                (t for t in tasks if self._task_can_be_ran(t, ran_task_ids)),
                 None,
             )
 
@@ -43,6 +36,7 @@ class EagerRunner(BasePipelineRunner):
     def start(
         self,
         pipeline_id: str,
+        run_id: str,
         tasks: List[BaseTask],
         input_data: Dict[str, Any],
         reporter: BasePipelineReporter,
@@ -50,23 +44,21 @@ class EagerRunner(BasePipelineRunner):
         reporter.report_pipeline(pipeline_id, PipelineTaskStatus.RUNNING, "Running")
 
         ran_task_ids: List[str] = []
-        ran_task_labels: List[str] = []
 
-        for task in self._get_next_task(tasks, ran_task_ids, ran_task_labels):
-            res = task.start(input_data, reporter)
+        for task in self._get_next_task(tasks, ran_task_ids):
+            identifier = task.task_id  # should be unique for the run
+            res = task.start(run_id, input_data, reporter)
             if res:
-                ran_task_ids.append(task.id)
-
-                task_label = getattr(task.cleaned_config, "label", "")
-                if task_label:
-                    ran_task_labels.append(task_label)
+                ran_task_ids.append(task.task_id)
             else:
                 # if a task fails record all others have been canceled
                 for t in (
-                    _t for _t in tasks if _t.id != task.id and _t not in ran_task_ids
+                    _t
+                    for _t in tasks
+                    if _t.task_id != task.task_id and _t not in ran_task_ids
                 ):
                     reporter.report_task(
-                        t.id,
+                        identifier,
                         PipelineTaskStatus.CANCELLED,
                         "There was an error running a different task",
                     )

@@ -1,5 +1,6 @@
-from django.urls import path
 from django.contrib import admin
+from django.urls import path
+
 from datorum.registry import registry
 
 from . import views
@@ -16,7 +17,7 @@ urlpatterns = [
         name="list",
     ),
     path(
-        "<str:pipeline_id>/start/",
+        "<str:slug>/start/",
         views.PipelineStartView.as_view(),
         name="start",
     ),

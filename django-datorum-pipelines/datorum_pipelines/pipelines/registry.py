@@ -3,7 +3,6 @@ from typing import Dict, Type
 from django.utils.module_loading import autodiscover_modules
 
 from ..log import logger
-from .base import BasePipeline
 
 
 class RegistryError(Exception):
@@ -12,17 +11,15 @@ class RegistryError(Exception):
 
 class PipeLineRegistry(object):
     def __init__(self):
-        self.pipelines: Dict[str, Type[BasePipeline]] = {}
+        self.pipelines: Dict[str, Type["BasePipeline"]] = {}
 
     def autodiscover_pipelines(self, module_name="pipelines"):
         autodiscover_modules(module_name)
 
     def register(self, cls):
-        slug = cls.pipeline_id
+        slug = self.get_slug(cls.__module__, cls.__name__)
         if slug in self.pipelines:
-            raise RegistryError(
-                f"Multiple pipelines named {slug} have been registered."
-            )
+            raise RegistryError(f"Multiple pipelines with {slug} have been registered.")
 
         logger.debug(f"registering pipeline {slug}")
         self.pipelines[slug] = cls
