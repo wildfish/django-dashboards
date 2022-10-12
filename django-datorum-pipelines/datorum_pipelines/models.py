@@ -24,6 +24,7 @@ class TaskLog(TimeStampedModel):
 
 
 class TaskResult(models.Model):
+    pipeline_id = models.CharField(max_length=255)
     task_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255)
     status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices())
@@ -37,6 +38,13 @@ class TaskResult(models.Model):
 
     def __str__(self):
         return f"{self.task_id} ({self.run_id})"
+
+    @property
+    def duration(self):
+        if self.completed and self.started:
+            return self.completed - self.started
+
+        return None
 
 
 class PipelineExecution(models.Model):

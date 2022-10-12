@@ -122,3 +122,4 @@ dmypy.json
 
 # project specific
 dev-docker-compose.yml
+demo-db

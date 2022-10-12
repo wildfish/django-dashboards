@@ -21,4 +21,9 @@ urlpatterns = [
         views.PipelineStartView.as_view(),
         name="start",
     ),
+    path(
+        "<str:run_id>/run/",
+        views.PipelineRunView.as_view(),
+        name="run",
+    ),
 ]

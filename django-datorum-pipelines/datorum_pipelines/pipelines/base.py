@@ -19,7 +19,7 @@ from .registry import pipeline_registry
 class PipelineConfigEntry(BaseModel):
     task: Type[BaseTask]
     id: str
-    config: Dict[str, Any]  # payload?
+    config: Dict[str, Any]
 
 
 PipelineConfig = List[PipelineConfigEntry]

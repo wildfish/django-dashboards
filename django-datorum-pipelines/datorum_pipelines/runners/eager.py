@@ -46,8 +46,7 @@ class EagerRunner(BasePipelineRunner):
         ran_task_ids: List[str] = []
 
         for task in self._get_next_task(tasks, ran_task_ids):
-            identifier = task.task_id  # should be unique for the run
-            res = task.start(run_id, input_data, reporter)
+            res = task.start(pipeline_id, run_id, input_data, reporter)
             if res:
                 ran_task_ids.append(task.task_id)
             else:
@@ -58,7 +57,7 @@ class EagerRunner(BasePipelineRunner):
                     if _t.task_id != task.task_id and _t not in ran_task_ids
                 ):
                     reporter.report_task(
-                        identifier,
+                        task.task_id,
                         PipelineTaskStatus.CANCELLED,
                         "There was an error running a different task",
                     )

@@ -1,4 +1,5 @@
 import sys
+import time
 from typing import Optional
 
 from pydantic import BaseModel
@@ -13,10 +14,10 @@ from datorum_pipelines.pipelines.registry import pipeline_registry
 
 
 class EchoConfigType(BaseTaskConfig):
-    pass
+    wait: int
 
 
-class EchoInputType(BaseTaskConfig):
+class EchoInputType(BaseModel):
     message: str
 
 
@@ -26,6 +27,8 @@ class Echo(BaseTask):
     InputType = EchoInputType
 
     def run(self, cleaned_data):
+        print(f"waiting {self.cleaned_config.wait} seconds before running")
+        time.sleep(self.cleaned_config.wait)
         print(cleaned_data.message)
 
 
@@ -36,14 +39,14 @@ class BasicPipeline(BasePipeline):
         PipelineConfigEntry(
             id="first",
             task=Echo,
-            config={"message": "First"},
+            config={"wait": 5}
         ),
         PipelineConfigEntry(
             id="second",
             task=Echo,
             config={
                 "parents": ["first"],
-                "message": "Second",
+                "wait": 4
             },
         ),
         PipelineConfigEntry(
@@ -51,7 +54,7 @@ class BasicPipeline(BasePipeline):
             task=Echo,
             config={
                 "parents": ["first"],
-                "message": "Third",
+                "wait": 3
             },
         ),
         PipelineConfigEntry(
@@ -59,7 +62,7 @@ class BasicPipeline(BasePipeline):
             task=Echo,
             config={
                 "parents": ["first"],
-                "message": "Fourth",
+                "wait": 2
             },
         ),
     ]

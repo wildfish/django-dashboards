@@ -22,6 +22,11 @@ django-htmx
 django-model-utils
 django-vanilla-views
 
+# project
+celery
+django-celery-results
+pydantic
+
 # Dev tools
 Faker
 ipython

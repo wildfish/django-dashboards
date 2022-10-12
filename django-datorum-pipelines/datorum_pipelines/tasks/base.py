@@ -21,7 +21,7 @@ class BaseTaskConfig(BaseModel):
 class BaseTask:
     title: Optional[str] = ""
     ConfigType: Type[BaseTaskConfig] = BaseTaskConfig
-    InputType: Optional[Type[BaseModel]] = None
+    InputType: Optional[Type[BaseModel]] = None  # todo: can this a django form which can then be rendered?
 
     name: Optional[str] = None
 
@@ -62,6 +62,7 @@ class BaseTask:
 
     def start(
         self,
+        pipeline_id: str,
         run_id: str,
         input_data: Dict[str, Any],
         reporter: BasePipelineReporter,
@@ -78,6 +79,7 @@ class BaseTask:
 
             # record the task is running
             result = self.save(
+                pipeline_id=pipeline_id,
                 run_id=run_id,
                 status=PipelineTaskStatus.RUNNING,
                 input_data=cleaned_data.json(),
@@ -120,12 +122,12 @@ class BaseTask:
     ):  # pragma: no cover
         pass
 
-    def save(self, run_id, status, started, input_data=None):
+    def save(self, pipeline_id, run_id, status, started, input_data=None):
         from ..models import TaskResult
 
         defaults = dict(status=status, input_data=input_data, started=started)
         result, _ = TaskResult.objects.update_or_create(
-            task_id=self.task_id, run_id=run_id, defaults=defaults
+            pipeline_id=pipeline_id, task_id=self.task_id, run_id=run_id, defaults=defaults
         )
 
         return result
