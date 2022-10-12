@@ -28,7 +28,7 @@ PipelineConfig = List[PipelineConfigEntry]
 class BasePipeline:
     title: str = ""
     config: PipelineConfig
-    graph: Dict[str, Any]
+    graph: Optional[Dict[str, Any]]
     # todo: add these to control running on schedule(cron)? - copied from airflow
     # schedule_interval
     # start_date
@@ -48,7 +48,8 @@ class BasePipeline:
             task_registry.get_slug(
                 task_config.task.__module__, task_config.task.__name__
             ),
-            task_config,
+            task_config.id,
+            task_config.config,
             reporter,
         )
 
@@ -65,9 +66,6 @@ class BasePipeline:
 
         parent_ids = getattr(task_config.config, "parents", []) or []
 
-        logger.debug(f"id: {task_config.id}")
-        logger.debug(f"other: {other_ids}")
-        logger.debug(f"parents: {parent_ids}")
         if not all(p in other_ids for p in parent_ids):
             reporter.report_task(
                 task.id,

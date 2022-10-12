@@ -4,7 +4,7 @@
   <ul>
     {% for task in task_results %}
       <li>
-        {{ task.task_id }}-{{ task.get_status_display }}-{{ task.duration }}
+        {{ task.task_id }}-{{ task.get_status_display }}-{{ task.duration }} <a href="{% url "datorum_pipelines:rerun-task" task.pk %}">rerun</a>
       </li>
     {% endfor %}
   </ul>

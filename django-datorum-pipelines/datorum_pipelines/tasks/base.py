@@ -21,9 +21,9 @@ class BaseTaskConfig(BaseModel):
 class BaseTask:
     title: Optional[str] = ""
     ConfigType: Type[BaseTaskConfig] = BaseTaskConfig
-    InputType: Optional[Type[BaseModel]] = None  # todo: can this a django form which can then be rendered?
-
-    name: Optional[str] = None
+    InputType: Optional[
+        Type[BaseModel]
+    ] = None  # todo: can this a django form which can then be rendered?
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -82,16 +82,16 @@ class BaseTask:
                 pipeline_id=pipeline_id,
                 run_id=run_id,
                 status=PipelineTaskStatus.RUNNING,
-                input_data=cleaned_data.json(),
                 started=timezone.now(),
+                config=self.cleaned_config.dict(),
+                input_data=cleaned_data.dict(),
             )
 
             # run the task
-            output_data = self.run(cleaned_data)
+            self.run(pipeline_id, run_id, cleaned_data)
 
-            # update the result
+            # update the result as completed
             result.status = PipelineTaskStatus.DONE
-            result.output_data = output_data
             result.completed = timezone.now()
             result.save()
 
@@ -118,16 +118,28 @@ class BaseTask:
 
     def run(
         self,
+        pipeline_id: str,
+        run_id: str,
         cleaned_data: Optional[BaseModel],
     ):  # pragma: no cover
-        pass
+        raise NotImplementedError("run not implemented")
 
-    def save(self, pipeline_id, run_id, status, started, input_data=None):
+    def save(self, pipeline_id, run_id, status, started, config=None, input_data=None):
         from ..models import TaskResult
 
-        defaults = dict(status=status, input_data=input_data, started=started)
+        logger.debug(config)
+        logger.debug(type(config))
+        logger.debug("*" * 40)
+
+        defaults = dict(
+            status=status, config=config, input_data=input_data, started=started
+        )
         result, _ = TaskResult.objects.update_or_create(
-            pipeline_id=pipeline_id, task_id=self.task_id, run_id=run_id, defaults=defaults
+            pipeline_id=pipeline_id,
+            task_slug=self.slug,
+            task_id=self.task_id,
+            run_id=run_id,
+            defaults=defaults,
         )
 
         return result

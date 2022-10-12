@@ -1,7 +1,8 @@
 from celery import shared_task
-from datorum_pipelines.runners.eager import Runner
-from datorum_pipelines.reporters.logging import LoggingReporter
+
 from datorum_pipelines.pipelines.registry import pipeline_registry
+from datorum_pipelines.reporters.logging import LoggingReporter
+from datorum_pipelines.runners.eager import Runner
 
 
 @shared_task

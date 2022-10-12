@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING, Dict, Type
+from typing import TYPE_CHECKING, Any, Dict, Type
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .base import BaseTask
+    from .base import BaseTask, BaseTaskConfig
 
+from ..log import logger
 from ..reporters import BasePipelineReporter
 from ..status import PipelineTaskStatus
 
@@ -24,6 +25,8 @@ class TaskRegistry(object):
                 f"Multiple tasks named {task_name} have been registered."
             )
 
+        logger.debug(f"registering task {slug}")
+
         self.tasks[slug] = cls
 
     def get_slug(self, module, class_name):
@@ -37,7 +40,13 @@ class TaskRegistry(object):
             return self.tasks[slug]
         return None
 
-    def load_task_from_slug(self, slug, task_config, reporter: BasePipelineReporter):
+    def load_task_from_slug(
+        self,
+        slug: str,
+        task_id: str,
+        config: Dict[str, Any],
+        reporter: BasePipelineReporter,
+    ):
         cls = self.get_task_class(slug)
 
         if not cls:
@@ -49,7 +58,7 @@ class TaskRegistry(object):
             return None
 
         try:
-            return cls(task_id=task_config.id, config=task_config.config)
+            return cls(task_id=task_id, config=config)
         except Exception as e:
             reporter.report_task(slug, PipelineTaskStatus.CONFIG_ERROR, str(e))
             return None

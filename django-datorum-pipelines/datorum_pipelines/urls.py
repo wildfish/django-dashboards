@@ -24,4 +24,9 @@ urlpatterns = [
         views.PipelineRunView.as_view(),
         name="run",
     ),
+    path(
+        "task-result/<str:pk>/rerun/",
+        views.TaskResultReRunView.as_view(),
+        name="rerun-task",
+    ),
 ]
