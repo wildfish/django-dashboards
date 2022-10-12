@@ -6,7 +6,7 @@ from ..tasks import BaseTask
 from .base import BasePipelineRunner
 
 
-class EagerRunner(BasePipelineRunner):
+class Runner(BasePipelineRunner):
     def _task_can_be_ran(self, task: BaseTask, ran_ids: List[str]):
         not_all_parents_ran = any(
             map(

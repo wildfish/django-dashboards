@@ -8,7 +8,8 @@ from django.views.generic import FormView, TemplateView
 from datorum_pipelines.pipelines.registry import pipeline_registry as registry
 from datorum_pipelines.reporters.logging import LoggingReporter
 from datorum_pipelines.reporters.orm import ORMReporter
-from datorum_pipelines.runners.eager import EagerRunner
+from datorum_pipelines.runners.eager import Runner as EagerRunner
+from datorum_pipelines.runners.celery import Runner as CeleryRunner
 from datorum_pipelines.models import TaskResult
 
 
@@ -30,8 +31,8 @@ class PipelineStartView(LoginRequiredMixin, TemplateView):
         return {
             "run_id": str(run_id),
             "input_data": {"message": "hello"},  # todo: can this be made from a form?
-            "runner": EagerRunner(),  # todo get from a setting - either on pipeline or django settings
-            "reporter": LoggingReporter(),  # todo: get from a setting - either on pipeline or django settings
+            "runner": CeleryRunner(),  # todo should this get from a setting - either on pipeline or django settings
+            "reporter": LoggingReporter(),  # todo: should this get from a setting - either on pipeline or django settings
         }
 
     def get(self, request, *args, **kwargs):

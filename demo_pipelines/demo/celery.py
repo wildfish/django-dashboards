@@ -9,4 +9,4 @@ configurations.setup()
 
 app = Celery("demo")
 app.config_from_object("django.conf:settings", namespace="CELERY")
-app.autodiscover_tasks()
+app.autodiscover_tasks(['datorum_pipelines.celery_tasks'])

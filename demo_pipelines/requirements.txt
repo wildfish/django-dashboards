@@ -4,8 +4,6 @@
 #
 #    pip-compile
 #
--e file:///Users/johnpeterson/Projects/code/django-datorum/django-datorum-pipelines
-
 alabaster==0.7.12
     # via sphinx
 amqp==5.1.1
@@ -121,6 +119,8 @@ flake8==5.0.4
     # via pytest-flake8
 gprof2dot==2022.7.29
     # via django-silk
+graphlib==0.9.5
+    # via -r requirements.in
 hiredis==2.0.0
     # via -r requirements.in
 idna==3.4

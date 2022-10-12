@@ -4,7 +4,6 @@
 
 # Core
 django>=4.0,<4.1
--e ../django-datorum-pipelines
 django-configurations
 django-clear-cache
 django-redis
@@ -26,6 +25,7 @@ django-vanilla-views
 celery
 django-celery-results
 pydantic
+graphlib
 
 # Dev tools
 Faker

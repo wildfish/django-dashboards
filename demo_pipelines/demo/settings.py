@@ -126,6 +126,7 @@ class Common(Configuration):
         "django.contrib.staticfiles",
         "django_extensions",
         "clear_cache",
+        "django_celery_results",
         # pipelines
         "datorum_pipelines",
         "demo.basic.apps.BasicConfig",
@@ -163,6 +164,19 @@ class Common(Configuration):
     ]
 
     WSGI_APPLICATION = "demo.wsgi.application"
+
+    # Celery
+    CELERY_REDIS_HOST = get_env("CELERY_REDIS_HOST", default="127.0.0.1")
+    CELERY_REDIS_PORT = get_env("CELERY_REDIS_PORT", default=6379, cast=int)
+    CELERY_REDIS_BROKER_DB = get_env("CELERY_REDIS_BROKER_DB", default=1, cast=int)
+
+    CELERY_RESULT_BACKEND = "django-db"
+    CELERY_BROKER_CONNECTION_MAX_RETRIES = 1
+    CELERY_TASK_MAX_RETRIES = 1
+
+    @property
+    def CELERY_BROKER_URL(self):
+        return f"redis://{self.CELERY_REDIS_HOST}:{self.CELERY_REDIS_PORT}/{self.CELERY_REDIS_BROKER_DB}"
 
     # Database
     # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -307,18 +321,6 @@ class DevDocker(RedisCache, Dev):
     """
     Dev for docker, uses Redis.
     """
-    # Celery
-    CELERY_REDIS_HOST = get_env("CELERY_REDIS_HOST", "127.0.0.1")
-    CELERY_REDIS_PORT = get_env("CELERY_REDIS_PORT", "6379")
-    CELERY_REDIS_BROKER_DB = get_env("CELERY_REDIS_BROKER_DB", "2")
-
-    CELERY_RESULT_BACKEND = "django-db"
-    CELERY_BROKER_CONNECTION_MAX_RETRIES = 1
-    CELERY_TASK_MAX_RETRIES = 1
-
-    @property
-    def CELERY_BROKER_URL(self):
-        return f"redis://{self.CELERY_REDIS_HOST}:{self.CELERY_REDIS_PORT}/{self.CELERY_REDIS_BROKER_DB}"
 
 
 class Test(Common):

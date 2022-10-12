@@ -7,7 +7,7 @@ from ..tasks import BaseTask
 from .base import BasePipelineRunner
 
 
-class CeleryRunner(BasePipelineRunner):
+class Runner(BasePipelineRunner):
     def start(
         self,
         pipeline_id: str,
@@ -17,6 +17,6 @@ class CeleryRunner(BasePipelineRunner):
         reporter: BasePipelineReporter,
     ) -> bool:
 
-        run_pipeline(pipeline_id, run_id, tasks, input_data, reporter).delay()
+        run_pipeline.delay(pipeline_id, run_id, input_data)
 
         return True
