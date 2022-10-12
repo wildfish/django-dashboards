@@ -20,9 +20,14 @@ urlpatterns = [
         name="start",
     ),
     path(
-        "<str:run_id>/run/",
-        views.PipelineRunView.as_view(),
-        name="run",
+        "<str:run_id>/results/",
+        views.TaskResultView.as_view(),
+        name="results",
+    ),
+    path(
+        "<str:run_id>/results/list/",
+        views.TaskResultListView.as_view(),
+        name="results-list",
     ),
     path(
         "task-result/<str:pk>/rerun/",

@@ -1,12 +1,8 @@
 {% extends "datorum_pipelines/base.html" %}
-
+{% block content_title %}Tasks{% endblock content_title %}
 {% block content %}
-  <ul>
-    {% for task in task_results %}
-      <li>
-        {{ task.task_id }}-{{ task.get_status_display }}-{{ task.duration }} <a href="{% url "datorum_pipelines:rerun-task" task.pk %}">rerun</a>
-      </li>
-    {% endfor %}
-  </ul>
+  <div hx-get="{% url "datorum_pipelines:results-list" run_id %}" hx-trigger="load, every 3s">
+    LOADING
+  </div>
 {% endblock %}
 

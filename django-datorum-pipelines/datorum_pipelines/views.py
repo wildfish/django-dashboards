@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, ListView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
@@ -49,18 +49,18 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
         return response
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("datorum_pipelines:run", args=(self.run_id,))
+        return reverse_lazy("datorum_pipelines:results", args=(self.run_id,))
 
 
-class PipelineRunView(LoginRequiredMixin, TemplateView):
+class TaskResultView(LoginRequiredMixin, TemplateView):
     template_name = "datorum_pipelines/results_list.html"
 
-    def get_context_data(self, **kwargs):
-        task_results = TaskResult.objects.filter(run_id=kwargs["run_id"])
-        return {
-            **super().get_context_data(**kwargs),
-            "task_results": task_results,
-        }
+
+class TaskResultListView(LoginRequiredMixin, ListView):
+    template_name = "datorum_pipelines/_results_list.html"
+
+    def get_queryset(self):
+        return TaskResult.objects.filter(run_id=self.kwargs["run_id"])
 
 
 class TaskResultReRunView(LoginRequiredMixin, SingleObjectMixin, RedirectView):

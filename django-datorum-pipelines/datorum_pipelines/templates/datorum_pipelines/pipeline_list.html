@@ -1,11 +1,11 @@
 {% extends "datorum_pipelines/base.html" %}
-
+{% block content_title %}Current Pipelines{% endblock content_title %}
 {% block content %}
   <ul>
     {% for pipeline in pipelines %}
       <li>
-        {{ pipeline.title }} <a href="{% url "datorum_pipelines:start" pipeline.slug %}">start</a>
-      -{{ pipeline.dag }}-
+        {{ pipeline.title }}
+        <a href="{% url "datorum_pipelines:start" pipeline.slug %}" class="btn btn-success">start</a>
       </li>
     {% endfor %}
   </ul>

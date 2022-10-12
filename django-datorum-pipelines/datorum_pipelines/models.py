@@ -46,7 +46,7 @@ class TaskResult(models.Model):
     @property
     def duration(self):
         if self.completed and self.started:
-            return self.completed - self.started
+            return (self.completed - self.started).seconds
 
         return None
 
