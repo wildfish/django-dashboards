@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, TemplateView, ListView
+from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
