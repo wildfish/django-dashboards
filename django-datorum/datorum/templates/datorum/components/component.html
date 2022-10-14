@@ -3,7 +3,7 @@
 
 {% if component.is_deferred and htmx %}
     <div hx-get="{{ component.get_absolute_url }}"
-         hx-trigger="intersect once{% if component.htmx_poll_rate %}, {{ component.htmx_poll_rate }}{% endif %} delay:{{ delay }}"></div>
+         hx-trigger="{{ component.htmx_trigger_on }}intersect once{% if component.htmx_poll_rate %}, {{ component.htmx_poll_rate }}{% endif %} delay:{{ delay }}"></div>
 {% else %}
     {# -inner will be replaced if a filter is applied. #}
     <div id="component-{{ component.key }}-inner" class="dashboard-component-inner fade-in">

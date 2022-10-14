@@ -26,6 +26,7 @@ class ChartData:
         type: Optional[Type] = None
         mode: Optional[Mode] = None
         name: Optional[str] = None
+        orientation: Optional[str] = 'v'
         marker: Optional[dict] = field(default_factory=lambda: {})
 
     @dataclass

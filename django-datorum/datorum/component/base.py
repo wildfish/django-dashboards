@@ -29,7 +29,8 @@ class Component:
     # replicated on LayoutBase TODO need to handle this better
     css_classes: Optional[str] = None
     width: Optional[int] = 6
-    poll_rate: Optional[int] = None  # In seconds, TODO make default a seting
+    poll_rate: Optional[int] = None  # In seconds, TODO make default a setting
+    trigger_on: Optional[str] = None
 
     # attrs below should not be changed
     dependent_components: Optional[list["Component"]] = None
@@ -45,6 +46,12 @@ class Component:
     def htmx_poll_rate(self):
         if self.poll_rate:
             return f"every {self.poll_rate}s"
+
+    def htmx_trigger_on(self):
+        if self.trigger_on:
+            return f"{self.trigger_on} from:body, "
+
+        return ""
 
     def get_value(
         self,

@@ -1,5 +1,5 @@
 <div id="{{ component.key }}">
-  <table id="{{ component.key }}_table"></table>
+  <table id="{{ component.key }}_table" class="cell-border display compact nowrap" style="width:100%"></table>
 </div>
 
 {% with data_key="data_"|add:component.key columns_key="columns_"|add:component.key %}
@@ -18,12 +18,13 @@
               data: rows_{{ component.key }},
               columns: columns_{{ component.key }},
               pageLength: {{ component.page_size|default:25 }},
+              scrollX: true,
           }
 
       {% else %}
           var options = {
               destroy: true,
-              responsive: true,
+              scrollX: true,
               processing: true,
               serverSide: true,
               columns: columns_{{ component.key }},
