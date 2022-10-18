@@ -194,7 +194,10 @@ a.active {
   padding: 0.5rem 2rem;
 }
 
-
+table {
+  font-size: 0.8rem;
+  line-height: normal;
+}
 .table {
     border-collapse: collapse;
     border-spacing: 0;

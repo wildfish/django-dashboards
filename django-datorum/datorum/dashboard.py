@@ -74,6 +74,8 @@ class DashboardType(type):
                 dashboard_class._meta.lookup_field = base_meta.lookup_field
             if not hasattr(meta, "include_in_graphql"):
                 dashboard_class._meta.include_in_graphql = base_meta.include_in_graphql
+            if not hasattr(meta, "include_in_menu"):
+                dashboard_class._meta.include_in_menu = base_meta.include_in_menu
             if not hasattr(meta, "permission_classes"):
                 dashboard_class._meta.permission_classes = base_meta.permission_classes
             if not hasattr(meta, "template_name"):
@@ -111,6 +113,7 @@ class Dashboard(metaclass=DashboardType):
     class Meta:
         name: str
         include_in_graphql: bool = True
+        include_in_menu: bool = True
         permission_classes: Optional[List[BasePermission]] = None
         template_name: Optional[str] = None
         model = None

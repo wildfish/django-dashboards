@@ -19,6 +19,10 @@
               columns: columns_{{ component.key }},
               pageLength: {{ component.page_size|default:25 }},
               scrollX: true,
+              searching: {{ component.searching|yesno:"true,false" }},
+              paging: {{ component.paging|yesno:"true,false" }},
+              info: {{ component.paging|yesno:"true,false" }},
+              ordering: {{ component.ordering|yesno:"true,false" }},
           }
 
       {% else %}
@@ -27,6 +31,10 @@
               scrollX: true,
               processing: true,
               serverSide: true,
+              searching: {{ component.searching|yesno:"true,false" }},
+              paging: {{ component.paging|yesno:"true,false" }},
+              info: {{ component.paging|yesno:"true,false" }},
+              ordering: {{ component.ordering|yesno:"true,false" }},
               columns: columns_{{ component.key }},
               pageLength: {{ component.page_size|default:25 }},
               ajax: {

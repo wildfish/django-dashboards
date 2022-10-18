@@ -16,7 +16,7 @@ from .base import Component
 class TablePaging:
     ssr: bool = False
     page: int = 1
-    page_size: int = 999
+    page_size: int = 100
     page_count: int = 1
 
 
@@ -71,6 +71,9 @@ class Table(Component):
     template: str = "datorum/components/table/index.html"
     page_size: int = 10
     columns: Optional[list] = None
+    searching: Optional[bool] = True
+    paging: Optional[bool] = True
+    ordering: Optional[bool] = True
 
     # Expect tables to return table data
     value: Optional[TableData] = None
@@ -98,18 +101,20 @@ class DatatablesQuerysetFilter(BaseFilter):
         """
 
         global_search_value = self.filters.get("search[value]")
+        # used to filter out non model fields
+        model_fields = [f.name for f in qs.model._meta.get_fields()]
 
         q_list = Q()
 
         # Search all fields by adding a Q for each.
         for field in self.fields:
-            if global_search_value:
+            if field in model_fields and global_search_value:
                 q_list |= Q(**{f"{field}__icontains": global_search_value})
 
         # # Search in individual fields by checking for a request value at index.
         for o in range(len(self.fields)):
             field_search_value = self.filters.get(f"columns[{o}][search][value]")
-            if field_search_value:
+            if field in model_fields and field_search_value:
                 q_list &= Q(**{f"{self.fields[o]}__icontains": field_search_value})
 
         return qs.filter(q_list)
@@ -268,6 +273,8 @@ class ToTable:
         if self.sort_class:
             self.data = self.sort_class(self.filters, self.fields).sort(self.data)
 
+        # if length is -1 then this means no pagination e.g. show all
+        if length < 0: length = initial_count
         # apply pagination
         page_obj, filtered_count = self._paginate(start, length)
 
