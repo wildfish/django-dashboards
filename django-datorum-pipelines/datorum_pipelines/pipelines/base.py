@@ -46,7 +46,7 @@ class PipelineType(type):
 
 class BasePipeline(metaclass=PipelineType):
     title: str = ""
-    tasks: Optional[dict[str, BaseTask]] = None
+    tasks: Optional[dict[str, BaseTask]] = {}
 
     def __init__(self):
         self.id = pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
@@ -59,15 +59,17 @@ class BasePipeline(metaclass=PipelineType):
     ):
         # check against pipeline kets, as parent is relative to the Pipeline, not Task.id which will is
         # full task id.
+        other_tasks = self.tasks.values() if self.tasks else []
         other_pipeline_tasks = [
             t.pipeline_task
-            for t in self.tasks.values()
+            for t in other_tasks
             if t.pipeline_task != task.pipeline_task
         ]
         parent_keys = getattr(task.cleaned_config, "parents", []) or []
 
         if not all(p in other_pipeline_tasks for p in parent_keys):
             reporter.report_task(
+                pipeline_task=task.pipeline_task,
                 task_id=task.task_id,
                 status=PipelineTaskStatus.CONFIG_ERROR,
                 message="One or more of the parent ids are not in the pipeline",
@@ -110,6 +112,7 @@ class BasePipeline(metaclass=PipelineType):
             # if any of the tasks have an invalid config cancel all others
             for task in (t for t in self.cleaned_tasks if t is not None):
                 reporter.report_task(
+                    pipeline_task=task.pipeline_task,
                     task_id=task.task_id,
                     status=PipelineTaskStatus.CANCELLED,
                     message="Tasks cancelled due to an error in the pipeline config",
@@ -121,6 +124,7 @@ class BasePipeline(metaclass=PipelineType):
             # else mark them all as pending
             for task in cleaned_tasks:
                 reporter.report_task(
+                    pipeline_task=task.pipeline_task,
                     task_id=task.task_id,
                     status=PipelineTaskStatus.PENDING,
                     message="Task is waiting to start",

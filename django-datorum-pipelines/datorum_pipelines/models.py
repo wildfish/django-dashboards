@@ -2,7 +2,6 @@ from django.db import models
 
 from django_extensions.db.models import TimeStampedModel
 
-from datorum_pipelines.pipelines.registry import pipeline_registry
 from datorum_pipelines.tasks.registry import task_registry
 
 from .status import PipelineTaskStatus
@@ -16,6 +15,7 @@ class PipelineLog(TimeStampedModel):
 
 
 class TaskLog(TimeStampedModel):
+    pipeline_task = models.CharField(max_length=255)
     task_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255, blank=True)
     status = models.CharField(
@@ -52,7 +52,10 @@ class TaskResult(models.Model):
 
     def get_task_instance(self, reporter):
         return task_registry.load_task_from_id(
-            task_id=self.task_id, config=self.config, reporter=reporter
+            pipeline_task=self.pipeline_task,
+            task_id=self.task_id,
+            config=self.config,
+            reporter=reporter,
         )
 
 

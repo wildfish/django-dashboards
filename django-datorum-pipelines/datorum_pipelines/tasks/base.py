@@ -1,4 +1,3 @@
-import uuid
 from typing import Any, Dict, List, Optional, Type
 
 from django.utils import timezone
@@ -33,7 +32,7 @@ class BaseTask:
 
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: Dict[str, Any] = {},
     ):
         self.task_id = task_registry.get_task_id(
             self.__module__, self.__class__.__name__
@@ -74,6 +73,7 @@ class BaseTask:
             logger.debug(cleaned_data)
 
             reporter.report_task(
+                pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
                 status=PipelineTaskStatus.RUNNING,
                 message="Task is running",
@@ -85,8 +85,8 @@ class BaseTask:
                 run_id=run_id,
                 status=PipelineTaskStatus.RUNNING,
                 started=timezone.now(),
-                config=self.cleaned_config.dict(),
-                input_data=cleaned_data.dict(),
+                config=self.cleaned_config.dict() if self.cleaned_config else None,
+                input_data=cleaned_data.dict() if cleaned_data else None,
             )
 
             # run the task
@@ -98,6 +98,7 @@ class BaseTask:
             result.save()
 
             reporter.report_task(
+                pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
                 status=PipelineTaskStatus.DONE,
                 message="Done",
@@ -107,14 +108,15 @@ class BaseTask:
         except InputValidationError as e:
             # If there is an error in the input data record the error
             reporter.report_task(
+                pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
                 status=PipelineTaskStatus.VALIDATION_ERROR,
                 message=e.msg,
             )
-
         except Exception as e:
             # If there is an error running the task record the error
             reporter.report_task(
+                pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
                 status=PipelineTaskStatus.RUNTIME_ERROR,
                 message=str(e),

@@ -275,6 +275,8 @@ class Common(Configuration):
     EVENTSTREAM_ALLOW_CREDENTIALS = True
     EVENTSTREAM_ALLOW_HEADERS = "Authorization"
 
+    DATORUM_PIPELINE_RUNNER = "datorum_pipelines.runners.eager.Runner"
+
 
 class RedisCache:
     REDIS_HOST = get_env("DJANGO_REDIS_HOST", required=True)

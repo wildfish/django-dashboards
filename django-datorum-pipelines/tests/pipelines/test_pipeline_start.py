@@ -1,20 +1,17 @@
+import uuid
 from unittest.mock import Mock
 
+import pytest
 from pydantic import BaseModel
 
-from datorum_pipelines import (
-    BasePipeline,
-    BaseTask,
-    BaseTaskConfig,
-    PipelineConfigEntry,
-    PipelineTaskStatus,
-)
+from datorum_pipelines import BasePipeline, BaseTask, BaseTaskConfig, PipelineTaskStatus
+from datorum_pipelines.tasks.base import ConfigValidationError
+
+
+pytestmark = pytest.mark.django_db
 
 
 def test_one_task_has_a_bad_config___error_is_reported_runner_is_not_started_tasks_are_marked_as_cancelled():
-    reporter = Mock()
-    runner = Mock()
-
     class BadConfig(BaseTask):
         class ConfigType(BaseTaskConfig):
             value: int
@@ -23,34 +20,19 @@ def test_one_task_has_a_bad_config___error_is_reported_runner_is_not_started_tas
         class ConfigType(BaseTaskConfig):
             value: int
 
-    pipeline = BasePipeline(
-        "id",
-        [
-            PipelineConfigEntry(
-                name="BadConfig",
-                id="bad_config",
-                config={"value": "foo"},
-            ),
-            PipelineConfigEntry(
-                name="GoodConfig",
-                id="good_config",
-                config={"value": "1"},
-            ),
-        ],
-    )
+    with pytest.raises(ConfigValidationError) as e:
 
-    assert pipeline.start({}, runner, reporter) is False
-    reporter.report_task.assert_any_call(
-        "bad_config",
-        PipelineTaskStatus.CONFIG_ERROR,
-        '[\n{\n"loc": [\n"value"\n],\n"msg": "value is not a valid integer",\n"type": "type_error.integer"\n}\n]',
+        class Pipeline(BasePipeline):
+            bad = BadConfig(config={"value": "foo"})
+            good = GoodConfig(config={"value": "1"})
+
+            class Meta:
+                title = "Test Pipeline"
+
+    assert (
+        str(e.value)
+        == '[\n{\n"loc": [\n"value"\n],\n"msg": "value is not a valid integer",\n"type": "type_error.integer"\n}\n]'
     )
-    reporter.report_task.assert_any_call(
-        "good_config",
-        PipelineTaskStatus.CANCELLED,
-        "Tasks cancelled due to an error in the pipeline config",
-    )
-    runner.start.assert_not_called()
 
 
 def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pending():
@@ -66,34 +48,40 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
         class ConfigType(BaseTaskConfig):
             value: int
 
-    pipeline = BasePipeline(
-        "id",
-        [
-            PipelineConfigEntry(
-                name="GoodConfigA",
-                id="good_config_a",
-                config={"value": "0"},
-            ),
-            PipelineConfigEntry(
-                name="GoodConfigB",
-                id="good_config_b",
-                config={"value": "1"},
-            ),
-        ],
+    class Pipeline(BasePipeline):
+        good = GoodConfigA(config={"value": "0"})
+        also_good = GoodConfigB(config={"value": "1"})
+
+        class Meta:
+            title = "Test Pipeline"
+
+    pipeline = Pipeline()
+    run_id = str(uuid.uuid4())
+    assert (
+        pipeline.start(run_id=run_id, input_data={}, runner=runner, reporter=reporter)
+        is True
     )
 
-    assert pipeline.start({}, runner, reporter) is True
     reporter.report_task.assert_any_call(
-        "good_config_a",
-        PipelineTaskStatus.PENDING,
-        "Task is waiting to start",
+        pipeline_task="good",
+        task_id="test_pipeline_start.GoodConfigA",
+        status=PipelineTaskStatus.PENDING,
+        message="Task is waiting to start",
     )
     reporter.report_task.assert_any_call(
-        "good_config_b",
-        PipelineTaskStatus.PENDING,
-        "Task is waiting to start",
+        pipeline_task="also_good",
+        task_id="test_pipeline_start.GoodConfigB",
+        status=PipelineTaskStatus.PENDING,
+        message="Task is waiting to start",
     )
-    runner.start.assert_called_once_with("id", pipeline.cleaned_tasks, {}, reporter)
+
+    runner.start.assert_called_once_with(
+        pipeline_id="test_pipeline_start.Pipeline",
+        run_id=run_id,
+        tasks=pipeline.cleaned_tasks,
+        input_data={},
+        reporter=reporter,
+    )
 
 
 def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_input_data():
@@ -112,35 +100,45 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
         class ConfigType(BaseTaskConfig):
             value: int
 
-    pipeline = BasePipeline(
-        "id",
-        [
-            PipelineConfigEntry(
-                name="GoodConfigA",
-                id="good_config_a",
-                config={"value": "0"},
-            ),
-            PipelineConfigEntry(
-                name="GoodConfigB",
-                id="good_config_b",
-                config={"value": "1"},
-            ),
-        ],
+    class Pipeline(BasePipeline):
+        good = GoodConfigA(config={"value": "0"})
+        also_good = GoodConfigB(config={"value": "1"})
+
+        class Meta:
+            title = "Test Pipeline"
+
+    pipeline = Pipeline()
+    run_id = str(uuid.uuid4())
+    assert (
+        pipeline.start(
+            run_id=run_id,
+            input_data={"message": "something"},
+            runner=runner,
+            reporter=reporter,
+        )
+        is True
     )
 
-    assert pipeline.start({"message": "something"}, runner, reporter) is True
     reporter.report_task.assert_any_call(
-        "good_config_a",
-        PipelineTaskStatus.PENDING,
-        "Task is waiting to start",
+        pipeline_task="good",
+        task_id="test_pipeline_start.GoodConfigA",
+        status=PipelineTaskStatus.PENDING,
+        message="Task is waiting to start",
     )
+
     reporter.report_task.assert_any_call(
-        "good_config_b",
-        PipelineTaskStatus.PENDING,
-        "Task is waiting to start",
+        pipeline_task="also_good",
+        task_id="test_pipeline_start.GoodConfigB",
+        status=PipelineTaskStatus.PENDING,
+        message="Task is waiting to start",
     )
+
     runner.start.assert_called_once_with(
-        "id", pipeline.cleaned_tasks, {"message": "something"}, reporter
+        pipeline_id="test_pipeline_start.Pipeline",
+        run_id=run_id,
+        tasks=pipeline.cleaned_tasks,
+        input_data={"message": "something"},
+        reporter=reporter,
     )
 
 
@@ -154,33 +152,30 @@ def test_tasks_has_a_missing_parent___error_is_raised():
     class GoodConfig(BaseTask):
         pass
 
-    pipeline = BasePipeline(
-        "id",
-        [
-            PipelineConfigEntry(
-                name="BadConfig",
-                id="bad_config",
-                config={
-                    "parents": ["missing"],
-                },
-            ),
-            PipelineConfigEntry(
-                name="GoodConfig",
-                id="good_config",
-                config={},
-            ),
-        ],
+    class Pipeline(BasePipeline):
+        bad = BadConfig(
+            config={
+                "parents": ["missing"],
+            }
+        )
+        good = GoodConfig(config={})
+
+        class Meta:
+            title = "Test Pipeline"
+
+    pipeline = Pipeline()
+
+    assert (
+        pipeline.start(
+            run_id=str(uuid.uuid4()), input_data={}, runner=runner, reporter=reporter
+        )
+        is False
+    )
+    reporter.report_task.assert_any_call(
+        pipeline_task="bad",
+        task_id="test_pipeline_start.BadConfig",
+        status=PipelineTaskStatus.CONFIG_ERROR,
+        message="One or more of the parent ids are not in the pipeline",
     )
 
-    assert pipeline.start({}, runner, reporter) is False
-    reporter.report_task.assert_any_call(
-        "bad_config",
-        PipelineTaskStatus.CONFIG_ERROR,
-        "One or more of the parent labels are not in the pipeline",
-    )
-    reporter.report_task.assert_any_call(
-        "good_config",
-        PipelineTaskStatus.CANCELLED,
-        "Tasks cancelled due to an error in the pipeline config",
-    )
     runner.start.assert_not_called()

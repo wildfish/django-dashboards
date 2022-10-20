@@ -32,10 +32,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install "django~=${{ matrix.django-version }}.0"
-      - name: Test
+      - name: Test Dashboard
         working-directory: django-datorum
         run: |
           pytest
+          flake8
+      - name: Test Pipelines
+        working-directory: django-datorum-pipelines
+        run: |
+          pytest
+          flake8
 #      - name: Upload coverage to Codecov
 #        uses: codecov/codecov-action@v1
 #        with:

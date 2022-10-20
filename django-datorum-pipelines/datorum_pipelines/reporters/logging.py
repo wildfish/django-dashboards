@@ -10,6 +10,7 @@ class LoggingReporter(BasePipelineReporter):
     def report(
         self,
         pipeline_id: Optional[str],
+        pipeline_task: Optional[str],
         task_id: Optional[str],
         status: PipelineTaskStatus,
         message: str,
@@ -19,4 +20,6 @@ class LoggingReporter(BasePipelineReporter):
                 f"Pipeline {pipeline_id} changed to state {status.value}: {message}"
             )
         else:
-            logger.info(f"Task {task_id} changed to state {status.value}: {message}")
+            logger.info(
+                f"Task {pipeline_task}:{task_id} changed to state {status.value}: {message}"
+            )

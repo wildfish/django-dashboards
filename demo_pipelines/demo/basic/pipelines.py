@@ -6,7 +6,6 @@ from datorum_pipelines import (
     BasePipeline,
     BaseTask,
     BaseTaskConfig,
-    PipelineConfigEntry,
 )
 from datorum_pipelines.models import ValueStore
 from datorum_pipelines.pipelines.registry import pipeline_registry
@@ -20,7 +19,7 @@ class EchoInputType(BaseModel):
     message: str
 
 
-class SaveMessage(BaseTask):
+class SaveMessageTask(BaseTask):
     title = "Echo message"
     ConfigType = EchoConfigType
     InputType = EchoInputType
@@ -35,7 +34,7 @@ class SaveMessage(BaseTask):
         )
 
 
-class EchoMessage(BaseTask):
+class EchoMessageTask(BaseTask):
     title = "Echo message from Store"
     ConfigType = EchoConfigType
     InputType = EchoInputType
@@ -51,15 +50,8 @@ class EchoMessage(BaseTask):
 
 @pipeline_registry.register
 class BasicPipeline(BasePipeline):
-    title = "Basic pipline with 2 steps"
-    config = [
-        PipelineConfigEntry(id="first", task=SaveMessage, config={"wait": 5}),
-        PipelineConfigEntry(
-            id="second",
-            task=EchoMessage,
-            config={"parents": ["first"], "wait": 4},
-        ),
-    ]
-    graph = {
-        "second": {"first"},
-    }  # todo: can parents use this instead?
+    save_message = SaveMessageTask(config={"wait": 5})
+    echo_message = EchoMessageTask(config={"wait": 5, "parents": ["save_message"]})
+
+    class Meta:
+        title = "Basic pipeline with 2 steps"

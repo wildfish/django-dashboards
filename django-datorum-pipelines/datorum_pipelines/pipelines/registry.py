@@ -1,8 +1,12 @@
-from typing import Dict, Type
+from typing import TYPE_CHECKING, Dict
 
 from django.utils.module_loading import autodiscover_modules
 
 from ..log import logger
+
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .base import BasePipeline
 
 
 class RegistryError(Exception):
@@ -11,7 +15,7 @@ class RegistryError(Exception):
 
 class PipeLineRegistry(object):
     def __init__(self):
-        self.pipelines: Dict[str, Type["BasePipeline"]] = {}
+        self.pipelines: Dict[str, BasePipeline] = {}  #
 
     def autodiscover_pipelines(self, module_name="pipelines"):
         autodiscover_modules(module_name)

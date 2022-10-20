@@ -1,40 +1,18 @@
 from unittest.mock import Mock
 
-import pytest
 from pydantic import BaseModel
 
 from datorum_pipelines import BaseTask
 from datorum_pipelines.reporters import PipelineTaskStatus
-from datorum_pipelines.tasks.registry import RegistryError, task_registry
+from datorum_pipelines.tasks.registry import task_registry
 
 
 def test_task_class_created_without_name___it_is_added_to_the_registry_using_the_classname():
     class TestTask(BaseTask):
         pass
 
-    assert ["TestTask"] == list(task_registry.tasks.keys())
-    assert task_registry.tasks["TestTask"] == TestTask
-
-
-def test_task_class_created_with_name___it_is_added_to_the_registry_using_the_overridden_name():
-    class TestTask(BaseTask):
-        name = "Other Name"
-
-    assert ["Other Name"] == list(task_registry.tasks.keys())
-    assert task_registry.tasks["Other Name"] == TestTask
-
-
-def test_multiple_tasks_created_with_the_same_name___error_is_raised():
-    with pytest.raises(
-        RegistryError,
-        match="Multiple tasks named AnotherTestTask have been registered.",
-    ):
-
-        class AnotherTestTask(BaseTask):
-            pass
-
-        class YetAnotherTestTask(BaseTask):
-            name = "AnotherTestTask"
+    assert ["test_registry.TestTask"] == list(task_registry.tasks.keys())
+    assert task_registry.tasks["test_registry.TestTask"] == TestTask
 
 
 def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
@@ -43,13 +21,16 @@ def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
 
     reporter = Mock()
 
-    task = task_registry.load("DifferentTestTask", "missing_task_id", {}, reporter)
+    task = task_registry.load_task_from_id(
+        pipeline_task="fake", task_id="missing_task_id", config={}, reporter=reporter
+    )
 
     assert task is None
     reporter.report_task.assert_called_once_with(
-        "missing_task_id",
-        PipelineTaskStatus.CONFIG_ERROR,
-        "No task named DifferentTestTask is registered",
+        pipeline_task="fake",
+        task_id="missing_task_id",
+        status=PipelineTaskStatus.CONFIG_ERROR,
+        message="No task named missing_task_id is registered",
     )
 
 
@@ -62,13 +43,19 @@ def test_request_to_load_a_task_that_exists_with_a_bad_config___error_is_reporte
 
     reporter = Mock()
 
-    task = task_registry.load("TestTask", "missing_task_id", {"value": "foo"}, reporter)
+    task = task_registry.load_task_from_id(
+        pipeline_task="fake",
+        task_id="missing_task_id",
+        config={"value": "foo"},
+        reporter=reporter,
+    )
 
     assert task is None
     reporter.report_task.assert_called_once_with(
-        "missing_task_id",
-        PipelineTaskStatus.CONFIG_ERROR,
-        '[\n{\n"loc": [\n"value"\n],\n"msg": "value is not a valid integer",\n"type": "type_error.integer"\n}\n]',
+        pipeline_task="fake",
+        task_id="missing_task_id",
+        status=PipelineTaskStatus.CONFIG_ERROR,
+        message="No task named missing_task_id is registered",
     )
 
 
@@ -80,8 +67,12 @@ def test_request_to_load_a_task_that_exists_with_a_valid_config___task_is_loaded
         ConfigType = TestTaskConfigType
 
     reporter = Mock()
-
-    task = task_registry.load("TestTask", "missing_task_id", {"value": 1}, reporter)
+    task = task_registry.load_task_from_id(
+        pipeline_task="fake",
+        task_id="test_registry.TestTask",
+        config={"value": 1},
+        reporter=reporter,
+    )
 
     assert isinstance(task, TestTask)
     assert task.cleaned_config == TestTaskConfigType(value=1)

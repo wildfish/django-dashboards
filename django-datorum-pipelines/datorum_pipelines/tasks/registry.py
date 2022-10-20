@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict, Type
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .base import BaseTask, BaseTaskConfig
+    from .base import BaseTask
 
 from ..log import logger
 from ..reporters import BasePipelineReporter
@@ -40,6 +40,7 @@ class TaskRegistry(object):
 
     def load_task_from_id(
         self,
+        pipeline_task: str,
         task_id: str,
         config: Dict[str, Any],
         reporter: BasePipelineReporter,
@@ -48,6 +49,7 @@ class TaskRegistry(object):
 
         if not cls:
             reporter.report_task(
+                pipeline_task=pipeline_task,
                 task_id=task_id,
                 status=PipelineTaskStatus.CONFIG_ERROR,
                 message=f"No task named {task_id} is registered",
@@ -58,7 +60,10 @@ class TaskRegistry(object):
             return cls(config=config)
         except Exception as e:
             reporter.report_task(
-                task_id=task_id, status=PipelineTaskStatus.CONFIG_ERROR, message=str(e)
+                pipeline_task=pipeline_task,
+                task_id=task_id,
+                status=PipelineTaskStatus.CONFIG_ERROR,
+                message=str(e),
             )
             return None
 

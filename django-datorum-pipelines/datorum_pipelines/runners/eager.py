@@ -55,17 +55,22 @@ class Runner(BasePipelineRunner):
                     _t
                     for _t in tasks
                     if _t.pipeline_task != task.pipeline_task
-                    and _t not in ran_pipeline_tasks
+                    and _t.pipeline_task not in ran_pipeline_tasks
                 ):
                     reporter.report_task(
-                        task_id=task.task_id,
+                        pipeline_task=t.pipeline_task,
+                        task_id=t.task_id,
                         status=PipelineTaskStatus.CANCELLED,
                         message="There was an error running a different task",
                     )
                 reporter.report_pipeline(
-                    pipeline_id, PipelineTaskStatus.RUNTIME_ERROR, "Error"
+                    pipeline_id=pipeline_id,
+                    status=PipelineTaskStatus.RUNTIME_ERROR,
+                    message="Error",
                 )
                 return False
 
-        reporter.report_pipeline(pipeline_id, PipelineTaskStatus.DONE, "Done")
+        reporter.report_pipeline(
+            pipeline_id=pipeline_id, status=PipelineTaskStatus.DONE, message="Done"
+        )
         return True
