@@ -13,6 +13,7 @@ class Text(Component):
 @dataclass
 class StatData:
     text: str
+    change_by: Optional[float] = None
     sub_text: Optional[str] = ""
 
 
@@ -32,3 +33,19 @@ class CTAData:
 class CTA(Component):
     template: str = "datorum/components/cta.html"
     value: Optional[CTAData] = None
+
+
+@dataclass
+class ProgressData:
+    @dataclass
+    class ProgressItem:
+        value: str
+        percentage: int
+        title: Optional[str] = None
+
+    data: list[ProgressItem]
+
+
+@dataclass
+class Progress(Component):
+    template: str = "datorum/components/text/progress.html"

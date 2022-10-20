@@ -26,7 +26,7 @@ class ChartData:
         type: Optional[Type] = None
         mode: Optional[Mode] = None
         name: Optional[str] = None
-        orientation: Optional[str] = 'v'
+        orientation: Optional[str] = "v"
         marker: Optional[dict] = field(default_factory=lambda: {})
 
     @dataclass
@@ -58,6 +58,8 @@ class ChartData:
 @dataclass
 class Chart(Component):
     template: str = "datorum/components/chart/chart.html"
+    displayModeBar: Optional[bool] = True
+    staticPlot: Optional[bool] = False
 
     # Expect charts to return chart data
     value: Optional[ChartData] = None

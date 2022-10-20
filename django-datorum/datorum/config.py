@@ -11,9 +11,17 @@ class Config:
         )
 
     @property
-    def DASHBOARD_URL(cls) -> str:
+    def DATORUM_DASHBOARD_URL(cls) -> str:
         return getattr(
             settings,
-            "DASHBOARD_URL",
+            "DATORUM_DASHBOARD_URL",
             "dashboard",
+        )
+
+    @property
+    def DATORUM_GRID_PREFIX(cls) -> str:
+        return getattr(
+            settings,
+            "DATORUM_GRID_PREFIX",
+            "span",
         )

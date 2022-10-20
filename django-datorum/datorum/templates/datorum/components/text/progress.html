@@ -1,0 +1,9 @@
+{% for item in rendered_value.data %}
+{% if item.title %}<h5 class="">{{ item.title }}</h5>{% endif %}
+<div class="progress-w-percent">
+  <strong class="progress-value">{{ item.value }}</strong>
+  <div class="progress progress-sm">
+    <div class="progress-bar" role="progressbar" style="width: {{ item.percentage }}%;" aria-valuenow="{{ item.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+</div>
+{% endfor %}

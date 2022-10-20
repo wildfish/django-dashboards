@@ -274,7 +274,8 @@ class ToTable:
             self.data = self.sort_class(self.filters, self.fields).sort(self.data)
 
         # if length is -1 then this means no pagination e.g. show all
-        if length < 0: length = initial_count
+        if length < 0:
+            length = initial_count
         # apply pagination
         page_obj, filtered_count = self._paginate(start, length)
 
