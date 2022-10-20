@@ -10,7 +10,7 @@ app_name = "datorum_pipelines"
 
 urlpatterns = [
     path(
-        "list/",
+        "",
         views.PipelineListView.as_view(),
         name="list",
     ),

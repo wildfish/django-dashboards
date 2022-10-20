@@ -1,3 +1,4 @@
+import uuid
 from typing import Any, Dict, List, Optional, Type
 
 from django.utils import timezone
@@ -19,6 +20,7 @@ class BaseTaskConfig(BaseModel):
 
 
 class BaseTask:
+    pipeline_task: str  # The attribute this tasks is named against - set via __new__ on BasePipeline
     title: Optional[str] = ""
     ConfigType: Type[BaseTaskConfig] = BaseTaskConfig
     InputType: Optional[
@@ -31,11 +33,11 @@ class BaseTask:
 
     def __init__(
         self,
-        task_id: str,
         config: Dict[str, Any],
     ):
-        self.task_id = task_id
-        self.slug = task_registry.get_slug(self.__module__, self.__class__.__name__)
+        self.task_id = task_registry.get_task_id(
+            self.__module__, self.__class__.__name__
+        )
         self.cleaned_config = self.clean_config(config)
 
     def clean_config(self, config: Dict[str, Any]):
@@ -72,9 +74,9 @@ class BaseTask:
             logger.debug(cleaned_data)
 
             reporter.report_task(
-                self.task_id,
-                PipelineTaskStatus.RUNNING,
-                "Task is running",
+                task_id=self.task_id,
+                status=PipelineTaskStatus.RUNNING,
+                message="Task is running",
             )
 
             # record the task is running
@@ -96,23 +98,27 @@ class BaseTask:
             result.save()
 
             reporter.report_task(
-                self.task_id,
-                PipelineTaskStatus.DONE,
-                "Done",
+                task_id=self.task_id,
+                status=PipelineTaskStatus.DONE,
+                message="Done",
             )
 
             return True
         except InputValidationError as e:
             # If there is an error in the input data record the error
             reporter.report_task(
-                self.slug,
-                PipelineTaskStatus.VALIDATION_ERROR,
-                e.msg,
+                task_id=self.task_id,
+                status=PipelineTaskStatus.VALIDATION_ERROR,
+                message=e.msg,
             )
 
         except Exception as e:
             # If there is an error running the task record the error
-            reporter.report_task(self.slug, PipelineTaskStatus.RUNTIME_ERROR, str(e))
+            reporter.report_task(
+                task_id=self.task_id,
+                status=PipelineTaskStatus.RUNTIME_ERROR,
+                message=str(e),
+            )
 
         return False
 
@@ -136,7 +142,7 @@ class BaseTask:
         )
         result, _ = TaskResult.objects.update_or_create(
             pipeline_id=pipeline_id,
-            task_slug=self.slug,
+            pipeline_task=self.pipeline_task,
             task_id=self.task_id,
             run_id=run_id,
             defaults=defaults,

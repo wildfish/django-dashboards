@@ -1,4 +1,4 @@
-from .base import BasePipeline, PipelineConfigEntry
+from .base import BasePipeline
 
 
-__all__ = ["BasePipeline", "PipelineConfigEntry"]
+__all__ = ["BasePipeline"]

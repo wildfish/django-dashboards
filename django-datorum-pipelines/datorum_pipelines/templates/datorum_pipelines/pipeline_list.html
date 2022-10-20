@@ -5,7 +5,7 @@
     {% for pipeline in pipelines %}
       <li>
         {{ pipeline.title }}
-        <a href="{% url "datorum_pipelines:start" pipeline.slug %}" class="btn btn-success">start</a>
+        <a href="{% url "datorum_pipelines:start" pipeline.id %}" class="btn btn-success">start</a>
       </li>
     {% endfor %}
   </ul>

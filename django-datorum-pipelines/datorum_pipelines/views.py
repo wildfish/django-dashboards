@@ -2,18 +2,16 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, ListView, TemplateView
+from django.http import Http404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
+from datorum_pipelines import config
 from datorum_pipelines.models import TaskResult
 from datorum_pipelines.pipelines.registry import pipeline_registry as registry
 from datorum_pipelines.reporters.logging import LoggingReporter
-from datorum_pipelines.reporters.orm import ORMReporter
-from datorum_pipelines.runners.celery import Runner as CeleryRunner
-from datorum_pipelines.runners.eager import Runner as EagerRunner
 
 
 class PipelineListView(LoginRequiredMixin, TemplateView):
@@ -32,8 +30,8 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
         return {
             "run_id": str(self.run_id),
             "input_data": {"message": "hello"},  # todo: can this be made from a form?
-            "runner": CeleryRunner(),  # todo should this get from a setting - either on pipeline or django settings
-            "reporter": LoggingReporter(),  # todo: should this get from a setting - either on pipeline or django settings
+            "runner": config.Config().DATORUM_DEFAULT_PIPELINE_RUNNER,
+            "reporter": config.Config().DATORUM_DEFAULT_PIPELINE_REPORTER,
         }
 
     def get(self, request, *args, **kwargs):

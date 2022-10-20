@@ -1,76 +1,76 @@
 from graphlib import TopologicalSorter
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from django.utils import timezone
-
-from pydantic import BaseModel
 
 
 if TYPE_CHECKING:  # pragma: nocover
     from ..runners import BasePipelineRunner
 
-from ..log import logger
 from ..reporters import BasePipelineReporter
 from ..status import PipelineTaskStatus
-from ..tasks import BaseTask, task_registry
+from ..tasks import BaseTask
 from .registry import pipeline_registry
 
 
-class PipelineConfigEntry(BaseModel):
-    task: Type[BaseTask]
-    id: str
-    config: Dict[str, Any]
+class PipelineType(type):
+    def __new__(mcs, name, bases, attrs):
+        """
+        Collect tasks from attributes.
+        """
+
+        attrs["tasks"] = {}
+        for key, value in list(attrs.items()):
+            if isinstance(value, BaseTask):
+                task = attrs.pop(key)
+                task.pipeline_task = key
+                attrs["tasks"][key] = task
+
+        pipeline_class = super().__new__(mcs, name, bases, attrs)
+        tasks = {}
+        for base in reversed(pipeline_class.__mro__):
+            # Collect tasks from base class.
+            if hasattr(base, "tasks"):
+                tasks.update(base.tasks)
+
+            # Field shadowing.
+            for attr, value in base.__dict__.items():
+                if value is None and attr in tasks:
+                    tasks.pop(attr)
+
+        # add tasks to class.
+        pipeline_class.tasks = tasks
+
+        return pipeline_class
 
 
-PipelineConfig = List[PipelineConfigEntry]
-
-
-class BasePipeline:
+class BasePipeline(metaclass=PipelineType):
     title: str = ""
-    config: PipelineConfig
-    graph: Optional[Dict[str, Any]]
-    # todo: add these to control running on schedule(cron)? - copied from airflow
-    # schedule_interval
-    # start_date
+    tasks: Optional[dict[str, BaseTask]] = None
 
     def __init__(self):
-        self.slug = pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
+        self.id = pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
         self.cleaned_tasks: List[Optional[BaseTask]] = []
 
     def clean_parents(
         self,
-        task_config: PipelineConfigEntry,
-        all_task_configs: List[PipelineConfigEntry],
+        task: BaseTask,
         reporter: BasePipelineReporter,
     ):
-        # load task from registry
-        task = task_registry.load_task_from_slug(
-            task_registry.get_slug(
-                task_config.task.__module__, task_config.task.__name__
-            ),
-            task_config.id,
-            task_config.config,
-            reporter,
-        )
+        # check against pipeline kets, as parent is relative to the Pipeline, not Task.id which will is
+        # full task id.
+        other_pipeline_tasks = [
+            t.pipeline_task
+            for t in self.tasks.values()
+            if t.pipeline_task != task.pipeline_task
+        ]
+        parent_keys = getattr(task.cleaned_config, "parents", []) or []
 
-        # we cannot find task in registry
-        if not task:
-            return None
-
-        other_ids = list(
-            map(
-                lambda c: c.id,
-                (c for c in all_task_configs if c and c.id != task_config.id),
-            )
-        )
-
-        parent_ids = getattr(task_config.config, "parents", []) or []
-
-        if not all(p in other_ids for p in parent_ids):
+        if not all(p in other_pipeline_tasks for p in parent_keys):
             reporter.report_task(
-                task.id,
-                PipelineTaskStatus.CONFIG_ERROR,
-                "One or more of the parent ids are not in the pipeline",
+                task_id=task.task_id,
+                status=PipelineTaskStatus.CONFIG_ERROR,
+                message="One or more of the parent ids are not in the pipeline",
             )
             return None
 
@@ -79,15 +79,15 @@ class BasePipeline:
     def clean_tasks(
         self, reporter: "BasePipelineReporter"
     ) -> List[Optional["BaseTask"]]:
-        # check that all configs with parents have a task with the parent label present
-        tasks = list(
+        """
+        check that all configs with parents have a task with the parent label present
+        """
+        return list(
             map(
-                lambda c: self.clean_parents(c, self.config, reporter) if c else c,
-                self.config,
+                lambda t: self.clean_parents(t, reporter) if t else t,
+                self.tasks.values() if self.tasks else {},
             )
         )
-
-        return tasks
 
     def start(
         self,
@@ -99,9 +99,9 @@ class BasePipeline:
         from ..models import PipelineExecution
 
         reporter.report_pipeline(
-            self.slug,
-            PipelineTaskStatus.PENDING,
-            "Pipeline is waiting to start",
+            pipeline_id=self.id,
+            status=PipelineTaskStatus.PENDING,
+            message="Pipeline is waiting to start",
         )
 
         self.cleaned_tasks = self.clean_tasks(reporter)
@@ -110,9 +110,9 @@ class BasePipeline:
             # if any of the tasks have an invalid config cancel all others
             for task in (t for t in self.cleaned_tasks if t is not None):
                 reporter.report_task(
-                    task.slug,
-                    PipelineTaskStatus.CANCELLED,
-                    "Tasks cancelled due to an error in the pipeline config",
+                    task_id=task.task_id,
+                    status=PipelineTaskStatus.CANCELLED,
+                    message="Tasks cancelled due to an error in the pipeline config",
                 )
             return False
         else:
@@ -121,16 +121,22 @@ class BasePipeline:
             # else mark them all as pending
             for task in cleaned_tasks:
                 reporter.report_task(
-                    task.slug,
-                    PipelineTaskStatus.PENDING,
-                    "Task is waiting to start",
+                    task_id=task.task_id,
+                    status=PipelineTaskStatus.PENDING,
+                    message="Task is waiting to start",
                 )
 
-        started = runner.start(self.slug, run_id, cleaned_tasks, input_data, reporter)
+        started = runner.start(
+            pipeline_id=self.id,
+            run_id=run_id,
+            tasks=cleaned_tasks,
+            input_data=input_data,
+            reporter=reporter,
+        )
         # record when it started
         if started:
             PipelineExecution.objects.update_or_create(
-                pipeline_id=self.slug, defaults={"last_run": timezone.now()}
+                pipeline_id=self.id, defaults={"last_run": timezone.now()}
             )
 
         return started

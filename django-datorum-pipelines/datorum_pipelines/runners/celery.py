@@ -1,8 +1,7 @@
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, List
 
 from ..celery_tasks import run_pipeline
 from ..reporters import BasePipelineReporter
-from ..status import PipelineTaskStatus
 from ..tasks import BaseTask
 from .base import BasePipelineRunner
 

@@ -28,7 +28,7 @@ class TaskLog(TimeStampedModel):
 
 class TaskResult(models.Model):
     pipeline_id = models.CharField(max_length=255)
-    task_slug = models.CharField(max_length=255)
+    pipeline_task = models.CharField(max_length=255)
     task_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255)
     status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices())
@@ -51,8 +51,8 @@ class TaskResult(models.Model):
         return None
 
     def get_task_instance(self, reporter):
-        return task_registry.load_task_from_slug(
-            self.task_slug, task_id=self.task_id, config=self.config, reporter=reporter
+        return task_registry.load_task_from_id(
+            task_id=self.task_id, config=self.config, reporter=reporter
         )
 
 

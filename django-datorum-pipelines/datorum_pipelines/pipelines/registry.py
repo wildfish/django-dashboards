@@ -27,7 +27,7 @@ class PipeLineRegistry(object):
     def get_all_registered_pipelines(self):
         return list(self.pipelines.values())
 
-    def get_all_registered_pipeline_slugs(self):
+    def get_all_registered_pipeline_ids(self):
         return self.pipelines.keys()
 
     def get_pipeline_class(self, slug):
