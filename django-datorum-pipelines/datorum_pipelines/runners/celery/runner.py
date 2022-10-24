@@ -4,9 +4,7 @@ from typing import Any, Dict, List
 from celery import chain
 
 from datorum_pipelines import PipelineTaskStatus
-from datorum_pipelines.pipelines import BasePipeline
 from datorum_pipelines.reporters import BasePipelineReporter
-from datorum_pipelines.reporters.logging import LoggingReporter
 from datorum_pipelines.runners import BasePipelineRunner
 from datorum_pipelines.tasks import BaseTask
 
@@ -39,10 +37,9 @@ class Runner(BasePipelineRunner):
     def start(
         self,
         pipeline_id: str,
-        run_id: str,
         tasks: List[BaseTask],
         input_data: Dict[str, Any],
-        reporter: BasePipelineReporter,
+        **kwargs,
     ) -> bool:
 
         ordered_tasks = self._get_task_graph(tasks=tasks)
@@ -75,28 +72,4 @@ class Runner(BasePipelineRunner):
             )
         )
 
-        return True
-
-
-if __name__ == "__main__":
-    """Test celery runner"""
-
-    class NoddyTask(BaseTask):
-        title = "Noddy task that prints a message"
-
-        def run(self, pipeline_id: str, run_id: str, cleaned_data):
-            print("Run")
-
-    class BasicPipeline(BasePipeline):
-        parent = NoddyTask()
-        child = NoddyTask(config={"parents": ["parent"]})
-
-        class Meta:
-            title = "Basic pipeline with to test celery"
-
-    BasicPipeline().start(
-        run_id=str(uuid.uuid4()),
-        runner=Runner(),
-        input_data={},
-        reporter=LoggingReporter(),
-    )
+        return c

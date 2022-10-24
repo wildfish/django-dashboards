@@ -1,14 +1,9 @@
 import time
 
-from pydantic import BaseModel
-
-from datorum_pipelines import (
-    BasePipeline,
-    BaseTask,
-    BaseTaskConfig,
-)
+from datorum_pipelines import BasePipeline, BaseTask, BaseTaskConfig
 from datorum_pipelines.models import ValueStore
 from datorum_pipelines.pipelines.registry import pipeline_registry
+from pydantic import BaseModel
 
 
 class EchoConfigType(BaseTaskConfig):
