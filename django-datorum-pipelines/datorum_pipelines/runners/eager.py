@@ -1,7 +1,6 @@
 from typing import Any, Dict, Iterable, List
 
 from ..reporters import BasePipelineReporter
-from ..status import PipelineTaskStatus
 from ..tasks import BaseTask
 from .base import BasePipelineRunner
 
@@ -41,12 +40,17 @@ class Runner(BasePipelineRunner):
         input_data: Dict[str, Any],
         reporter: BasePipelineReporter,
     ) -> bool:
-        reporter.report_pipeline(pipeline_id, PipelineTaskStatus.RUNNING, "Running")
+        self._report_pipeline_running(pipeline_id=pipeline_id, reporter=reporter)
 
         ran_pipeline_tasks: List[str] = []
 
         for task in self._get_next_task(tasks, ran_pipeline_tasks):
-            res = task.start(pipeline_id, run_id, input_data, reporter)
+            res = task.start(
+                pipeline_id=pipeline_id,
+                run_id=run_id,
+                input_data=input_data,
+                reporter=reporter,
+            )
             if res:
                 ran_pipeline_tasks.append(task.pipeline_task)
             else:
@@ -57,20 +61,12 @@ class Runner(BasePipelineRunner):
                     if _t.pipeline_task != task.pipeline_task
                     and _t.pipeline_task not in ran_pipeline_tasks
                 ):
-                    reporter.report_task(
-                        pipeline_task=t.pipeline_task,
-                        task_id=t.task_id,
-                        status=PipelineTaskStatus.CANCELLED,
-                        message="There was an error running a different task",
-                    )
-                reporter.report_pipeline(
-                    pipeline_id=pipeline_id,
-                    status=PipelineTaskStatus.RUNTIME_ERROR,
-                    message="Error",
-                )
+                    self._report_task_cancelled(task=t, reporter=reporter)
+
+                self._report_pipeline_error(pipeline_id=pipeline_id, reporter=reporter)
+
                 return False
 
-        reporter.report_pipeline(
-            pipeline_id=pipeline_id, status=PipelineTaskStatus.DONE, message="Done"
-        )
+        self._report_pipeline_done(pipeline_id=pipeline_id, reporter=reporter)
+
         return True

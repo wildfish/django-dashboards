@@ -1,4 +1,3 @@
-from graphlib import TopologicalSorter
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from django.utils import timezone
@@ -98,8 +97,6 @@ class BasePipeline(metaclass=PipelineType):
         runner: "BasePipelineRunner",
         reporter: "BasePipelineReporter",
     ) -> bool:
-        from ..models import PipelineExecution
-
         reporter.report_pipeline(
             pipeline_id=self.id,
             status=PipelineTaskStatus.PENDING,
@@ -137,15 +134,13 @@ class BasePipeline(metaclass=PipelineType):
             input_data=input_data,
             reporter=reporter,
         )
+
         # record when it started
         if started:
-            PipelineExecution.objects.update_or_create(
-                pipeline_id=self.id, defaults={"last_run": timezone.now()}
+            reporter.report_pipeline(
+                pipeline_id=self.id,
+                status=PipelineTaskStatus.RUNNING,
+                message="Started",
             )
 
         return started
-
-    @property
-    def dag(self):
-        ts = TopologicalSorter(self.graph)
-        return tuple(ts.static_order())

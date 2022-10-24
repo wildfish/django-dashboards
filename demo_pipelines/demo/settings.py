@@ -166,7 +166,7 @@ class Common(Configuration):
     WSGI_APPLICATION = "demo.wsgi.application"
 
     # Celery
-    CELERY_REDIS_HOST = get_env("CELERY_REDIS_HOST", default="127.0.0.1")
+    CELERY_REDIS_HOST = get_env("CELERY_REDIS_HOST", default="redis")
     CELERY_REDIS_PORT = get_env("CELERY_REDIS_PORT", default=6379, cast=int)
     CELERY_REDIS_BROKER_DB = get_env("CELERY_REDIS_BROKER_DB", default=1, cast=int)
 
