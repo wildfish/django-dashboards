@@ -1,0 +1,17 @@
+<div id="{{ component.key }}">
+  <table id="{{ component.key }}_table" class="{{ component.css_classes }}" style="width:100%">
+    <thead>
+    {% for h in rendered_value.headers %}
+    {% endfor %}
+    </thead>
+    <tbody>
+    {% for cols in rendered_value.rows %}
+    <tr>
+      {% for value in cols %}
+      <td>{{ value }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

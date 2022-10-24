@@ -59,6 +59,7 @@ class BasicTable(Component):
     """
     Basic HTML Table without any js for pagination, sorting, filtering etc.
     """
+
     template: str = "datorum/components/table/basic.html"
     value: Optional[BasicTableData] = None
     defer: Optional[Callable[[HttpRequest], BasicTableData]] = None

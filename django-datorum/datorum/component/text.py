@@ -1,5 +1,8 @@
+import datetime
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Callable, Optional
+
+from django.http import HttpRequest
 
 from .base import Component
 
@@ -56,3 +59,25 @@ class ProgressData:
 @dataclass
 class Progress(Component):
     template: str = "datorum/components/text/progress.html"
+    value: Optional[ProgressData] = None
+    defer: Optional[Callable[[HttpRequest], ProgressData]] = None
+
+
+@dataclass
+class TimelineData:
+    @dataclass
+    class TimelineItem:
+        icon: str  # html element
+        title: str
+        subtext: str
+        datetime: datetime.datetime
+        css_classes: Optional[str] = "timeline-item"
+
+    items: list[TimelineItem]
+
+
+@dataclass
+class Timeline(Component):
+    template: str = "datorum/components/text/timeline.html"
+    value: Optional[TimelineData] = None
+    defer: Optional[Callable[[HttpRequest], TimelineData]] = None
