@@ -46,16 +46,20 @@ snapshots["test_view__dashboard__not_found 1"] = None
 snapshots["test_view__dashboard__with_layout 1"] = {
     "Meta": {
         "layoutJson": {
+            "component_context": {},
             "layout_components": [
                 {
+                    "component_context": {},
                     "layout_components": [
                         {
+                            "component_context": {},
                             "css_classes": "css_style",
                             "layout_components": ["component_1"],
                             "renderType": "Div",
                             "width": 99,
                         },
                         {
+                            "component_context": {},
                             "css_classes": "css_style",
                             "layout_components": ["component_2"],
                             "renderType": "Div",
@@ -63,7 +67,7 @@ snapshots["test_view__dashboard__with_layout 1"] = {
                     ],
                     "renderType": "Div",
                 }
-            ]
+            ],
         },
         "name": "Test Dashboard with Layout",
         "slug": "test-dashboard-with-layout",
@@ -198,6 +202,7 @@ snapshots["test_view__dashboards 1"] = [
                             "marker": {},
                             "mode": None,
                             "name": None,
+                            "orientation": "v",
                             "text": None,
                             "type": None,
                             "x": ["a"],

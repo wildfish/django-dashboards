@@ -64,13 +64,13 @@ snapshots[
     <script src="/static/js/plotly-2.12.1.min.js"></script>
 
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.js"></script>
 
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "QU09NvLgTvMB0oEZFJAu3ZyPyWCA1wUAc76j4lJWMmp9MFZ9SBpMzGi9QTIQzGGz"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "2LTEAtWGCM5lqtwB8Wyy7UdpemmKBKJVpWaMRLfRnRZr3BVC4H7OgYPEGYKpEVZV"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -78,10 +78,12 @@ snapshots[
 </h1>
     <div class="content">
         
-    <div class="span-6  dashboard-component">
-  
-  <div class="card-body">
+    <div class="span-6 ">
+  <div class="card  dashboard-component">
     
+    
+    <div class="card-body">
+      
 
 
 
@@ -92,22 +94,30 @@ value
 
     </div>
 
-  </div>
-</div><div class="span-6  dashboard-component">
-  
-  <div class="card-body">
+    </div>
     
+  </div>
+</div><div class="span-6 ">
+  <div class="card  dashboard-component">
+    
+    
+    <div class="card-body">
+      
 
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:118ms"></div>
+         hx-trigger="intersect once delay:93ms"></div>
 
-  </div>
-</div><div class="span-6  dashboard-component">
-  
-  <div class="card-body">
+    </div>
     
+  </div>
+</div><div class="span-6 ">
+  <div class="card  dashboard-component">
+    
+    
+    <div class="card-body">
+      
 
 
 
@@ -118,6 +128,8 @@ value from callable
 
     </div>
 
+    </div>
+    
   </div>
 </div>
 
