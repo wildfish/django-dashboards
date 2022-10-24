@@ -49,6 +49,23 @@ class TableData:
 
 
 @dataclass
+class BasicTableData:
+    headers: Optional[List[str]] = None
+    rows: Optional[List[List[str]]] = None
+
+
+@dataclass
+class BasicTable(Component):
+    """
+    Basic HTML Table without any js for pagination, sorting, filtering etc.
+    """
+    template: str = "datorum/components/table/basic.html"
+    value: Optional[BasicTableData] = None
+    defer: Optional[Callable[[HttpRequest], BasicTableData]] = None
+    css_classes: Optional[str] = "table"
+
+
+@dataclass
 class Table(Component):
     """
     Basic table example, we'd also want it to handle pagination/searching/filter/ordering remotely etc.
