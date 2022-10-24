@@ -15,7 +15,7 @@ from datorum.component.layout import (
     TabContainer,
 )
 from datorum.component.table import TableData, TablePaging
-from datorum.component.text import CTAData, StatData, Timeline, TimelineData
+from datorum.component.text import CTAData, StatData
 from datorum.dashboard import Dashboard
 from datorum.permissions import IsAdminUser
 from datorum.registry import registry
@@ -126,31 +126,6 @@ class DemoDashboard(Dashboard):
     )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
     choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
-    timeline = Timeline(
-        value=TimelineData(
-            items=[
-                TimelineData.TimelineItem(
-                    icon="<i class=\"mdi mdi-upload bg-info-lighten text-info timeline-icon\"></i>",
-                    title="<a href=\"javascript:void(0);\" class=\"text-info fw-bold mb-1 d-block\">You sold an item</a>",
-                    subtext="<small>Paul Burgess just purchased “Hyper - Admin Dashboard”!</small>",
-                    datetime=fake.date_time_this_year()
-                ),
-                TimelineData.TimelineItem(
-                    icon="<i class=\"mdi mdi-airplane bg-primary-lighten text-primary timeline-icon\"></i>",
-                    title="<a href=\"javascript:void(0);\" class=\"text-primary fw-bold mb-1 d-block\">Product on the Bootstrap Market</a>",
-                    subtext="<small>Dave Gamache added <span class=\"fw-bold\">Admin Dashboard</span></small>",
-                    datetime=fake.date_time_this_year()
-                ),
-                TimelineData.TimelineItem(
-                    icon="<i class=\"mdi mdi-upload bg-info-lighten text-info timeline-icon\"></i>",
-                    title="<a href=\"javascript:void(0);\" class=\"text-info fw-bold mb-1 d-block\">You sold an item</a>",
-                    subtext="<small>Paul Burgess just purchased “Hyper - Admin Dashboard”!</small>",
-                    datetime=fake.date_time_this_year()
-                ),
-            ],
-        ),
-        css_classes="timeline-alt",
-    )
 
     class Meta:
         name = "Basic"
