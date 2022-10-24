@@ -172,8 +172,8 @@ class Tab(HTMLComponentLayout):
                 "datorum/layout/components/tabs/tab.html",
                 {
                     "tab_label": self.tab_label,
-                    "li_css_classes": self.component_context["li_css_classes"],
-                    "link_css_classes": self.component_context["link_css_classes"],
+                    "li_css_classes": self.component_context.get("li_css_classes"),
+                    "link_css_classes": self.component_context.get("link_css_classes"),
                 },
             )
         )
