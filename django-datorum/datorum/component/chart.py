@@ -51,7 +51,14 @@ class ChartData:
         node: Optional[dict] = None
         link: Optional[dict] = None
 
-    data: list[Union[Gauge, Trace, Sankey, Any]]
+    @dataclass
+    class Pie:
+        type: str = "pie"
+        values: Optional[list[Any]] = None
+        labels: Optional[list[Any]] = None
+        hole: Optional[float] = 0
+
+    data: list[Union[Gauge, Trace, Sankey, Pie, Any]]
     layout: Optional[dict[str, str]] = None
 
 

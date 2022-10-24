@@ -275,7 +275,7 @@ class ToTable:
 
         # if length is -1 then this means no pagination e.g. show all
         if length < 0:
-            length = initial_count
+            length = 999
         # apply pagination
         page_obj, filtered_count = self._paginate(start, length)
 

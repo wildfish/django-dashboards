@@ -1,13 +1,5 @@
 <div class="stat">
-  {% if component.href %}
-  <a href="{{ component.href }}">
-    <h2>{{ rendered_value.text }}</h2>
-    <p>
-      {% if rendered_value.change_by %}<span style="margin-right: 0.75em">{{ rendered_value.change_by }}</span>{% endif %}
-      <span>{{ rendered_value.sub_text }}</span>
-    </p>
-  </a>
-  {% else %}
+  {% if component.href %}<a href="{{ component.href }}">{% endif %}
   {% if component.icon %}
   <div class="float-end">
     {{ component.icon|safe }}
@@ -15,16 +7,16 @@
   {% endif %}
   <h2>{{ rendered_value.text }}</h2>
   <p>
-    {% if rendered_value.change_by %}
+    {% if rendered_value.change_by_display %}
     <span class="text-{% if rendered_value.change_by > 0 %}success{% else %}danger{% endif %}" style="margin-right: 0.75em">
     {% if rendered_value.change_by > 0 %}
       <i class="mdi mdi-arrow-up-bold"></i>
       {% else %}
       <i class="mdi mdi-arrow-down-bold"></i>
-      {% endif %} {{ rendered_value.change_by }}
+      {% endif %} {{ rendered_value.change_by_display }}
     </span>
     {% endif %}
     <span>{{ rendered_value.sub_text }}</span>
   </p>
-  {% endif %}
+  {% if component.href %}</a>{% endif %}
 </div>

@@ -120,11 +120,13 @@ class Card(HTMLComponentLayout):
 
 class Div(HTMLComponentLayout):
     template_name: str = "datorum/layout/components/div.html"
+    width: Optional[int] = 12
 
 
 class TabContainer(HTMLComponentLayout):
     template_name: str = "datorum/layout/components/tabs/container.html"
     css_classes: str = "tab-container"
+    tab_list_classes: str = "tabs"
 
     def render(self, dashboard, context: Context, **kwargs) -> str:
         tab_panels = self.get_components_rendered(dashboard, context)
@@ -151,6 +153,8 @@ class Tab(HTMLComponentLayout):
     tab_label: str = ""
     template_name: str = "datorum/layout/components/tabs/content.html"
     css_classes: str = "tab-content"
+    li_css_classes: str = ""
+    link_css_classes: str = ""
 
     def __init__(self, tab_label, *layout_components, **kwargs):
         self.tab_label = tab_label
@@ -168,6 +172,8 @@ class Tab(HTMLComponentLayout):
                 "datorum/layout/components/tabs/tab.html",
                 {
                     "tab_label": self.tab_label,
+                    "li_css_classes": self.component_context["li_css_classes"],
+                    "link_css_classes": self.component_context["link_css_classes"],
                 },
             )
         )
