@@ -1,9 +1,9 @@
 <div class="{{ css }}" x-data="{ tab: '{{ first.tab_label|slugify }}' }">
-    <ul id="{{ element_id }}" class="tabs" >
+    <ul id="{{ element_id }}" class="{{ tab_list_classes }}" >
         {{ tabs|safe }}
     </ul>
 
-    <div>
+    <div class="tab-content">
         {{ tab_panels }}
     </div>
 </div>

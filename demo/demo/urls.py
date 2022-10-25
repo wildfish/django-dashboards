@@ -20,7 +20,7 @@ urlpatterns = [
             namespace="kicthensink",
         ),
     ),
-    path(f"{config.Config().DASHBOARD_URL}/", include("datorum.urls")),
+    path(f"{config.Config().DATORUM_DASHBOARD_URL}/", include("datorum.urls")),
     path("admin/", admin.site.urls),
     path("graphql/", GraphQLView.as_view(schema=schema)),
 ]

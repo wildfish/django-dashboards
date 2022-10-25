@@ -25,6 +25,10 @@ from demo.kitchensink.components import SharedComponent, SSEChart, SSEStat
 from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
 
+from faker import Faker
+
+fake = Faker()
+
 
 class DemoDashboard(Dashboard):
     link = CTA(

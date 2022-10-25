@@ -26,13 +26,13 @@ snapshots[
     <script src="/static/js/plotly-2.12.1.min.js"></script>
 
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.js"></script>
 
     <link rel="stylesheet" href="/static/css/styles.css">
     
 </head>
-<body class="" hx-headers=\'{"X-CSRFToken": "2E3l4NsJhijjhdF19oqYKOFbE4az5CKZHR33bPvZCldKXoy7azGKtuozx9Rivo2y"}\'>
+<body class="" hx-headers=\'{"X-CSRFToken": "t2iW5DOh3wzkGAjylv4U3iem2cDJOw0BRHoSqKeNAUSWPGA7XQSu4nXzpcrkPjlz"}\'>
     
     <div class="menu"></div>
     <h1>
@@ -40,7 +40,7 @@ snapshots[
 </h1>
     <div class="content">
         
-    <div class="span-6 ">
+    <div class="span-12 ">
   <div class="span-99 css_style">
   
 
@@ -53,13 +53,13 @@ value
 
     </div>
 
-</div><div class="span-6 css_style">
+</div><div class="span-12 css_style">
   
 
 
 
     <div hx-get="/app1/testdashboardwithlayout/component/component_2/"
-         hx-trigger="intersect once delay:117ms"></div>
+         hx-trigger="intersect once delay:143ms"></div>
 
 </div>
 </div>
@@ -71,14 +71,16 @@ value
 </body>
 </html>"""
 
-snapshots["test_html__render 1"] = '<div class="span-6 ">some text....</div>'
+snapshots["test_html__render 1"] = '<div class="span-12 ">some text....</div>'
 
 snapshots[
     "test_html_component__render[Card] 1"
-] = """<div class="span-6 css_class">
-  
-  <div class="card-body">
+] = """<div class="span-6 ">
+  <div class="card css_class">
     
+    
+    <div class="card-body">
+      
 
 
 
@@ -89,12 +91,14 @@ value
 
     </div>
 
+    </div>
+    
   </div>
 </div>"""
 
 snapshots[
     "test_html_component__render[Div] 1"
-] = """<div class="span-6 css_class">
+] = """<div class="span-12 css_class">
   
 
 
@@ -110,7 +114,7 @@ value
 
 snapshots[
     "test_html_component__render[Tab] 1"
-] = """<div x-show="tab === \'component_1\'">
+] = """<div :class="{ \'active show\': tab === \'component_1\' }" x-show="tab === \'component_1\'">
     <div class="span-6 css_class">
   
 </div>
@@ -133,7 +137,7 @@ value
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:86ms"></div>
+         hx-trigger="intersect once delay:156ms"></div>
 """
 
 snapshots[
@@ -153,7 +157,7 @@ value
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:155ms"></div>
+         hx-trigger="intersect once delay:106ms"></div>
 
 
 
@@ -168,17 +172,17 @@ value from callable
 
 snapshots[
     "test_tab_container__render 1"
-] = """<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width6\' }">
-    <ul id="" class="tabs" >
-        <li class="tab-link">
-  <a :class="{ \'active\': tab === \'htmlhtmlsome-text-width6\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text-width6\'" href="#">
-    HTML(html=&#x27;some text....&#x27;, width=6)
+] = """<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width12\' }">
+    <ul id="" class="" >
+        <li class="None">
+  <a :class="{ \'active\': tab === \'htmlhtmlsome-text-width12\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text-width12\'" href="#" class="None">
+    HTML(html=&#x27;some text....&#x27;, width=12)
   </a>
 </li>
     </ul>
 
-    <div>
-        <div x-show="tab === \'htmlhtmlsome-text-width6\'">
+    <div class="tab-content">
+        <div :class="{ \'active show\': tab === \'htmlhtmlsome-text-width12\' }" x-show="tab === \'htmlhtmlsome-text-width12\'">
     <div class="span-6 tab-content">
   
 </div>

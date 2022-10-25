@@ -23,6 +23,7 @@ snapshots[
             'test',
             data_test.data,
             data_test.layout,
+            {displayModeBar: "hover", staticPlot: false},
         );
     </script>
 
@@ -42,7 +43,7 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
-  <table id="test_table"></table>
+  <table id="test_table" class="table table-striped nowrap None" style="width:100%"></table>
 </div>
 
 
@@ -61,6 +62,11 @@ snapshots[
               data: rows_test,
               columns: columns_test,
               pageLength: 10,
+              scrollX: true,
+              searching: true,
+              paging: true,
+              info: true,
+              ordering: true,
           }
 
       
@@ -104,6 +110,7 @@ snapshots[
             'test',
             data_test.data,
             data_test.layout,
+            {displayModeBar: "hover", staticPlot: false},
         );
     </script>
 
@@ -123,7 +130,7 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
-  <table id="test_table"></table>
+  <table id="test_table" class="table table-striped nowrap None" style="width:100%"></table>
 </div>
 
 
@@ -135,9 +142,13 @@ snapshots[
       
           var options = {
               destroy: true,
-              responsive: true,
+              scrollX: true,
               processing: true,
               serverSide: true,
+              searching: true,
+              paging: true,
+              info: true,
+              ordering: true,
               columns: columns_test,
               pageLength: 10,
               ajax: {
@@ -186,6 +197,7 @@ snapshots[
             'test',
             data_test.data,
             data_test.layout,
+            {displayModeBar: "hover", staticPlot: false},
         );
     </script>
 
@@ -205,7 +217,7 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
-  <table id="test_table"></table>
+  <table id="test_table" class="table table-striped nowrap [&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%"></table>
 </div>
 
 
@@ -224,6 +236,11 @@ snapshots[
               data: rows_test,
               columns: columns_test,
               pageLength: 10,
+              scrollX: true,
+              searching: true,
+              paging: true,
+              info: true,
+              ordering: true,
           }
 
       
@@ -267,6 +284,7 @@ snapshots[
             'test',
             data_test.data,
             data_test.layout,
+            {displayModeBar: "hover", staticPlot: false},
         );
     </script>
 
@@ -286,7 +304,7 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
-  <table id="test_table"></table>
+  <table id="test_table" class="table table-striped nowrap None" style="width:100%"></table>
 </div>
 
 
@@ -305,6 +323,11 @@ snapshots[
               data: rows_test,
               columns: columns_test,
               pageLength: 10,
+              scrollX: true,
+              searching: true,
+              paging: true,
+              info: true,
+              ordering: true,
           }
 
       
@@ -339,7 +362,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:60ms"></div>
+         hx-trigger="intersect once delay:199ms"></div>
 """
 
 snapshots[
@@ -349,7 +372,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:52ms"></div>
 """
 
 snapshots[
@@ -359,7 +382,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:40ms"></div>
+         hx-trigger="intersect once delay:55ms"></div>
 """
 
 snapshots[
@@ -378,6 +401,7 @@ snapshots[
             'test',
             data_test.data,
             data_test.layout,
+            {displayModeBar: "hover", staticPlot: false},
         );
     </script>
 
@@ -397,7 +421,7 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         <div id="test">
-  <table id="test_table"></table>
+  <table id="test_table" class="table table-striped nowrap [&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%"></table>
 </div>
 
 
@@ -416,6 +440,11 @@ snapshots[
               data: rows_test,
               columns: columns_test,
               pageLength: 10,
+              scrollX: true,
+              searching: true,
+              paging: true,
+              info: true,
+              ordering: true,
           }
 
       
@@ -451,10 +480,16 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div class="stat">
+  
+  
   <h2>100%</h2>
-  <small>increase</small>
-
+  <p>
+    
+    <span>increase</span>
+  </p>
+  
+</div>
     </div>
 """
 
@@ -466,10 +501,16 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div class="stat">
+  
+  
   <h2>100%</h2>
-  <small>increase</small>
-
+  <p>
+    
+    <span>increase</span>
+  </p>
+  
+</div>
     </div>
 """
 
@@ -481,10 +522,16 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div class="stat">
+  
+  
   <h2>100%</h2>
-  <small>increase</small>
-
+  <p>
+    
+    <span>increase</span>
+  </p>
+  
+</div>
     </div>
 """
 
@@ -495,7 +542,7 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:160ms"></div>
+         hx-trigger="intersect once delay:131ms"></div>
 """
 
 snapshots[
@@ -506,7 +553,7 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/" class="dashboard-component-cta">
+        <a href="/" class="None">
   click here
 </a>
 
@@ -521,7 +568,7 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/" class="dashboard-component-cta">
+        <a href="/" class="None">
   click here
 </a>
 

@@ -27,6 +27,7 @@ class Component:
     serializable: bool = True
 
     # replicated on LayoutBase TODO need to handle this better
+    icon: Optional[str] = None  # html string .e.g <i class="fa-up"></i>
     css_classes: Optional[str] = None
     width: Optional[int] = 6
     poll_rate: Optional[int] = None  # In seconds, TODO make default a setting

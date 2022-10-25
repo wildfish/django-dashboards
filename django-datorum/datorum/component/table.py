@@ -49,6 +49,24 @@ class TableData:
 
 
 @dataclass
+class BasicTableData:
+    headers: Optional[List[str]] = None
+    rows: Optional[List[List[str]]] = None
+
+
+@dataclass
+class BasicTable(Component):
+    """
+    Basic HTML Table without any js for pagination, sorting, filtering etc.
+    """
+
+    template: str = "datorum/components/table/basic.html"
+    value: Optional[BasicTableData] = None
+    defer: Optional[Callable[[HttpRequest], BasicTableData]] = None
+    css_classes: Optional[str] = "table"
+
+
+@dataclass
 class Table(Component):
     """
     Basic table example, we'd also want it to handle pagination/searching/filter/ordering remotely etc.
@@ -274,7 +292,8 @@ class ToTable:
             self.data = self.sort_class(self.filters, self.fields).sort(self.data)
 
         # if length is -1 then this means no pagination e.g. show all
-        if length < 0: length = initial_count
+        if length < 0:
+            length = 999
         # apply pagination
         page_obj, filtered_count = self._paginate(start, length)
 

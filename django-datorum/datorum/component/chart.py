@@ -26,7 +26,7 @@ class ChartData:
         type: Optional[Type] = None
         mode: Optional[Mode] = None
         name: Optional[str] = None
-        orientation: Optional[str] = 'v'
+        orientation: Optional[str] = "v"
         marker: Optional[dict] = field(default_factory=lambda: {})
 
     @dataclass
@@ -51,13 +51,22 @@ class ChartData:
         node: Optional[dict] = None
         link: Optional[dict] = None
 
-    data: list[Union[Gauge, Trace, Sankey, Any]]
+    @dataclass
+    class Pie:
+        type: str = "pie"
+        values: Optional[list[Any]] = None
+        labels: Optional[list[Any]] = None
+        hole: Optional[float] = 0
+
+    data: list[Union[Gauge, Trace, Sankey, Pie, Any]]
     layout: Optional[dict[str, str]] = None
 
 
 @dataclass
 class Chart(Component):
     template: str = "datorum/components/chart/chart.html"
+    displayModeBar: Optional[bool] = True
+    staticPlot: Optional[bool] = False
 
     # Expect charts to return chart data
     value: Optional[ChartData] = None
