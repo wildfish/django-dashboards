@@ -1,0 +1,10 @@
+{% extends "datorum/dashboards/base.html" %}
+{% load datorum %}
+
+{% block content_title %}
+  {{ dashboard.Meta.name }}
+{% endblock %}
+
+{% block content %}
+    {% render_dashboard dashboard %}
+{% endblock %}

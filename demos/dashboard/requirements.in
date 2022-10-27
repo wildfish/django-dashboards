@@ -1,0 +1,15 @@
+#
+# Project requirements
+#
+
+
+# Specific for this demo only.
+# TODO until pip installable
+-e ../../
+django_eventstream
+httpx
+plotly
+psutil
+
+# Include base
+-r ../../requirements.in

@@ -1,0 +1,4 @@
+include LICENSE
+include README.rst
+recursive-include datorum/templates *
+recursive-include datorum/static *

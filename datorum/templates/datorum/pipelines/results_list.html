@@ -1,0 +1,8 @@
+{% extends "datorum/pipelines/base.html" %}
+{% block content_title %}Tasks{% endblock content_title %}
+{% block content %}
+  <div hx-get="{% url "datorum.pipelines:results-list" run_id %}" hx-trigger="load, every 3s">
+    LOADING
+  </div>
+{% endblock %}
+

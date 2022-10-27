@@ -1,0 +1,11 @@
+#
+# Project requirements
+#
+
+
+# Specific for this demo only.
+# TODO until pip installable
+-e ../
+
+# Include base
+-r ../../requirements.in

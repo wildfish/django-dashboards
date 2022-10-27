@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Datorum | {% block title %}{{ dashboard.Meta.name }}{% endblock title %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="{% static 'datorum/js/htmx.min.js' %}"></script>
+    <script src="{% static 'datorum/js/htmx.debug.min.js' %}"></script>
+    <script src="{% static 'datorum/js/htmx.sse.min.js' %}"></script>
+    <script src="{% static 'datorum/js/hyperscript-0.9.7.min.js' %}"></script>
+    <script src="{% static 'datorum/js/alpine-3.10.3.js' %}" defer></script>
+    <script src="{% static 'datorum/js/plotly-2.12.1.min.js' %}"></script>
+
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'datorum/css/styles.css' %}">
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+<body class="{% block body_class %}{% endblock body_class %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% block body %}
+    <div class="menu">{% block menu %}{% endblock menu %}</div>
+    <h1>{% block content_title %}{% endblock content_title %}</h1>
+    <div class="content">
+        {% block content %} {% endblock content %}
+    </div>
+    {% endblock body %}
+    {% block extra_script %}
+    {% endblock %}
+</body>
+</html>

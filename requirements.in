@@ -1,0 +1,35 @@
+#
+# Project requirements
+#
+
+# Core
+celery
+django-cors-headers
+django-extensions
+django_htmx
+pydantic
+strawberry-graphql[debug-server]
+
+# Dev tools
+Faker
+ipython
+ipdb
+pip-tools
+pre-commit
+
+# Testing
+django-webtest
+model-bakery
+py
+pytest
+pytest-black
+pytest-cov
+pytest-django
+pytest-isort
+pytest-flake8
+pytest-mypy
+snapshottest
+
+# Documentation
+sphinx
+sphinx_rtd_theme
