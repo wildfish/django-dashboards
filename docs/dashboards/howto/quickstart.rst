@@ -99,7 +99,7 @@ Next we need to wire up the dashboard urls.  In :code:`demo/urls.py`::
 
     urlpatterns = [
         path('admin/', admin.site.urls),
-        path('dasboards/', include('datorum.dashboards.urls')),
+        path('dashboards/', include('datorum.dashboards.urls')),
     ]
 
 Settings
