@@ -6,10 +6,13 @@
 # Specific for this demo only.
 # TODO until pip installable
 -e ../../
+envdir
+django_configurations
 django_eventstream
+django_silk
+faker
 httpx
 plotly
 psutil
-
-# Include base
--r ../../requirements.in
+psycopg2
+whitenoise

@@ -5,7 +5,14 @@
 
 # Specific for this demo only.
 # TODO until pip installable
--e ../
-
-# Include base
--r ../../requirements.in
+-e ../../
+envdir
+django_configurations
+django_eventstream
+django_silk
+faker
+httpx
+plotly
+psutil
+psycopg2
+whitenoise

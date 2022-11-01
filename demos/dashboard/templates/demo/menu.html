@@ -1,7 +1,6 @@
-{% extends "datorum/dashboards/base.html" %}
-{% load static datorum %}
+{% load datorum %}
 
-{% block menu %}
+<div class="menu">
     {% dashboard_urls "kitchensink" as kitchensink %}
     {% dashboard_urls "vehicle" as vehicle %}
 
@@ -30,5 +29,4 @@
         </ul>
     </nav>
     <hr/>
-
-{% endblock %}
+</div>
