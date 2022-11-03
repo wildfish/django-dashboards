@@ -2,9 +2,7 @@ from os import environ
 from pathlib import Path
 
 import envdir
-import sentry_sdk
 from configurations import Configuration
-from sentry_sdk.integrations.django import DjangoIntegration
 
 
 # Common settings
@@ -125,7 +123,6 @@ class Common(Configuration):
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
         "django_extensions",
-        "clear_cache",
         "django_celery_results",
         # pipelines
         "datorum.pipelines",
@@ -369,15 +366,6 @@ class Deployed(RedisCache, Common):
     EMAIL_HOST_PASSWORD = ""
     DEFAULT_FROM_EMAIL = ""
     SERVER_EMAIL = ""
-
-    @classmethod
-    def post_setup(cls):
-        super(Deployed, cls).post_setup()
-        sentry_sdk.init(
-            dsn="",
-            integrations=[DjangoIntegration()],
-            environment=CONFIGURATION,
-        )
 
 
 class Stage(Deployed):

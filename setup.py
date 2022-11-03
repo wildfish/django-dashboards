@@ -30,7 +30,6 @@ setup(
     install_requires=[
         "django>=3.2",
         "django-cors-headers",
-        "django_htmx",
         "django-extensions",
         "pydantic",
         "strawberry-graphql[debug-server]",

@@ -17,7 +17,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     # required for datorum
     "corsheaders",
-    "django_htmx",
     "strawberry.django",
     "datorum",
 ]
@@ -32,8 +31,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # required for datorum
-    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 TEMPLATES = [

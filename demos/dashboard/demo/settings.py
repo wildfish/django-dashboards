@@ -2,9 +2,7 @@ from os import environ
 from pathlib import Path
 
 import envdir
-import sentry_sdk
 from configurations import Configuration
-from sentry_sdk.integrations.django import DjangoIntegration
 
 
 # Common settings
@@ -125,12 +123,10 @@ class Common(Configuration):
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
         "django_extensions",
-        "clear_cache",
         # required for datorum
         "datorum",
         "datorum.dashboards",
         "corsheaders",
-        "django_htmx",
         "strawberry.django",
         "django_eventstream",
         # Project
@@ -149,8 +145,6 @@ class Common(Configuration):
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
-        # django_htmx required for datorum
-        "django_htmx.middleware.HtmxMiddleware",
     ]
 
     ROOT_URLCONF = "demo.urls"
@@ -250,11 +244,6 @@ class Common(Configuration):
         "handlers": {"console": {"class": "logging.StreamHandler"}},
         "loggers": {
             "django": {"handlers": ["console"], "level": "INFO"},
-            "sentry_sdk": {
-                "level": "ERROR",
-                "handlers": ["console"],
-                "propagate": False,
-            },
         },
     }
 
@@ -378,15 +367,6 @@ class Deployed(RedisCache, Common):
     EMAIL_HOST_PASSWORD = ""
     DEFAULT_FROM_EMAIL = ""
     SERVER_EMAIL = ""
-
-    @classmethod
-    def post_setup(cls):
-        super(Deployed, cls).post_setup()
-        sentry_sdk.init(
-            dsn="",
-            integrations=[DjangoIntegration()],
-            environment=CONFIGURATION,
-        )
 
 
 class Stage(Deployed):

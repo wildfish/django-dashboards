@@ -6,7 +6,6 @@
 celery
 django-cors-headers
 django-extensions
-django_htmx
 pydantic
 strawberry-graphql[debug-server]
 

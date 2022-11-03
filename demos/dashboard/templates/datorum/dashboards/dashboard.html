@@ -1,12 +1,17 @@
-{% extends "datorum/dashboards/base.html" %}
+{% extends "datorum/dashboards/dashboard.html" %}
 {% load datorum %}
 
-{% block content_title %}
-    <h2>{{ dashboard.Meta.name }}</h2>
-{% endblock content_title %}
+{% block body %}
+    {% include "demo/menu.html" %}
 
-{% block content %}
-    <div class="dashboard-container">
-        {% render_dashboard dashboard %}
-    </div>
+    {% block content_title %}
+        <h2>{{ dashboard.Meta.name }}</h2>
+    {% endblock content_title %}
+
+    {% block content %}
+        <div class="dashboard-container">
+            {% render_dashboard dashboard %}
+        </div>
+    {% endblock %}
+
 {% endblock %}
