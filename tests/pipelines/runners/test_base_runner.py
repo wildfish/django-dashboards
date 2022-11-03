@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from datorum.pipelines import BasePipeline, BaseTask
-from datorum.pipelines.runners.base import BasePipelineRunner
+from wildcoeus.pipelines import BasePipeline, BaseTask
+from wildcoeus.pipelines.runners.base import BasePipelineRunner
 
 
 pytestmark = pytest.mark.django_db

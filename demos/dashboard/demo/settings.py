@@ -123,9 +123,9 @@ class Common(Configuration):
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
         "django_extensions",
-        # required for datorum
-        "datorum",
-        "datorum.dashboards",
+        # required for wildcoeus
+        "wildcoeus",
+        "wildcoeus.dashboards",
         "corsheaders",
         "strawberry.django",
         "django_eventstream",
@@ -134,7 +134,7 @@ class Common(Configuration):
         "demo.vehicle.apps.VehicleConfig",
     ]
     MIDDLEWARE = [
-        # django_grip required for datorum/dashboards/eventstream
+        # django_grip required for wildcoeus/dashboards/eventstream
         "django_grip.GripMiddleware",
         "django.middleware.security.SecurityMiddleware",
         "corsheaders.middleware.CorsMiddleware",
@@ -267,7 +267,7 @@ class Common(Configuration):
             "level": "WARNING",
         },
         "loggers": {
-            "datorum": {
+            "wildcoeus": {
                 "handlers": ["console"],
                 "level": "DEBUG",
                 "propagate": False,

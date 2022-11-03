@@ -9,8 +9,8 @@ from demo.kitchensink.views import (
     SyncComponentView,
 )
 
-from datorum.dashboards.urls import COMPONENT_PATTERN
-from datorum.dashboards.views import DashboardView
+from wildcoeus.dashboards.urls import COMPONENT_PATTERN
+from wildcoeus.dashboards.views import DashboardView
 
 
 urlpatterns = [

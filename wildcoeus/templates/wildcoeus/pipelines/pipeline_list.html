@@ -1,0 +1,13 @@
+{% extends "wildcoeus/pipelines/base.html" %}
+{% block content_title %}Current Pipelines{% endblock content_title %}
+{% block content %}
+  <ul>
+    {% for pipeline in pipelines %}
+      <li>
+        {{ pipeline.title }}
+        <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">start</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+

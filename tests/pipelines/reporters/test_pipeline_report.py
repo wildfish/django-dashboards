@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from datorum.pipelines import BasePipelineReporter, PipelineTaskStatus
+from wildcoeus.pipelines import BasePipelineReporter, PipelineTaskStatus
 
 
 class Reporter(BasePipelineReporter):

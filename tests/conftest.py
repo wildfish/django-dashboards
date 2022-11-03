@@ -1,6 +1,6 @@
 import pytest
 
-from datorum.pipelines.tasks.registry import task_registry
+from wildcoeus.pipelines.tasks.registry import task_registry
 
 
 @pytest.fixture(autouse=True)

@@ -2,7 +2,7 @@ from django.core.exceptions import PermissionDenied
 
 import pytest
 
-from datorum.dashboards.views import DashboardView
+from wildcoeus.dashboards.views import DashboardView
 
 
 pytest_plugins = [

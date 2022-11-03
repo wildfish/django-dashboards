@@ -1,0 +1,8 @@
+{% extends "wildcoeus/pipelines/base.html" %}
+{% block content_title %}Tasks{% endblock content_title %}
+{% block content %}
+  <div hx-get="{% url "wildcoeus.pipelines:results-list" run_id %}" hx-trigger="load, every 3s">
+    LOADING
+  </div>
+{% endblock %}
+

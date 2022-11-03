@@ -1,0 +1,21 @@
+{% extends "wildcoeus/dashboards/base.html" %}
+{% load static %}
+{% load wildcoeus %}
+
+{% block wildcoeus_js %}
+    {{ block.super }}
+    {% include "wildcoeus/dashboards/includes/static/js.html" %}
+{% endblock %}
+
+{% block wildcoeus_style %}
+    {{ block.super }}
+    {% include "wildcoeus/dashboards/includes/static/style.html" %}
+{% endblock %}
+
+{% block content_title %}
+  {{ dashboard.Meta.name }}
+{% endblock %}
+
+{% block content %}
+    {% render_dashboard dashboard %}
+{% endblock %}

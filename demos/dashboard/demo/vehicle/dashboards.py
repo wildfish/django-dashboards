@@ -2,10 +2,10 @@ from demo.vehicle.data import VehicleData
 from demo.vehicle.forms import VehicleTypeFilterForm
 from demo.vehicle.models import Vehicle
 
-from datorum.dashboards.component import Form, Map, Stat, Table
-from datorum.dashboards.component.layout import HTML, Card, ComponentLayout, Div
-from datorum.dashboards.dashboard import Dashboard, ModelDashboard
-from datorum.dashboards.registry import registry
+from wildcoeus.dashboards.component import Form, Map, Stat, Table
+from wildcoeus.dashboards.component.layout import HTML, Card, ComponentLayout, Div
+from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
+from wildcoeus.dashboards.registry import registry
 
 
 class VehicleOverviewDashboard(Dashboard):

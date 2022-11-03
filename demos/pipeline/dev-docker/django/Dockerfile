@@ -11,8 +11,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # TODO temp until pipelines ready
-COPY ./django-datorum-pipelines/ /build/django-datorum-pipelines/
-RUN pip install ./django-datorum-pipelines
+COPY ./django-wildcoeus-pipelines/ /build/django-wildcoeus-pipelines/
+RUN pip install ./django-wildcoeus-pipelines
 
 # Full python requirements to support development
 COPY ./demo_pipelines/requirements.txt /build/requirements.txt

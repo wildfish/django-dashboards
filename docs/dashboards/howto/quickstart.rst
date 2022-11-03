@@ -14,12 +14,12 @@ Create a new Django project::
     cd demo
 
     # Create a virtual environment
-    pyenv virtualenv 3.9.9 django-datorum-demo
-    pyenv activate django-datorum-demo
+    pyenv virtualenv 3.9.9 django-wildcoeus-demo
+    pyenv activate django-wildcoeus-demo
 
-    # Install Django and Datorum into the virtual environment
+    # Install Django and Wildcoeus into the virtual environment
     pip install django
-    pip install django-datorum
+    pip install django-wildcoeus
 
     # Set up a new project
     django-admin startproject demo .
@@ -34,9 +34,9 @@ Dashboards
 ----------
 First you need to setup a dashboard definition.  Create a new file :code:`demo/mydashboard/dashboards.py`::
 
-    from datorum.dashboards.dashboard import Dashboard
-    from datorum.dashboards.component import Text, Chart
-    from datorum.dashboards.registry import registry
+    from wildcoeus.dashboards.dashboard import Dashboard
+    from wildcoeus.dashboards.component import Text, Chart
+    from wildcoeus.dashboards.registry import registry
     from demo.mydashboard.data import DashboardData
 
     class DemoDashboard(Dashboard):
@@ -56,7 +56,7 @@ Data for the dashboard component can be inline (text_example) or come from a cal
 In the example above the data for chart_example is returned from fetch_bar_chart_data.  We set this up now.
 Create a new file :code:`demo/mydashboard/data.py`::
 
-    from datorum.dashboards.component.chart import ChartData
+    from wildcoeus.dashboards.component.chart import ChartData
 
     class DashboardData:
         @staticmethod
@@ -99,17 +99,17 @@ Next we need to wire up the dashboard urls.  In :code:`demo/urls.py`::
 
     urlpatterns = [
         path('admin/', admin.site.urls),
-        path('dashboards/', include('datorum.dashboards.urls')),
+        path('dashboards/', include('wildcoeus.dashboards.urls')),
     ]
 
 Settings
 --------
-Finally add :code:`datorum`, :code:`datorum.dashboards` and your new app :code:`demo.mydashboard` to INSTALLED_APPS in :code:`demo/settings.py`::
+Finally add :code:`wildcoeus`, :code:`wildcoeus.dashboards` and your new app :code:`demo.mydashboard` to INSTALLED_APPS in :code:`demo/settings.py`::
 
     INSTALLED_APPS = [
         ...
-        "datorum",
-        "datorum.dashboards",
+        "wildcoeus",
+        "wildcoeus.dashboards",
         "demo.mydashboard",
     ]
 

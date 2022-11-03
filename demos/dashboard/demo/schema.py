@@ -10,7 +10,7 @@
 """
 import strawberry
 
-from datorum.dashboards.schema import DashboardQuery
+from wildcoeus.dashboards.schema import DashboardQuery
 
 
 schema = strawberry.Schema(query=DashboardQuery)

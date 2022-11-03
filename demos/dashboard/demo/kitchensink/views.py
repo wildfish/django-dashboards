@@ -7,11 +7,11 @@ from django.views.generic import TemplateView
 import httpx
 from demo.kitchensink.dashboards import DemoDashboard
 
-from datorum.dashboards.views import ComponentView
+from wildcoeus.dashboards.views import ComponentView
 
 
 class NormalView(TemplateView):
-    template_name = "datorum/dashboards/dashboard.html"
+    template_name = "wildcoeus/dashboards/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

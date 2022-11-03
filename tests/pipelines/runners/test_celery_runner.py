@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from datorum.pipelines import BasePipeline, BaseTask, PipelineTaskStatus
-from datorum.pipelines.runners.celery.runner import Runner
+from wildcoeus.pipelines import BasePipeline, BaseTask, PipelineTaskStatus
+from wildcoeus.pipelines.runners.celery.runner import Runner
 
 
 pytestmark = pytest.mark.django_db
@@ -19,7 +19,7 @@ def validate_pipeline_report(task, name, pipeline_id, status):
 
 
 def validate_run_task(task, task_id, pipeline_id, input_data):
-    assert task.name == "datorum.pipelines.runners.celery.tasks.run_task"
+    assert task.name == "wildcoeus.pipelines.runners.celery.tasks.run_task"
     assert list(task.kwargs.keys()) == [
         "task_id",
         "run_id",
@@ -59,7 +59,7 @@ def test_task_have_no_parents___tasks_are_added_to_chain_in_configured_order():
 
     validate_pipeline_report(
         task=chain.tasks[0],
-        name="datorum.pipelines.runners.celery.tasks.run_pipeline_report",
+        name="wildcoeus.pipelines.runners.celery.tasks.run_pipeline_report",
         pipeline_id=pipeline.id,
         status=PipelineTaskStatus.RUNNING,
     )
@@ -80,7 +80,7 @@ def test_task_have_no_parents___tasks_are_added_to_chain_in_configured_order():
 
     validate_pipeline_report(
         task=chain.tasks[3],
-        name="datorum.pipelines.runners.celery.tasks.run_pipeline_report",
+        name="wildcoeus.pipelines.runners.celery.tasks.run_pipeline_report",
         pipeline_id=pipeline.id,
         status=PipelineTaskStatus.DONE,
     )
@@ -116,7 +116,7 @@ def test_task_with_parents___tasks_are_added_to_chain_in_configured_order():
 
     validate_pipeline_report(
         task=chain.tasks[0],
-        name="datorum.pipelines.runners.celery.tasks.run_pipeline_report",
+        name="wildcoeus.pipelines.runners.celery.tasks.run_pipeline_report",
         pipeline_id=pipeline.id,
         status=PipelineTaskStatus.RUNNING,
     )
@@ -137,7 +137,7 @@ def test_task_with_parents___tasks_are_added_to_chain_in_configured_order():
 
     validate_pipeline_report(
         task=chain.tasks[3],
-        name="datorum.pipelines.runners.celery.tasks.run_pipeline_report",
+        name="wildcoeus.pipelines.runners.celery.tasks.run_pipeline_report",
         pipeline_id=pipeline.id,
         status=PipelineTaskStatus.DONE,
     )
@@ -164,7 +164,7 @@ def test_task__link_error_added():
 
     assert (
         chain.options["link_error"][0].name
-        == "datorum.pipelines.runners.celery.tasks.run_pipeline_report"
+        == "wildcoeus.pipelines.runners.celery.tasks.run_pipeline_report"
     )
     assert chain.options["link_error"][0].kwargs == {
         "pipeline_id": "test_celery_runner.Pipeline",

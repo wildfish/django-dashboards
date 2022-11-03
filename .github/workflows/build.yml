@@ -1,6 +1,6 @@
 name: Tests
 
-# Test django-datorum on:
+# Test django-wildcoeus on:
 #   all supported Django and Python versions
 
 on:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: py-${{ matrix.python-version }} dj-${{ matrix.django-version }} Datorum
+    name: py-${{ matrix.python-version }} dj-${{ matrix.django-version }} Wildcoeus
     runs-on: ubuntu-latest
     strategy:
       matrix:

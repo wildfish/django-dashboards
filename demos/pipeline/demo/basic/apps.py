@@ -6,6 +6,6 @@ class BasicConfig(AppConfig):
     name = "demo.basic"
 
     def ready(self):
-        from datorum.pipelines.registry import pipeline_registry
+        from wildcoeus.pipelines.registry import pipeline_registry
 
         pipeline_registry.autodiscover_pipelines()

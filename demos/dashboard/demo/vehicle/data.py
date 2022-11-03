@@ -5,9 +5,9 @@ from django.utils.safestring import mark_safe
 
 from demo.vehicle.models import Data, Parameter, Vehicle
 
-from datorum.dashboards.component.map import MapData
-from datorum.dashboards.component.table import TableData
-from datorum.dashboards.component.text import StatData
+from wildcoeus.dashboards.component.map import MapData
+from wildcoeus.dashboards.component.table import TableData
+from wildcoeus.dashboards.component.text import StatData
 
 
 def dict_to_table(d: dict):

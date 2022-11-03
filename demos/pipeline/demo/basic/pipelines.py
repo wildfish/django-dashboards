@@ -2,9 +2,9 @@ import time
 
 from pydantic import BaseModel
 
-from datorum.pipelines import BasePipeline, BaseTask, BaseTaskConfig
-from datorum.pipelines.models import ValueStore
-from datorum.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines import BasePipeline, BaseTask, BaseTaskConfig
+from wildcoeus.pipelines.models import ValueStore
+from wildcoeus.pipelines.registry import pipeline_registry
 
 
 class EchoConfigType(BaseTaskConfig):

@@ -1,9 +1,9 @@
 from django import forms
 
-from datorum.dashboards.forms import DatorumForm
+from wildcoeus.dashboards.forms import DashboardForm
 
 
-class ExampleForm(DatorumForm):
+class ExampleForm(DashboardForm):
     country = forms.ChoiceField(
         choices=(
             ("all", "All"),
@@ -14,7 +14,7 @@ class ExampleForm(DatorumForm):
     )
 
 
-class AnimalForm(DatorumForm):
+class AnimalForm(DashboardForm):
     animal = forms.ChoiceField(
         choices=(
             ("all", "All"),

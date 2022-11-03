@@ -3,10 +3,10 @@ from django.test.utils import override_settings
 
 import pytest
 
-from datorum.dashboards.component import CTA, Chart, Stat, Table, Text
-from datorum.dashboards.component.text import CTAData
 from tests import urls
 from tests.utils import render_component_test
+from wildcoeus.dashboards.component import CTA, Chart, Stat, Table, Text
+from wildcoeus.dashboards.component.text import CTAData
 
 
 pytest_plugins = [

@@ -1,9 +1,9 @@
-.. Datorum documentation master file, created by
+.. Wildcoeus documentation master file, created by
    sphinx-quickstart on Thu Oct 27 14:05:56 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Datorum's documentation!
+Welcome to Wildcoeus's documentation!
 ===================================
 
 .. toctree::

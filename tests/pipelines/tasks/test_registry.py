@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 from pydantic import BaseModel
 
-from datorum.pipelines import BaseTask
-from datorum.pipelines.reporters import PipelineTaskStatus
-from datorum.pipelines.tasks.registry import task_registry
+from wildcoeus.pipelines import BaseTask
+from wildcoeus.pipelines.reporters import PipelineTaskStatus
+from wildcoeus.pipelines.tasks.registry import task_registry
 
 
 def test_task_class_created_without_name___it_is_added_to_the_registry_using_the_classname():

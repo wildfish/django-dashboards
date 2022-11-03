@@ -52,22 +52,22 @@ snapshots[
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Datorum | Test Dashboard</title>
+    <title>Wildcoeus | Test Dashboard</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <script src="/static/datorum/js/htmx.min.js"></script>
-    <script src="/static/datorum/js/htmx.debug.min.js"></script>
-    <script src="/static/datorum/js/htmx.sse.min.js"></script>
-    <script src="/static/datorum/js/hyperscript-0.9.7.min.js"></script>
-    <script src="/static/datorum/js/alpine-3.10.3.js" defer></script>
-    <script src="/static/datorum/js/plotly-2.12.1.min.js"></script>
+    <script src="/static/wildcoeus/js/htmx.min.js"></script>
+    <script src="/static/wildcoeus/js/htmx.debug.min.js"></script>
+    <script src="/static/wildcoeus/js/htmx.sse.min.js"></script>
+    <script src="/static/wildcoeus/js/hyperscript-0.9.7.min.js"></script>
+    <script src="/static/wildcoeus/js/alpine-3.10.3.js" defer></script>
+    <script src="/static/wildcoeus/js/plotly-2.12.1.min.js"></script>
 
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.12.1/fh-3.2.4/r-2.3.0/sc-2.0.7/sr-1.1.1/datatables.min.js"></script>
 
-    <link rel="stylesheet" href="/static/datorum/css/styles.css">
+    <link rel="stylesheet" href="/static/wildcoeus/css/styles.css">
     
 </head>
 <body class="" hx-headers=\'{"X-CSRFToken": "b4MWDYFcaH2l6objYxQU0W34HsDUy3oqkenyp0ngUaq64yQKnKtHESmWFiwy5dhg"}\'>

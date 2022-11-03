@@ -7,7 +7,7 @@ from django.urls import include, path
 admin.autodiscover()
 
 urlpatterns = [
-    path("pipelines/", include("datorum.pipelines.urls")),
+    path("pipelines/", include("wildcoeus.pipelines.urls")),
     path("admin/", admin.site.urls),
 ]
 

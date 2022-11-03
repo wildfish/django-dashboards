@@ -15,9 +15,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "datorum",
-    "datorum.dashboards",
-    "datorum.pipelines",
+    "wildcoeus",
+    "wildcoeus.dashboards",
+    "wildcoeus.pipelines",
 ]
 
 MIDDLEWARE = [

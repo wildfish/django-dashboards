@@ -1,7 +1,7 @@
 import logging
 
-from datorum.pipelines import PipelineTaskStatus
-from datorum.pipelines.reporters.logging import LoggingReporter
+from wildcoeus.pipelines import PipelineTaskStatus
+from wildcoeus.pipelines.reporters.logging import LoggingReporter
 
 
 def test_report_task_writes_the_message_to_info(caplog):

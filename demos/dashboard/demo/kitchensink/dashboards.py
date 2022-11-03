@@ -9,8 +9,8 @@ from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
 from faker import Faker
 
-from datorum.dashboards.component import CTA, Chart, Form, Map, Stat, Table, Text
-from datorum.dashboards.component.layout import (
+from wildcoeus.dashboards.component import CTA, Chart, Form, Map, Stat, Table, Text
+from wildcoeus.dashboards.component.layout import (
     HR,
     HTML,
     Card,
@@ -20,11 +20,11 @@ from datorum.dashboards.component.layout import (
     Tab,
     TabContainer,
 )
-from datorum.dashboards.component.table import TableData, TablePaging
-from datorum.dashboards.component.text import CTAData, StatData
-from datorum.dashboards.dashboard import Dashboard
-from datorum.dashboards.permissions import IsAdminUser
-from datorum.dashboards.registry import registry
+from wildcoeus.dashboards.component.table import TableData, TablePaging
+from wildcoeus.dashboards.component.text import CTAData, StatData
+from wildcoeus.dashboards.dashboard import Dashboard
+from wildcoeus.dashboards.permissions import IsAdminUser
+from wildcoeus.dashboards.registry import registry
 
 
 fake = Faker()
@@ -34,7 +34,7 @@ class DemoDashboard(Dashboard):
     link = CTA(
         value=CTAData(
             href=reverse_lazy(
-                "datorum.dashboards:dashboards:kitchensink_demodashboardcustomtemplate"
+                "wildcoeus.dashboards:dashboards:kitchensink_demodashboardcustomtemplate"
             ),
             text="Find out more!",
         ),

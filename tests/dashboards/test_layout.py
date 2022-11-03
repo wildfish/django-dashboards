@@ -3,7 +3,9 @@ from django.test.utils import override_settings
 
 import pytest
 
-from datorum.dashboards.component.layout import (
+from tests import urls
+from tests.utils import render_dashboard_test
+from wildcoeus.dashboards.component.layout import (
     HTML,
     Card,
     ComponentLayout,
@@ -11,8 +13,6 @@ from datorum.dashboards.component.layout import (
     Tab,
     TabContainer,
 )
-from tests import urls
-from tests.utils import render_dashboard_test
 
 
 pytest_plugins = [

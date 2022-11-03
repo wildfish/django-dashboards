@@ -125,7 +125,7 @@ class Common(Configuration):
         "django_extensions",
         "django_celery_results",
         # pipelines
-        "datorum.pipelines",
+        "wildcoeus.pipelines",
         "demo.basic.apps.BasicConfig",
     ]
     MIDDLEWARE = [
@@ -257,7 +257,7 @@ class Common(Configuration):
             "level": "WARNING",
         },
         "loggers": {
-            "datorum-pipelines": {
+            "wildcoeus-pipelines": {
                 "handlers": ["console"],
                 "level": "DEBUG",
                 "propagate": False,
@@ -272,7 +272,7 @@ class Common(Configuration):
     EVENTSTREAM_ALLOW_CREDENTIALS = True
     EVENTSTREAM_ALLOW_HEADERS = "Authorization"
 
-    DATORUM_PIPELINE_RUNNER = "datorum.pipelines.runners.eager.Runner"
+    WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.eager.Runner"
 
 
 class RedisCache:

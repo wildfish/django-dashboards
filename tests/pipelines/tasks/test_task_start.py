@@ -3,9 +3,9 @@ from unittest.mock import Mock
 import pytest
 from pydantic import BaseModel
 
-from datorum.pipelines import BaseTask
-from datorum.pipelines.reporters import PipelineTaskStatus
 from tests.pipelines.tasks.fakes import make_fake_task
+from wildcoeus.pipelines import BaseTask
+from wildcoeus.pipelines.reporters import PipelineTaskStatus
 
 
 pytestmark = pytest.mark.django_db

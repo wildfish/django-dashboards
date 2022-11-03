@@ -3,9 +3,9 @@ import csv
 import requests
 from demo.kitchensink.models import FlatText
 
-from datorum.dashboards.component.chart import ChartData
-from datorum.dashboards.component.map import MapData
-from datorum.dashboards.component.table import (
+from wildcoeus.dashboards.component.chart import ChartData
+from wildcoeus.dashboards.component.map import MapData
+from wildcoeus.dashboards.component.table import (
     DatatablesFilter,
     DatatablesSort,
     ReactTablesSort,

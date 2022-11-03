@@ -3,14 +3,14 @@ from typing import Optional
 
 from django.contrib.auth.models import User
 
-from datorum.dashboards.component import Chart, Stat
-from datorum.dashboards.component.text import StatData
-from datorum.dashboards.types import ValueData
+from wildcoeus.dashboards.component import Chart, Stat
+from wildcoeus.dashboards.component.text import StatData
+from wildcoeus.dashboards.types import ValueData
 
 
 @dataclass
 class SSEStat(Stat):
-    template: str = "datorum/dashboards/components/sse_stat.html"
+    template: str = "wildcoeus/dashboards/components/sse_stat.html"
     poll_rate: Optional[int] = 10
 
     @staticmethod
@@ -23,7 +23,7 @@ class SSEStat(Stat):
 
 @dataclass
 class SSEChart(Chart):
-    template: str = "datorum/dashboards/components/sse_chart.html"
+    template: str = "wildcoeus/dashboards/components/sse_chart.html"
     poll_rate: Optional[int] = None
 
     @staticmethod

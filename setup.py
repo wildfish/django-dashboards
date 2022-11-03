@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 VERSION = "0.0.1"
 
 setup(
-    name="django-datorum",
+    name="django-wildcoeus",
     version=VERSION,
     author="Wildfish",
     author_email="developers@wildfish.com",

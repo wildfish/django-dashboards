@@ -4,8 +4,13 @@ from unittest.mock import Mock
 import pytest
 from pydantic import BaseModel
 
-from datorum.pipelines import BasePipeline, BaseTask, BaseTaskConfig, PipelineTaskStatus
-from datorum.pipelines.tasks.base import ConfigValidationError
+from wildcoeus.pipelines import (
+    BasePipeline,
+    BaseTask,
+    BaseTaskConfig,
+    PipelineTaskStatus,
+)
+from wildcoeus.pipelines.tasks.base import ConfigValidationError
 
 
 pytestmark = pytest.mark.django_db

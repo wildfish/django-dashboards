@@ -2,8 +2,8 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from datorum.pipelines import BasePipeline, BaseTask, PipelineTaskStatus
-from datorum.pipelines.runners.eager import Runner
+from wildcoeus.pipelines import BasePipeline, BaseTask, PipelineTaskStatus
+from wildcoeus.pipelines.runners.eager import Runner
 
 
 pytestmark = pytest.mark.django_db

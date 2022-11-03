@@ -15,10 +15,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    # required for datorum
+    # required for wildcoeus
     "corsheaders",
     "strawberry.django",
-    "datorum",
+    "wildcoeus",
 ]
 
 MIDDLEWARE = [

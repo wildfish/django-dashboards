@@ -1,0 +1,11 @@
+<ul>
+  {% for task in object_list %}
+    <li>
+      {{ task.pipeline_task }}<br />
+      {{ task.task_id }}<br />
+      {{ task.get_status_display }}<br />
+      {{ task.duration }} seconds<br />
+      <a href="{% url "wildcoeus.pipelines:rerun-task" task.pk %}" class="btn btn-success">rerun</a>
+    </li>
+  {% endfor %}
+</ul>

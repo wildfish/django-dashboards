@@ -3,8 +3,8 @@ from django.test.utils import override_settings
 
 import pytest
 
-from datorum.dashboards.views import ComponentView, DashboardView
 from tests import urls
+from wildcoeus.dashboards.views import ComponentView, DashboardView
 
 
 pytest_plugins = [
@@ -16,7 +16,7 @@ def test_view__get_template_names__default(rf, dashboard):
     view = DashboardView(dashboard_class=dashboard)
     view.setup(rf.get("/"))
 
-    assert view.get_template_names() == ["datorum/dashboards/dashboard.html"]
+    assert view.get_template_names() == ["wildcoeus/dashboards/dashboard.html"]
 
 
 @override_settings(ROOT_URLCONF=urls)
@@ -24,7 +24,7 @@ def test_view__get_template_names__partial(rf, dashboard):
     view = ComponentView(dashboard_class=dashboard)
     view.setup(rf.get("/app1/TestDashboard/component_1/"))
 
-    assert view.get_template_names() == ["datorum/dashboards/components/partial.html"]
+    assert view.get_template_names() == ["wildcoeus/dashboards/components/partial.html"]
 
 
 @override_settings(ROOT_URLCONF=urls)

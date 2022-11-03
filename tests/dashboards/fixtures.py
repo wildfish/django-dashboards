@@ -5,20 +5,20 @@ from django.contrib.auth.models import User
 import pytest
 import strawberry
 
-from datorum.dashboards import permissions
-from datorum.dashboards.component import Chart, Table, Text
-from datorum.dashboards.component.chart import ChartData
-from datorum.dashboards.component.layout import ComponentLayout, Div
-from datorum.dashboards.component.table import TableData
-from datorum.dashboards.dashboard import Dashboard, ModelDashboard
-from datorum.dashboards.registry import registry
-from datorum.dashboards.schema import DashboardQuery
+from wildcoeus.dashboards import permissions
+from wildcoeus.dashboards.component import Chart, Table, Text
+from wildcoeus.dashboards.component.chart import ChartData
+from wildcoeus.dashboards.component.layout import ComponentLayout, Div
+from wildcoeus.dashboards.component.table import TableData
+from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
+from wildcoeus.dashboards.registry import registry
+from wildcoeus.dashboards.schema import DashboardQuery
 
 
 @pytest.fixture(autouse=True)
 def mock_random_ms_delay():
     with patch(
-        "datorum.dashboards.templatetags.datorum.random.randint"
+        "wildcoeus.dashboards.templatetags.wildcoeus.random.randint"
     ) as random_ms_delay:
         random_ms_delay.return_value = 1
         yield random_ms_delay
