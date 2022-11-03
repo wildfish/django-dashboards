@@ -2,3 +2,4 @@ include LICENSE
 include README.rst
 recursive-include wildcoeus/templates *
 recursive-include wildcoeus/static *
+recursive-include docs *
