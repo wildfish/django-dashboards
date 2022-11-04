@@ -1,12 +1,10 @@
 from django.template import Context
-from django.test.utils import override_settings
 
 import pytest
 
-from tests import urls
 from tests.utils import render_component_test
 from wildcoeus.dashboards.component import CTA, Chart, Stat, Table, Text
-from wildcoeus.dashboards.component.text import CTAData
+from wildcoeus.dashboards.component.text import CTAData, Progress, StatData, Timeline
 
 
 pytest_plugins = [
@@ -14,8 +12,9 @@ pytest_plugins = [
 ]
 
 
-@override_settings(ROOT_URLCONF=urls)
-@pytest.mark.parametrize("component_class", [Text, Chart, Table])
+@pytest.mark.parametrize(
+    "component_class", [Text, Chart, Table, Progress, Timeline, Stat]
+)
 @pytest.mark.parametrize(
     "component_kwargs",
     [
@@ -41,7 +40,6 @@ def test_component__renders_value(
     snapshot.assert_match(render_component_test(context, htmx=htmx))
 
 
-@override_settings(ROOT_URLCONF=urls)
 @pytest.mark.parametrize("htmx", [True, False])
 def test_cta_component__renders_value(htmx, dashboard, rf, snapshot):
     component = CTA(value=CTAData(text="click here", href="/"))
@@ -57,12 +55,16 @@ def test_cta_component__renders_value(htmx, dashboard, rf, snapshot):
     snapshot.assert_match(render_component_test(context, htmx=htmx))
 
 
-@override_settings(ROOT_URLCONF=urls)
 @pytest.mark.parametrize(
     "component_kwargs",
     [
-        {"value": {"text": "100%", "sub_text": "increase"}},
-        {"defer": lambda **kwargs: {"text": "100%", "sub_text": "increase"}},
+        {"value": StatData(text="100%", sub_text="increase")},
+        {"defer": lambda **k: StatData(text="100%", sub_text="increase")},
+        {
+            "value": StatData(
+                text="100%", sub_text="increase", change_by=1.0, change_by_text="Change"
+            )
+        },
     ],
 )
 @pytest.mark.parametrize("htmx", [True, False])

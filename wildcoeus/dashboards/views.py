@@ -98,7 +98,7 @@ class ComponentView(DashboardObjectMixin, TemplateView):
                 return component
 
         raise Http404(
-            f"Component {self.kwargs['component']} does not exist in dashboard {self.kwargs['dashboard']}"
+            f"Component {self.kwargs['component']} does not exist in dashboard {self.dashboard_class.class_name()}"
         )
 
 
@@ -109,33 +109,8 @@ class FormComponentView(ComponentView):
 
     template_name: str = "wildcoeus/dashboards/components/partial.html"
 
-    # todo: temp fix as currently failing as not passed through form. remove once csrf_token passed in post
-    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request: HttpRequest, *args, **kwargs):
-        dashboard = self.get_dashboard(request)
-        component = self.get_partial_component(dashboard)
-        dependant_components = component.dependent_components
-
-        if self.is_ajax():
-            response = []
-            filters = request.GET.dict()
-            for c in dependant_components:
-                # Return json, calling deferred value on dependant components.
-                response.append(c.get_value(request=self.request, filters=filters))
-            return HttpResponse(response, content_type="application/json")
-        else:
-            context = self.get_context_data(
-                **{
-                    "dependants": dependant_components,
-                    "dashboard": dashboard,
-                    "component": component,
-                }
-            )
-
-            return self.render_to_response(context)
 
     def post(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard(request)

@@ -35,6 +35,39 @@ snapshots[
 """
 
 snapshots[
+    "test_component__renders_value[False-component_kwargs0-Progress] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs0-Stat] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="stat">
+  
+  
+  <h2></h2>
+  <p>
+    
+    <span></span>
+  </p>
+  
+</div>
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value[False-component_kwargs0-Table] 1"
 ] = """
 
@@ -95,6 +128,20 @@ value
 """
 
 snapshots[
+    "test_component__renders_value[False-component_kwargs0-Timeline] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="None">
+  
+</div>
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value[False-component_kwargs1-Chart] 1"
 ] = """
 
@@ -118,6 +165,39 @@ snapshots[
 <div id="test"></div>
 
 
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs1-Progress] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs1-Stat] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="stat">
+  
+  
+  <h2></h2>
+  <p>
+    
+    <span></span>
+  </p>
+  
+</div>
     </div>
 """
 
@@ -182,6 +262,20 @@ value
 """
 
 snapshots[
+    "test_component__renders_value[False-component_kwargs1-Timeline] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="None">
+  
+</div>
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value[False-component_kwargs2-Chart] 1"
 ] = """
 
@@ -205,6 +299,39 @@ snapshots[
 <div id="test"></div>
 
 
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs2-Progress] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[False-component_kwargs2-Stat] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="stat">
+  
+  
+  <h2></h2>
+  <p>
+    
+    <span></span>
+  </p>
+  
+</div>
     </div>
 """
 
@@ -269,6 +396,20 @@ value
 """
 
 snapshots[
+    "test_component__renders_value[False-component_kwargs2-Timeline] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
+  
+</div>
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value[True-component_kwargs0-Chart] 1"
 ] = """
 
@@ -292,6 +433,39 @@ snapshots[
 <div id="test"></div>
 
 
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs0-Progress] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs0-Stat] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="stat">
+  
+  
+  <h2></h2>
+  <p>
+    
+    <span></span>
+  </p>
+  
+</div>
     </div>
 """
 
@@ -356,7 +530,41 @@ value
 """
 
 snapshots[
+    "test_component__renders_value[True-component_kwargs0-Timeline] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="None">
+  
+</div>
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value[True-component_kwargs1-Chart] 1"
+] = """
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:1ms"></div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs1-Progress] 1"
+] = """
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:1ms"></div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs1-Stat] 1"
 ] = """
 
 
@@ -377,6 +585,16 @@ snapshots[
 
 snapshots[
     "test_component__renders_value[True-component_kwargs1-Text] 1"
+] = """
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:1ms"></div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs1-Timeline] 1"
 ] = """
 
 
@@ -409,6 +627,39 @@ snapshots[
 <div id="test"></div>
 
 
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs2-Progress] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        
+    </div>
+"""
+
+snapshots[
+    "test_component__renders_value[True-component_kwargs2-Stat] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="stat">
+  
+  
+  <h2></h2>
+  <p>
+    
+    <span></span>
+  </p>
+  
+</div>
     </div>
 """
 
@@ -473,6 +724,20 @@ value
 """
 
 snapshots[
+    "test_component__renders_value[True-component_kwargs2-Timeline] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
+  
+</div>
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value__stat[False-component_kwargs0] 1"
 ] = """
 
@@ -515,6 +780,33 @@ snapshots[
 """
 
 snapshots[
+    "test_component__renders_value__stat[False-component_kwargs2] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="stat">
+  
+  
+  <h2>100%</h2>
+  <p>
+    
+    <span class="text-success" style="margin-right: 0.75em">
+    
+      <i class="mdi mdi-arrow-up-bold"></i>
+       Change
+    </span>
+    
+    <span>increase</span>
+  </p>
+  
+</div>
+    </div>
+"""
+
+snapshots[
     "test_component__renders_value__stat[True-component_kwargs0] 1"
 ] = """
 
@@ -543,6 +835,33 @@ snapshots[
 
     <div hx-get="/app1/testdashboard/component/test/"
          hx-trigger="intersect once delay:1ms"></div>
+"""
+
+snapshots[
+    "test_component__renders_value__stat[True-component_kwargs2] 1"
+] = """
+
+
+
+    
+    <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div class="stat">
+  
+  
+  <h2>100%</h2>
+  <p>
+    
+    <span class="text-success" style="margin-right: 0.75em">
+    
+      <i class="mdi mdi-arrow-up-bold"></i>
+       Change
+    </span>
+    
+    <span>increase</span>
+  </p>
+  
+</div>
+    </div>
 """
 
 snapshots[

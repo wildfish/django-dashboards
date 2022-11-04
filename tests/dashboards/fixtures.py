@@ -1,16 +1,18 @@
 from unittest.mock import patch
 
+from django import forms
 from django.contrib.auth.models import User
 
 import pytest
 import strawberry
 
 from wildcoeus.dashboards import permissions
-from wildcoeus.dashboards.component import Chart, Table, Text
+from wildcoeus.dashboards.component import Chart, Form, Table, Text
 from wildcoeus.dashboards.component.chart import ChartData
 from wildcoeus.dashboards.component.layout import ComponentLayout, Div
 from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
+from wildcoeus.dashboards.forms import DashboardForm
 from wildcoeus.dashboards.registry import registry
 from wildcoeus.dashboards.schema import DashboardQuery
 
@@ -89,6 +91,39 @@ def model_dashboard():
 
 
 @pytest.fixture
+def filter_dashboard():
+    class TestForm(DashboardForm):
+        country = forms.ChoiceField(
+            choices=(
+                ("all", "All"),
+                ("one", "one"),
+                ("two", "two"),
+            )
+        )
+
+    class TestFilterDashboard(Dashboard):
+        filter_component = Form(
+            form=TestForm,
+            method="get",
+            dependents=["dependent_component_1", "dependent_component_2"],
+        )
+        dependent_component_1 = Text(
+            value=lambda **k: f"filter={k['filters'].get('filter_form')}"
+        )
+        dependent_component_2 = Text(
+            value=lambda **k: f"filter={k['filters'].get('filter_form')}"
+        )
+        non_dependent_component_3 = Text(value="A value")
+
+        class Meta:
+            name = "Test Filter Dashboard"
+            app_label = "app1"
+
+    registry.register(TestFilterDashboard)
+    return TestFilterDashboard
+
+
+@pytest.fixture
 def schema():
     return strawberry.Schema(query=DashboardQuery)
 
@@ -123,6 +158,16 @@ def dashboard_with_layout(dashboard):
 def user():
     user = User.objects.create(
         username="tester", is_active=True, email="tester@test.com"
+    )
+    user.set_password("password")
+    user.save()
+    return user
+
+
+@pytest.fixture
+def staff():
+    user = User.objects.create(
+        username="tester", is_active=True, email="tester@test.com", is_staff=True
     )
     user.set_password("password")
     user.save()
