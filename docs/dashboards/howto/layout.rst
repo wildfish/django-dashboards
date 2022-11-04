@@ -131,7 +131,7 @@ generates::
 
 **Card**: A common layout element used in popular css templates such as Bootstrap::
 
-    Card(HTML("<p>Please contact us for more information.</p>"), width=12, css_classes="more-styles", heading="some title" footer="some footer text" image_url="" actions=[("", "")])
+    Card(HTML("<p>Please contact us for more information.</p>"), width=12, css_classes="more-styles", heading="some title" footer="some footer text" image_url="" actions=[("http://google.com", "Google")])
 
 This example would generate the following html::
 
@@ -171,7 +171,7 @@ This example would generate the following html::
         width=12,
     ),
 
-Tabs must be wrapped in a TabContainer::
+Note All :code:`Tab` s must be wrapped in a :code:`TabContainer`::
 
     <div class="span-12 tab-container" x-data="{ tab: 'tab-1' }">
         <ul>
@@ -237,9 +237,10 @@ Creating your own Component Layout Objects
 ------------------------------------------
 
 Wildcoeus provides a few commonly used layout elements to get you started and you can easily get by with these.
-If however you need to create your own Component Layout object this is very easy to do.
+However if you need to create your own Component Layout object this is very easy to do.
+
 New component layouts should inherit from HTMLComponentLayout and provide a template_name
-which is a path to a html file to render.  Lets create a new DivWithImage object.  Create a new file :code:`demo/mydashboard/layout.py`::
+which is a path to a html file to render.  Lets create a new :code:`DivWithImage` object.  Create a new file :code:`demo/mydashboard/layout.py`::
 
     from wildcoeus.dashboards.component.layout import HTMLComponentLayout
 
@@ -248,7 +249,7 @@ which is a path to a html file to render.  Lets create a new DivWithImage object
         image_url: str = ""
         width: int = 12
 
-Now lets create the template div_with_image.html. Create a new file :code:`demo/templates/demo/div_with_image.html`::
+Now lets create the template. Create a new file :code:`demo/templates/demo/div_with_image.html`::
 
     <div {% if css %}class="{{ css }}"{% endif %}>
         <img src="{{ image_url }}" />
@@ -259,7 +260,7 @@ Note that the :code:`image_url` attribute is automatically available in the temp
 This is built in and allows you to include any extra attributes you may require by simply
 adding them to you class.
 
-We can now use it in our dashboard::
+Its now ready to use in our dashboard::
 
     from demo.mydashboard.layout
 
