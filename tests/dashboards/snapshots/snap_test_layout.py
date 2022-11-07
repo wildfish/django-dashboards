@@ -33,6 +33,10 @@ value
 </div>
 </div>"""
 
+snapshots[
+    "test_header__render 1"
+] = '<div class="span-12 "><h2>some text....</h2></div>'
+
 snapshots["test_html__render 1"] = '<div class="span-12 ">some text....</div>'
 
 snapshots[

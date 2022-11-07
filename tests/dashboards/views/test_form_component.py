@@ -1,7 +1,11 @@
+from django import forms
 from django.core.exceptions import PermissionDenied
 
 import pytest
 
+from wildcoeus.dashboards.component import Form
+from wildcoeus.dashboards.dashboard import Dashboard
+from wildcoeus.dashboards.forms import DashboardForm
 from wildcoeus.dashboards.views import FormComponentView
 
 
@@ -55,3 +59,23 @@ def test_admin_only_dashboard__with_permission(
     view.setup(request, component="component_1")
 
     assert view.dispatch(request).status_code == 200
+
+
+def test_post(filter_dashboard, rf):
+    request = rf.post("/app1/TestFilterDashboard/component_1/", {"country": "two"})
+    view = FormComponentView(dashboard_class=filter_dashboard)
+    view.setup(request=request, component="filter_component")
+    response = view.post(request)
+
+    assert response.status_code == 302
+
+
+def test_post_ajax(filter_dashboard, rf, snapshot):
+    request = rf.post("/app1/TestFilterDashboard/component_1/", {"country": "two"})
+    request.headers = {"x-requested-with": "XMLHttpRequest"}
+    view = FormComponentView(dashboard_class=filter_dashboard)
+    view.setup(request=request, component="filter_component")
+    snapshot.assert_match(view.post(request).content)
+    response = view.post(request)
+
+    assert response.status_code == 200

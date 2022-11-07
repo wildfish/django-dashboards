@@ -7,4 +7,4 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_get__json 1"] = b"filter=Nonefilter=None"
+snapshots["test_post_ajax 1"] = b"successform"

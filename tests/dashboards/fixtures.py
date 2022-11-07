@@ -101,6 +101,9 @@ def filter_dashboard():
             )
         )
 
+        def save(self):
+            return
+
     class TestFilterDashboard(Dashboard):
         filter_component = Form(
             form=TestForm,

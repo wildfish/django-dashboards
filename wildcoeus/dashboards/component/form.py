@@ -28,12 +28,13 @@ class Form(Component):
                 f"No form configured for Form Component {self.__class__.__name__}"
             )
 
-        if request and request.method == "POST":
-            data = request.POST
-        elif request:
-            data = request.GET or None
-        else:
-            data = None
+        data = None
+
+        if request:
+            if request.method == "POST":
+                data = request.POST
+            elif request.GET:
+                data = request.GET
 
         form = self.form(
             app_label=self.dashboard.Meta.app_label if self.dashboard else "",

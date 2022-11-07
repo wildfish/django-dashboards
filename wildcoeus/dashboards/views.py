@@ -105,11 +105,6 @@ class FormComponentView(ComponentView):
     Form Component view, partial rendering of dependant components to support HTMX calls.
     """
 
-    template_name: str = "wildcoeus/dashboards/components/partial.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
     def post(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard(request)
         component = self.get_partial_component(dashboard)
@@ -117,7 +112,10 @@ class FormComponentView(ComponentView):
         if form.is_valid():
             form.save()
             if self.is_ajax():
-                return HttpResponse({"success": True}, content_type="application/json")
+                return HttpResponse(
+                    {"success": True, "form": form.asdict()},
+                    content_type="application/json",
+                )
 
             return HttpResponseRedirect(component.get_absolute_url())
 

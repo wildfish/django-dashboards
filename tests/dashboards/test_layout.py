@@ -8,6 +8,7 @@ from wildcoeus.dashboards.component.layout import (
     Card,
     ComponentLayout,
     Div,
+    Header,
     Tab,
     TabContainer,
 )
@@ -57,6 +58,16 @@ def test_html__render(rf, dashboard, snapshot):
 
     snapshot.assert_match(
         HTML("some text....").render(dashboard=dashboard, context=context)
+    )
+
+
+def test_header__render(rf, dashboard, snapshot):
+    context = Context({"request": rf.get("/")})
+
+    snapshot.assert_match(
+        Header(heading="some text....", size=2).render(
+            dashboard=dashboard, context=context
+        )
     )
 
 
