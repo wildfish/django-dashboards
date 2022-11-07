@@ -5,7 +5,7 @@ from django.template import Context
 import pytest
 
 from tests.utils import render_component_test
-from wildcoeus.dashboards.component import BasicTable, Chart, Component, Table, Text
+from wildcoeus.dashboards.component import Chart, Component, Text
 from wildcoeus.dashboards.component.text import Progress, Stat, Timeline
 
 
