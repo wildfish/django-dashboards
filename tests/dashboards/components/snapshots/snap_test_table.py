@@ -128,6 +128,12 @@ snapshots[
               ajax: {
                   url: "/app1/testdashboard/component/test/",
                   contentType: "application/json",
+                  dataFilter: function(data){
+                    let json = jQuery.parseJSON( data );
+                    json.recordsTotal = json.total;
+                    json.recordsFiltered = json.filtered;
+                    return JSON.stringify( json );
+                }
               }
           }
       

@@ -291,7 +291,7 @@ snapshots[
 """
 
 snapshots[
-    "test_timeline_component__renders_value_[False-component_kwargs0] 1"
+    "test_timeline_component__renders_value[False-component_kwargs0] 1"
 ] = """
 
 
@@ -303,7 +303,7 @@ snapshots[
 """
 
 snapshots[
-    "test_timeline_component__renders_value_[False-component_kwargs1] 1"
+    "test_timeline_component__renders_value[False-component_kwargs1] 1"
 ] = """
 
 
@@ -315,7 +315,7 @@ snapshots[
 """
 
 snapshots[
-    "test_timeline_component__renders_value_[False-component_kwargs2] 1"
+    "test_timeline_component__renders_value[False-component_kwargs2] 1"
 ] = """
 
 
@@ -327,7 +327,7 @@ snapshots[
 """
 
 snapshots[
-    "test_timeline_component__renders_value_[True-component_kwargs0] 1"
+    "test_timeline_component__renders_value[True-component_kwargs0] 1"
 ] = """
 
 
@@ -339,7 +339,7 @@ snapshots[
 """
 
 snapshots[
-    "test_timeline_component__renders_value_[True-component_kwargs1] 1"
+    "test_timeline_component__renders_value[True-component_kwargs1] 1"
 ] = """
 
 
@@ -349,7 +349,7 @@ snapshots[
 """
 
 snapshots[
-    "test_timeline_component__renders_value_[True-component_kwargs2] 1"
+    "test_timeline_component__renders_value[True-component_kwargs2] 1"
 ] = """
 
 

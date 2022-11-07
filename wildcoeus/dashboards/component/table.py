@@ -1,15 +1,16 @@
 from dataclasses import dataclass
 from datetime import datetime
 from functools import reduce
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from django.core.paginator import Paginator
+from django.core.paginator import Page, Paginator
 from django.db.models import F, Q, QuerySet
 from django.db.models.functions import Lower
 from django.http import HttpRequest
 
 from wildcoeus.dashboards.component import Component
+from wildcoeus.dashboards.log import logger
 
 
 @dataclass
@@ -33,13 +34,9 @@ class BasicTable(Component):
 @dataclass
 class TableData:
     data: list[dict[str, Any]]
-
-
-@dataclass
-class DataTableData(TableData):
     draw: int = 0
-    recordsTotal: int = 0
-    recordsFiltered: int = 0
+    total: int = 0
+    filtered: int = 0
 
 
 @dataclass
@@ -59,19 +56,47 @@ class Table(Component):
     poll_rate: Optional[int] = None
 
 
-class TableBaseFilter:
+class TableFilter:
     def __init__(self, filters: Dict[str, Any], fields: List):
         self.filters = filters
         self.fields = fields
 
+    def filter(self, data: List) -> List:
+        """
+        Apply filtering to a list based on the search[value] request params and
+        columns[{field}][search][value] column request params.
+        """
 
-class TableBaseSort:
-    def __init__(self, filters: Dict[str, Any], fields: List):
-        self.filters = filters
-        self.fields = fields
+        global_search_value = self.filters.get("search[value]")
+
+        if global_search_value:
+            data = [
+                d
+                for d in data
+                if any(
+                    [global_search_value.lower() in str(x).lower() for x in d.values()]
+                )
+            ]
+        else:
+            fields_to_search = {}
+
+            # Search in individual fields by checking for a request value at index.
+            for o, field in enumerate(self.fields):
+                field_search_value = self.filters.get(f"columns[{o}][search][value]")
+                if field_search_value:
+                    fields_to_search[field] = field_search_value
+
+            if fields_to_search:
+                data = [
+                    d
+                    for d in data
+                    for field, value in fields_to_search.items()
+                    if d[field] == value
+                ]
+        return data
 
 
-class DatatablesQuerysetFilter(TableBaseFilter):
+class TableQuerysetFilter(TableFilter):
     def filter(self, qs: QuerySet) -> QuerySet:
         """
         Apply filtering on  a queryset based on the search[value] and
@@ -89,8 +114,8 @@ class DatatablesQuerysetFilter(TableBaseFilter):
             if field in model_fields and global_search_value:
                 q_list |= Q(**{f"{field}__icontains": global_search_value})
 
-        # # Search in individual fields by checking for a request value at index.
-        for o in range(len(self.fields)):
+        # Search in individual fields by checking for a request value at index.
+        for o, field in enumerate(self.fields):
             field_search_value = self.filters.get(f"columns[{o}][search][value]")
             if field in model_fields and field_search_value:
                 q_list &= Q(**{f"{self.fields[o]}__icontains": field_search_value})
@@ -98,9 +123,37 @@ class DatatablesQuerysetFilter(TableBaseFilter):
         return qs.filter(q_list)
 
 
-class DatatablesQuerysetSort(TableBaseSort):
-    force_lower = True
+class TableSort:
+    def __init__(self, filters: Dict[str, Any], fields: List, force_lower: bool = True):
+        self.filters = filters
+        self.fields = fields
+        self.force_lower = force_lower
 
+    def sort(self, data: List) -> List:
+        """
+        Apply ordering to a list based on the order[{field}][column] column request params.
+        """
+
+        def conditionally_apply_lower(v):
+            if self.force_lower and isinstance(v, str):
+                return v.lower()
+            return v
+
+        for o in range(len(self.fields)):
+            order_index = self.filters.get(f"order[{o}][column]")
+            if order_index is not None:
+                field = self.fields[int(order_index)]
+                direction = self.filters.get(f"order[{o}][dir]")
+                data = sorted(
+                    data,
+                    key=lambda x: conditionally_apply_lower(x[field]),
+                    reverse=direction == "desc",
+                )
+
+        return data
+
+
+class TableQuerysetSort(TableSort):
     def sort(self, qs: QuerySet) -> QuerySet:
         """
         Apply ordering to a queryset based on the order[{field}][column] column request params.
@@ -127,42 +180,6 @@ class DatatablesQuerysetSort(TableBaseSort):
         return qs
 
 
-class DatatablesSort(TableBaseSort):
-    def sort(self, data: List) -> List:
-        """
-        Apply ordering to a list based on the order[{field}][column] column request params.
-        """
-        for o in range(len(self.fields)):
-            order_index = self.filters.get(f"order[{o}][column]")
-            if order_index is not None:
-                field = self.fields[int(order_index)]
-                direction = self.filters.get(f"order[{o}][dir]")
-                # todo: will this work for multiple?
-                data = sorted(data, key=lambda x: x[field], reverse=direction == "desc")
-
-        return data
-
-
-class DatatablesFilter(TableBaseFilter):
-    def filter(self, data: List) -> List:
-        """
-        Apply filtering to a list based on the search[value] request params.
-        """
-
-        global_search_value = self.filters.get("search[value]")
-
-        if global_search_value:
-            data = [
-                d
-                for d in data
-                if any(
-                    [global_search_value.lower() in str(x).lower() for x in d.values()]
-                )
-            ]
-
-        return data
-
-
 class TableSerializer:
     """
     Applies filtering, sorting and pagination to a dataset which can be used for datatables and reacttables
@@ -175,15 +192,8 @@ class TableSerializer:
         fields: List[str],
         count_func: Callable,
         first_as_absolute_url: bool = False,
-        filter_class: Optional[
-            Union[Type[DatatablesQuerysetFilter], Type[DatatablesFilter]]
-        ] = None,
-        sort_class: Optional[
-            Union[
-                Type[DatatablesQuerysetSort],
-                Type[DatatablesSort],
-            ]
-        ] = None,
+        filter_class: Optional[Type[TableFilter]] = None,
+        sort_class: Optional[Type[TableSort]] = None,
     ):
         self.data = data
         self.filters = filters
@@ -193,7 +203,7 @@ class TableSerializer:
         self.filter_class = filter_class
         self.sort_class = sort_class
 
-    def _paginate(self, start: int, length: int):
+    def apply_paginator(self, start: int, length: int) -> Tuple[Page, int]:
         paginator = Paginator(self.data, length)
         page_number = (int(start) / int(length)) + 1
         return paginator.get_page(page_number), paginator.count
@@ -218,7 +228,7 @@ class TableSerializer:
             length = initial_count
 
         # apply pagination
-        page_obj, filtered_count = self._paginate(start, length)
+        page_obj, filtered_count = self.apply_paginator(start, length)
 
         data = []
 
@@ -226,10 +236,14 @@ class TableSerializer:
             values = {}
             fields = self.fields
             for field in fields:
-                try:
+                if not isinstance(obj, dict):
                     # reduce is used to allow relations to be traversed.
-                    value = reduce(getattr, field.split("__"), obj)
-                except AttributeError:
+                    try:
+                        value = reduce(getattr, field.split("__"), obj)
+                    except AttributeError:
+                        logger.warn(f"{field} is not a attribute for this object.")
+                        value = None
+                else:
                     value = obj.get(field)
 
                 if value and isinstance(value, datetime):
@@ -252,15 +266,9 @@ class TableSerializer:
 
             data.append(values)
 
-        # TODO probably a better way to handle this if we have more filters
-        if issubclass(type(self.filter_class), DatatablesQuerysetFilter) or issubclass(
-            type(self.filter_class), DatatablesFilter
-        ):
-            return DataTableData(
-                data=data,
-                draw=self.filters.get("draw", 1),
-                recordsTotal=initial_count,
-                recordsFiltered=filtered_count,
-            )
-        else:
-            return TableData(data=data)
+        return TableData(
+            data=data,
+            draw=self.filters.get("draw", 1),
+            total=initial_count,
+            filtered=filtered_count,
+        )

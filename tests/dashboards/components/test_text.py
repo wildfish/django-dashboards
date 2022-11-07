@@ -155,7 +155,7 @@ def test_progress_component__renders_value(
     ],
 )
 @pytest.mark.parametrize("htmx", [True, False])
-def test_timeline_component__renders_value_(
+def test_timeline_component__renders_value(
     component_kwargs, dashboard, htmx, rf, snapshot
 ):
     component = Progress(**component_kwargs)
