@@ -178,13 +178,7 @@ snapshots["test_view__dashboards 1"] = [
                 "isDeferred": False,
                 "key": "component_6",
                 "renderType": "Table",
-                "value": {
-                    "data": [{"a": "Value", "b": "Value b"}],
-                    "draw": 0,
-                    "paging": None,
-                    "recordsFiltered": 0,
-                    "recordsTotal": 0,
-                },
+                "value": {"data": [{"a": "Value", "b": "Value b"}]},
                 "width": 6,
             },
             {

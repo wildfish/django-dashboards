@@ -1,4 +1,3 @@
-import collections
 from dataclasses import dataclass
 from datetime import datetime
 from functools import reduce
@@ -7,45 +6,10 @@ from typing import Any, Callable, Dict, List, Optional, Type, Union
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.paginator import Paginator
 from django.db.models import F, Q, QuerySet
+from django.db.models.functions import Lower
 from django.http import HttpRequest
 
-from .base import Component
-
-
-@dataclass
-class TablePaging:
-    ssr: bool = False
-    page: int = 1
-    page_size: int = 100
-    page_count: int = 1
-
-
-@dataclass
-class TableData:
-    data: list[dict[str, Any]]
-    # todo: these are for datatables in the mpa only.  need to update FE so can be shared
-    draw: int = 0  # datatables only
-    recordsTotal: int = 0  # datatables only
-    recordsFiltered: int = 0  # datatables only
-    # todo: these are for reacttable and spa only.
-    paging: Optional[TablePaging] = None
-
-    @classmethod
-    def get_request_data(cls, request, fields):
-        """
-        Helper for tabulator, need to think how this functions with Table Data.
-        """
-        page = request.GET.get("page", 1)
-        size = request.GET.get("size", 10)
-        sorts = {}
-        for r in range(len(fields)):
-            sort_field = request.GET.get(f"sort[{r}][field]")
-            sort_order = request.GET.get(f"sort[{r}][dir]")
-            if sort_field and sort_order:
-                sorts[r] = f"{'-' if sort_order == 'desc' else ''}{sort_field}"
-        order = collections.OrderedDict(sorted(sorts.items()))
-
-        return page, size, order
+from wildcoeus.dashboards.component import Component
 
 
 @dataclass
@@ -67,23 +31,21 @@ class BasicTable(Component):
 
 
 @dataclass
+class TableData:
+    data: list[dict[str, Any]]
+
+
+@dataclass
+class DataTableData(TableData):
+    draw: int = 0
+    recordsTotal: int = 0
+    recordsFiltered: int = 0
+
+
+@dataclass
 class Table(Component):
     """
-    Basic table example, we'd also want it to handle pagination/searching/filter/ordering remotely etc.
-
-    That should all be possible via the defer calls, I've set the table to ajax if deferred and that passes
-    the params needed to sort/filter etc, we'd just need to handle that in there, we could probably write some helper
-    functions maybe here like Tabulator.apply_sort(data) that we could leverage when deferring data.
-
-    Also need a meta/options call, either part of data or part of the component (Component.Options maybe) which can
-    be passed to front end for config options and setting titles of columns/widths etc.
-
-    Atm the deferred version of this is a little confusing, if deferred, we load the component in via HTMX because
-    that's what is deferred does, but then we don't render the data as ajax is called to get the data s JSON to
-    leverage tabulator (and most js table libs) ajax rendering. Might be a better way to do this maybe we need a is_ajax
-    also but that feels complicated, this way works for a poc.
-
-    Also need it to be possible to click on columns for list views.
+    Basic HTML Table with js for pagination, sorting, filtering etc.
     """
 
     template: str = "wildcoeus/dashboards/components/table/index.html"
@@ -92,26 +54,24 @@ class Table(Component):
     searching: Optional[bool] = True
     paging: Optional[bool] = True
     ordering: Optional[bool] = True
-
-    # Expect tables to return table data
     value: Optional[TableData] = None
     defer: Optional[Callable[[HttpRequest], TableData]] = None
     poll_rate: Optional[int] = None
 
 
-class BaseFilter:
+class TableBaseFilter:
     def __init__(self, filters: Dict[str, Any], fields: List):
         self.filters = filters
         self.fields = fields
 
 
-class BaseSort:
+class TableBaseSort:
     def __init__(self, filters: Dict[str, Any], fields: List):
         self.filters = filters
         self.fields = fields
 
 
-class DatatablesQuerysetFilter(BaseFilter):
+class DatatablesQuerysetFilter(TableBaseFilter):
     def filter(self, qs: QuerySet) -> QuerySet:
         """
         Apply filtering on  a queryset based on the search[value] and
@@ -138,7 +98,9 @@ class DatatablesQuerysetFilter(BaseFilter):
         return qs.filter(q_list)
 
 
-class DatatablesQuerysetSort(BaseSort):
+class DatatablesQuerysetSort(TableBaseSort):
+    force_lower = True
+
     def sort(self, qs: QuerySet) -> QuerySet:
         """
         Apply ordering to a queryset based on the order[{field}][column] column request params.
@@ -146,8 +108,12 @@ class DatatablesQuerysetSort(BaseSort):
         orders = []
         for o in range(len(self.fields)):
             order_index = self.filters.get(f"order[{o}][column]")
-            if order_index:
-                field = F(self.fields[int(order_index)])
+            if order_index is not None:
+                if self.force_lower:
+                    field = Lower(self.fields[int(order_index)])
+                else:
+                    field = F(self.fields[int(order_index)])
+
                 ordered_field = (
                     field.desc(nulls_last=True)
                     if self.filters.get(f"order[{o}][dir]") == "desc"
@@ -161,14 +127,14 @@ class DatatablesQuerysetSort(BaseSort):
         return qs
 
 
-class DatatablesSort(BaseSort):
+class DatatablesSort(TableBaseSort):
     def sort(self, data: List) -> List:
         """
         Apply ordering to a list based on the order[{field}][column] column request params.
         """
         for o in range(len(self.fields)):
             order_index = self.filters.get(f"order[{o}][column]")
-            if order_index:
+            if order_index is not None:
                 field = self.fields[int(order_index)]
                 direction = self.filters.get(f"order[{o}][dir]")
                 # todo: will this work for multiple?
@@ -177,7 +143,7 @@ class DatatablesSort(BaseSort):
         return data
 
 
-class DatatablesFilter(BaseFilter):
+class DatatablesFilter(TableBaseFilter):
     def filter(self, data: List) -> List:
         """
         Apply filtering to a list based on the search[value] request params.
@@ -197,49 +163,7 @@ class DatatablesFilter(BaseFilter):
         return data
 
 
-class ReactTablesQuerysetSort(BaseSort):
-    def sort(self, qs: QuerySet) -> QuerySet:
-        """
-        Apply ordering to a queryset based on sortby and direction request params.
-        """
-        direction = "asc"
-
-        if "sortby" in self.filters:
-            field = F(self.filters["sortby"])
-
-            if "direction" in self.filters:
-                direction = self.filters["direction"]
-
-            sort_by = (
-                field.desc(nulls_last=True)
-                if direction == "desc"
-                else field.asc(nulls_last=True)
-            )
-
-            qs = qs.order_by(sort_by)
-
-        return qs
-
-
-class ReactTablesSort(BaseSort):
-    def sort(self, data: List) -> List:
-        """
-        Apply ordering to a list based on a sortby and direction param.
-        """
-        direction = "asc"
-        # only order if sortby provided
-        if "sortby" in self.filters:
-            sort_by = self.filters["sortby"]
-
-            if "direction" in self.filters:
-                direction = self.filters["direction"]
-
-            data = sorted(data, key=lambda x: x[sort_by], reverse=direction == "desc")
-
-        return data
-
-
-class ToTable:
+class TableSerializer:
     """
     Applies filtering, sorting and pagination to a dataset which can be used for datatables and reacttables
     """
@@ -258,8 +182,6 @@ class ToTable:
             Union[
                 Type[DatatablesQuerysetSort],
                 Type[DatatablesSort],
-                Type[ReactTablesQuerysetSort],
-                Type[ReactTablesSort],
             ]
         ] = None,
     ):
@@ -276,7 +198,7 @@ class ToTable:
         page_number = (int(start) / int(length)) + 1
         return paginator.get_page(page_number), paginator.count
 
-    def get_data(self, start: int, length: int) -> TableData:
+    def get(self, start: int, length: int) -> TableData:
         """
         return paginated, filtered and ordered data in a format expected by table.
         """
@@ -293,7 +215,8 @@ class ToTable:
 
         # if length is -1 then this means no pagination e.g. show all
         if length < 0:
-            length = 999
+            length = initial_count
+
         # apply pagination
         page_obj, filtered_count = self._paginate(start, length)
 
@@ -329,17 +252,15 @@ class ToTable:
 
             data.append(values)
 
-        paging = TablePaging(
-            ssr=True,
-            page_size=length,
-            page=page_obj.number,
-            page_count=page_obj.paginator.num_pages,
-        )
-
-        return TableData(
-            data=data,
-            draw=self.filters.get("draw", 1),
-            recordsTotal=initial_count,
-            recordsFiltered=filtered_count,
-            paging=paging,
-        )
+        # TODO probably a better way to handle this if we have more filters
+        if issubclass(type(self.filter_class), DatatablesQuerysetFilter) or issubclass(
+            type(self.filter_class), DatatablesFilter
+        ):
+            return DataTableData(
+                data=data,
+                draw=self.filters.get("draw", 1),
+                recordsTotal=initial_count,
+                recordsFiltered=filtered_count,
+            )
+        else:
+            return TableData(data=data)

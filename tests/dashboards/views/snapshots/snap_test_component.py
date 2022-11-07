@@ -7,44 +7,6 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots[
-    "test_component_view__with_model 1"
-] = """
-
-
-
-
-
-    
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-
-
-
-"""
-
-snapshots[
-    "test_component_view__with_model 2"
-] = """
-
-
-
-
-
-    
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-
-
-
-"""
-
 snapshots["test_get__json 1"] = b'"value"'
 
 snapshots[
@@ -76,46 +38,6 @@ snapshots[
 
     
     <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-
-
-
-"""
-
-snapshots[
-    "test_model_dashboard__object_is_set 2"
-] = """
-
-
-
-
-
-    
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-
-
-
-"""
-
-snapshots["test_view__get__json 1"] = b'"value"'
-
-snapshots[
-    "test_view__get__partial_template 1"
-] = """
-
-
-
-
-
-    
-    <div id="component-component_2-inner" class="dashboard-component-inner fade-in">
         
 value
 

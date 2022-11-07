@@ -4,7 +4,9 @@ from django.template import Context
 
 import pytest
 
-from wildcoeus.dashboards.component import Component, Text
+from tests.utils import render_component_test
+from wildcoeus.dashboards.component import BasicTable, Chart, Component, Table, Text
+from wildcoeus.dashboards.component.text import Progress, Stat, Timeline
 
 
 pytest_plugins = [
@@ -114,14 +116,25 @@ def test_get_absolute_url__dashboard_object(dashboard, user):
     assert component.get_absolute_url() == "/app1/testdashboard/1/component/None/"
 
 
-def test_render(rf, dashboard, snapshot):
-    component = Text(value="Test")
+@pytest.mark.parametrize("component_class", [Text, Chart, Progress, Timeline, Stat])
+@pytest.mark.parametrize(
+    "component_kwargs",
+    [
+        {"value": "value"},
+        {"defer": lambda **kwargs: "value"},
+        {"value": "value", "css_classes": ["a", "b"]},
+    ],
+)
+@pytest.mark.parametrize("htmx", [True, False])
+def test_render(component_class, dashboard, component_kwargs, htmx, rf, snapshot):
+    component = component_class(**component_kwargs)
     component.dashboard = dashboard
-
-    snapshot.assert_match(
-        component.render(
-            context=Context({}),
-            htmx=False,
-            call_deferred=False,
-        )
+    component.key = "test"
+    context = Context(
+        {
+            "component": component,
+            "request": rf.get("/"),
+        }
     )
+
+    snapshot.assert_match(render_component_test(context, htmx=htmx))
