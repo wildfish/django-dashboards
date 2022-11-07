@@ -7,7 +7,9 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['test_render[False-component_kwargs0-BasicTable] 1'] = '''
+snapshots[
+    "test_render[False-component_kwargs0-BasicTable] 1"
+] = """
 
 
 
@@ -24,9 +26,11 @@ snapshots['test_render[False-component_kwargs0-BasicTable] 1'] = '''
   </table>
 </div>
     </div>
-'''
+"""
 
-snapshots['test_render[False-component_kwargs0-Table] 1'] = '''
+snapshots[
+    "test_render[False-component_kwargs0-Table] 1"
+] = """
 
 
 
@@ -68,9 +72,11 @@ snapshots['test_render[False-component_kwargs0-Table] 1'] = '''
 
 
     </div>
-'''
+"""
 
-snapshots['test_render[False-component_kwargs1-BasicTable] 1'] = '''
+snapshots[
+    "test_render[False-component_kwargs1-BasicTable] 1"
+] = """
 
 
 
@@ -87,9 +93,11 @@ snapshots['test_render[False-component_kwargs1-BasicTable] 1'] = '''
   </table>
 </div>
     </div>
-'''
+"""
 
-snapshots['test_render[False-component_kwargs1-Table] 1'] = '''
+snapshots[
+    "test_render[False-component_kwargs1-Table] 1"
+] = """
 
 
 
@@ -131,9 +139,11 @@ snapshots['test_render[False-component_kwargs1-Table] 1'] = '''
 
 
     </div>
-'''
+"""
 
-snapshots['test_render[False-component_kwargs2-BasicTable] 1'] = '''
+snapshots[
+    "test_render[False-component_kwargs2-BasicTable] 1"
+] = """
 
 
 
@@ -150,9 +160,11 @@ snapshots['test_render[False-component_kwargs2-BasicTable] 1'] = '''
   </table>
 </div>
     </div>
-'''
+"""
 
-snapshots['test_render[False-component_kwargs2-Table] 1'] = '''
+snapshots[
+    "test_render[False-component_kwargs2-Table] 1"
+] = """
 
 
 
@@ -194,9 +206,11 @@ snapshots['test_render[False-component_kwargs2-Table] 1'] = '''
 
 
     </div>
-'''
+"""
 
-snapshots['test_render[True-component_kwargs0-BasicTable] 1'] = '''
+snapshots[
+    "test_render[True-component_kwargs0-BasicTable] 1"
+] = """
 
 
 
@@ -213,9 +227,11 @@ snapshots['test_render[True-component_kwargs0-BasicTable] 1'] = '''
   </table>
 </div>
     </div>
-'''
+"""
 
-snapshots['test_render[True-component_kwargs0-Table] 1'] = '''
+snapshots[
+    "test_render[True-component_kwargs0-Table] 1"
+] = """
 
 
 
@@ -257,25 +273,31 @@ snapshots['test_render[True-component_kwargs0-Table] 1'] = '''
 
 
     </div>
-'''
+"""
 
-snapshots['test_render[True-component_kwargs1-BasicTable] 1'] = '''
-
-
-
-    <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
-'''
-
-snapshots['test_render[True-component_kwargs1-Table] 1'] = '''
+snapshots[
+    "test_render[True-component_kwargs1-BasicTable] 1"
+] = """
 
 
 
     <div hx-get="/app1/testdashboard/component/test/"
          hx-trigger="intersect once delay:1ms"></div>
-'''
+"""
 
-snapshots['test_render[True-component_kwargs2-BasicTable] 1'] = '''
+snapshots[
+    "test_render[True-component_kwargs1-Table] 1"
+] = """
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:1ms"></div>
+"""
+
+snapshots[
+    "test_render[True-component_kwargs2-BasicTable] 1"
+] = """
 
 
 
@@ -292,9 +314,11 @@ snapshots['test_render[True-component_kwargs2-BasicTable] 1'] = '''
   </table>
 </div>
     </div>
-'''
+"""
 
-snapshots['test_render[True-component_kwargs2-Table] 1'] = '''
+snapshots[
+    "test_render[True-component_kwargs2-Table] 1"
+] = """
 
 
 
@@ -336,4 +360,4 @@ snapshots['test_render[True-component_kwargs2-Table] 1'] = '''
 
 
     </div>
-'''
+"""
