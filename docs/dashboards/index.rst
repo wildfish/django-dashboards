@@ -7,15 +7,14 @@ Dashboards
 ==========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    howto/quickstart.rst
+   howto/components.rst
    howto/layout.rst
    howto/permissions.rst
-   howto/forms.rst
    howto/templates.rst
-   howto/custom_components.rst
    howto/dynamic.rst
    howto/async.rst
    howto/sse.rst
