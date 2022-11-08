@@ -103,7 +103,7 @@ def test_view__dashboard__not_found(rf, admin_user, schema_with_dashboards, snap
         context_value={"request": request},
     )
     assert result.errors is None
-    snapshot.assert_match(result.data["dashboard"])
+    assert result.data == {"dashboard": None}
 
 
 def test_view__dashboard__with_layout(rf, admin_user, schema_with_dashboards, snapshot):
@@ -146,3 +146,18 @@ def test_view__component__deferred(rf, admin_user, schema_with_dashboards, snaps
     )
     assert result.errors is None
     snapshot.assert_match(result.data["component"])
+
+
+def test_view__component__deferred__not_found(
+    rf, admin_user, schema_with_dashboards, snapshot
+):
+    request = rf.get("/")
+    request.user = admin_user
+
+    result = schema_with_dashboards.execute_sync(
+        COMPONENT_GQL,
+        variable_values={"slug": "test-not-dashboards", "key": "component_2"},
+        context_value={"request": request},
+    )
+    assert result.errors is None
+    assert result.data == {"component": None}

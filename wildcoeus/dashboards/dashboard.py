@@ -66,6 +66,8 @@ class DashboardType(type):
                 dashboard_class._meta.app_label = app_config.label
 
         if base_meta:
+            if not hasattr(meta, "name"):
+                dashboard_class._meta.name = name
             if not hasattr(meta, "model"):
                 dashboard_class._meta.model = base_meta.model
             if not hasattr(meta, "lookup_kwarg"):
@@ -107,8 +109,6 @@ class Dashboard(metaclass=DashboardType):
                 and component.defer_url is None
             ):
                 logger.warning(f"component {key} has no value or defer set.")
-
-        super().__init__()
 
     class Meta:
         name: str

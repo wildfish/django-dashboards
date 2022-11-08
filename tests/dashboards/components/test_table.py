@@ -177,7 +177,7 @@ def test_sort__table_queryset(sort_class, filters, force_lower, expected_order):
 @pytest.mark.django_db
 @pytest.mark.parametrize("length", [5, 10, -1])
 def test_serializer__queryset(length):
-    for u in range(0, 20):
+    for u in range(0, 11):
         fake_user()
 
     data = User.objects.all()
@@ -192,14 +192,14 @@ def test_serializer__queryset(length):
     assert isinstance(result, TableData)
     assert len(result.data) == expected_length
     assert result.draw == 1
-    assert result.total == 20
-    assert result.filtered == 20
+    assert result.total == 11
+    assert result.filtered == 11
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("length", [5, 10, -1])
 def test_serializer__list(length):
-    for u in range(0, 20):
+    for u in range(0, 11):
         fake_user()
 
     data = list(User.objects.all())
@@ -214,13 +214,13 @@ def test_serializer__list(length):
     assert isinstance(result, TableData)
     assert len(result.data) == expected_length
     assert result.draw == 1
-    assert result.total == 20
-    assert result.filtered == 20
+    assert result.total == 11
+    assert result.filtered == 11
 
 
 @pytest.mark.django_db
 def test_serializer__sort_and_filter_applied():
-    for u in range(0, 20):
+    for u in range(0, 11):
         fake_user(username=str(u))
 
     data = User.objects.all()

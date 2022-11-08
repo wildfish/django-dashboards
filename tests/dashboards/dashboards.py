@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from wildcoeus.dashboards import permissions
 from wildcoeus.dashboards.component import Chart, Form, Table, Text
 from wildcoeus.dashboards.component.chart import ChartData
-from wildcoeus.dashboards.component.layout import ComponentLayout, Div
+from wildcoeus.dashboards.component.layout import HR, ComponentLayout, Div
 from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
 from wildcoeus.dashboards.forms import DashboardForm
@@ -92,6 +92,7 @@ class TestDashboardWithLayout(TestDashboard):
 
     class Layout:
         components = ComponentLayout(
+            HR(),
             Div(
                 Div(
                     "component_1",

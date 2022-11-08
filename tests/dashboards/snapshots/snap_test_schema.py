@@ -41,13 +41,12 @@ snapshots["test_view__dashboard 1"] = {
     ],
 }
 
-snapshots["test_view__dashboard__not_found 1"] = None
-
 snapshots["test_view__dashboard__with_layout 1"] = {
     "Meta": {
         "layoutJson": {
             "component_context": {},
             "layout_components": [
+                {"html": "<hr />", "renderType": "HR", "width": 12},
                 {
                     "component_context": {},
                     "layout_components": [
@@ -66,7 +65,7 @@ snapshots["test_view__dashboard__with_layout 1"] = {
                         },
                     ],
                     "renderType": "Div",
-                }
+                },
             ],
         },
         "name": "Test Dashboard with Layout",

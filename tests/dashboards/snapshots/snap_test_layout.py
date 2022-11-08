@@ -9,7 +9,7 @@ snapshots = Snapshot()
 
 snapshots[
     "test_dashboard__render_layout 1"
-] = """}{<div class="span-12 ">
+] = """}{<div class="span-12 "><hr /></div><div class="span-12 ">
   <div class="span-99 css_style">
   
 
