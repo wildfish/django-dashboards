@@ -1,11 +1,7 @@
-from django import forms
 from django.core.exceptions import PermissionDenied
 
 import pytest
 
-from wildcoeus.dashboards.component import Form
-from wildcoeus.dashboards.dashboard import Dashboard
-from wildcoeus.dashboards.forms import DashboardForm
 from wildcoeus.dashboards.views import FormComponentView
 
 
