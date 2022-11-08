@@ -3,6 +3,8 @@ from django.http.response import Http404
 
 import pytest
 
+from wildcoeus.dashboards.dashboard import ModelDashboard
+
 
 pytest_plugins = [
     "tests.dashboards.fixtures",
@@ -29,24 +31,37 @@ def test__get_object(model_dashboard, user, rf):
     assert model_dashboard(request=request, lookup=lookup).object == user
 
 
-# @pytest.mark.django_db
-# def test__get_object__change_lookup_field(model_dashboard, user, rf):
-#     request = rf.get("/")
-#     lookup = user.username
-#     dashboard = model_dashboard(request=request, lookup=lookup)
-#     dashboard._meta.lookup_field = "username"
-#     assert dashboard.get_object() == user
-#
-#
-# @pytest.mark.django_db
-# def test__get_object__change_lookup_kwarg(model_dashboard, user, rf):
-#     request = rf.get("/")
-#     lookup = user.username
-#     dashboard = model_dashboard(request=request, username=lookup)
-#     dashboard._meta.lookup_kwarg = "username"
-#     dashboard._meta.lookup_field = "username"
-#
-#     assert dashboard.get_object() == user
+@pytest.mark.django_db
+def test__get_object__change_lookup_field(model_dashboard, user, rf):
+    class TestModelDashboard(ModelDashboard):
+        class Meta:
+            name = "Test Model Dashboard"
+            model = User
+            app_label = "app1"
+            lookup_field = "username"
+
+    request = rf.get("/")
+    lookup = user.username
+    dashboard = TestModelDashboard(request=request, lookup=lookup)
+
+    assert dashboard.get_object() == user
+
+
+@pytest.mark.django_db
+def test__get_object__change_lookup_kwarg(user, rf):
+    class TestModelDashboard(ModelDashboard):
+        class Meta:
+            name = "Test Model Dashboard"
+            model = User
+            app_label = "app1"
+            lookup_kwarg = "username"
+            lookup_field = "username"
+
+    request = rf.get("/")
+    lookup = user.username
+    dashboard = TestModelDashboard(request=request, username=lookup)
+
+    assert dashboard.get_object() == user
 
 
 @pytest.mark.django_db
@@ -59,12 +74,19 @@ def test__get_queryset(model_dashboard, user, rf):
 
 
 @pytest.mark.django_db
-def test__get_queryset__no_model__raises_exception(model_dashboard, user, rf):
-    model_dashboard._meta.model = None
+def test__get_queryset__no_model__raises_exception(user, rf):
+    class TestModelDashboard(ModelDashboard):
+        class Meta:
+            name = "Test Model Dashboard"
+            model = None
+            app_label = "app1"
+
     request = rf.get("/")
     lookup = user.pk
+    dashboard = TestModelDashboard(request=request, lookup=lookup)
+
     with pytest.raises(AttributeError):
-        model_dashboard(request=request, lookup=lookup).get_queryset()
+        dashboard.get_queryset()
 
 
 @pytest.mark.django_db
@@ -72,9 +94,7 @@ def test_model_dashboard__get_absolute_url(model_dashboard, user, rf):
     request = rf.get("/")
     lookup = user.pk
 
-    dashboard = model_dashboard(request=request, username=lookup)
-    # dashboard._meta.model = User
-    # dashboard._meta.lookup_field = "pk"
+    dashboard = model_dashboard(request=request, lookup=lookup)
 
     assert dashboard.get_absolute_url() == f"/app1/testmodeldashboard/{lookup}/"
 
