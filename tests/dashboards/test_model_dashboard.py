@@ -3,6 +3,7 @@ from django.http.response import Http404
 
 import pytest
 
+from wildcoeus.dashboards import permissions
 from wildcoeus.dashboards.dashboard import ModelDashboard
 
 
@@ -110,3 +111,37 @@ def test_model_dashboard__get_urls(model_dashboard, user, rf):
         str(urls[0].pattern)
         == f"app1/testmodeldashboard/<str:{model_dashboard._meta.lookup_kwarg}>/"
     )
+
+
+@pytest.mark.django_db
+def test_model_dashboard__has_permission_fails_for_non_admin(user, rf):
+    class TestModelDashboard(ModelDashboard):
+        class Meta:
+            name = "Test Model Dashboard"
+            model = User
+            app_label = "app1"
+            permission_classes = [permissions.IsAdminUser]
+
+    request = rf.get("/")
+    request.user = user
+    lookup = user.pk
+    dashboard = TestModelDashboard(request=request, lookup=lookup)
+
+    assert dashboard.has_permissions(request) is False
+
+
+@pytest.mark.django_db
+def test_model_dashboard__has_permission_passes_for_authenticated_user(user, rf):
+    class TestModelDashboard(ModelDashboard):
+        class Meta:
+            name = "Test Model Dashboard"
+            model = User
+            app_label = "app1"
+            permission_classes = [permissions.IsAuthenticated]
+
+    request = rf.get("/")
+    request.user = user
+    lookup = user.pk
+    dashboard = TestModelDashboard(request=request, lookup=lookup)
+
+    assert dashboard.has_permissions(request) is True

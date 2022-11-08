@@ -132,19 +132,6 @@ class Dashboard(metaclass=DashboardType):
         return f"{slugify(cls._meta.app_label)}_{slugify(cls.__name__)}"
 
     @classmethod
-    def get_attributes_order(cls):
-        """
-        Get the order of the attributes as they are defined on the Dashboard class.
-        Follows mro, then reverses to parents first.
-        """
-        attributes_to_class = []
-        attributes_to_class.extend(
-            [list(vars(bc).keys()) for bc in cls.mro() if issubclass(bc, Dashboard)]
-        )
-        attributes_to_class.sort(reverse=True)
-        return [a for nested in attributes_to_class for a in nested]
-
-    @classmethod
     def get_components(cls) -> list[Component]:
         components_to_keys = {}
         awaiting_dependents = {}
@@ -180,7 +167,7 @@ class Dashboard(metaclass=DashboardType):
                 try:
                     permissions_class = import_string(permission_class_path)
                     permissions_classes.append(permissions_class)
-                except ModuleNotFoundError:
+                except ModuleNotFoundError:  # pragma: no cover
                     logger.warning(
                         f"{permission_class_path} is invalid permissions path"
                     )
