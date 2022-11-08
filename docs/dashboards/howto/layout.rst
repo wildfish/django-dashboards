@@ -1,6 +1,6 @@
-=================
-Dashboard Layouts
-=================
+=======
+Layouts
+=======
 
 Dashboards by default display components in a 2 column grid, but
 this can be customized to fit your needs.  This is done using a :code:`ComponentLayout`

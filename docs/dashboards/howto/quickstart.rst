@@ -1,6 +1,6 @@
-==========================
-Dashboard quickstart guide
-==========================
+==========
+Quickstart
+==========
 
 This is a quickstart guide for creating a dashboard.
 

@@ -3,14 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Wildcoeus's documentation!
-===================================
+Dashboards
+==========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-   dashboards/index.rst
-   pipelines/index.rst
-   contributing.rst
-   changelog.rst
+   howto/quickstart.rst
+   howto/layout.rst
+   howto/permissions.rst
+   howto/forms.rst
+   howto/templates.rst
+   howto/custom_components.rst
+   howto/dynamic.rst
+   howto/async.rst
+   howto/sse.rst
+   howto/graphql.rst
