@@ -1,5 +1,3 @@
-from django.http.response import Http404
-
 import pytest
 
 
@@ -39,41 +37,10 @@ def test__get_components__with_parent__no_layout(complex_dashboard, rf):
     ]
 
 
-def test__get_object__missing_kwargs(model_dashboard, rf):
-    request = rf.get("/")
-    with pytest.raises(AttributeError):
-        model_dashboard(request=request).get_object()
-
-
 @pytest.mark.django_db
-def test__get_object__missing_model_404(model_dashboard, rf):
+def test_dashboard__get_absolute_url(dashboard, rf):
     request = rf.get("/")
-    with pytest.raises(Http404):
-        model_dashboard(request=request, lookup="1").get_object()
-
-
-@pytest.mark.django_db
-def test__get_object(model_dashboard, user, rf):
-    request = rf.get("/")
-    lookup = user.pk
-    assert model_dashboard(request=request, lookup=lookup).get_object() == user
-
-
-@pytest.mark.django_db
-def test__get_object__change_lookup_field(model_dashboard, user, rf):
-    request = rf.get("/")
-    model_dashboard._meta.lookup_field = "username"
-    lookup = user.username
-    assert model_dashboard(request=request, lookup=lookup).get_object() == user
-
-
-@pytest.mark.django_db
-def test__get_object__change_lookup_kwarg(model_dashboard, user, rf):
-    request = rf.get("/")
-    model_dashboard._meta.lookup_kwarg = "username"
-    model_dashboard._meta.lookup_field = "username"
-    lookup = user.username
-    assert model_dashboard(request=request, username=lookup).get_object() == user
+    assert dashboard(request=request).get_absolute_url() == "/app1/testdashboard/"
 
 
 # More tests to add here re layout

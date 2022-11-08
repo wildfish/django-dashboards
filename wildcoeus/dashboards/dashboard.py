@@ -277,8 +277,8 @@ class ModelDashboard(Dashboard):
 
     def get_absolute_url(self):
         return reverse(
-            f"wildcoeus.dashboards:dashboards:{self.get_slug()}",
-            kwargs={"pk": self.object.pk},
+            f"wildcoeus.dashboards:dashboards:{self.get_slug()}_dashboard_detail",
+            kwargs={self._meta.lookup_kwarg: self.object.pk},
         )
 
     def get_object(self):

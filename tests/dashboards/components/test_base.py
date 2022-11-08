@@ -100,7 +100,7 @@ def test_get_value(component_kwargs, call_deferred, expected, rf):
         ),
     ],
 )
-def test_get_absolute_url(component_kwargs, expected, rf, dashboard):
+def test_get_absolute_url(component_kwargs, expected, dashboard):
     component = TestComponent(**component_kwargs)
     component.dashboard = dashboard
 
@@ -108,12 +108,13 @@ def test_get_absolute_url(component_kwargs, expected, rf, dashboard):
 
 
 @pytest.mark.django_db
-def test_get_absolute_url__dashboard_object(dashboard, user):
-    component = TestComponent()
-    component.dashboard = dashboard
-    component.dashboard.object = user
+def test_get_absolute_url__dashboard_object(model_dashboard, user, rf):
+    request = rf.get("/")
 
-    assert component.get_absolute_url() == "/app1/testdashboard/1/component/None/"
+    component = TestComponent()
+    component.dashboard = model_dashboard(request=request, lookup=user.pk)
+
+    assert component.get_absolute_url() == "/app1/testmodeldashboard/1/component/None/"
 
 
 @pytest.mark.parametrize("component_class", [Text, Chart, Progress, Timeline, Stat])
