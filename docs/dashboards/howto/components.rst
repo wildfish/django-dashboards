@@ -47,6 +47,36 @@ In this example note that ``three`` calls a function, this can be any callable t
     * filters
         *A dict containing the GET params of the request*
 
+``defer_url``
+
+A str or callable which acts as ``defer`` but calling after initial load to a specific url.
+
+
+``def_FOO_value / def_FOO_defer``
+
+Declaring a function on a dashboard where FOO is the attribute of the defined component
+is an alternative to providing a value or defer for example:
+
+::
+
+    from wildcoeus.dashboards.component import Text
+    from wildcoeus.dashboards.dashboard import Dashboard
+
+    class ExampleDashboard(Dashboard):
+        value_from_method = Text()
+        defer_from_method = Text()
+
+        def get_value_from_method_value(self, **kwargs):
+            return "I am defined as a FOO value."
+
+        def get_defer_from_method_defer(self, **kwargs):
+            request = kwargs["request"]
+            return f"hello {request.user} I am defined as a FOO defer."
+
+It's also possible to define your components via  ``__init__`` if you require more granular control of
+the components, for details on this see :doc:`dynamic dashboards <dynamic>`
+
+
 Optional attributes
 +++++++++++++++++++
 
@@ -58,11 +88,6 @@ by component basic.
 ::
 
     one = Text(template="custom/template/one.html")
-
-
-``defer_url``
-
-A str or callable which acts as ``defer`` but calling after initial load to a specific url.
 
 TODO BELOW
 
