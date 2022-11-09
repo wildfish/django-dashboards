@@ -40,6 +40,12 @@
               ajax: {
                   url: "{{ component.get_absolute_url }}",
                   contentType: "application/json",
+                  dataFilter: function(data){
+                    let json = jQuery.parseJSON( data );
+                    json.recordsTotal = json.total;
+                    json.recordsFiltered = json.filtered;
+                    return JSON.stringify( json );
+                }
               }
           }
       {% endif %}

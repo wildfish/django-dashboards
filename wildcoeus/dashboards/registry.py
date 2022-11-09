@@ -1,10 +1,26 @@
+from wildcoeus.pipelines.log import logger
+
+
 class Registry(object):
     def __init__(self):
         # Register dashboard classes
         self.dashboards = []
 
+    def __contains__(self, item):
+        item.get_slug() not in list(map(lambda d: d.get_slug(), self.dashboards))
+
+    def reset(self):
+        self.dashboards = []
+
+    def remove(self, cls):
+        if cls.get_slug() in list(map(lambda d: d.get_slug(), self.dashboards)):
+            self.dashboards.remove(cls)
+
     def register(self, cls):
-        self.dashboards.append(cls)
+        if cls.get_slug() not in list(map(lambda d: d.get_slug(), self.dashboards)):
+            self.dashboards.append(cls)
+        else:
+            logger.warn(f"{cls.get_slug()} already registered")
 
     def get_all_dashboards(self):
         return self.dashboards

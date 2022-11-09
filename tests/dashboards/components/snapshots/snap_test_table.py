@@ -8,34 +8,28 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs0-Chart] 1"
+    "test_render[False-component_kwargs0-BasicTable] 1"
 ] = """
 
 
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    <script id="data_test" type="application/json">"value"</script>
-    <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
-        );
-    </script>
-
-
-<div id="test"></div>
-
-
+        <div id="test">
+  <table id="test_table" class="table" style="width:100%">
+    <thead>
+    
+    </thead>
+    <tbody>
+    
+    </tbody>
+  </table>
+</div>
     </div>
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs0-Table] 1"
+    "test_render[False-component_kwargs0-Table] 1"
 ] = """
 
 
@@ -81,48 +75,28 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs0-Text] 1"
+    "test_render[False-component_kwargs1-BasicTable] 1"
 ] = """
 
 
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs1-Chart] 1"
-] = """
-
-
-
+        <div id="test">
+  <table id="test_table" class="table" style="width:100%">
+    <thead>
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    <script id="data_test" type="application/json">"value"</script>
-    <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
-        );
-    </script>
-
-
-<div id="test"></div>
-
-
+    </thead>
+    <tbody>
+    
+    </tbody>
+  </table>
+</div>
     </div>
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs1-Table] 1"
+    "test_render[False-component_kwargs1-Table] 1"
 ] = """
 
 
@@ -154,6 +128,12 @@ snapshots[
               ajax: {
                   url: "/app1/testdashboard/component/test/",
                   contentType: "application/json",
+                  dataFilter: function(data){
+                    let json = jQuery.parseJSON( data );
+                    json.recordsTotal = json.total;
+                    json.recordsFiltered = json.filtered;
+                    return JSON.stringify( json );
+                }
               }
           }
       
@@ -168,48 +148,28 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs1-Text] 1"
+    "test_render[False-component_kwargs2-BasicTable] 1"
 ] = """
 
 
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[False-component_kwargs2-Chart] 1"
-] = """
-
-
-
+        <div id="test">
+  <table id="test_table" class="[&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%">
+    <thead>
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    <script id="data_test" type="application/json">"value"</script>
-    <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
-        );
-    </script>
-
-
-<div id="test"></div>
-
-
+    </thead>
+    <tbody>
+    
+    </tbody>
+  </table>
+</div>
     </div>
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs2-Table] 1"
+    "test_render[False-component_kwargs2-Table] 1"
 ] = """
 
 
@@ -255,48 +215,28 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[False-component_kwargs2-Text] 1"
+    "test_render[True-component_kwargs0-BasicTable] 1"
 ] = """
 
 
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs0-Chart] 1"
-] = """
-
-
-
+        <div id="test">
+  <table id="test_table" class="table" style="width:100%">
+    <thead>
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    <script id="data_test" type="application/json">"value"</script>
-    <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
-        );
-    </script>
-
-
-<div id="test"></div>
-
-
+    </thead>
+    <tbody>
+    
+    </tbody>
+  </table>
+</div>
     </div>
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs0-Table] 1"
+    "test_render[True-component_kwargs0-Table] 1"
 ] = """
 
 
@@ -342,78 +282,48 @@ snapshots[
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs0-Text] 1"
+    "test_render[True-component_kwargs1-BasicTable] 1"
+] = """
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:1ms"></div>
+"""
+
+snapshots[
+    "test_render[True-component_kwargs1-Table] 1"
+] = """
+
+
+
+    <div hx-get="/app1/testdashboard/component/test/"
+         hx-trigger="intersect once delay:1ms"></div>
+"""
+
+snapshots[
+    "test_render[True-component_kwargs2-BasicTable] 1"
 ] = """
 
 
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs1-Chart] 1"
-] = """
-
-
-
-    <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs1-Table] 1"
-] = """
-
-
-
-    <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs1-Text] 1"
-] = """
-
-
-
-    <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs2-Chart] 1"
-] = """
-
-
-
+        <div id="test">
+  <table id="test_table" class="[&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%">
+    <thead>
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    <script id="data_test" type="application/json">"value"</script>
-    <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
-        Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
-        );
-    </script>
-
-
-<div id="test"></div>
-
-
+    </thead>
+    <tbody>
+    
+    </tbody>
+  </table>
+</div>
     </div>
 """
 
 snapshots[
-    "test_component__renders_value[True-component_kwargs2-Table] 1"
+    "test_render[True-component_kwargs2-Table] 1"
 ] = """
 
 
@@ -454,123 +364,6 @@ snapshots[
 
 
 
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value[True-component_kwargs2-Text] 1"
-] = """
-
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-value
-
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value__stat[False-component_kwargs0] 1"
-] = """
-
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
-  
-  
-  <h2>100%</h2>
-  <p>
-    
-    <span>increase</span>
-  </p>
-  
-</div>
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value__stat[False-component_kwargs1] 1"
-] = """
-
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
-  
-  
-  <h2>100%</h2>
-  <p>
-    
-    <span>increase</span>
-  </p>
-  
-</div>
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value__stat[True-component_kwargs0] 1"
-] = """
-
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
-  
-  
-  <h2>100%</h2>
-  <p>
-    
-    <span>increase</span>
-  </p>
-  
-</div>
-    </div>
-"""
-
-snapshots[
-    "test_component__renders_value__stat[True-component_kwargs1] 1"
-] = """
-
-
-
-    <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
-"""
-
-snapshots[
-    "test_cta_component__renders_value[False] 1"
-] = """
-
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/" class="None">
-  click here
-</a>
-
-    </div>
-"""
-
-snapshots[
-    "test_cta_component__renders_value[True] 1"
-] = """
-
-
-
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/" class="None">
-  click here
-</a>
 
     </div>
 """

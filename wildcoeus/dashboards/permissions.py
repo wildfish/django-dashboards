@@ -1,8 +1,17 @@
 class BasePermission:
-    def has_permission(self, request):
+    def has_permission(self, request):  # pragma: no cover
         raise NotImplementedError(
             "Subclasses of BasePermission must provide a has_permission() method."
         )
+
+    def __repr__(self):
+        return str(self.__class__.__name__)
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return str(self) == str(other)
+
+        return False
 
 
 class AllowAny(BasePermission):

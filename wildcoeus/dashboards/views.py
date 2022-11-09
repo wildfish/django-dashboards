@@ -4,8 +4,6 @@ from typing import Callable, Dict, Optional, Protocol, Type
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from wildcoeus.dashboards.dashboard import Dashboard
@@ -98,7 +96,7 @@ class ComponentView(DashboardObjectMixin, TemplateView):
                 return component
 
         raise Http404(
-            f"Component {self.kwargs['component']} does not exist in dashboard {self.kwargs['dashboard']}"
+            f"Component {self.kwargs['component']} does not exist in dashboard {self.dashboard_class.class_name()}"
         )
 
 
@@ -107,36 +105,6 @@ class FormComponentView(ComponentView):
     Form Component view, partial rendering of dependant components to support HTMX calls.
     """
 
-    template_name: str = "wildcoeus/dashboards/components/partial.html"
-
-    # todo: temp fix as currently failing as not passed through form. remove once csrf_token passed in post
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request: HttpRequest, *args, **kwargs):
-        dashboard = self.get_dashboard(request)
-        component = self.get_partial_component(dashboard)
-        dependant_components = component.dependent_components
-
-        if self.is_ajax():
-            response = []
-            filters = request.GET.dict()
-            for c in dependant_components:
-                # Return json, calling deferred value on dependant components.
-                response.append(c.get_value(request=self.request, filters=filters))
-            return HttpResponse(response, content_type="application/json")
-        else:
-            context = self.get_context_data(
-                **{
-                    "dependants": dependant_components,
-                    "dashboard": dashboard,
-                    "component": component,
-                }
-            )
-
-            return self.render_to_response(context)
-
     def post(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard(request)
         component = self.get_partial_component(dashboard)
@@ -144,7 +112,10 @@ class FormComponentView(ComponentView):
         if form.is_valid():
             form.save()
             if self.is_ajax():
-                return HttpResponse({"success": True}, content_type="application/json")
+                return HttpResponse(
+                    {"success": True, "form": form.asdict()},
+                    content_type="application/json",
+                )
 
             return HttpResponseRedirect(component.get_absolute_url())
 

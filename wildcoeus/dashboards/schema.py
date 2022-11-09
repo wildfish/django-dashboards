@@ -143,6 +143,6 @@ class DashboardQuery:
                     # Changing the type to DeferredComponentSchema makes this return what we expect, but
                     # causes a mypy issue, need to look at how we resolve this, but it is working as expected.
                     return component_schema  # type: ignore
+            return None
         except IndexError:
             return None
-        return None

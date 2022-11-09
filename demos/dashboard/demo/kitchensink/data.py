@@ -8,9 +8,8 @@ from wildcoeus.dashboards.component.map import MapData
 from wildcoeus.dashboards.component.table import (
     DatatablesFilter,
     DatatablesSort,
-    ReactTablesSort,
     TableData,
-    ToTable,
+    TableSerializer,
 )
 
 
@@ -269,23 +268,18 @@ class DashboardData:
             "car",
         ]
 
-        # todo: can this be done better i.e. if mpa do x if spa do y?
-        if "draw" in filters:  # assume its datatables request (mpa) if draw in filters
-            filter_class = DatatablesFilter
-            sort_class = DatatablesSort
-        else:
-            filter_class = None
-            sort_class = ReactTablesSort
+        filter_class = DatatablesFilter
+        sort_class = DatatablesSort
 
         # filter the data
-        table_data = ToTable(
+        table_data = TableSerializer(
             data=data,
             filters=filters,
             count_func=lambda x: len(x),
             fields=fields,
             filter_class=filter_class,
             sort_class=sort_class,
-        ).get_data(start, length)
+        ).get(start, length)
 
         return table_data
 

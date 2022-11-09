@@ -1,15 +1,14 @@
 from django.template import Context
-from django.test.utils import override_settings
 
 import pytest
 
-from tests import urls
 from tests.utils import render_dashboard_test
 from wildcoeus.dashboards.component.layout import (
     HTML,
     Card,
     ComponentLayout,
     Div,
+    Header,
     Tab,
     TabContainer,
 )
@@ -20,7 +19,6 @@ pytest_plugins = [
 ]
 
 
-@override_settings(ROOT_URLCONF=urls)
 def test_dashboard__render_layout(rf, dashboard_with_layout, snapshot):
     context = Context(
         {
@@ -32,7 +30,6 @@ def test_dashboard__render_layout(rf, dashboard_with_layout, snapshot):
     snapshot.assert_match(render_dashboard_test(context))
 
 
-@override_settings(ROOT_URLCONF=urls)
 @pytest.mark.parametrize("component_class", [Div, Tab, Card])
 def test_html_component__render(rf, component_class, dashboard, snapshot):
     request = rf.get("/")
@@ -64,7 +61,16 @@ def test_html__render(rf, dashboard, snapshot):
     )
 
 
-@override_settings(ROOT_URLCONF=urls)
+def test_header__render(rf, dashboard, snapshot):
+    context = Context({"request": rf.get("/")})
+
+    snapshot.assert_match(
+        Header(heading="some text....", size=2).render(
+            dashboard=dashboard, context=context
+        )
+    )
+
+
 def test_layout_component__render(rf, dashboard, snapshot):
     request = rf.get("/")
     context = Context({"request": request})
@@ -77,7 +83,6 @@ def test_layout_component__render(rf, dashboard, snapshot):
     )
 
 
-@override_settings(ROOT_URLCONF=urls)
 def test_layout_component__unknown_component_ignored(rf, dashboard, snapshot):
     request = rf.get("/")
     context = Context({"request": request})

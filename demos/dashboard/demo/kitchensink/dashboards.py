@@ -20,7 +20,7 @@ from wildcoeus.dashboards.component.layout import (
     Tab,
     TabContainer,
 )
-from wildcoeus.dashboards.component.table import TableData, TablePaging
+from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.component.text import CTAData, StatData
 from wildcoeus.dashboards.dashboard import Dashboard
 from wildcoeus.dashboards.permissions import IsAdminUser
@@ -121,7 +121,6 @@ class DemoDashboard(Dashboard):
                     "car": 0,
                 },
             ],
-            paging=TablePaging(page_size=1, page=1, page_count=2),
         ),
     )
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)

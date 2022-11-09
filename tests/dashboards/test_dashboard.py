@@ -1,6 +1,9 @@
-from django.http.response import Http404
-
 import pytest
+
+from tests.dashboards.dashboards import TestDashboard, TestModelDashboard
+from wildcoeus.dashboards import permissions
+from wildcoeus.dashboards.component import Text
+from wildcoeus.dashboards.dashboard import Dashboard
 
 
 pytest_plugins = [
@@ -39,41 +42,129 @@ def test__get_components__with_parent__no_layout(complex_dashboard, rf):
     ]
 
 
-def test__get_object__missing_kwargs(model_dashboard, rf):
+@pytest.mark.django_db
+def test_dashboard__get_absolute_url(dashboard, rf):
     request = rf.get("/")
-    with pytest.raises(AttributeError):
-        model_dashboard(request=request).get_object()
+    assert dashboard(request=request).get_absolute_url() == "/app1/testdashboard/"
 
 
 @pytest.mark.django_db
-def test__get_object__missing_model_404(model_dashboard, rf):
+def test_dashboard__with_get_FOO_methods(dashboard, rf):
+    class TestDashboardSingle(Dashboard):
+        component_value = Text()
+        component_defer = Text()
+
+        def get_component_value_value(self):
+            return "Foo"
+
+        def get_component_defer_defer(self):
+            return "Bar"
+
     request = rf.get("/")
-    with pytest.raises(Http404):
-        model_dashboard(request=request, lookup="1").get_object()
+
+    assert (
+        TestDashboardSingle(request=request).components["component_value"].value()
+        == "Foo"
+    )
+    assert (
+        TestDashboardSingle(request=request).components["component_value"].defer is None
+    )
+    assert (
+        TestDashboardSingle(request=request).components["component_defer"].defer()
+        == "Bar"
+    )
+    assert (
+        TestDashboardSingle(request=request).components["component_defer"].value is None
+    )
+
+
+@pytest.mark.parametrize(
+    "dashboard_class",
+    [
+        {"klass": TestDashboard, "expected": "testdashboard"},
+        {"klass": TestModelDashboard, "expected": "testmodeldashboard"},
+    ],
+)
+def test_dashboard__class_name_method(dashboard_class):
+    assert dashboard_class["klass"].class_name() == dashboard_class["expected"]
+
+
+@pytest.mark.parametrize(
+    "dashboard_class",
+    [
+        {"klass": TestDashboard, "expected": "app1_testdashboard"},
+        {"klass": TestModelDashboard, "expected": "app1_testmodeldashboard"},
+    ],
+)
+def test_dashboard__get_slug_method(dashboard_class):
+    assert dashboard_class["klass"].get_slug() == dashboard_class["expected"]
 
 
 @pytest.mark.django_db
-def test__get_object(model_dashboard, user, rf):
-    request = rf.get("/")
-    lookup = user.pk
-    assert model_dashboard(request=request, lookup=lookup).get_object() == user
+def test_dashboard__get_dashboard_permissions__permissions_set(admin_dashboard):
+    assert admin_dashboard.get_dashboard_permissions() == [permissions.IsAdminUser()]
 
 
 @pytest.mark.django_db
-def test__get_object__change_lookup_field(model_dashboard, user, rf):
-    request = rf.get("/")
-    model_dashboard._meta.lookup_field = "username"
-    lookup = user.username
-    assert model_dashboard(request=request, lookup=lookup).get_object() == user
+def test_dashboard__get_dashboard_permissions__no_permissions_set__uses_default(
+    dashboard, settings
+):
+    settings.WILDCOEUS_DEFAULT_PERMISSION_CLASSES = [
+        "wildcoeus.dashboards.permissions.IsAdminUser"
+    ]
+    assert dashboard.get_dashboard_permissions() == [permissions.IsAdminUser()]
 
 
 @pytest.mark.django_db
-def test__get_object__change_lookup_kwarg(model_dashboard, user, rf):
+def test_dashboard__has_permission_fails_for_non_admin(user, rf):
+    class TestDashboard(Dashboard):
+        class Meta:
+            name = "Test Dashboard"
+            app_label = "app1"
+            permission_classes = [permissions.IsAdminUser]
+
     request = rf.get("/")
-    model_dashboard._meta.lookup_kwarg = "username"
-    model_dashboard._meta.lookup_field = "username"
-    lookup = user.username
-    assert model_dashboard(request=request, username=lookup).get_object() == user
+    request.user = user
+    dashboard = TestDashboard(request=request)
+
+    assert dashboard.has_permissions(request) is False
+
+
+@pytest.mark.django_db
+def test_dashboard__has_permission_passes_for_authenticated_user(user, rf):
+    class TestDashboard(Dashboard):
+        class Meta:
+            name = "Test Dashboard"
+            app_label = "app1"
+            permission_classes = [permissions.IsAuthenticated]
+
+    request = rf.get("/")
+    request.user = user
+    dashboard = TestDashboard(request=request)
+
+    assert dashboard.has_permissions(request) is True
+
+
+def test_dashboard__str(dashboard, rf):
+    request = rf.get("/")
+
+    assert str(dashboard(request)) == "Test Dashboard"
+
+
+def test_dashboard__get_context(dashboard, rf):
+    request = rf.get("/")
+    d = dashboard(request)
+    context = d.get_context()
+
+    assert context["dashboard"] == d
+    assert "components" in context
+    assert len(context["components"]) == 3
+
+
+# def test_dashboard__render__template_name(dashboard, rf, snapshot):
+#     request = rf.get("/")
+#     d = dashboard(request)
+#     snapshot.assert_match(d.render(request, template_name="foo.html"))
 
 
 # More tests to add here re layout

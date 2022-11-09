@@ -9,7 +9,7 @@ snapshots = Snapshot()
 
 snapshots[
     "test_dashboard__render_layout 1"
-] = """}{<div class="span-12 ">
+] = """}{<div class="span-12 "><hr /></div><div class="span-12 ">
   <div class="span-99 css_style">
   
 
@@ -27,11 +27,15 @@ value
 
 
 
-    <div hx-get="/app1/testdashboardwithlayout/component/component_2/"
+    <div hx-get="/app1/testdashboard/component/component_2/"
          hx-trigger="intersect once delay:1ms"></div>
 
 </div>
 </div>"""
+
+snapshots[
+    "test_header__render 1"
+] = '<div class="span-12 "><h2>some text....</h2></div>'
 
 snapshots["test_html__render 1"] = '<div class="span-12 ">some text....</div>'
 

@@ -18,8 +18,7 @@ class DashboardFormMixin:
         )
 
     def save(self, **kwargs):
-        print("saving the form!!!!")
-        return
+        raise NotImplementedError
 
 
 class DashboardForm(DashboardFormMixin, forms.Form):

@@ -66,6 +66,8 @@ class DashboardType(type):
                 dashboard_class._meta.app_label = app_config.label
 
         if base_meta:
+            if not hasattr(meta, "name"):
+                dashboard_class._meta.name = name
             if not hasattr(meta, "model"):
                 dashboard_class._meta.model = base_meta.model
             if not hasattr(meta, "lookup_kwarg"):
@@ -108,8 +110,6 @@ class Dashboard(metaclass=DashboardType):
             ):
                 logger.warning(f"component {key} has no value or defer set.")
 
-        super().__init__()
-
     class Meta:
         name: str
         include_in_graphql: bool = True
@@ -130,19 +130,6 @@ class Dashboard(metaclass=DashboardType):
     @classmethod
     def get_slug(cls):
         return f"{slugify(cls._meta.app_label)}_{slugify(cls.__name__)}"
-
-    @classmethod
-    def get_attributes_order(cls):
-        """
-        Get the order of the attributes as they are defined on the Dashboard class.
-        Follows mro, then reverses to parents first.
-        """
-        attributes_to_class = []
-        attributes_to_class.extend(
-            [list(vars(bc).keys()) for bc in cls.mro() if issubclass(bc, Dashboard)]
-        )
-        attributes_to_class.sort(reverse=True)
-        return [a for nested in attributes_to_class for a in nested]
 
     @classmethod
     def get_components(cls) -> list[Component]:
@@ -180,7 +167,7 @@ class Dashboard(metaclass=DashboardType):
                 try:
                     permissions_class = import_string(permission_class_path)
                     permissions_classes.append(permissions_class)
-                except ModuleNotFoundError:
+                except ModuleNotFoundError:  # pragma: no cover
                     logger.warning(
                         f"{permission_class_path} is invalid permissions path"
                     )
@@ -277,8 +264,8 @@ class ModelDashboard(Dashboard):
 
     def get_absolute_url(self):
         return reverse(
-            f"wildcoeus.dashboards:dashboards:{self.get_slug()}",
-            kwargs={"pk": self.object.pk},
+            f"wildcoeus.dashboards:dashboards:{self.get_slug()}_dashboard_detail",
+            kwargs={self._meta.lookup_kwarg: self.object.pk},
         )
 
     def get_object(self):

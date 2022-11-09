@@ -1,3 +1,5 @@
+{% spaceless %}
 <form hx-{{ rendered_value.method }}="{{ rendered_value.action }}?key={{ component.key }}" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-{{ component.key }}-inner">
   {{ rendered_value.form.as_p }}
 </form>
+{% endspaceless %}
