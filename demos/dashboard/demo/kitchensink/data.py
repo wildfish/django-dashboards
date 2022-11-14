@@ -6,10 +6,10 @@ from demo.kitchensink.models import FlatText
 from wildcoeus.dashboards.component.chart import ChartData
 from wildcoeus.dashboards.component.map import MapData
 from wildcoeus.dashboards.component.table import (
-    DatatablesFilter,
-    DatatablesSort,
     TableData,
+    TableFilter,
     TableSerializer,
+    TableSort,
 )
 
 
@@ -268,8 +268,8 @@ class DashboardData:
             "car",
         ]
 
-        filter_class = DatatablesFilter
-        sort_class = DatatablesSort
+        filter_class = TableFilter
+        sort_class = TableSort
 
         # filter the data
         table_data = TableSerializer(

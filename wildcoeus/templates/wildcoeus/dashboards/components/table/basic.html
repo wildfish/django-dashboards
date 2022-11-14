@@ -1,17 +1,21 @@
+{% load wildcoeus %}
+{% with columns=component.columns %}
 <div id="{{ component.key }}">
   <table id="{{ component.key }}_table" class="{{ component.css_classes }}" style="width:100%">
     <thead>
-    {% for h in rendered_value.headers %}
+    {% for column in columns %}
+      <th>{{ column.title }}</th>
     {% endfor %}
     </thead>
     <tbody>
-    {% for cols in rendered_value.rows %}
+    {% for row in rendered_value.data %}
     <tr>
-      {% for value in cols %}
-      <td>{{ value }}</td>
+      {% for column in columns %}
+      <td>{{ row|lookup:column.data }}</td>
       {% endfor %}
     </tr>
     {% endfor %}
     </tbody>
   </table>
 </div>
+{% endwith %}

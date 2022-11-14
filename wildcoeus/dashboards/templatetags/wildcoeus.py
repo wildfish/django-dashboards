@@ -37,3 +37,8 @@ def dashboard_urls(app_label):
         for d in registry.get_by_app_label(app_label)
         if not d._meta.model and d._meta.include_in_menu
     }
+
+
+@register.filter(name="lookup")
+def lookup(value, arg):
+    return value.get(arg)

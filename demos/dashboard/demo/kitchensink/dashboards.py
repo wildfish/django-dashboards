@@ -9,7 +9,16 @@ from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
 from faker import Faker
 
-from wildcoeus.dashboards.component import CTA, Chart, Form, Map, Stat, Table, Text
+from wildcoeus.dashboards.component import (
+    CTA,
+    BasicTable,
+    Chart,
+    Form,
+    Map,
+    Stat,
+    Table,
+    Text,
+)
 from wildcoeus.dashboards.component.layout import (
     HR,
     HTML,
@@ -89,8 +98,7 @@ class DemoDashboard(Dashboard):
         ],
         defer=DashboardData.fetch_table_data,
     )
-    table_example_not_deferred = Table(
-        page_size=1,
+    table_example_not_deferred = BasicTable(
         columns=[
             {"data": "id", "title": "ID"},
             {"data": "name", "title": "Name"},

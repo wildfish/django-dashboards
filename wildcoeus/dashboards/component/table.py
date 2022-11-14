@@ -14,9 +14,11 @@ from wildcoeus.dashboards.log import logger
 
 
 @dataclass
-class BasicTableData:
-    headers: Optional[List[str]] = None
-    rows: Optional[List[List[str]]] = None
+class TableData:
+    data: list[dict[str, Any]]
+    draw: Optional[int] = 0
+    total: Optional[int] = 0
+    filtered: Optional[int] = 0
 
 
 @dataclass
@@ -26,17 +28,10 @@ class BasicTable(Component):
     """
 
     template: str = "wildcoeus/dashboards/components/table/basic.html"
-    value: Optional[BasicTableData] = None
-    defer: Optional[Callable[[HttpRequest], BasicTableData]] = None
+    columns: Optional[list] = None
+    value: Optional[TableData] = None
+    defer: Optional[Callable[[HttpRequest], TableData]] = None
     css_classes: Optional[str] = "table"
-
-
-@dataclass
-class TableData:
-    data: list[dict[str, Any]]
-    draw: int = 0
-    total: int = 0
-    filtered: int = 0
 
 
 @dataclass

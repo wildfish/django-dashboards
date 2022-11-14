@@ -15,7 +15,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test">
+        
+
+<div id="test">
   <table id="test_table" class="table" style="width:100%">
     <thead>
     
@@ -25,6 +27,7 @@ snapshots[
     </tbody>
   </table>
 </div>
+
     </div>
 """
 
@@ -82,7 +85,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test">
+        
+
+<div id="test">
   <table id="test_table" class="table" style="width:100%">
     <thead>
     
@@ -92,6 +97,7 @@ snapshots[
     </tbody>
   </table>
 </div>
+
     </div>
 """
 
@@ -155,7 +161,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test">
+        
+
+<div id="test">
   <table id="test_table" class="[&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%">
     <thead>
     
@@ -165,6 +173,7 @@ snapshots[
     </tbody>
   </table>
 </div>
+
     </div>
 """
 
@@ -222,7 +231,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test">
+        
+
+<div id="test">
   <table id="test_table" class="table" style="width:100%">
     <thead>
     
@@ -232,6 +243,7 @@ snapshots[
     </tbody>
   </table>
 </div>
+
     </div>
 """
 
@@ -309,7 +321,9 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div id="test">
+        
+
+<div id="test">
   <table id="test_table" class="[&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%">
     <thead>
     
@@ -319,6 +333,7 @@ snapshots[
     </tbody>
   </table>
 </div>
+
     </div>
 """
 
