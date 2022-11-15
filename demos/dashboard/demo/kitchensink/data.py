@@ -5,12 +5,7 @@ from demo.kitchensink.models import FlatText
 
 from wildcoeus.dashboards.component.chart import ChartData
 from wildcoeus.dashboards.component.map import MapData
-from wildcoeus.dashboards.component.table import (
-    TableData,
-    TableFilter,
-    TableSerializer,
-    TableSort,
-)
+from wildcoeus.dashboards.component.table import TableData, TableSerializer
 
 
 class DashboardData:
@@ -268,20 +263,13 @@ class DashboardData:
             "car",
         ]
 
-        filter_class = TableFilter
-        sort_class = TableSort
-
         # filter the data
-        table_data = TableSerializer(
-            data=data,
+        table_serializer = TableSerializer(
             filters=filters,
-            count_func=lambda x: len(x),
             fields=fields,
-            filter_class=filter_class,
-            sort_class=sort_class,
-        ).get(start, length)
+        )
 
-        return table_data
+        return table_serializer.serialize(data, start, length)
 
     @staticmethod
     def fetch_scatter_map_data(*args, **kwargs) -> MapData:

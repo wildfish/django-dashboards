@@ -10,14 +10,9 @@ import pytest
 from tests.dashboards.fakes import fake_user
 from tests.utils import render_component_test
 from wildcoeus.dashboards.component import BasicTable, Table
-from wildcoeus.dashboards.component.table import (
-    TableData,
-    TableFilter,
-    TableQuerysetFilter,
-    TableQuerysetSort,
-    TableSerializer,
-    TableSort,
-)
+from wildcoeus.dashboards.component.table import TableData
+from wildcoeus.dashboards.component.table.mixins import TableFilterMixin, TableSortMixin
+from wildcoeus.dashboards.component.table.serializers import TableSerializer
 
 
 pytest_plugins = [
@@ -50,39 +45,44 @@ def test_render(component_class, dashboard, component_kwargs, htmx, rf, snapshot
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("filter_class", [TableFilter, TableQuerysetFilter])
-def test_filter__table_queryset__global__one_field(filter_class, dashboard):
+def test_filter__table_queryset__global__one_field(dashboard):
     abc = fake_user(username="abc")
     fake_user(username="xyz")
 
     data = User.objects.all()
     expected = [abc]
-    if filter_class == TableFilter:
-        # as if a list of data instead
-        data = map(model_to_dict, data)
-        expected = list(map(model_to_dict, expected))
 
-    result = filter_class(filters={"search[value]": "abc"}, fields=["username"]).filter(
-        data
-    )
+    result = TableSerializer(
+        filters={"search[value]": "abc"}, fields=["username"]
+    ).filter(data)
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("filter_class", [TableFilter, TableQuerysetFilter])
-def test_filter__table_queryset__global__two_field(filter_class, dashboard):
+def test_filter__table_list__global__one_field(dashboard):
+    abc = fake_user(username="abc")
+    fake_user(username="xyz")
+
+    data = map(model_to_dict, User.objects.all())
+    expected = list(map(model_to_dict, [abc]))
+
+    result = TableSerializer(
+        filters={"search[value]": "abc"}, fields=["username"]
+    ).filter(data)
+
+    assert list(result) == expected
+
+
+@pytest.mark.django_db
+def test_filter__table_queryset__global__two_field(dashboard):
     abc = fake_user(username="abc")
     xyz = fake_user(username="xyz", first_name="abc")
 
     data = User.objects.all()
     expected = [abc, xyz]
-    if filter_class == TableFilter:
-        # as if a list of data instead
-        data = map(model_to_dict, data)
-        expected = list(map(model_to_dict, expected))
 
-    result = filter_class(
+    result = TableSerializer(
         filters={"search[value]": "abc"}, fields=["username", "first_name"]
     ).filter(data)
 
@@ -90,19 +90,29 @@ def test_filter__table_queryset__global__two_field(filter_class, dashboard):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("filter_class", [TableFilter, TableQuerysetFilter])
-def test_filter__table_queryset__individual__find_on_username(filter_class, dashboard):
+def test_filter__table_list__global__two_field(dashboard):
+    abc = fake_user(username="abc")
+    xyz = fake_user(username="xyz", first_name="abc")
+
+    data = map(model_to_dict, User.objects.all())
+    expected = list(map(model_to_dict, [abc, xyz]))
+
+    result = TableSerializer(
+        filters={"search[value]": "abc"}, fields=["username", "first_name"]
+    ).filter(data)
+
+    assert list(result) == expected
+
+
+@pytest.mark.django_db
+def test_filter__table_queryset__individual__find_on_username(dashboard):
     abc = fake_user(username="abc")
     fake_user(username="xyz", first_name="abc")
 
     data = User.objects.all()
     expected = [abc]
-    if filter_class == TableFilter:
-        # as if a list of data instead
-        data = map(model_to_dict, data)
-        expected = list(map(model_to_dict, expected))
 
-    result = filter_class(
+    result = TableSerializer(
         filters={"columns[0][search][value]": "abc"}, fields=["username", "first_name"]
     ).filter(data)
 
@@ -110,24 +120,78 @@ def test_filter__table_queryset__individual__find_on_username(filter_class, dash
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("filter_class", [TableFilter, TableQuerysetFilter])
-def test_filter__table_queryset__individual__find_on_first_name(
-    filter_class, dashboard
-):
+def test_filter__table_list__individual__find_on_username(dashboard):
+    abc = fake_user(username="abc")
+    fake_user(username="xyz", first_name="abc")
+
+    data = map(model_to_dict, User.objects.all())
+    expected = list(map(model_to_dict, [abc]))
+
+    result = TableSerializer(
+        filters={"columns[0][search][value]": "abc"}, fields=["username", "first_name"]
+    ).filter(data)
+
+    assert list(result) == expected
+
+
+@pytest.mark.django_db
+def test_filter__table_queryset__individual__find_on_first_name(dashboard):
     xyz = fake_user(username="xyz", first_name="abc")
 
     data = User.objects.all()
     expected = [xyz]
-    if filter_class == TableFilter:
-        # as if a list of data instead
-        data = map(model_to_dict, data)
-        expected = list(map(model_to_dict, expected))
+    # if filter_class == TableFilter:
+    #     # as if a list of data instead
+    #     data = map(model_to_dict, data)
+    #     expected = list(map(model_to_dict, expected))
 
-    result = filter_class(
+    result = TableSerializer(
         filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
     ).filter(data)
 
     assert list(result) == expected
+
+
+@pytest.mark.django_db
+def test_filter__table_list__individual__find_on_first_name(dashboard):
+    xyz = fake_user(username="xyz", first_name="abc")
+
+    data = map(model_to_dict, User.objects.all())
+    expected = list(map(model_to_dict, [xyz]))
+
+    result = TableSerializer(
+        filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
+    ).filter(data)
+
+    assert list(result) == expected
+
+
+@pytest.mark.django_db
+def test_count__table_list(dashboard):
+    fake_user(username="xyz", first_name="abc")
+
+    data = list(map(model_to_dict, User.objects.all()))
+    expected = User.objects.count()
+
+    result = TableSerializer(
+        filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
+    ).count(data)
+
+    assert result == expected
+
+
+@pytest.mark.django_db
+def test_count__table_queryset(dashboard):
+    fake_user(username="xyz", first_name="abc")
+
+    data = User.objects.all()
+    expected = data.count()
+
+    result = TableSerializer(
+        filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
+    ).count(data)
+
+    assert result == expected
 
 
 @pytest.mark.django_db
@@ -153,8 +217,7 @@ def test_filter__table_queryset__individual__find_on_first_name(
         ),
     ],
 )
-@pytest.mark.parametrize("sort_class", [TableSort, TableQuerysetSort])
-def test_sort__table_queryset(sort_class, filters, force_lower, expected_order):
+def test_sort__table_queryset(filters, force_lower, expected_order):
     one = fake_user(username="abc", first_name="123")
     two = fake_user(username="xyz", first_name="345")
     three = fake_user(username="CBA", first_name="012")
@@ -162,12 +225,45 @@ def test_sort__table_queryset(sort_class, filters, force_lower, expected_order):
     data = User.objects.all()
     users = [one, two, three]
 
-    if sort_class == TableSort:
-        # as if a list of data instead
-        data = map(model_to_dict, data)
-        users = list(map(model_to_dict, [one, two, three]))
+    result = TableSerializer(
+        filters=filters, fields=["username", "first_name"], force_lower=force_lower
+    ).sort(data)
 
-    result = sort_class(
+    assert list(result) == [users[i] for i in expected_order]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "filters,force_lower,expected_order",
+    [
+        ({}, True, [0, 1, 2]),
+        ({"order[0][column]": 0}, True, [0, 2, 1]),
+        ({"order[0][column]": 1}, True, [2, 0, 1]),
+        (
+            {"order[0][column]": 0, "order[0][dir]": "desc"},
+            True,
+            [1, 2, 0],
+        ),
+        # Not forced to lower
+        ({}, False, [0, 1, 2]),  # Does not change
+        ({"order[0][column]": 0}, False, [2, 0, 1]),
+        ({"order[0][column]": 1}, False, [2, 0, 1]),  # Does not change
+        (
+            {"order[0][column]": 0, "order[0][dir]": "desc"},
+            False,
+            [1, 0, 2],
+        ),
+    ],
+)
+def test_sort__table_list(filters, force_lower, expected_order):
+    one = fake_user(username="abc", first_name="123")
+    two = fake_user(username="xyz", first_name="345")
+    three = fake_user(username="CBA", first_name="012")
+
+    data = map(model_to_dict, User.objects.all())
+    users = list(map(model_to_dict, [one, two, three]))
+
+    result = TableSerializer(
         filters=filters, fields=["username", "first_name"], force_lower=force_lower
     ).sort(data)
 
@@ -182,11 +278,9 @@ def test_serializer__queryset(length):
 
     data = User.objects.all()
     result = TableSerializer(
-        data=data,
         fields=["username", "first_name", "is_staff", "last_login", "date_joined"],
-        count_func=lambda x: x.count(),
         filters={},
-    ).get(start=0, length=length)
+    ).serialize(data, start=0, length=length)
 
     expected_length = length if length > 0 else data.count()
     assert isinstance(result, TableData)
@@ -204,11 +298,9 @@ def test_serializer__list(length):
 
     data = list(User.objects.all())
     result = TableSerializer(
-        data=data,
         fields=["username", "first_name", "is_staff", "last_login", "date_joined"],
-        count_func=lambda x: len(x),
         filters={},
-    ).get(start=0, length=length)
+    ).serialize(data, start=0, length=length)
 
     expected_length = length if length > 0 else len(data)
     assert isinstance(result, TableData)
@@ -225,10 +317,9 @@ def test_serializer__sort_and_filter_applied():
 
     data = User.objects.all()
 
-    with patch.object(TableSort, "sort") as mock_sort:
-        with patch.object(TableFilter, "filter") as mock_filter:
+    with patch.object(TableSortMixin, "sort") as mock_sort:
+        with patch.object(TableFilterMixin, "filter") as mock_filter:
             result = TableSerializer(
-                data=data,
                 fields=[
                     "username",
                     "first_name",
@@ -236,11 +327,8 @@ def test_serializer__sort_and_filter_applied():
                     "last_login",
                     "date_joined",
                 ],
-                count_func=lambda x: x.count(),
                 filters={"order[0][column]": 0, "order[0][dir]": "desc"},
-                sort_class=TableSort,
-                filter_class=TableFilter,
-            ).get(start=0, length=5)
+            ).serialize(data, start=0, length=5)
 
     assert isinstance(result, TableData)
     assert mock_sort.call_count == 1
@@ -257,11 +345,9 @@ def test_serializer__related_field():
 
     data = Permission.objects.filter(codename="test")
     result = TableSerializer(
-        data=data,
         fields=["name", "content_type__name"],
-        count_func=lambda x: x.count(),
         filters={},
-    ).get(start=0, length=5)
+    ).serialize(data=data, start=0, length=5)
 
     assert isinstance(result, TableData)
     assert result.data[0]["content_type__name"] == "user"
@@ -271,11 +357,9 @@ def test_serializer__related_field():
 def test_serializer__invalid_fields():
     data = User.objects.all()
     result = TableSerializer(
-        data=data,
         fields=["x", "y"],
-        count_func=lambda x: x.count(),
         filters={},
-    ).get(start=0, length=5)
+    ).serialize(data=data, start=0, length=5)
 
     assert isinstance(result, TableData)
     assert len(result.data) == 0
@@ -296,12 +380,10 @@ def test_serializer__first_as_absolute_url():
 
     data = ProxyUser.objects.all()
     result = TableSerializer(
-        data=data,
         fields=["username", "first_name"],
-        count_func=lambda x: x.count(),
         filters={},
         first_as_absolute_url=True,
-    ).get(start=0, length=5)
+    ).serialize(data=data, start=0, length=5)
 
     assert isinstance(result, TableData)
     assert result.data == [
