@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 from django.contrib.auth.models import User
 
@@ -28,7 +30,7 @@ class TestComplexDashboard(TestDashboard):
         value=TableData(data=[{"a": "Value", "b": "Value b"}]), columns=["a", "b"]
     )
     component_7 = Chart(
-        value=ChartData(data=[ChartData.Trace(x=["a"], y=["b"])], layout={})
+        value=json.dumps(dict(data=[dict(x=["a"], y=["b"])], layout={}))
     )
 
     class Meta:

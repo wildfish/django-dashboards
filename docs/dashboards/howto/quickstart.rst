@@ -56,24 +56,24 @@ Data for the dashboard component can be inline (text_example) or come from a cal
 In the example above the data for chart_example is returned from fetch_bar_chart_data.  We set this up now.
 Create a new file :code:`demo/mydashboard/data.py`::
 
-    from wildcoeus.dashboards.component.chart import ChartData
+    import json
 
     class DashboardData:
         @staticmethod
-        def fetch_bar_chart_data(**kwargs) -> ChartData:
+        def fetch_bar_chart_data(**kwargs) -> str:
             data = {"giraffes": 20, "orangutans": 14, "monkeys": 23}
 
-            return ChartData(
+            return json.dumps(dict(
                 data=[
-                    ChartData.Trace(
+                    dict(
                         x=list(data.keys()),
                         y=list(data.values()),
-                        type=ChartData.Trace.Type.BAR,
+                        type="bar",
                     )
                 ]
             )
 
-This returns a ChartData object with values for x, y, and type.  This is interporated by the component and rendered as a bar chart.
+This returns a json object with values for x, y, and type.  This is interporated by the component and rendered as a bar chart.
 
 Config
 ------

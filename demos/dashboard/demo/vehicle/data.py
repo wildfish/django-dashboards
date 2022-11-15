@@ -1,3 +1,4 @@
+import json
 from collections import namedtuple
 
 from django.db.models import Max
@@ -5,7 +6,6 @@ from django.utils.safestring import mark_safe
 
 from demo.vehicle.models import Data, Parameter, Vehicle
 
-from wildcoeus.dashboards.component.map import MapData
 from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.component.text import StatData
 
@@ -121,26 +121,30 @@ class VehicleData:
         lat_coords = [location.lat for location in locations]
         lon_coords = [location.lon for location in locations]
 
-        return MapData(
-            data=[
-                MapData.ScatterGeo(
-                    lat=lat_coords,
-                    lon=lon_coords,
-                    line={"width": 2, "color": "red"},
-                )
-            ],
-            layout=dict(
-                title="Map of Last Job",
-                showlegend=False,
-                geo={
-                    "showland": True,
-                    "showlakes": True,
-                    "landcolor": "rgb(204, 204, 204)",
-                    "countrycolor": "rgb(204, 204, 204)",
-                    "lakecolor": "rgb(255, 255, 255)",
-                    "fitbounds": "locations",
-                },
-            ),
+        return json.dumps(
+            dict(
+                data=[
+                    dict(
+                        lat=lat_coords,
+                        lon=lon_coords,
+                        mode="markers+text",
+                        type="scattergeo",
+                        line={"width": 2, "color": "red"},
+                    )
+                ],
+                layout=dict(
+                    title="Map of Last Job",
+                    showlegend=False,
+                    geo={
+                        "showland": True,
+                        "showlakes": True,
+                        "landcolor": "rgb(204, 204, 204)",
+                        "countrycolor": "rgb(204, 204, 204)",
+                        "lakecolor": "rgb(255, 255, 255)",
+                        "fitbounds": "locations",
+                    },
+                ),
+            )
         )
 
     @staticmethod
@@ -160,28 +164,29 @@ class VehicleData:
         lat_coords = [location.lat for location in locations]
         lon_coords = [location.lon for location in locations]
 
-        w = MapData(
-            data=[
-                MapData.ScatterGeo(
-                    text=vehicle_list,
-                    lat=lat_coords,
-                    lon=lon_coords,
-                    mode="markers+text",
-                    line={"width": 2, "color": "red"},
-                )
-            ],
-            layout=dict(
-                title="Map of Last Job",
-                showlegend=False,
-                geo={
-                    "showland": True,
-                    "showlakes": True,
-                    "landcolor": "rgb(204, 204, 204)",
-                    "countrycolor": "rgb(204, 204, 204)",
-                    "lakecolor": "rgb(255, 255, 255)",
-                    "fitbounds": "locations",
-                },
-            ),
+        return json.dumps(
+            dict(
+                data=[
+                    dict(
+                        text=vehicle_list,
+                        lat=lat_coords,
+                        lon=lon_coords,
+                        mode="markers+text",
+                        type="scattergeo",
+                        line={"width": 2, "color": "red"},
+                    )
+                ],
+                layout=dict(
+                    title="Map of Last Job",
+                    showlegend=False,
+                    geo={
+                        "showland": True,
+                        "showlakes": True,
+                        "landcolor": "rgb(204, 204, 204)",
+                        "countrycolor": "rgb(204, 204, 204)",
+                        "lakecolor": "rgb(255, 255, 255)",
+                        "fitbounds": "locations",
+                    },
+                ),
+            )
         )
-
-        return w

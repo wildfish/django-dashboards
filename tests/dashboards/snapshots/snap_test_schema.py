@@ -238,21 +238,7 @@ snapshots["test_view__dashboards 1"] = [
                 "isDeferred": False,
                 "key": "component_7",
                 "renderType": "Chart",
-                "value": {
-                    "data": [
-                        {
-                            "marker": {},
-                            "mode": None,
-                            "name": None,
-                            "orientation": "v",
-                            "text": None,
-                            "type": None,
-                            "x": ["a"],
-                            "y": ["b"],
-                        }
-                    ],
-                    "layout": {},
-                },
+                "value": '{"data": [{"x": ["a"], "y": ["b"]}], "layout": {}}',
                 "width": 6,
             },
         ],

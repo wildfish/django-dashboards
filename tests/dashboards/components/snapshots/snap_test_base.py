@@ -16,9 +16,8 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
-    <script id="data_test" type="application/json">"value"</script>
     <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
+        var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
@@ -104,9 +103,8 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
-    <script id="data_test" type="application/json">"value"</script>
     <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
+        var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
@@ -192,9 +190,8 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
-    <script id="data_test" type="application/json">"value"</script>
     <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
+        var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
@@ -280,9 +277,8 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
-    <script id="data_test" type="application/json">"value"</script>
     <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
+        var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
@@ -418,9 +414,8 @@ snapshots[
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
         
-    <script id="data_test" type="application/json">"value"</script>
     <script>
-        var data_test = JSON.parse(document.getElementById('data_test').textContent);
+        var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,

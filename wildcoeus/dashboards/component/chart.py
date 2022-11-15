@@ -1,65 +1,9 @@
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Callable, Optional, Union
+from dataclasses import dataclass
+from typing import Callable, Optional
 
 from django.http import HttpRequest
 
 from .base import Component
-
-
-@dataclass
-class ChartData:
-    @dataclass
-    class Trace:
-        class Mode(Enum):
-            LINE = "lines"
-            SCATTER = "markers"
-            SCATTER_LINE = "lines+markers"
-
-        class Type(Enum):
-            BAR = "bar"
-            SCATTER = "scatter"
-
-        x: Optional[list[Any]] = None
-        y: Optional[list[Any]] = None
-        text: Optional[list] = None
-        type: Optional[Type] = None
-        mode: Optional[Mode] = None
-        name: Optional[str] = None
-        orientation: Optional[str] = "v"
-        marker: Optional[dict] = field(default_factory=lambda: {})
-
-    @dataclass
-    class Gauge:
-        class Mode(Enum):
-            STANDARD = "gauge+number"
-            DELTA = "gauge+number+delta"
-
-        domain: dict
-        value: int
-        title: Optional[dict] = None
-        mode: Optional[Mode] = None
-        delta: Optional[dict] = None
-        gauge: Optional[dict] = None
-        type: str = "indicator"
-
-    @dataclass
-    class Sankey:
-        type: str = "sankey"
-        orientation: str = "h"
-        arrangement: str = "fixed"
-        node: Optional[dict] = None
-        link: Optional[dict] = None
-
-    @dataclass
-    class Pie:
-        type: str = "pie"
-        values: Optional[list[Any]] = None
-        labels: Optional[list[Any]] = None
-        hole: Optional[float] = 0
-
-    data: list[Union[Gauge, Trace, Sankey, Pie, Any]]
-    layout: Optional[dict[str, str]] = None
 
 
 @dataclass
@@ -68,6 +12,7 @@ class Chart(Component):
     displayModeBar: Optional[bool] = True
     staticPlot: Optional[bool] = False
 
-    # Expect charts to return chart data
-    value: Optional[ChartData] = None
-    defer: Optional[Callable[[HttpRequest], ChartData]] = None
+    # Charts return json or for now str, we need better validation around this.
+    # we should also probably accept objects which have a to_json() on them
+    value: Optional[str] = None
+    defer: Optional[Callable[[HttpRequest], str]] = None
