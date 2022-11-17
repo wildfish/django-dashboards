@@ -3,7 +3,6 @@ from django.http.response import Http404
 
 import pytest
 
-from wildcoeus.dashboards import permissions
 from wildcoeus.dashboards.dashboard import ModelDashboard
 
 
