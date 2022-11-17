@@ -175,14 +175,17 @@ class Dashboard(metaclass=DashboardType):
         return [permission() for permission in permissions_classes]
 
     @classmethod
-    def has_permissions(cls, request: HttpRequest) -> bool:
+    def has_permissions(cls, request: HttpRequest, handle: bool = True):
         """
         Check if the request should be permitted.
         Raises exception if the request is not permitted.
         """
         for permission in cls.get_dashboard_permissions():
             if not permission.has_permission(request):
-                return False
+                if handle:
+                    return permission.handle_no_permission(request)
+                else:
+                    return False
         return True
 
     @classmethod

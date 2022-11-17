@@ -46,7 +46,7 @@ def test_get_dashboard__dashboard_class_not_defined__found(rf, dashboard):
         dashboard="testdashboard",
     )
 
-    assert view.get_dashboard(request=request)
+    assert view.dispatch(view.request, *view.args, **view.kwargs)
 
 
 def test_get_dashboard__dashboard_class_not_defined__not_found(rf, dashboard):
@@ -59,7 +59,7 @@ def test_get_dashboard__dashboard_class_not_defined__not_found(rf, dashboard):
     )
 
     with pytest.raises(Http404):
-        view.get_dashboard(request=request)
+        assert view.dispatch(view.request, *view.args, **view.kwargs)
 
 
 @pytest.mark.django_db

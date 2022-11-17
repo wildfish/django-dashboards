@@ -20,16 +20,8 @@ class HasValueProtocol(Protocol):
 class DashboardObjectMixin:
     dashboard_class: Optional[Dashboard] = None
 
-    def get_dashboard_kwargs(self: HasValueProtocol, request: HttpRequest) -> dict:
-        kwargs = {"request": request}
-        if self.dashboard_class:
-            kwargs[self.dashboard_class._meta.lookup_kwarg] = self.kwargs.get(
-                self.dashboard_class._meta.lookup_kwarg
-            )
-
-        return kwargs
-
-    def get_dashboard(self: HasValueProtocol, request: HttpRequest) -> Dashboard:
+    def dispatch(self, request, *args, **kwargs):
+        print(";dis")
         if not self.dashboard_class:
             try:
                 self.dashboard_class = get_dashboard_class(
@@ -38,11 +30,24 @@ class DashboardObjectMixin:
             except DashboardNotFoundError as e:
                 raise Http404(str(e))
 
-        has_permissions = self.dashboard_class.has_permissions(request=request)
-        if not has_permissions:
+        has_perm = self.dashboard_class.has_permissions(request=request, handle=True)
+        # if has perm is not a bool, it's the result of a permission.handle_no_permission
+        if not isinstance(has_perm, bool):
+            return has_perm
+        # else it is a bool, but False, the permission was not handled to assume PermissionDenied
+        elif not has_perm:
             raise PermissionDenied()
 
-        return self.dashboard_class(**self.get_dashboard_kwargs(request=request))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_dashboard(self: HasValueProtocol, request: HttpRequest) -> Dashboard:
+        kwargs = {"request": request}
+        if self.dashboard_class:
+            kwargs[self.dashboard_class._meta.lookup_kwarg] = self.kwargs.get(
+                self.dashboard_class._meta.lookup_kwarg
+            )
+
+        return self.dashboard_class(**kwargs)
 
 
 class DashboardView(DashboardObjectMixin, TemplateView):
