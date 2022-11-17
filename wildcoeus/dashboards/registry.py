@@ -59,7 +59,7 @@ class Registry(object):
 
     @property
     def urls(self):
-        return self.get_urls(), "dashboards", "wildcoeus"
+        return self.get_urls()
 
 
 registry = Registry()

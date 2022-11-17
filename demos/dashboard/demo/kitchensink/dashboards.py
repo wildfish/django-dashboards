@@ -43,7 +43,7 @@ class DemoDashboard(Dashboard):
     link = CTA(
         value=CTAData(
             href=reverse_lazy(
-                "wildcoeus.dashboards:dashboards:kitchensink_demodashboardcustomtemplate"
+                "wildcoeus.dashboards:kitchensink_demodashboardcustomtemplate"
             ),
             text="Find out more!",
         ),

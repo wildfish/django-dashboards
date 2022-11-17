@@ -211,7 +211,7 @@ class Dashboard(metaclass=DashboardType):
 
     @classmethod
     def get_absolute_url(cls):
-        return reverse(f"wildcoeus.dashboards:dashboards:{cls.get_slug()}")
+        return reverse(f"wildcoeus.dashboards:{cls.get_slug()}")
 
     def get_context(self) -> dict:
         return {"dashboard": self, "components": self.get_components()}
@@ -267,7 +267,7 @@ class ModelDashboard(Dashboard):
 
     def get_absolute_url(self):
         return reverse(
-            f"wildcoeus.dashboards:dashboards:{self.get_slug()}_dashboard_detail",
+            f"wildcoeus.dashboards:{self.get_slug()}_dashboard_detail",
             kwargs={self._meta.lookup_kwarg: self.object.pk},
         )
 

@@ -11,6 +11,7 @@ Dashboards
    :caption: Contents:
 
    howto/quickstart.rst
+   howto/views.rst
    howto/components.rst
    howto/layout.rst
    howto/permissions.rst
