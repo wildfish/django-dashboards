@@ -21,7 +21,6 @@ class DashboardObjectMixin:
     dashboard_class: Optional[Dashboard] = None
 
     def dispatch(self, request, *args, **kwargs):
-        print(";dis")
         if not self.dashboard_class:
             try:
                 self.dashboard_class = get_dashboard_class(

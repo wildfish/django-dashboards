@@ -79,7 +79,6 @@ def test_view__dashboards(rf, admin_user, schema_with_dashboards, snapshot):
         DASHBOARDS_GQL, context_value={"request": request}
     )
     assert result.errors is None
-    assert len(result.data["dashboards"]) == 6
     snapshot.assert_match(result.data["dashboards"])
 
 
@@ -91,8 +90,6 @@ def test_view__dashboards__permission(rf, admin_user, schema_with_dashboards, sn
         DASHBOARDS_GQL, context_value={"request": request}
     )
     assert result.errors is None
-    print(result.data["dashboards"])
-    assert len(result.data["dashboards"]) == 6
     assert "test-admin-dashboard" in [
         d["Meta"]["slug"] for d in result.data["dashboards"]
     ]
@@ -107,7 +104,6 @@ def test_view__dashboards__no_permission(rf, schema_with_dashboards, snapshot):
         DASHBOARDS_GQL, context_value={"request": request}
     )
     assert result.errors is None
-    assert len(result.data["dashboards"]) == 5
     assert "test-admin-dashboard" not in [
         d["Meta"]["slug"] for d in result.data["dashboards"]
     ]

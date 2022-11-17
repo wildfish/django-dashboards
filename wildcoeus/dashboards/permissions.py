@@ -1,9 +1,10 @@
+from typing import Union
 from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import resolve_url
 
 
@@ -17,10 +18,8 @@ class BasePermission:
     raise_exception: bool = False
     redirect_field_name: str = "next"
 
-    def has_permission(self, request):  # pragma: no cover
-        raise NotImplementedError(
-            "Subclasses of BasePermission must provide a has_permission() method."
-        )
+    def has_permission(self, request) -> bool:
+        return False
 
     def get_login_url(self):
         """
@@ -47,7 +46,9 @@ class BasePermission:
         """
         return self.redirect_field_name
 
-    def handle_no_permission(self, request: HttpRequest):
+    def handle_no_permission(
+        self, request: HttpRequest
+    ) -> Union[PermissionDenied, HttpResponseRedirect]:
         if self.raise_exception or request.user.is_authenticated:
             raise PermissionDenied(self.get_permission_denied_message())
 
@@ -82,7 +83,7 @@ class AllowAny(BasePermission):
     Allows access to anyone.
     """
 
-    def has_permission(self, request):
+    def has_permission(self, request) -> bool:
         return True
 
 
@@ -91,7 +92,7 @@ class IsAuthenticated(BasePermission):
     Allows access to authenticated users.
     """
 
-    def has_permission(self, request):
+    def has_permission(self, request) -> bool:
         return bool(request.user and request.user.is_authenticated)
 
 
@@ -100,5 +101,5 @@ class IsAdminUser(BasePermission):
     Allows access to staff users.
     """
 
-    def has_permission(self, request):
+    def has_permission(self, request) -> bool:
         return bool(request.user and request.user.is_staff)
