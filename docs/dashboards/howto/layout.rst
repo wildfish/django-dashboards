@@ -36,8 +36,8 @@ We can add a custom layout to the example dashboard from the quickstart guide
         class Layout(Dashboard.Layout):
             components = ComponentLayout(
                 HTML("<p>Welcome to our demo app</p>"),
-                Card("text_example", width=12),
-                Card("chart_example", width=12)
+                Card("text_example", grid_css_classes="span-12"),
+                Card("chart_example", grid_css_classes="span-12")
             )
 
 This will render the dashboard with a html paragraph tag, followed by the text_example,
@@ -61,13 +61,13 @@ This is a very basic example but you can do much more.  Lets now change the layo
             HTML("<p>Below is the results from our investigation:</p>"),
             Card(
                 HTML("<h1>Chart Example</h1>"),
-                Div("chart_example", width=12),
-                width=6
+                Div("chart_example", grid_css_classes="span-12"),
+                grid_css_classes="span-6"
             ),
             Card(
                 HTML("<h1>Text Example</h1>"),
-                Div("text_example", width=12),
-                width=6
+                Div("text_example", grid_css_classes="span-12"),
+                grid_css_classes="span-6"
             ),
             HR(),
             HTML("<p>Please contact us for more information.</p>")
@@ -86,19 +86,48 @@ HTMLComponentLayout attributes
 
 All :code:`HTMLComponentLayout` objects can accept a number of kwargs.
 These vary depending on the element but common to all objects are
-:code:`css_classes` and :code:`width`.  In the complex example above
-we used the width attribute to lay the divs in the card side by side.
-If we had 3 components we could add the extra card and change the width to 4.::
+:code:`css_classes` and :code:`grid_css_classes`.
+
+grid_css_classes
+================
+
+In the complex example above
+we used the grid_css_classes attribute to lay the divs in the card side by side.
+If we had 3 components we could add the extra card and change the grid_css_classes to "span-4".::
 
     Card(
         "text_example",
-        width=4
+        grid_css_classes="span-4"
     ),
 
-This adds a css class :code:`span-{width}` e.g. :code:`span-4` to the element.
 The css grid layout is based on 12 columns.
 
-You can also add extra css classes to your HTMLComponentLayout elements by::
+To save on typing and to make things easier to update we recommend creating a helper
+class to define css classes.  e.g.::
+
+    class Grid(Enum):
+        DEFAULT = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
+        ONE = "span-12"
+        TWO = "span-6 sm-span-12"
+        THREE = "span-4 sm-span-12"
+        FOUR = "span-3 sm-span-12"
+
+This should look familiar to someone who uses the bootstrap stylesheet
+
+You can then use this on the component::
+
+    Card(
+        "text_example",
+        grid_css_classes=Grid.THREE.value
+    )
+
+Any component which does not have :code:`grid_css_classes` will automatically get one assigned based on
+the settings :code:`WILDCOEUS_DEFAULT_GRID_CSS` by default this is set to :code:`span-6`
+
+css_classes
+===========
+
+You can add extra css classes to your HTMLComponentLayout elements by::
 
     Div(
         HTML("Lorem ipsum dolor sit amet"),
@@ -111,6 +140,7 @@ This generates::
       <div class="span-12 ">Lorem ipsum dolor sit amet</div>
     </div>
 
+not that setting this does not remove the :code:`grid_css_classes` but instead appends to it
 
 Component Layout Objects
 ------------------------
@@ -119,7 +149,7 @@ These live in :code:`wildcoeus.dashboards.component.layout`.
 
 **Div**: Simply wraps the contents in a <div>::
 
-    Div(HTML("<p>Please contact us for more information.</p>"), css_classes="more-styles", width=6))
+    Div(HTML("<p>Please contact us for more information.</p>"), css_classes="more-styles", grid_css_classes="span-6"))
 
 
 generates::
@@ -131,7 +161,7 @@ generates::
 
 **Card**: A common layout element used in popular css templates such as Bootstrap::
 
-    Card(HTML("<p>Please contact us for more information.</p>"), width=12, css_classes="more-styles", heading="some title" footer="some footer text" image_url="" actions=[("http://google.com", "Google")])
+    Card(HTML("<p>Please contact us for more information.</p>"), grid_css_classes="span-12", css_classes="more-styles", heading="some title" footer="some footer text" image_url="" actions=[("http://google.com", "Google")])
 
 This example would generate the following html::
 
@@ -161,14 +191,14 @@ This example would generate the following html::
         Tab(
             "Tab 1",
             HTML("Lorem ipsum dolor sit amet."),
-            width=12,
+            grid_css_classes="span-12",
         ),
         Tab(
             "Tab 2",
             HTML("Please contact us for more information."),
-            width=12,
+            grid_css_classes="span-12",
         ),
-        width=12,
+        grid_css_classes="span-12",
     ),
 
 Note All :code:`Tab` s must be wrapped in a :code:`TabContainer`::
@@ -247,7 +277,6 @@ which is a path to a html file to render.  Lets create a new :code:`DivWithImage
     class DivWithImage(HTMLComponentLayout):
         template_name: str = "demo/div_with_image.html"
         image_url: str = ""
-        width: int = 12
 
 Now lets create the template. Create a new file :code:`demo/templates/demo/div_with_image.html`::
 

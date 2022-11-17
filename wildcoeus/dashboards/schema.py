@@ -42,7 +42,7 @@ class ComponentSchema:
     is_deferred: bool
     key: Optional[str]
     render_type: Optional[str]
-    width: Optional[int]
+    grid_css_classes: Optional[str]
 
     @strawberry.field()
     def value(self, root: Component, info: Info) -> Optional[strawberry.scalars.JSON]:

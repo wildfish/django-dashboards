@@ -236,8 +236,8 @@ class Dashboard(metaclass=DashboardType):
 
             def _get_layout(c: Component) -> dict:
                 return {
-                    "width": c.width,
-                    "css_classes": f"{c.css_classes if c.css_classes else ''} {Card.css_classes}",
+                    "grid_css_classes": c.grid_css_classes,
+                    "css_classes": c.css_classes or "",
                 }
 
             layout.components = ComponentLayout(

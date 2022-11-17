@@ -19,7 +19,6 @@ DASHBOARD_GQL = """
         components {
           key
           value
-          width
           isDeferred
           renderType
         }
@@ -62,7 +61,6 @@ def test_view__dashboards(rf, admin_user, schema_with_dashboards, snapshot):
             components {
               key
               value
-              width
               isDeferred
               renderType
             }

@@ -1,3 +1,4 @@
+from enum import Enum
 from random import randint
 
 from django.http import HttpRequest
@@ -9,6 +10,7 @@ from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
 from faker import Faker
 
+from wildcoeus.dashboards import config
 from wildcoeus.dashboards.component import (
     CTA,
     BasicTable,
@@ -36,6 +38,17 @@ from wildcoeus.dashboards.permissions import IsAdminUser
 from wildcoeus.dashboards.registry import registry
 
 
+class Grid(Enum):
+    """define css classes here for grid layout"""
+
+    DEFAULT = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
+    ONE = "span-12"
+    DOUBLE = "span-9 sm-span-12"
+    TWO = "span-6 sm-span-12"
+    THREE = "span-4 sm-span-12"
+    FOUR = "span-3 sm-span-12"
+
+
 fake = Faker()
 
 
@@ -47,46 +60,65 @@ class DemoDashboard(Dashboard):
             ),
             text="Find out more!",
         ),
-        width=3,
+        grid_css_classes=Grid.THREE.value,
     )
     text_example = Text(
         value="Rendered on load",
-        width=3,
+        grid_css_classes=Grid.THREE.value,
     )
     html_example = Text(
-        value="<strong>HTML also rendered on load</strong>", mark_safe=True, width=3
+        value="<strong>HTML also rendered on load</strong>",
+        mark_safe=True,
+        grid_css_classes=Grid.THREE.value,
     )
-    calculated_example = Text(defer=lambda **kwargs: "Deferred text", width=3)
+    calculated_example = Text(
+        defer=lambda **kwargs: "Deferred text",
+        grid_css_classes=Grid.THREE.value,
+    )
     form_example = Form(
         form=AnimalForm,
         method="get",
         dependents=["chart_example", "stacked_chart_example", "stat_three"],
-        width=3,
+        grid_css_classes=Grid.THREE.value,
     )
-    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=3)
+    chart_example = Chart(
+        defer=DashboardData.fetch_bar_chart_data, grid_css_classes=Grid.THREE.value
+    )
     stacked_chart_example = Chart(
-        defer=DashboardData.fetch_stacked_bar_chart_data, width=3, poll_rate=5
+        defer=DashboardData.fetch_stacked_bar_chart_data,
+        grid_css_classes=Grid.THREE.value,
+        poll_rate=5,
     )
-    bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data, width=3)
+    bubble_chart_example = Chart(
+        defer=DashboardData.fetch_bubble_chart_data, grid_css_classes=Grid.THREE.value
+    )
     filter_form = Form(
         form=ExampleForm,
         method="get",
         dependents=["line_chart_example", "stat_three"],
-        width=3,
+        grid_css_classes=Grid.THREE.value,
     )
-    line_chart_example = Chart(defer=DashboardData.fetch_scatter_chart_data, width=9)
-    stat_one = Stat(value={"text": "100%", "sub_text": "increase"}, width=4)
-    stat_two = Stat(value={"text": "88%", "sub_text": "increase"}, width=4)
+    line_chart_example = Chart(
+        defer=DashboardData.fetch_scatter_chart_data, grid_css_classes=Grid.DOUBLE.value
+    )
+    stat_one = Stat(
+        value={"text": "100%", "sub_text": "increase"}, grid_css_classes=Grid.FOUR.value
+    )
+    stat_two = Stat(
+        value={"text": "88%", "sub_text": "increase"}, grid_css_classes=Grid.FOUR.value
+    )
     stat_three = Stat(
         defer=lambda **kwargs: {
             "text": "33%",
             "sub_text": kwargs.get("filters", {}).get("country", "all"),
         },
-        width=4,
+        grid_css_classes=Grid.FOUR.value,
     )
     gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
     gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
-    free_text_example = Text(defer=DashboardData.fetch_html, mark_safe=True, width=12)
+    free_text_example = Text(
+        defer=DashboardData.fetch_html, mark_safe=True, grid_css_classes=Grid.ONE.value
+    )
     table_example = Table(
         page_size=5,
         columns=[
@@ -145,45 +177,50 @@ class DemoDashboardCustomTemplate(DemoDashboard):
 
 
 class DemoDashboardWithLayout(DemoDashboard):
-    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data, width=12)
-    calculated_example = Text(defer=lambda **kwargs: "some calculated text", width=3)
-    table_example = Table(defer=DashboardData.fetch_table_data, width=12)
+    chart_example = Chart(
+        defer=DashboardData.fetch_bar_chart_data, grid_css_classes=Grid.ONE.value
+    )
+    calculated_example = Text(
+        defer=lambda **kwargs: "some calculated text", grid_css_classes=Grid.THREE.value
+    )
+    table_example = Table(
+        defer=DashboardData.fetch_table_data, grid_css_classes=Grid.ONE.value
+    )
 
     class Meta:
         name = "With Layout"
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
-            Header(heading="Header", size=2, width=12),
+            Header(heading="Header", size=2),
             HTML(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend "
+                "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend "
                 "diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum "
-                "dolor sit amet, consectetur adipiscing elit.",
-                width=12,
+                "dolor sit amet, consectetur adipiscing elit.</p>",
             ),
-            Card("text_example", "html_example", width=3),
+            Card("text_example", "html_example", grid_css_classes=Grid.THREE.value),
             Card(
                 Div("stat_one"),
                 Div("stat_two"),
                 Div("stat_three"),
-                width=9,
+                grid_css_classes=Grid.DOUBLE.value,
             ),
-            HR(width=12),
-            Header(heading="Tab Example", size=3, width=12),
+            HR(),
+            Header(heading="Tab Example", size=3),
             TabContainer(
                 Tab(
                     "Calculated Example",
                     Card("calculated_example"),
                     Card("chart_example"),
-                    width=12,
+                    grid_css_classes=Grid.ONE.value,
                 ),
                 Tab(
                     "Table Example",
                     Card("table_example"),
                     Card("gauge_two"),
-                    width=12,
+                    grid_css_classes=Grid.ONE.value,
                 ),
-                width=12,
+                grid_css_classes=Grid.ONE.value,
             ),
         )
 
@@ -210,7 +247,8 @@ class DynamicDashboard(Dashboard):
         # Generated components
         for r in range(1, 3):
             self.components[f"dynamic_component_{r}"] = Text(
-                value=f"Rendered Dynamically via __init__: {r}", width=6
+                value=f"Rendered Dynamically via __init__: {r}",
+                grid_css_classes=Grid.TWO.value,
             )
 
         # Components with shared seed data
@@ -240,7 +278,7 @@ class DynamicDashboard(Dashboard):
         # Apply a change such as width or css to already defined components
         change_width_for = ["width_test_one", "width_test_two"]
         for component in change_width_for:
-            self.components[component].width = 3
+            self.components[component].grid_css_classes = Grid.ONE.value
             self.components[component].css_classes = "dynamic"
 
         # drop a component depending on user
@@ -259,7 +297,10 @@ class DynamicDashboard(Dashboard):
                 )
             )
             self.Layout.components = ComponentLayout(
-                *[Div(k, width=3) for k, c in self.components.items()]
+                *[
+                    Div(k, grid_css_classes=Grid.THREE.value)
+                    for k, c in self.components.items()
+                ]
             )
         else:
             self.components["layout_swap"] = CTA(
@@ -270,16 +311,11 @@ class DynamicDashboard(Dashboard):
             )
             self.Layout.components = None
 
-        # Reorder fields
-        self.components = {
-            k: v for k, v in sorted(self.components.items(), key=lambda c: c[1].width)
-        }
-
-    standard_field = Text(value="Standard field", width=6)
+    standard_field = Text(value="Standard field", grid_css_classes=Grid.TWO.value)
     width_test_one = Text(value="Width Changed 1")
     width_test_two = Text(value="Width Changed 2")
-    value_from_method = Text(width=6)
-    defer_from_method = Text(width=6)
+    value_from_method = Text(grid_css_classes=Grid.TWO.value)
+    defer_from_method = Text(grid_css_classes=Grid.TWO.value)
     stat_shared = SharedComponent()
 
     def get_value_from_method_value(self, **kwargs):
