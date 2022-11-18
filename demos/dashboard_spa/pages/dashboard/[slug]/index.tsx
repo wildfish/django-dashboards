@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             components{
               key
               value
-              width
+              gridCssClasses
               isDeferred
               renderType
             }
