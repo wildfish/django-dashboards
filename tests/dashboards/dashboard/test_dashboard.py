@@ -1,7 +1,6 @@
 import pytest
 
 from tests.dashboards.dashboards import TestDashboard, TestModelDashboard
-from wildcoeus.dashboards import permissions
 from wildcoeus.dashboards.component import Text
 from wildcoeus.dashboards.dashboard import Dashboard
 
@@ -98,51 +97,6 @@ def test_dashboard__class_name_method(dashboard_class):
 )
 def test_dashboard__get_slug_method(dashboard_class):
     assert dashboard_class["klass"].get_slug() == dashboard_class["expected"]
-
-
-@pytest.mark.django_db
-def test_dashboard__get_dashboard_permissions__permissions_set(admin_dashboard):
-    assert admin_dashboard.get_dashboard_permissions() == [permissions.IsAdminUser()]
-
-
-@pytest.mark.django_db
-def test_dashboard__get_dashboard_permissions__no_permissions_set__uses_default(
-    dashboard, settings
-):
-    settings.WILDCOEUS_DEFAULT_PERMISSION_CLASSES = [
-        "wildcoeus.dashboards.permissions.IsAdminUser"
-    ]
-    assert dashboard.get_dashboard_permissions() == [permissions.IsAdminUser()]
-
-
-@pytest.mark.django_db
-def test_dashboard__has_permission_fails_for_non_admin(user, rf):
-    class TestDashboard(Dashboard):
-        class Meta:
-            name = "Test Dashboard"
-            app_label = "app1"
-            permission_classes = [permissions.IsAdminUser]
-
-    request = rf.get("/")
-    request.user = user
-    dashboard = TestDashboard(request=request)
-
-    assert dashboard.has_permissions(request) is False
-
-
-@pytest.mark.django_db
-def test_dashboard__has_permission_passes_for_authenticated_user(user, rf):
-    class TestDashboard(Dashboard):
-        class Meta:
-            name = "Test Dashboard"
-            app_label = "app1"
-            permission_classes = [permissions.IsAuthenticated]
-
-    request = rf.get("/")
-    request.user = user
-    dashboard = TestDashboard(request=request)
-
-    assert dashboard.has_permissions(request) is True
 
 
 def test_dashboard__str(dashboard, rf):

@@ -1,5 +1,4 @@
 import json
-from typing import Any, Dict
 
 import plotly.express as px
 from demo.kitchensink.models import FlatText
