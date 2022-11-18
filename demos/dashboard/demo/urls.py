@@ -20,7 +20,7 @@ urlpatterns = [
         ),
     ),
     path(
-        f"dashboard/",
+        "dashboard/",
         include("wildcoeus.dashboards.urls"),
     ),
     path("admin/", admin.site.urls),
