@@ -42,6 +42,35 @@ def test_html_component__render(rf, component_class, dashboard, snapshot):
     )
 
 
+@pytest.mark.parametrize("component_class", [Div, Tab, Card])
+def test_html_component__grid_css_classes__render(rf, component_class, dashboard):
+    request = rf.get("/")
+    context = Context({"request": request})
+
+    html = component_class("component_1", grid_css_classes="grid-12").render(
+        dashboard=dashboard(request=request), context=context
+    )
+
+    assert "grid-12" in html
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("component_class", [Div, Tab, Card])
+def test_html_component__grid_css_classes_not_set__default(
+    rf, component_class, dashboard, settings
+):
+    settings.WILDCOEUS_DEFAULT_GRID_CSS = "default-css-class"
+
+    request = rf.get("/")
+    context = Context({"request": request})
+
+    html = component_class("component_1").render(
+        dashboard=dashboard(request=request), context=context
+    )
+
+    assert "default-css-class" in html
+
+
 def test_tab_container__render(rf, dashboard, snapshot):
     request = rf.get("/")
     context = Context({"request": request})

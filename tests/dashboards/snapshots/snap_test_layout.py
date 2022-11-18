@@ -9,8 +9,8 @@ snapshots = Snapshot()
 
 snapshots[
     "test_dashboard__render_layout 1"
-] = """}{<div class="span-12 "><hr /></div><div class="span-12 ">
-  <div class="span-99 css_style">
+] = """}{<hr /><div class="span-6">
+  <div class="span-6 css_style">
   
 
 
@@ -22,7 +22,7 @@ value
 
     </div>
 
-</div><div class="span-12 css_style">
+</div><div class="span-6 css_style">
   
 
 
@@ -33,15 +33,13 @@ value
 </div>
 </div>"""
 
-snapshots[
-    "test_header__render 1"
-] = '<div class="span-12 "><h2>some text....</h2></div>'
+snapshots["test_header__render 1"] = "<h2>some text....</h2>"
 
-snapshots["test_html__render 1"] = '<div class="span-12 ">some text....</div>'
+snapshots["test_html__render 1"] = "some text...."
 
 snapshots[
     "test_html_component__render[Card] 1"
-] = """<div class="span-6 ">
+] = """<div class="span-6">
   <div class="card css_class">
     
     
@@ -64,7 +62,7 @@ value
 
 snapshots[
     "test_html_component__render[Div] 1"
-] = """<div class="span-12 css_class">
+] = """<div class="span-6 css_class">
   
 
 
@@ -138,17 +136,17 @@ value from callable
 
 snapshots[
     "test_tab_container__render 1"
-] = """<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text-width12\' }">
+] = """<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text\' }">
     <ul id="" class="" >
         <li class="None">
-  <a :class="{ \'active\': tab === \'htmlhtmlsome-text-width12\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text-width12\'" href="#" class="None">
-    HTML(html=&#x27;some text....&#x27;, width=12)
+  <a :class="{ \'active\': tab === \'htmlhtmlsome-text\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text\'" href="#" class="None">
+    HTML(html=&#x27;some text....&#x27;)
   </a>
 </li>
     </ul>
 
     <div class="tab-content">
-        <div :class="{ \'active show\': tab === \'htmlhtmlsome-text-width12\' }" x-show="tab === \'htmlhtmlsome-text-width12\'">
+        <div :class="{ \'active show\': tab === \'htmlhtmlsome-text\' }" x-show="tab === \'htmlhtmlsome-text\'">
     <div class="span-6 tab-content">
   
 </div>

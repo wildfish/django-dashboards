@@ -10,7 +10,7 @@ export const DashboardGrid = ({dashboard}: {dashboard: Dashboard}) => (
         <h1>{dashboard.Meta.name} (Grid applied)</h1>
         <div className={styles.dashboardContainer}>
         {dashboard.components.map(c =>
-            <div className={`${componentStyles.component} ${styles[`span${c.width}`]}`} key={c.key}>
+            <div className={`${componentStyles.component} ${styles[`${c.gridCssClasses}`]}`} key={c.key}>
                 <DashboardComponent dashboard={dashboard} component={c}/>
             </div>
         )}

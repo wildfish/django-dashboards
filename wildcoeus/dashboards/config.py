@@ -11,11 +11,11 @@ class Config:
         )
 
     @property
-    def WILDCOEUS_GRID_PREFIX(cls) -> str:
+    def WILDCOEUS_DEFAULT_GRID_CSS(cls) -> str:
         return getattr(
             settings,
-            "WILDCOEUS_GRID_PREFIX",
-            "span",
+            "WILDCOEUS_DEFAULT_GRID_CSS",
+            "span-6",
         )
 
     @property

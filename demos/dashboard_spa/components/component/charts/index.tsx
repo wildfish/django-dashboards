@@ -4,10 +4,16 @@ import {Value, DataValue} from "@/types";
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 export const Plotly = ({value}: {value: Value}) => {
-    return <Plot
-        data={JSON.parse(JSON.stringify((value as DataValue).data))}
-        layout={{autosize: true}}
-        useResizeHandler={true}
-        style={{minHeight: "300px", height: "100%"}}
-    />
+    try {
+        return <Plot
+            data={JSON.parse(value).data}
+            layout={{autosize: true}}
+            useResizeHandler={true}
+            style={{minHeight: "300px", height: "100%"}}
+        />
+    } catch (err) {
+        console.log("error", err)
+        console.log(value)
+        return
+    }
 }
