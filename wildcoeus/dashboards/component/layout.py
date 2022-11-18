@@ -16,7 +16,7 @@ def css_template(*css_classes):
 class LayoutBase:
     template_name: Optional[str] = None
     css_classes: Optional[str] = None
-    grid_css_classes: Optional[str] = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
+    grid_css_classes: Optional[str] = None
 
     def __init__(
         self,
@@ -35,6 +35,8 @@ class LayoutBase:
 
         if grid_css_classes:
             self.grid_css_classes = grid_css_classes
+        else:
+            self.grid_css_classes = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
 
         self.component_context = {}
         for k, v in kwargs.items():

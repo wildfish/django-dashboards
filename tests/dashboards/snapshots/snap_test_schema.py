@@ -37,20 +37,24 @@ snapshots["test_view__dashboard__with_layout 1"] = {
     "Meta": {
         "layoutJson": {
             "component_context": {},
+            "grid_css_classes": "span-6",
             "layout_components": [
                 {"html": "<hr />", "renderType": "HR"},
                 {
                     "component_context": {},
+                    "grid_css_classes": "span-6",
                     "layout_components": [
                         {
                             "component_context": {},
                             "css_classes": "css_style",
+                            "grid_css_classes": "span-6",
                             "layout_components": ["component_1"],
                             "renderType": "Div",
                         },
                         {
                             "component_context": {},
                             "css_classes": "css_style",
+                            "grid_css_classes": "span-6",
                             "layout_components": ["component_2"],
                             "renderType": "Div",
                         },
