@@ -11,17 +11,17 @@ class Config:
         )
 
     @property
-    def WILDCOEUS_DASHBOARD_URL(cls) -> str:
-        return getattr(
-            settings,
-            "WILDCOEUS_DASHBOARD_URL",
-            "dashboard",
-        )
-
-    @property
     def WILDCOEUS_DEFAULT_GRID_CSS(cls) -> str:
         return getattr(
             settings,
             "WILDCOEUS_DEFAULT_GRID_CSS",
             "span-6",
+        )
+
+    @property
+    def WILDCOEUS_INCLUDE_DASHBOARD_VIEWS(cls) -> bool:
+        return getattr(
+            settings,
+            "WILDCOEUS_INCLUDE_DASHBOARD_VIEWS",
+            True,
         )

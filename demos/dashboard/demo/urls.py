@@ -6,8 +6,6 @@ from django.urls import include, path
 import django_eventstream
 from strawberry.django.views import GraphQLView
 
-from wildcoeus.dashboards import config
-
 from .schema import schema
 
 
@@ -22,7 +20,7 @@ urlpatterns = [
         ),
     ),
     path(
-        f"{config.Config().WILDCOEUS_DASHBOARD_URL}/",
+        "dashboard/",
         include("wildcoeus.dashboards.urls"),
     ),
     path("admin/", admin.site.urls),
