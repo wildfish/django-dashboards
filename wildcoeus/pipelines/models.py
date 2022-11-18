@@ -68,7 +68,7 @@ class PipelineExecution(models.Model):
 
 class ValueStore(TimeStampedModel):
     """
-    Used to pass lightweight data between tasks
+    Used to store lightweight data between tasks
     """
 
     pipeline_id = models.CharField(max_length=255)

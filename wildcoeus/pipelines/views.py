@@ -12,10 +12,11 @@ from wildcoeus.pipelines import config
 from wildcoeus.pipelines.models import TaskResult
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class PipelineListView(LoginRequiredMixin, TemplateView):
-    template_name = "pipelines/pipeline_list.html"
+    template_name = "wildcoeus/pipelines/pipeline_list.html"
 
     def get_context_data(self, **kwargs):
         return {
@@ -51,14 +52,28 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
 
 
 class TaskResultView(LoginRequiredMixin, TemplateView):
-    template_name = "pipelines/results_list.html"
+    template_name = "wildcoeus/pipelines/results_list.html"
 
 
 class TaskResultListView(LoginRequiredMixin, ListView):
-    template_name = "pipelines/_results_list.html"
+    template_name = "wildcoeus/pipelines/_results_list.html"
 
     def get_queryset(self):
         return TaskResult.objects.filter(run_id=self.kwargs["run_id"])
+
+    def tasks_completed(self):
+        return TaskResult.\
+            objects.\
+            filter(
+                run_id=self.kwargs["run_id"],
+                status__in=[PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
+            ).count() == 0
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        #  286 status stops htmx from polling
+        response.status_code = 286 if self.tasks_completed() else 200
+        return response
 
 
 class TaskResultReRunView(LoginRequiredMixin, SingleObjectMixin, RedirectView):

@@ -125,6 +125,7 @@ class Common(Configuration):
         "django_extensions",
         "django_celery_results",
         # pipelines
+        "wildcoeus",
         "wildcoeus.pipelines",
         "demo.basic.apps.BasicConfig",
     ]

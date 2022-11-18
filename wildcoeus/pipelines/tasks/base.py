@@ -93,7 +93,7 @@ class BaseTask:
             self.run(pipeline_id, run_id, cleaned_data)
 
             # update the result as completed
-            result.status = PipelineTaskStatus.DONE
+            result.status = PipelineTaskStatus.DONE.value
             result.completed = timezone.now()
             result.save()
 
@@ -140,7 +140,7 @@ class BaseTask:
         logger.debug("*" * 40)
 
         defaults = dict(
-            status=status, config=config, input_data=input_data, started=started
+            status=status.value, config=config, input_data=input_data, started=started
         )
         result, _ = TaskResult.objects.update_or_create(
             pipeline_id=pipeline_id,
