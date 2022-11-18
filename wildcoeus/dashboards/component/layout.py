@@ -8,21 +8,21 @@ from django.utils.safestring import mark_safe
 from .. import config
 
 
-def css_template(width: int = None, css_classes: Optional[str] = None):
-    span_width = f"{config.Config().WILDCOEUS_GRID_PREFIX}-{width}" if width else ""
-    return f"{span_width} {css_classes if css_classes else ''}"
+def css_template(*css_classes):
+    css = " ".join(filter(None, css_classes))
+    return f"{css}"
 
 
 class LayoutBase:
     template_name: Optional[str] = None
     css_classes: Optional[str] = None
-    width: Optional[int] = 6
+    grid_css_classes: Optional[str] = None
 
     def __init__(
         self,
         *layout_components,
         css_classes=None,
-        width=None,
+        grid_css_classes=None,
         **kwargs,
     ):
         if not layout_components:
@@ -33,8 +33,10 @@ class LayoutBase:
         if css_classes:
             self.css_classes = css_classes
 
-        if width:
-            self.width = width
+        if grid_css_classes:
+            self.grid_css_classes = grid_css_classes
+        else:
+            self.grid_css_classes = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
 
         self.component_context = {}
         for k, v in kwargs.items():
@@ -79,7 +81,7 @@ class HTMLComponentLayout(ComponentLayout):
         component_context = self.component_context
         component_context.update(
             {
-                "css": css_template(self.width, self.css_classes),
+                "css": css_template(self.grid_css_classes, self.css_classes),
             }
         )
 
@@ -112,7 +114,7 @@ class Card(HTMLComponentLayout):
         """split the passed in css from the layout css"""
         component_context = self.component_context
         component_context.update(
-            {"css": css_template(self.width), "card_css": self.css_classes}
+            {"css": css_template(self.grid_css_classes), "card_css": self.css_classes}
         )
 
         return component_context
@@ -120,7 +122,6 @@ class Card(HTMLComponentLayout):
 
 class Div(HTMLComponentLayout):
     template_name: str = "wildcoeus/dashboards/layout/components/div.html"
-    width: Optional[int] = 12
 
 
 class TabContainer(HTMLComponentLayout):
@@ -182,10 +183,9 @@ class Tab(HTMLComponentLayout):
 @dataclass
 class HTML:
     html: str
-    width: Optional[int] = 12
 
     def render(self, dashboard, context: Context, **kwargs):
-        to_render = f'<div class="{css_template(self.width)}">{self.html}</div>'
+        to_render = f"{self.html}"
         return Template(to_render).render(context=Context(context))
 
 

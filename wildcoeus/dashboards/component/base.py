@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from .. import config
 from ..types import ValueData
 
 
@@ -29,7 +30,7 @@ class Component:
     # replicated on LayoutBase TODO need to handle this better
     icon: Optional[str] = None  # html string .e.g <i class="fa-up"></i>
     css_classes: Optional[str] = None
-    width: Optional[int] = 6
+    grid_css_classes: Optional[str] = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
     poll_rate: Optional[int] = None  # In seconds, TODO make default a setting
     trigger_on: Optional[str] = None
 

@@ -15,9 +15,9 @@ export async function getServerSideProps() {
             components {
               key
               value
-              width
+              gridCssClasses
               isDeferred
-              renderType           
+              renderType
             }
           }
         }

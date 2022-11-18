@@ -15,6 +15,7 @@ export enum DashboardComponentTypes {
 export enum HTMLComponentTypes {
     Header = "Header",
     HTML = "HTML",
+    HR = "HR",
 }
 
 export enum LayoutComponentTypes {
@@ -45,7 +46,7 @@ export type Value = DataValue | StatValue | CTAValue | string
 export type Component = {
   key: string
   value: Value
-  width: number
+  gridCssClasses: string
   isDeferred: boolean
   renderType: DashboardComponentTypes
 }
@@ -54,7 +55,7 @@ export type Component = {
 export type LayoutComponent = {
   layout_components: LayoutComponent[],
   renderType: LayoutComponentTypes
-  width: number
+  gridCssClasses: string
   tab_label?: string
 }
 
@@ -62,7 +63,6 @@ export type LayoutComponent = {
 export type HTMLComponent = {
   html: string
   renderType: HTMLComponentTypes
-  width?: number
 }
 
 

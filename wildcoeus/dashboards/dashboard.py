@@ -211,7 +211,7 @@ class Dashboard(metaclass=DashboardType):
 
     @classmethod
     def get_absolute_url(cls):
-        return reverse(f"wildcoeus.dashboards:dashboards:{cls.get_slug()}")
+        return reverse(f"wildcoeus.dashboards:{cls.get_slug()}")
 
     def get_context(self) -> dict:
         return {"dashboard": self, "components": self.get_components()}
@@ -239,8 +239,8 @@ class Dashboard(metaclass=DashboardType):
 
             def _get_layout(c: Component) -> dict:
                 return {
-                    "width": c.width,
-                    "css_classes": f"{c.css_classes if c.css_classes else ''} {Card.css_classes}",
+                    "grid_css_classes": c.grid_css_classes,
+                    "css_classes": c.css_classes or "",
                 }
 
             layout.components = ComponentLayout(
@@ -267,7 +267,7 @@ class ModelDashboard(Dashboard):
 
     def get_absolute_url(self):
         return reverse(
-            f"wildcoeus.dashboards:dashboards:{self.get_slug()}_dashboard_detail",
+            f"wildcoeus.dashboards:{self.get_slug()}_dashboard_detail",
             kwargs={self._meta.lookup_kwarg: self.object.pk},
         )
 

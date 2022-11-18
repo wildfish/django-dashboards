@@ -19,7 +19,6 @@ DASHBOARDS_GQL = """
         components {
           key
           value
-          width
           isDeferred
           renderType
         }
@@ -39,7 +38,6 @@ DASHBOARD_GQL = """
         components {
           key
           value
-          width
           isDeferred
           renderType
         }

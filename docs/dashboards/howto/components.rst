@@ -97,7 +97,7 @@ TODO BELOW
 
 ``css_classes``
 
-``width``
+``grid_css_classes``
 
 ``poll_rate``
 

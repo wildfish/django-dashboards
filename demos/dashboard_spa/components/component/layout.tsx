@@ -25,9 +25,7 @@ type HTMLComponentProps = {
 
 
 export const HTMLComponent = ({dashboard, component}: HTMLComponentProps) => (
-    <div className={dashboardStyles[`span${component.width}`]}>
-        <HTML value={component.html}/>
-    </div>
+    <HTML value={component.html}/>
 )
 
 
@@ -90,7 +88,7 @@ export const LayoutComponentWrapper = ({dashboard, layoutComponent}: LayoutCompo
             <ConditionalWrapper
                 condition={hasNested}
                 wrapper={children => <div
-                    className={`${LayoutComponentWrapperStyle[castLayoutComponent!.renderType]} ${dashboardStyles[`span${castLayoutComponent!.width || 6}`]}`}>{children}</div>}
+                    className={`${LayoutComponentWrapperStyle[castLayoutComponent!.renderType]} ${dashboardStyles[`${castLayoutComponent!.gridCssClasses || "span6"}`]}`}>{children}</div>}
             >
                 <>
                     {

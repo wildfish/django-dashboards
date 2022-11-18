@@ -15,7 +15,7 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/" class="None">
+        <a href="/">
   click here
 </a>
 
@@ -30,7 +30,7 @@ snapshots[
 
     
     <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/" class="None">
+        <a href="/">
   click here
 </a>
 
