@@ -4,6 +4,8 @@ from wildcoeus.dashboards import config, views
 from wildcoeus.dashboards.registry import registry
 
 
+print("*" * 100)
+
 app_name = "wildcoeus.dashboards"
 
 COMPONENT_PATTERN = "<str:app_label>/<str:dashboard>/component/<str:component>/"
@@ -14,7 +16,9 @@ FORM_COMPONENT_PATTERN = "<str:app_label>/<str:dashboard>/<str:component>-form/"
 
 urlpatterns = []
 
+print("Here?")
 if config.Config().WILDCOEUS_INCLUDE_DASHBOARD_VIEWS:
+    print("or?")
     urlpatterns += [
         path("", include(registry.urls)),
     ]

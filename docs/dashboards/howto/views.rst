@@ -47,10 +47,6 @@ You can also provide a namespace as per Django's urls:
 
     reverse("customnamespace:test_demodashboard")
 
-    # template
-
-    {% url "customnamespace:test_demodashboard" %}
-
 
 Adding your own routes
 ----------------------
