@@ -14,11 +14,10 @@ Create a new Django project::
     cd demo
 
     # Create a virtual environment
-    pyenv virtualenv 3.9.9 django-wildcoeus-demo
+    pyenv virtualenv 3.11.0 django-wildcoeus-demo
     pyenv activate django-wildcoeus-demo
 
-    # Install Django and Wildcoeus into the virtual environment
-    pip install django
+    # Install
     pip install django-wildcoeus
 
     # Set up a new project
