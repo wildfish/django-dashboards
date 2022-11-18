@@ -49,6 +49,9 @@ class BasePipeline(metaclass=PipelineType):
         self.id = pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
         self.cleaned_tasks: List[Optional[BaseTask]] = []
 
+    class Meta:
+        title: str
+
     def clean_parents(
         self,
         task: BaseTask,
@@ -142,3 +145,29 @@ class BasePipeline(metaclass=PipelineType):
             )
 
         return started
+
+
+class BaseQuerysetPipeline(metaclass=PipelineType):
+    class Meta:
+        title: str
+        model: Optional[str]
+        queryset = Optional[str]
+
+    def get_queryset(self):
+        """
+        Return the list of items for this pipeline to run against.
+        """
+        if self.queryset is not None:
+            queryset = self.queryset
+            if isinstance(queryset, QuerySet):
+                queryset = queryset.all()
+        elif self.model is not None:
+            queryset = self.model._default_manager.all()
+        else:
+            raise ImproperlyConfigured(
+                "%(cls)s is missing a QuerySet. Define "
+                "%(cls)s.model, %(cls)s.queryset, or override "
+                "%(cls)s.get_queryset()." % {"cls": self.__class__.__name__}
+            )
+
+        return queryset

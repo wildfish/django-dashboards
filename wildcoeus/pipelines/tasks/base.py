@@ -153,6 +153,18 @@ class BaseTask:
         return result
 
 
+class BaseModelTask(BaseTask):
+    def __init__(self, content_type_id: int, object_id: int, config: Dict[str, Any] = {}):
+        self.content_type_id = content_type_id
+        self.object_id = object_id
+        super().__init__(config=config)
+
+    def get_object(self):
+        object_type = ContentType.objects.get_for_id(self.content_type_id)
+        obj = object_type.get_object_for_this_type(self.object_id)
+        return obj
+
+
 class BaseTaskError(Exception):
     def __init__(self, task: BaseTask, msg: str):
         super().__init__(msg)
