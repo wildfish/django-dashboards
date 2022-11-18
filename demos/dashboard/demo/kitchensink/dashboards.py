@@ -43,10 +43,10 @@ class Grid(Enum):
 
     DEFAULT = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
     ONE = "span-12"
-    DOUBLE = "span-9 sm-span-12"
-    TWO = "span-6 sm-span-12"
-    THREE = "span-4 sm-span-12"
-    FOUR = "span-3 sm-span-12"
+    DOUBLE = "span-9"
+    TWO = "span-6"
+    THREE = "span-4"
+    FOUR = "span-3"
 
 
 fake = Faker()
@@ -60,43 +60,32 @@ class DemoDashboard(Dashboard):
             ),
             text="Find out more!",
         ),
-        grid_css_classes=Grid.THREE.value,
     )
     text_example = Text(
         value="Rendered on load",
-        grid_css_classes=Grid.THREE.value,
     )
     html_example = Text(
         value="<strong>HTML also rendered on load</strong>",
         mark_safe=True,
-        grid_css_classes=Grid.THREE.value,
     )
     calculated_example = Text(
         defer=lambda **kwargs: "Deferred text",
-        grid_css_classes=Grid.THREE.value,
     )
     form_example = Form(
         form=AnimalForm,
         method="get",
         dependents=["chart_example", "stacked_chart_example", "stat_three"],
-        grid_css_classes=Grid.THREE.value,
     )
-    chart_example = Chart(
-        defer=DashboardData.fetch_bar_chart_data, grid_css_classes=Grid.THREE.value
-    )
+    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
     stacked_chart_example = Chart(
         defer=DashboardData.fetch_stacked_bar_chart_data,
-        grid_css_classes=Grid.THREE.value,
         poll_rate=5,
     )
-    bubble_chart_example = Chart(
-        defer=DashboardData.fetch_bubble_chart_data, grid_css_classes=Grid.THREE.value
-    )
+    bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
     filter_form = Form(
         form=ExampleForm,
         method="get",
         dependents=["line_chart_example", "stat_three"],
-        grid_css_classes=Grid.THREE.value,
     )
     line_chart_example = Chart(
         defer=DashboardData.fetch_scatter_chart_data, grid_css_classes=Grid.DOUBLE.value
@@ -114,8 +103,12 @@ class DemoDashboard(Dashboard):
         },
         grid_css_classes=Grid.FOUR.value,
     )
-    gauge_one = Chart(defer=DashboardData.fetch_gauge_chart_data)
-    gauge_two = Chart(defer=DashboardData.fetch_gauge_chart_data_two)
+    gauge_one = Chart(
+        defer=DashboardData.fetch_gauge_chart_data, grid_css_classes=Grid.TWO.value
+    )
+    gauge_two = Chart(
+        defer=DashboardData.fetch_gauge_chart_data_two, grid_css_classes=Grid.TWO.value
+    )
     free_text_example = Text(
         defer=DashboardData.fetch_html, mark_safe=True, grid_css_classes=Grid.ONE.value
     )
@@ -129,6 +122,7 @@ class DemoDashboard(Dashboard):
             {"data": "dob", "title": "DOB"},
         ],
         defer=DashboardData.fetch_table_data,
+        grid_css_classes=Grid.TWO.value,
     )
     table_example_not_deferred = BasicTable(
         columns=[
@@ -162,9 +156,14 @@ class DemoDashboard(Dashboard):
                 },
             ],
         ),
+        grid_css_classes=Grid.TWO.value,
     )
-    scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
-    choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
+    scatter_map_example = Map(
+        defer=DashboardData.fetch_scatter_map_data, grid_css_classes=Grid.TWO.value
+    )
+    choropleth_map_example = Map(
+        defer=DashboardData.fetch_choropleth_map_data, grid_css_classes=Grid.TWO.value
+    )
 
     class Meta:
         name = "Basic"
