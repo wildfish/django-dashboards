@@ -1,11 +1,31 @@
 from unittest.mock import patch
 
+from django.contrib.auth.models import AnonymousUser
+
 import pytest
 
 
 pytest_plugins = [
     "tests.dashboards.fixtures",
 ]
+
+DASHBOARDS_GQL = """
+    query getDashboards {
+      dashboards {
+        Meta {
+          name
+          slug
+        }
+        components {
+          key
+          value
+          width
+          isDeferred
+          renderType
+        }
+      }
+    }
+ """
 
 
 DASHBOARD_GQL = """
@@ -52,31 +72,41 @@ def schema_with_dashboards(schema, dashboard, complex_dashboard, dashboard_with_
 
 
 def test_view__dashboards(rf, admin_user, schema_with_dashboards, snapshot):
-    query = """
-        query getDashboards {
-          dashboards {
-            Meta {
-              name
-              slug
-            }
-            components {
-              key
-              value
-              width
-              isDeferred
-              renderType
-            }
-          }
-        }
-     """
-
     request = rf.get("/")
     request.user = admin_user
 
     result = schema_with_dashboards.execute_sync(
-        query, context_value={"request": request}
+        DASHBOARDS_GQL, context_value={"request": request}
     )
     assert result.errors is None
+    snapshot.assert_match(result.data["dashboards"])
+
+
+def test_view__dashboards__permission(rf, admin_user, schema_with_dashboards, snapshot):
+    request = rf.get("/")
+    request.user = admin_user
+
+    result = schema_with_dashboards.execute_sync(
+        DASHBOARDS_GQL, context_value={"request": request}
+    )
+    assert result.errors is None
+    assert "test-admin-dashboard" in [
+        d["Meta"]["slug"] for d in result.data["dashboards"]
+    ]
+    snapshot.assert_match(result.data["dashboards"])
+
+
+def test_view__dashboards__no_permission(rf, schema_with_dashboards, snapshot):
+    request = rf.get("/")
+    request.user = AnonymousUser()
+
+    result = schema_with_dashboards.execute_sync(
+        DASHBOARDS_GQL, context_value={"request": request}
+    )
+    assert result.errors is None
+    assert "test-admin-dashboard" not in [
+        d["Meta"]["slug"] for d in result.data["dashboards"]
+    ]
     snapshot.assert_match(result.data["dashboards"])
 
 

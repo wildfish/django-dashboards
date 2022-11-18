@@ -160,29 +160,32 @@ class Dashboard(metaclass=DashboardType):
         Returns a list of permissions attached to a dashboard.
         """
         if cls.Meta.permission_classes:
-            permissions_classes = cls.Meta.permission_classes
+            permission_classes = cls.Meta.permission_classes
         else:
-            permissions_classes = []
+            permission_classes = []
             for permission_class_path in Config().WILDCOEUS_DEFAULT_PERMISSION_CLASSES:
                 try:
-                    permissions_class = import_string(permission_class_path)
-                    permissions_classes.append(permissions_class)
+                    permission_class = import_string(permission_class_path)
+                    permission_classes.append(permission_class)
                 except ModuleNotFoundError:  # pragma: no cover
                     logger.warning(
                         f"{permission_class_path} is invalid permissions path"
                     )
 
-        return [permission() for permission in permissions_classes]
+        return [permission() for permission in permission_classes]
 
     @classmethod
-    def has_permissions(cls, request: HttpRequest) -> bool:
+    def has_permissions(cls, request: HttpRequest, handle: bool = True):
         """
         Check if the request should be permitted.
         Raises exception if the request is not permitted.
         """
         for permission in cls.get_dashboard_permissions():
             if not permission.has_permission(request):
-                return False
+                if handle:
+                    return permission.handle_no_permission(request)
+                else:
+                    return False
         return True
 
     @classmethod

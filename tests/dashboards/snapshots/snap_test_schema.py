@@ -285,3 +285,423 @@ snapshots["test_view__dashboards 1"] = [
         ],
     },
 ]
+
+snapshots["test_view__dashboards__no_permission 1"] = [
+    {
+        "Meta": {"name": "Test Filter Dashboard", "slug": "test-filter-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "filter_component",
+                "renderType": "Form",
+                "value": {
+                    "action": "/app1/testfilterdashboard/filter_component-form/",
+                    "dependents": ["dependent_component_1", "dependent_component_2"],
+                    "form": [
+                        {
+                            "choices": [("all", "All"), ("one", "one"), ("two", "two")],
+                            "field_type": "Select",
+                            "help_text": "",
+                            "id": "id_country",
+                            "label": "Country",
+                            "name": "country",
+                            "required": True,
+                            "value": "",
+                        }
+                    ],
+                    "method": "get",
+                },
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "dependent_component_1",
+                "renderType": "Text",
+                "value": "filter=None",
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "dependent_component_2",
+                "renderType": "Text",
+                "value": "filter=None",
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "non_dependent_component_3",
+                "renderType": "Text",
+                "value": "A value",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {"name": "Test Complex Dashboard", "slug": "test-complex-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_4",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_5",
+                "renderType": "Text",
+                "value": "<div></div>",
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_6",
+                "renderType": "Table",
+                "value": {
+                    "data": [{"a": "Value", "b": "Value b"}],
+                    "draw": 0,
+                    "filtered": 0,
+                    "total": 0,
+                },
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_7",
+                "renderType": "Chart",
+                "value": '{"data": [{"x": ["a"], "y": ["b"]}], "layout": {}}',
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {
+            "name": "Test Dashboard with Layout",
+            "slug": "test-dashboard-with-layout",
+        },
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {"name": "Test Model Dashboard", "slug": "test-model-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            }
+        ],
+    },
+    {
+        "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {"name": "ExtraDashboard", "slug": "extradashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {"name": "GQLDashboard", "slug": "gqldashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+                "width": 6,
+            },
+        ],
+    },
+]
+
+snapshots["test_view__dashboards__permission 1"] = [
+    {
+        "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {"name": "Test Filter Dashboard", "slug": "test-filter-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "filter_component",
+                "renderType": "Form",
+                "value": {
+                    "action": "/app1/testfilterdashboard/filter_component-form/",
+                    "dependents": ["dependent_component_1", "dependent_component_2"],
+                    "form": [
+                        {
+                            "choices": [("all", "All"), ("one", "one"), ("two", "two")],
+                            "field_type": "Select",
+                            "help_text": "",
+                            "id": "id_country",
+                            "label": "Country",
+                            "name": "country",
+                            "required": True,
+                            "value": "",
+                        }
+                    ],
+                    "method": "get",
+                },
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "dependent_component_1",
+                "renderType": "Text",
+                "value": "filter=None",
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "dependent_component_2",
+                "renderType": "Text",
+                "value": "filter=None",
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "non_dependent_component_3",
+                "renderType": "Text",
+                "value": "A value",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {"name": "Test Admin Dashboard", "slug": "test-admin-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "admin value",
+                "width": 6,
+            }
+        ],
+    },
+    {
+        "Meta": {"name": "Test Complex Dashboard", "slug": "test-complex-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_4",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_5",
+                "renderType": "Text",
+                "value": "<div></div>",
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_6",
+                "renderType": "Table",
+                "value": {
+                    "data": [{"a": "Value", "b": "Value b"}],
+                    "draw": 0,
+                    "filtered": 0,
+                    "total": 0,
+                },
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_7",
+                "renderType": "Chart",
+                "value": '{"data": [{"x": ["a"], "y": ["b"]}], "layout": {}}',
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {
+            "name": "Test Dashboard with Layout",
+            "slug": "test-dashboard-with-layout",
+        },
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+                "width": 6,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+                "width": 6,
+            },
+        ],
+    },
+    {
+        "Meta": {"name": "Test Model Dashboard", "slug": "test-model-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+                "width": 6,
+            }
+        ],
+    },
+]
