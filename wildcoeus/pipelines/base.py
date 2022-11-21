@@ -158,7 +158,7 @@ class ModelPipeline(Pipeline):
         """
         Return the list of items for this pipeline to run against.
         """
-        if cls.Meta.queryset is not None:
+        if getattr(cls.Meta, "queryset", None) is not None:
             queryset = cls.Meta.queryset
             if isinstance(queryset, QuerySet):
                 queryset = queryset.all()

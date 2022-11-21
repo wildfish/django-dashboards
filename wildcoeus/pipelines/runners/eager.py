@@ -39,15 +39,15 @@ class Runner(PipelineRunner):
         tasks: List[Task],
         input_data: Dict[str, Any],
         reporter: PipelineReporter,
-        instance: Optional[Any] = None,
+        obj: Optional[Any] = None,
     ) -> bool:
 
-        instance_lookup = self.instance_lookup(instance=instance)
+        object_lookup = self.object_lookup(obj=obj)
 
         self._report_pipeline_running(
             pipeline_id=pipeline_id,
             reporter=reporter,
-            instance_lookup=instance_lookup,
+            object_lookup=object_lookup,
         )
 
         ran_pipeline_tasks: List[str] = []
@@ -58,7 +58,7 @@ class Runner(PipelineRunner):
                 run_id=run_id,
                 input_data=input_data,
                 reporter=reporter,
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             )
             if res:
                 ran_pipeline_tasks.append(task.pipeline_task)
@@ -73,13 +73,13 @@ class Runner(PipelineRunner):
                     self._report_task_cancelled(
                         task=t,
                         reporter=reporter,
-                        instance_lookup=instance_lookup,
+                        object_lookup=object_lookup,
                     )
 
                 self._report_pipeline_error(
                     pipeline_id=pipeline_id,
                     reporter=reporter,
-                    instance_lookup=instance_lookup,
+                    object_lookup=object_lookup,
                 )
 
                 return False
@@ -87,7 +87,7 @@ class Runner(PipelineRunner):
         self._report_pipeline_done(
             pipeline_id=pipeline_id,
             reporter=reporter,
-            instance_lookup=instance_lookup,
+            object_lookup=object_lookup,
         )
 
         return True

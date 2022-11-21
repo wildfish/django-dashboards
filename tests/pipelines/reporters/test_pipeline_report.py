@@ -19,7 +19,7 @@ def test_report_task_calls_report_with_task_id_set():
         task_id="task-id",
         status=PipelineTaskStatus.PENDING,
         message="report message",
-        instance_lookup=None,
+        object_lookup=None,
     )
 
     reporter.report_body.assert_called_once_with(
@@ -39,7 +39,7 @@ def test_report_pipeline_calls_report_with_task_id_set():
         pipeline_id="pipeline-id",
         status=PipelineTaskStatus.PENDING,
         message="report message",
-        instance_lookup=None,
+        object_lookup=None,
     )
 
     reporter.report_body.assert_called_once_with(

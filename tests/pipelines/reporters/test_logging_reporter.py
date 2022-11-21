@@ -12,7 +12,7 @@ def test_report_task_writes_the_message_to_info(caplog):
         task_id="task_id",
         status=PipelineTaskStatus.DONE,
         message="Done",
-        instance_lookup=None,
+        object_lookup=None,
     )
 
     assert "Task fake:task_id changed to state DONE: Done" in caplog.text
@@ -25,7 +25,7 @@ def test_report_pipeline_writes_the_message_to_info(caplog):
         pipeline_id="pipeline_id",
         status=PipelineTaskStatus.DONE,
         message="Done",
-        instance_lookup=None,
+        object_lookup=None,
     )
 
     assert "Pipeline pipeline_id changed to state DONE: Done" in caplog.text

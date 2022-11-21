@@ -38,6 +38,16 @@ class Task:
             self.__module__, self.__class__.__name__
         )
         self.cleaned_config = self.clean_config(config)
+        self.object = None
+
+    def get_object(self, object_lookup: Dict[str, Any]):
+        from django.contrib.contenttypes.models import ContentType
+
+        object_type = ContentType.objects.get(
+            model=object_lookup.get("model_name"),
+            app_label=object_lookup.get("app_label"),
+        )
+        self.object = object_type.get_object_for_this_type(pk=object_lookup.get("pk"))
 
     def clean_config(self, config: Dict[str, Any]):
         try:
@@ -67,7 +77,7 @@ class Task:
         run_id: str,
         input_data: Dict[str, Any],
         reporter: PipelineReporter,
-        instance_lookup: Optional[dict[str, Any]] = None,
+        object_lookup: Optional[dict[str, Any]] = None,
     ):
         try:
             cleaned_data = self.clean_input_data(input_data)
@@ -78,7 +88,7 @@ class Task:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.RUNNING,
                 message="Task is running",
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             )
 
             # record the task is running
@@ -91,8 +101,15 @@ class Task:
                 input_data=cleaned_data.dict() if cleaned_data else None,
             )
 
+            if object_lookup:
+                self.get_object(object_lookup)
+
             # run the task
-            self.run(pipeline_id, run_id, cleaned_data)
+            self.run(
+                pipeline_id=pipeline_id,
+                run_id=run_id,
+                cleaned_data=cleaned_data,
+            )
 
             # update the result as completed
             result.status = PipelineTaskStatus.DONE
@@ -104,7 +121,7 @@ class Task:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.DONE,
                 message="Done",
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             )
 
             return True
@@ -115,7 +132,7 @@ class Task:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.VALIDATION_ERROR,
                 message=e.msg,
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             )
         except Exception as e:
             # If there is an error running the task record the error
@@ -124,7 +141,7 @@ class Task:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.RUNTIME_ERROR,
                 message=str(e),
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             )
 
         return False
@@ -140,10 +157,6 @@ class Task:
     def save(self, pipeline_id, run_id, status, started, config=None, input_data=None):
         from ..models import TaskResult
 
-        logger.debug(config)
-        logger.debug(type(config))
-        logger.debug("*" * 40)
-
         defaults = dict(
             status=status, config=config, input_data=input_data, started=started
         )
@@ -156,22 +169,6 @@ class Task:
         )
 
         return result
-
-
-class ModelTask(Task):
-    def __init__(
-        self, content_type_id: int, object_id: int, config: Dict[str, Any] = {}
-    ):
-        self.content_type_id = content_type_id
-        self.object_id = object_id
-        super().__init__(config=config)
-
-    def get_object(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        object_type = ContentType.objects.get_for_id(self.content_type_id)
-        obj = object_type.get_object_for_this_type(self.object_id)
-        return obj
 
 
 class TaskError(Exception):

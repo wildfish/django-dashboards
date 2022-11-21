@@ -16,7 +16,7 @@ class Runner(PipelineRunner):
         task: Task,
         pipeline_id: str,
         input_data: Dict[str, Any],
-        instance_lookup: Optional[dict[str, Any]],
+        object_lookup: Optional[dict[str, Any]],
     ):
         """
         Start a task async. Task reports will be inline however, we add a link error incase
@@ -27,7 +27,7 @@ class Runner(PipelineRunner):
             run_id=str(uuid.uuid4()),
             pipeline_id=pipeline_id,
             input_data=input_data,
-            instance_lookup=instance_lookup,
+            object_lookup=object_lookup,
         )
         celery_task.link_error(
             run_task_report.si(
@@ -35,7 +35,7 @@ class Runner(PipelineRunner):
                 pipeline_id=pipeline_id,
                 status=PipelineTaskStatus.RUNTIME_ERROR,
                 message="Task Error",
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             )
         )
         return celery_task
@@ -47,12 +47,12 @@ class Runner(PipelineRunner):
         tasks: List[Task],
         input_data: Dict[str, Any],
         reporter: PipelineReporter,
-        instance: Optional[Any] = None,
+        obj: Optional[Any] = None,
     ) -> bool:
 
         ordered_tasks = self._get_task_graph(tasks=tasks)
 
-        instance_lookup = self.instance_lookup(instance=instance)
+        object_lookup = self.object_lookup(obj=obj)
 
         c = chain(
             # Report starting
@@ -60,7 +60,7 @@ class Runner(PipelineRunner):
                 pipeline_id=pipeline_id,
                 status=PipelineTaskStatus.RUNNING,
                 message="Running",
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             ),
             # Run tasks in graph order
             *map(
@@ -68,7 +68,7 @@ class Runner(PipelineRunner):
                     task=t,
                     pipeline_id=pipeline_id,
                     input_data=input_data,
-                    instance_lookup=instance_lookup,
+                    object_lookup=object_lookup,
                 ),
                 ordered_tasks,
             ),
@@ -77,7 +77,7 @@ class Runner(PipelineRunner):
                 pipeline_id=pipeline_id,
                 status=PipelineTaskStatus.DONE,
                 message="Done",
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             ),
         )
         c.link_error(
@@ -86,7 +86,7 @@ class Runner(PipelineRunner):
                 pipeline_id=pipeline_id,
                 status=PipelineTaskStatus.RUNTIME_ERROR,
                 message="Pipeline Error - remaining tasks cancelled",
-                instance_lookup=instance_lookup,
+                object_lookup=object_lookup,
             )
         )
 

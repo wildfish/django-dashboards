@@ -31,7 +31,7 @@ def run_pipeline_report(
     pipeline_id: str,
     status: PipelineTaskStatus,
     message: str,
-    instance_lookup: Optional[dict[str, Any]],
+    object_lookup: Optional[dict[str, Any]],
 ):
     """
     Record a pipeline report update async.
@@ -41,7 +41,7 @@ def run_pipeline_report(
         pipeline_id=pipeline_id,
         status=status,
         message=message,
-        instance_lookup=instance_lookup,
+        object_lookup=object_lookup,
     )
 
 
@@ -50,7 +50,7 @@ def run_task(
     task_id: str,
     pipeline_id: str,
     input_data: Dict[str, Any],
-    instance_lookup: Optional[dict[str, Any]],
+    object_lookup: Optional[dict[str, Any]],
 ):
     """
     Start a specific task via it's pipeline's runner.
@@ -63,7 +63,7 @@ def run_task(
         run_id=str(uuid.uuid4()),
         input_data=input_data,
         reporter=reporter,
-        instance_lookup=instance_lookup,
+        object_lookup=object_lookup,
     )
 
 
@@ -73,7 +73,7 @@ def run_task_report(
     pipeline_id: str,
     status: PipelineTaskStatus,
     message: str,
-    instance_lookup: Optional[dict[str, Any]],
+    object_lookup: Optional[dict[str, Any]],
 ):
     """
     Record a task report update async.
@@ -84,5 +84,5 @@ def run_task_report(
         pipeline_id=pipeline_id,
         status=status,
         message=message,
-        instance_lookup=instance_lookup,
+        object_lookup=object_lookup,
     )

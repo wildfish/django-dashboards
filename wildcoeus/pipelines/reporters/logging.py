@@ -13,11 +13,11 @@ class LoggingReporter(PipelineReporter):
         task_id: Optional[str],
         status: PipelineTaskStatus,
         message: str,
-        instance_lookup: Optional[dict[str, Any]] = None,
+        object_lookup: Optional[dict[str, Any]] = None,
     ):
         instance_msg = ""
-        if instance_lookup:
-            instance_msg = f"for {instance_lookup}"
+        if object_lookup:
+            instance_msg = f"for {object_lookup}"
 
         if pipeline_id:
             logger.info(

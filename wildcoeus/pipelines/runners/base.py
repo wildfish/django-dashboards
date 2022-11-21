@@ -10,32 +10,32 @@ from wildcoeus.pipelines.tasks import Task
 
 class PipelineRunner:
     @staticmethod
-    def _report_task_cancelled(task, reporter, instance_lookup=None):
+    def _report_task_cancelled(task, reporter, object_lookup=None):
         reporter.report_task(
             pipeline_task=task.pipeline_task,
             task_id=task.task_id,
             status=PipelineTaskStatus.CANCELLED,
             message="There was an error running a different task",
-            instance_lookup=instance_lookup,
+            object_lookup=object_lookup,
         )
 
     @staticmethod
-    def _report_pipeline_running(pipeline_id, reporter, instance_lookup=None):
+    def _report_pipeline_running(pipeline_id, reporter, object_lookup=None):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
             status=PipelineTaskStatus.RUNNING,
             message="Running",
-            instance_lookup=instance_lookup,
+            object_lookup=object_lookup,
         )
 
     @staticmethod
-    def _report_pipeline_done(pipeline_id, reporter, instance_lookup=None):
+    def _report_pipeline_done(pipeline_id, reporter, object_lookup=None):
         reporter.report_pipeline(
             pipeline_id=pipeline_id, status=PipelineTaskStatus.DONE, message="Done"
         )
 
     @staticmethod
-    def _report_pipeline_error(pipeline_id, reporter, instance_lookup=None):
+    def _report_pipeline_error(pipeline_id, reporter, object_lookup=None):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
             status=PipelineTaskStatus.RUNTIME_ERROR,
@@ -56,14 +56,14 @@ class PipelineRunner:
         return tasks_ordered
 
     @staticmethod
-    def instance_lookup(instance):
-        if not instance:
+    def object_lookup(obj):
+        if not obj:
             return None
 
         return {
-            "pk": instance.pk,
-            "app_label": instance._meta.app_label,
-            "model_name": instance._meta.model_name,
+            "pk": obj.pk,
+            "app_label": obj._meta.app_label,
+            "model_name": obj._meta.model_name,
         }
 
     def start(
@@ -87,14 +87,14 @@ class PipelineRunner:
         if issubclass(pipeline, ModelPipeline):
             qs = pipeline.get_queryset()
             runs = []
-            for instance in qs:
+            for obj in qs:
                 run = self.start_runner(
                     pipeline_id=pipeline_id,
                     run_id=str(uuid.uuid4()),
                     tasks=tasks,
                     input_data=input_data,
                     reporter=reporter,
-                    instance=instance,
+                    obj=obj,
                 )
                 runs.append(run)
             return runs
@@ -114,7 +114,7 @@ class PipelineRunner:
         tasks: List[Task],
         input_data: Dict[str, Any],
         reporter: PipelineReporter,
-        instance: Optional[Any] = None,
+        obj: Optional[Any] = None,
     ):  # pragma: no cover
         """
         Start runner, is called by start and applies any runner specific steps.

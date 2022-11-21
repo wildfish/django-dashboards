@@ -11,7 +11,7 @@ class PipelineReporter:
         task_id: Optional[str],
         status: PipelineTaskStatus,
         message: str,
-        instance_lookup: Optional[dict[str, Any]] = None,
+        object_lookup: Optional[dict[str, Any]] = None,
     ):  # pragma: nocover
         pass
 
@@ -20,9 +20,9 @@ class PipelineReporter:
         pipeline_id: str,
         status: PipelineTaskStatus,
         message: str,
-        instance_lookup: Optional[dict[str, Any]] = None,
+        object_lookup: Optional[dict[str, Any]] = None,
     ):
-        self.report(pipeline_id, None, None, status, message, instance_lookup)
+        self.report(pipeline_id, None, None, status, message, object_lookup)
 
     def report_task(
         self,
@@ -30,6 +30,6 @@ class PipelineReporter:
         task_id: str,
         status: PipelineTaskStatus,
         message: str,
-        instance_lookup: Optional[dict[str, Any]] = None,
+        object_lookup: Optional[dict[str, Any]] = None,
     ):
-        self.report(None, pipeline_task, task_id, status, message, instance_lookup)
+        self.report(None, pipeline_task, task_id, status, message, object_lookup)

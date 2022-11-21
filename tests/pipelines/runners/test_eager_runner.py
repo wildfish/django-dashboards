@@ -35,7 +35,7 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
             task_id="test_eager_runner.TestTask",
             status=PipelineTaskStatus.RUNNING,
             message="Task is running",
-            instance_lookup=None,
+            object_lookup=None,
         )
     ) < reporter.report_task.call_args_list.index(
         call(
@@ -43,7 +43,7 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
             task_id="test_eager_runner.TestTask",
             status=PipelineTaskStatus.RUNNING,
             message="Task is running",
-            instance_lookup=None,
+            object_lookup=None,
         )
     )
 
@@ -73,7 +73,7 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
             task_id="test_eager_runner.TestTask",
             status=PipelineTaskStatus.RUNNING,
             message="Task is running",
-            instance_lookup=None,
+            object_lookup=None,
         )
     ) < reporter.report_task.call_args_list.index(
         call(
@@ -81,7 +81,7 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
             task_id="test_eager_runner.TestTask",
             status=PipelineTaskStatus.RUNNING,
             message="Task is running",
-            instance_lookup=None,
+            object_lookup=None,
         )
     )
 
@@ -116,14 +116,14 @@ def test_first_task_fails___other_tasks_are_cancelled():
         task_id="test_eager_runner.BadTask",
         status=PipelineTaskStatus.RUNTIME_ERROR,
         message="Test error",
-        instance_lookup=None,
+        object_lookup=None,
     )
     reporter.report_task.assert_any_call(
         pipeline_task="good",
         task_id="test_eager_runner.GoodTask",
         status=PipelineTaskStatus.CANCELLED,
         message="There was an error running a different task",
-        instance_lookup=None,
+        object_lookup=None,
     )
 
     good_task_start.assert_not_called()
