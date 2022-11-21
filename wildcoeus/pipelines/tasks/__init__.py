@@ -1,5 +1,5 @@
-from .base import BaseTask, BaseTaskConfig
+from .base import Task, TaskConfig
 from .registry import task_registry
 
 
-__all__ = ["BaseTask", "task_registry", "BaseTaskConfig"]
+__all__ = ["Task", "task_registry", "TaskConfig"]

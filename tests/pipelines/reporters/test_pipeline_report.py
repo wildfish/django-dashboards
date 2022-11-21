@@ -1,9 +1,9 @@
 from unittest.mock import Mock
 
-from wildcoeus.pipelines import BasePipelineReporter, PipelineTaskStatus
+from wildcoeus.pipelines import PipelineReporter, PipelineTaskStatus
 
 
-class Reporter(BasePipelineReporter):
+class Reporter(PipelineReporter):
     def __init__(self):
         self.report_body = Mock()
 
@@ -19,10 +19,16 @@ def test_report_task_calls_report_with_task_id_set():
         task_id="task-id",
         status=PipelineTaskStatus.PENDING,
         message="report message",
+        instance_lookup=None,
     )
 
     reporter.report_body.assert_called_once_with(
-        None, "fake", "task-id", PipelineTaskStatus.PENDING, "report message"
+        None,
+        "fake",
+        "task-id",
+        PipelineTaskStatus.PENDING,
+        "report message",
+        None,
     )
 
 
@@ -33,8 +39,14 @@ def test_report_pipeline_calls_report_with_task_id_set():
         pipeline_id="pipeline-id",
         status=PipelineTaskStatus.PENDING,
         message="report message",
+        instance_lookup=None,
     )
 
     reporter.report_body.assert_called_once_with(
-        "pipeline-id", None, None, PipelineTaskStatus.PENDING, "report message"
+        "pipeline-id",
+        None,
+        None,
+        PipelineTaskStatus.PENDING,
+        "report message",
+        None,
     )

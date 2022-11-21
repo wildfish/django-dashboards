@@ -1,4 +1,4 @@
-from .base import BasePipelineRunner
+from .base import PipelineRunner
 
 
-__all__ = ["BasePipelineRunner"]
+__all__ = ["PipelineRunner"]

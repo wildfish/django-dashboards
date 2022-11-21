@@ -2,13 +2,13 @@ from unittest.mock import Mock
 
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import BaseTask
+from wildcoeus.pipelines import Task
 from wildcoeus.pipelines.reporters import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
 
 
 def test_task_class_created_without_name___it_is_added_to_the_registry_using_the_classname():
-    class TestTask(BaseTask):
+    class TestTask(Task):
         pass
 
     assert ["test_registry.TestTask"] == list(task_registry.tasks.keys())
@@ -16,7 +16,7 @@ def test_task_class_created_without_name___it_is_added_to_the_registry_using_the
 
 
 def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
-    class TestTask(BaseTask):
+    class TestTask(Task):
         pass
 
     reporter = Mock()
@@ -38,7 +38,7 @@ def test_request_to_load_a_task_that_exists_with_a_bad_config___error_is_reporte
     class TestTaskConfigType(BaseModel):
         value: int
 
-    class TestTask(BaseTask):
+    class TestTask(Task):
         ConfigType = TestTaskConfigType
 
     reporter = Mock()
@@ -63,7 +63,7 @@ def test_request_to_load_a_task_that_exists_with_a_valid_config___task_is_loaded
     class TestTaskConfigType(BaseModel):
         value: int
 
-    class TestTask(BaseTask):
+    class TestTask(Task):
         ConfigType = TestTaskConfigType
 
     reporter = Mock()

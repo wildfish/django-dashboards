@@ -5,12 +5,12 @@ from django.utils import timezone
 from pydantic import BaseModel, ValidationError
 
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.reporters import BasePipelineReporter
+from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
 
 
-class BaseTaskConfig(BaseModel):
+class TaskConfig(BaseModel):
     parents: List[
         str
     ] = (
@@ -18,10 +18,10 @@ class BaseTaskConfig(BaseModel):
     )  # task ids that are required to have finished before this task can be started
 
 
-class BaseTask:
-    pipeline_task: str  # The attribute this tasks is named against - set via __new__ on BasePipeline
+class Task:
+    pipeline_task: str  # The attribute this tasks is named against - set via __new__ on Pipeline
     title: Optional[str] = ""
-    ConfigType: Type[BaseTaskConfig] = BaseTaskConfig
+    ConfigType: Type[TaskConfig] = TaskConfig
     InputType: Optional[
         Type[BaseModel]
     ] = None  # todo: can this a django form which can then be rendered?
@@ -66,7 +66,8 @@ class BaseTask:
         pipeline_id: str,
         run_id: str,
         input_data: Dict[str, Any],
-        reporter: BasePipelineReporter,
+        reporter: PipelineReporter,
+        instance_lookup: Optional[dict[str, Any]] = None,
     ):
         try:
             cleaned_data = self.clean_input_data(input_data)
@@ -77,6 +78,7 @@ class BaseTask:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.RUNNING,
                 message="Task is running",
+                instance_lookup=instance_lookup,
             )
 
             # record the task is running
@@ -102,6 +104,7 @@ class BaseTask:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.DONE,
                 message="Done",
+                instance_lookup=instance_lookup,
             )
 
             return True
@@ -112,6 +115,7 @@ class BaseTask:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.VALIDATION_ERROR,
                 message=e.msg,
+                instance_lookup=instance_lookup,
             )
         except Exception as e:
             # If there is an error running the task record the error
@@ -120,6 +124,7 @@ class BaseTask:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.RUNTIME_ERROR,
                 message=str(e),
+                instance_lookup=instance_lookup,
             )
 
         return False
@@ -153,28 +158,32 @@ class BaseTask:
         return result
 
 
-class BaseModelTask(BaseTask):
-    def __init__(self, content_type_id: int, object_id: int, config: Dict[str, Any] = {}):
+class ModelTask(Task):
+    def __init__(
+        self, content_type_id: int, object_id: int, config: Dict[str, Any] = {}
+    ):
         self.content_type_id = content_type_id
         self.object_id = object_id
         super().__init__(config=config)
 
     def get_object(self):
+        from django.contrib.contenttypes.models import ContentType
+
         object_type = ContentType.objects.get_for_id(self.content_type_id)
         obj = object_type.get_object_for_this_type(self.object_id)
         return obj
 
 
-class BaseTaskError(Exception):
-    def __init__(self, task: BaseTask, msg: str):
+class TaskError(Exception):
+    def __init__(self, task: Task, msg: str):
         super().__init__(msg)
         self.task = task
         self.msg = msg
 
 
-class ConfigValidationError(BaseTaskError):
+class ConfigValidationError(TaskError):
     pass
 
 
-class InputValidationError(BaseTaskError):
+class InputValidationError(TaskError):
     pass

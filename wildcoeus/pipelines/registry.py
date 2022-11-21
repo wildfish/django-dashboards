@@ -6,7 +6,7 @@ from wildcoeus.pipelines.log import logger
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .base import BasePipeline
+    from .base import Pipeline
 
 
 class RegistryError(Exception):
@@ -15,7 +15,7 @@ class RegistryError(Exception):
 
 class PipeLineRegistry(object):
     def __init__(self):
-        self.pipelines: Dict[str, BasePipeline] = {}  #
+        self.pipelines: Dict[str, Pipeline] = {}  #
 
     def autodiscover_pipelines(self, module_name="pipelines"):
         autodiscover_modules(module_name)
@@ -41,6 +41,9 @@ class PipeLineRegistry(object):
 
     def get_slug(self, module, class_name):
         return "{}.{}".format(module, class_name)
+
+    def reset(self):
+        self.pipelines = {}
 
 
 pipeline_registry = PipeLineRegistry()

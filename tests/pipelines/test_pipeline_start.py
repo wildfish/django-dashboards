@@ -4,12 +4,7 @@ from unittest.mock import Mock
 import pytest
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import (
-    BasePipeline,
-    BaseTask,
-    BaseTaskConfig,
-    PipelineTaskStatus,
-)
+from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task, TaskConfig
 from wildcoeus.pipelines.tasks.base import ConfigValidationError
 
 
@@ -17,17 +12,17 @@ pytestmark = pytest.mark.django_db
 
 
 def test_one_task_has_a_bad_config___error_is_reported_runner_is_not_started_tasks_are_marked_as_cancelled():
-    class BadConfig(BaseTask):
-        class ConfigType(BaseTaskConfig):
+    class BadConfig(Task):
+        class ConfigType(TaskConfig):
             value: int
 
-    class GoodConfig(BaseTask):
-        class ConfigType(BaseTaskConfig):
+    class GoodConfig(Task):
+        class ConfigType(TaskConfig):
             value: int
 
     with pytest.raises(ConfigValidationError) as e:
 
-        class Pipeline(BasePipeline):
+        class TestPipeline(Pipeline):
             bad = BadConfig(config={"value": "foo"})
             good = GoodConfig(config={"value": "1"})
 
@@ -45,22 +40,22 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
     runner = Mock()
     runner.start.return_value = True
 
-    class GoodConfigA(BaseTask):
-        class ConfigType(BaseTaskConfig):
+    class GoodConfigA(Task):
+        class ConfigType(TaskConfig):
             value: int
 
-    class GoodConfigB(BaseTask):
-        class ConfigType(BaseTaskConfig):
+    class GoodConfigB(Task):
+        class ConfigType(TaskConfig):
             value: int
 
-    class Pipeline(BasePipeline):
+    class TestPipeline(Pipeline):
         good = GoodConfigA(config={"value": "0"})
         also_good = GoodConfigB(config={"value": "1"})
 
         class Meta:
             title = "Test Pipeline"
 
-    pipeline = Pipeline()
+    pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
     assert (
         pipeline.start(run_id=run_id, input_data={}, runner=runner, reporter=reporter)
@@ -81,7 +76,7 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
     )
 
     runner.start.assert_called_once_with(
-        pipeline_id="test_pipeline_start.Pipeline",
+        pipeline_id="test_pipeline_start.TestPipeline",
         run_id=run_id,
         tasks=pipeline.cleaned_tasks,
         input_data={},
@@ -94,25 +89,25 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
     runner = Mock()
     runner.start.return_value = True
 
-    class GoodConfigA(BaseTask):
-        class ConfigType(BaseTaskConfig):
+    class GoodConfigA(Task):
+        class ConfigType(TaskConfig):
             value: int
 
         class InputType(BaseModel):
             message: str
 
-    class GoodConfigB(BaseTask):
-        class ConfigType(BaseTaskConfig):
+    class GoodConfigB(Task):
+        class ConfigType(TaskConfig):
             value: int
 
-    class Pipeline(BasePipeline):
+    class TestPipeline(Pipeline):
         good = GoodConfigA(config={"value": "0"})
         also_good = GoodConfigB(config={"value": "1"})
 
         class Meta:
             title = "Test Pipeline"
 
-    pipeline = Pipeline()
+    pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
     assert (
         pipeline.start(
@@ -139,7 +134,7 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
     )
 
     runner.start.assert_called_once_with(
-        pipeline_id="test_pipeline_start.Pipeline",
+        pipeline_id="test_pipeline_start.TestPipeline",
         run_id=run_id,
         tasks=pipeline.cleaned_tasks,
         input_data={"message": "something"},
@@ -151,13 +146,13 @@ def test_tasks_has_a_missing_parent___error_is_raised():
     reporter = Mock()
     runner = Mock()
 
-    class BadConfig(BaseTask):
+    class BadConfig(Task):
         pass
 
-    class GoodConfig(BaseTask):
+    class GoodConfig(Task):
         pass
 
-    class Pipeline(BasePipeline):
+    class TestPipeline(Pipeline):
         bad = BadConfig(
             config={
                 "parents": ["missing"],
@@ -168,7 +163,7 @@ def test_tasks_has_a_missing_parent___error_is_raised():
         class Meta:
             title = "Test Pipeline"
 
-    pipeline = Pipeline()
+    pipeline = TestPipeline()
 
     assert (
         pipeline.start(

@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from wildcoeus.pipelines import BasePipeline, BaseTask
-from wildcoeus.pipelines.runners.base import BasePipelineRunner
+from wildcoeus.pipelines import Pipeline, Task
+from wildcoeus.pipelines.runners.base import PipelineRunner
 
 
 pytestmark = pytest.mark.django_db
@@ -12,19 +12,19 @@ pytestmark = pytest.mark.django_db
 def test_graph_order__no_parents():
     reporter = Mock()
 
-    class Task(BaseTask):
+    class TestTask(Task):
         def run(self, *args, **kwargs):
             return True
 
-    class Pipeline(BasePipeline):
-        first = Task(config={})
-        second = Task(config={})
+    class TestPipeline(Pipeline):
+        first = TestTask(config={})
+        second = TestTask(config={})
 
         class Meta:
             title = "Test Pipeline"
 
-    tasks = Pipeline().clean_tasks(reporter)
-    ordered_tasks = BasePipelineRunner()._get_task_graph(tasks=tasks)
+    tasks = TestPipeline().clean_tasks(reporter)
+    ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)
 
     assert len(ordered_tasks) == 2
     assert ordered_tasks[0].pipeline_task == "first"
@@ -34,21 +34,21 @@ def test_graph_order__no_parents():
 def test_graph_order__with_parents():
     reporter = Mock()
 
-    class Task(BaseTask):
+    class TestTask(Task):
         def run(self, *args, **kwargs):
             return True
 
-    class Pipeline(BasePipeline):
-        first = Task(config={})
-        second = Task(config={"parents": ["first"]})
-        third = Task(config={"parents": ["second"]})
-        forth = Task(config={})
+    class TestPipeline(Pipeline):
+        first = TestTask(config={})
+        second = TestTask(config={"parents": ["first"]})
+        third = TestTask(config={"parents": ["second"]})
+        forth = TestTask(config={})
 
         class Meta:
             title = "Test Pipeline"
 
-    tasks = Pipeline().clean_tasks(reporter)
-    ordered_tasks = BasePipelineRunner()._get_task_graph(tasks=tasks)
+    tasks = TestPipeline().clean_tasks(reporter)
+    ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)
 
     assert len(ordered_tasks) == 4
     assert ordered_tasks[0].pipeline_task == "first"
