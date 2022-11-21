@@ -1,6 +1,6 @@
 import uuid
 from graphlib import TopologicalSorter
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from wildcoeus.pipelines import PipelineReporter
 from wildcoeus.pipelines.registry import pipeline_registry

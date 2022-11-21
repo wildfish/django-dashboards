@@ -1,12 +1,9 @@
 from unittest.mock import Mock, patch
 
-from django.contrib.auth.models import User
-
 import pytest
 
 from tests.dashboards.fakes import fake_user
-from wildcoeus.pipelines import Pipeline, Task
-from wildcoeus.pipelines.base import ModelPipeline
+from wildcoeus.pipelines import Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.base import PipelineRunner
 
