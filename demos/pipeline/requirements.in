@@ -5,14 +5,26 @@
 
 # Specific for this demo only.
 # TODO until pip installable
--e ../../
+#-e ../../
+django>=4.1,<4.2
 envdir
 django_configurations
 django_eventstream
+django-redis
 django_silk
 faker
 httpx
 plotly
 psutil
-psycopg2
+psycopg2-binary
 whitenoise
+
+# General
+celery[redis,gevent]>=5.0,<6.0
+celery-redbeat
+celery_once
+django-extensions
+django-filter
+django-model-utils
+django-vanilla-views
+django_redis

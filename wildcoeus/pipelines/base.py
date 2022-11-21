@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
-
+from django.utils import timezone
 
 if TYPE_CHECKING:  # pragma: nocover
     from wildcoeus.pipelines.runners import BasePipelineRunner
@@ -101,30 +101,55 @@ class BasePipeline(metaclass=PipelineType):
             message="Pipeline is waiting to start",
         )
 
+        # save that the pipeline has been triggered to run
+        self.save(
+            run_id=run_id,
+            status=PipelineTaskStatus.PENDING.value,
+            input_data=input_data,
+            runner=runner.__class__.__name__,
+            reporter=reporter.__class__.__name__
+        )
+
         self.cleaned_tasks = self.clean_tasks(reporter)
 
         if any(t is None for t in self.cleaned_tasks):
             # if any of the tasks have an invalid config cancel all others
-            for task in (t for t in self.cleaned_tasks if t is not None):
-                reporter.report_task(
-                    pipeline_task=task.pipeline_task,
-                    task_id=task.task_id,
-                    status=PipelineTaskStatus.CANCELLED,
-                    message="Tasks cancelled due to an error in the pipeline config",
-                )
+            self.handle_cancelled(run_id=run_id)
             return False
         else:
             cleaned_tasks = cast(List[BaseTask], self.cleaned_tasks)
 
             # else mark them all as pending
             for task in cleaned_tasks:
+                # log task is queued
                 reporter.report_task(
                     pipeline_task=task.pipeline_task,
                     task_id=task.task_id,
                     status=PipelineTaskStatus.PENDING,
                     message="Task is waiting to start",
                 )
+                # save that each task is pending
+                task.save(
+                    pipeline_id=self.id,
+                    run_id=run_id,
+                    status=PipelineTaskStatus.PENDING.value
+                )
 
+        # save that the pipeline is set to run
+        self.save(
+            run_id=run_id,
+            status=PipelineTaskStatus.RUNNING.value,
+            started=timezone.now(),
+        )
+
+        # record it is starting
+        reporter.report_pipeline(
+            pipeline_id=self.id,
+            status=PipelineTaskStatus.RUNNING,
+            message="Started",
+        )
+
+        # trigger runner to start
         started = runner.start(
             pipeline_id=self.id,
             run_id=run_id,
@@ -133,12 +158,24 @@ class BasePipeline(metaclass=PipelineType):
             reporter=reporter,
         )
 
-        # record when it started
-        if started:
-            reporter.report_pipeline(
-                pipeline_id=self.id,
-                status=PipelineTaskStatus.RUNNING,
-                message="Started",
-            )
-
         return started
+
+    def save(self, run_id: str, **defaults: dict):
+        from .models import PipelineExecution
+        PipelineExecution.objects.update_or_create(
+            pipeline_id=self.id,
+            run_id=run_id,
+            defaults=defaults
+        )
+
+    def handle_cancelled(self, run_id):
+        # if any of the tasks have an invalid config cancel all others
+        for task in (t for t in self.cleaned_tasks if t is not None):
+            reporter.report_task(
+                pipeline_task=task.pipeline_task,
+                task_id=task.task_id,
+                status=PipelineTaskStatus.CANCELLED,
+                message="Tasks cancelled due to an error in the pipeline config",
+            )
+        # update that pipeline has been cancelled
+        self.save(run_id, status=PipelineTaskStatus.CANCELLED.value)

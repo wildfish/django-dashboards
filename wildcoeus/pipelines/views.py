@@ -59,7 +59,7 @@ class TaskResultListView(LoginRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/_results_list.html"
 
     def get_queryset(self):
-        return TaskResult.objects.filter(run_id=self.kwargs["run_id"])
+        return TaskResult.objects.for_run_id(run_id=self.kwargs["run_id"])
 
     def tasks_completed(self):
         return TaskResult.\

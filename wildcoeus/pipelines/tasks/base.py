@@ -80,10 +80,10 @@ class BaseTask:
             )
 
             # record the task is running
-            result = self.save(
+            self.save(
                 pipeline_id=pipeline_id,
                 run_id=run_id,
-                status=PipelineTaskStatus.RUNNING,
+                status=PipelineTaskStatus.RUNNING.value,
                 started=timezone.now(),
                 config=self.cleaned_config.dict() if self.cleaned_config else None,
                 input_data=cleaned_data.dict() if cleaned_data else None,
@@ -93,9 +93,12 @@ class BaseTask:
             self.run(pipeline_id, run_id, cleaned_data)
 
             # update the result as completed
-            result.status = PipelineTaskStatus.DONE.value
-            result.completed = timezone.now()
-            result.save()
+            self.save(
+                pipeline_id=pipeline_id,
+                run_id=run_id,
+                status=PipelineTaskStatus.DONE.value,
+                completed=timezone.now(),
+            )
 
             reporter.report_task(
                 pipeline_task=self.pipeline_task,
@@ -105,22 +108,9 @@ class BaseTask:
             )
 
             return True
-        except InputValidationError as e:
-            # If there is an error in the input data record the error
-            reporter.report_task(
-                pipeline_task=self.pipeline_task,
-                task_id=self.task_id,
-                status=PipelineTaskStatus.VALIDATION_ERROR,
-                message=e.msg,
-            )
-        except Exception as e:
-            # If there is an error running the task record the error
-            reporter.report_task(
-                pipeline_task=self.pipeline_task,
-                task_id=self.task_id,
-                status=PipelineTaskStatus.RUNTIME_ERROR,
-                message=str(e),
-            )
+        except (InputValidationError, Exception) as e:
+            status = PipelineTaskStatus.VALIDATION_ERROR if isinstance(e, InputValidationError) else PipelineTaskStatus.RUNTIME_ERROR
+            self.handle_exception(reporter, pipeline_id, run_id, e, status)
 
         return False
 
@@ -132,23 +122,47 @@ class BaseTask:
     ):  # pragma: no cover
         raise NotImplementedError("run not implemented")
 
-    def save(self, pipeline_id, run_id, status, started, config=None, input_data=None):
-        from ..models import TaskResult
-
-        logger.debug(config)
-        logger.debug(type(config))
-        logger.debug("*" * 40)
-
-        defaults = dict(
-            status=status.value, config=config, input_data=input_data, started=started
+    def handle_exception(self, reporter, pipeline_id, run_id, e, status):
+        from ..models import PipelineExecution
+        # If there is an error running the task record the error
+        reporter.report_task(
+            pipeline_task=self.pipeline_task,
+            task_id=self.task_id,
+            status=status,
+            message=str(e),
         )
+
+        # update the task result as failed
+        self.save(
+            pipeline_id=pipeline_id,
+            run_id=run_id,
+            status=status.value,
+        )
+
+        # update PipelineExecution (if present) as failed
+        PipelineExecution.objects.filter(pipeline_id=pipeline_id, run_id=run_id).update(
+            pipeline_id=pipeline_id,
+            run_id=run_id,
+            status=status.value,
+        )
+
+    def save(self, pipeline_id, run_id, status, **defaults):
+        from ..models import TaskResult, PipelineExecution
+        # add to the defaults
+        defaults["status"] = status
+        defaults["pipeline_task"] = self.pipeline_task,
+
         result, _ = TaskResult.objects.update_or_create(
             pipeline_id=pipeline_id,
-            pipeline_task=self.pipeline_task,
             task_id=self.task_id,
             run_id=run_id,
             defaults=defaults,
         )
+
+        # if all tasks have ran then flag the PipelineExecution as complete
+        if status == PipelineTaskStatus.DONE.value:
+            if TaskResult.objects.not_completed(run_id=run_id).count() == 0:
+                PipelineExecution.objects.filter(pipeline_id=pipeline_id, run_id=run_id).update(status=PipelineTaskStatus.DONE.value)
 
         return result
 
