@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 from celery import shared_task
 
-from wildcoeus.pipelines import PipelineTaskStatus, config
+from wildcoeus.pipelines import PipelineTaskStatus, config, task_registry
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.eager import Runner
 
@@ -56,7 +56,7 @@ def run_task(
     Start a specific task via it's pipeline's runner.
     """
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-    task = pipeline_registry.get_task_class(task_id)
+    task = task_registry.get_task_class(task_id)
 
     task.start(
         pipeline_id=pipeline_id,

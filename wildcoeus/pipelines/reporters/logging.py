@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Any, Optional
 
 from wildcoeus.pipelines import PipelineReporter
 from wildcoeus.pipelines.log import logger
@@ -13,7 +13,7 @@ class LoggingReporter(PipelineReporter):
         task_id: Optional[str],
         status: PipelineTaskStatus,
         message: str,
-        instance_lookup: Optional[dict[str, Any]],
+        instance_lookup: Optional[dict[str, Any]] = None,
     ):
         instance_msg = ""
         if instance_lookup:

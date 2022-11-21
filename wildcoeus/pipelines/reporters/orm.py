@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Any, Optional
 
 from django.utils import timezone
 
@@ -16,7 +16,7 @@ class ORMReporter(PipelineReporter):
         task_id: Optional[str],
         status: PipelineTaskStatus,
         message: str,
-        instance_lookup: Optional[dict[str, Any]],
+        instance_lookup: Optional[dict[str, Any]] = None,
     ):
         if pipeline_id:
             PipelineLog.objects.create(
