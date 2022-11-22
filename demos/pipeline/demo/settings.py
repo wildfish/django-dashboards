@@ -3,7 +3,7 @@ from pathlib import Path
 
 import envdir
 from configurations import Configuration
-
+from kombu import Queue
 
 # Common settings
 BASE_DIR = Path(__file__).absolute().parent.parent
@@ -123,10 +123,11 @@ class Common(Configuration):
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
         "django_extensions",
-        "django_celery_results",
+        # "django_celery_results",
         # pipelines
         "wildcoeus",
         "wildcoeus.pipelines",
+        # Project
         "demo.basic.apps.BasicConfig",
     ]
     MIDDLEWARE = [
@@ -163,18 +164,18 @@ class Common(Configuration):
 
     WSGI_APPLICATION = "demo.wsgi.application"
 
-    # Celery
-    CELERY_REDIS_HOST = get_env("CELERY_REDIS_HOST", default="redis")
-    CELERY_REDIS_PORT = get_env("CELERY_REDIS_PORT", default=6379, cast=int)
-    CELERY_REDIS_BROKER_DB = get_env("CELERY_REDIS_BROKER_DB", default=1, cast=int)
-
-    CELERY_RESULT_BACKEND = "django-db"
-    CELERY_BROKER_CONNECTION_MAX_RETRIES = 1
-    CELERY_TASK_MAX_RETRIES = 1
-
-    @property
-    def CELERY_BROKER_URL(self):
-        return f"redis://{self.CELERY_REDIS_HOST}:{self.CELERY_REDIS_PORT}/{self.CELERY_REDIS_BROKER_DB}"
+    # # Celery
+    # CELERY_REDIS_HOST = get_env("CELERY_REDIS_HOST", default="redis")
+    # CELERY_REDIS_PORT = get_env("CELERY_REDIS_PORT", default=6379, cast=int)
+    # CELERY_REDIS_BROKER_DB = get_env("CELERY_REDIS_BROKER_DB", default=1, cast=int)
+    #
+    # CELERY_RESULT_BACKEND = "django-db"
+    # CELERY_BROKER_CONNECTION_MAX_RETRIES = 1
+    # CELERY_TASK_MAX_RETRIES = 1
+    #
+    # @property
+    # def CELERY_BROKER_URL(self):
+    #     return f"redis://{self.CELERY_REDIS_HOST}:{self.CELERY_REDIS_PORT}/{self.CELERY_REDIS_BROKER_DB}"
 
     # Database
     # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -251,6 +252,7 @@ class Common(Configuration):
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
+                "formatter": "verbose",
             },
         },
         "root": {
@@ -273,12 +275,23 @@ class Common(Configuration):
     EVENTSTREAM_ALLOW_CREDENTIALS = True
     EVENTSTREAM_ALLOW_HEADERS = "Authorization"
 
-    WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.eager.Runner"
+    WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.celery.runner.Runner"
 
 
 class RedisCache:
     REDIS_HOST = get_env("DJANGO_REDIS_HOST", required=True)
     REDIS_PORT = get_env("DJANGO_REDIS_PORT", default=6379, cast=int)
+
+    REDIS_DB_CACHE = "1"
+    REDIS_DB_CACHEOPS = "2"
+    REDIS_DB_CELERY_QUEUE = "3"
+    REDIS_DB_CELERY_RESULTS = "4"
+    REDIS_DB_TASK_KEYS = "5"
+
+    REDIS_PROTOCOL = get_env("REDIS_PROTOCOL", default="redis")
+
+    REDIS_LOCATION = f"{REDIS_PROTOCOL}://{REDIS_HOST}:{REDIS_PORT}"
+    REDIS_LOCATION = "redis://redis:6379"
 
     # Cache
     # https://docs.djangoproject.com/en/3.0/ref/settings/#caches
@@ -287,7 +300,7 @@ class RedisCache:
         return {
             "default": {
                 "BACKEND": "django_redis.cache.RedisCache",
-                "LOCATION": f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/1",
+                "LOCATION": f"{self.REDIS_LOCATION}/{self.REDIS_DB_CACHE}",
                 "KEY_PREFIX": f"{self.PROJECT_ENVIRONMENT_SLUG}_",
                 "OPTIONS": {
                     "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -295,6 +308,28 @@ class RedisCache:
                 },
             }
         }
+
+    # celery
+    CELERY_BROKER_URL = f"{REDIS_LOCATION}/{REDIS_DB_CELERY_QUEUE}"
+    CELERY_TASK_KEYS_URL = f"{REDIS_LOCATION}/{REDIS_DB_TASK_KEYS}"
+    CELERY_RESULT_BACKEND = f"{REDIS_LOCATION}/{REDIS_DB_CELERY_RESULTS}"
+    CELERY_RESULT_EXPIRES = 1800  # 30m
+    CELERY_RESULT_COMPRESSION = "gzip"
+    CELERY_TASK_COMPRESSION = "gzip"
+
+    REDBEAT_LOCK_TIMEOUT = 600  # 10 minutes
+
+    CELERY_TASK_DEFAULT_QUEUE = "default"
+    CELERY_TASK_PROCESSING_QUEUE = "processing"
+    CELERY_TASK_HIGHIO_QUEUE = "highio"
+
+    # CELERY_BEAT_SCHEDULE = {}
+
+    CELERY_TASK_QUEUES = (
+        Queue(CELERY_TASK_DEFAULT_QUEUE, routing_key=CELERY_TASK_DEFAULT_QUEUE),
+        Queue(CELERY_TASK_PROCESSING_QUEUE, routing_key=CELERY_TASK_PROCESSING_QUEUE),
+        Queue(CELERY_TASK_HIGHIO_QUEUE, routing_key=CELERY_TASK_HIGHIO_QUEUE),
+    )
 
 
 class Dev(Common):

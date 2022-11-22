@@ -4,4 +4,4 @@
 
 cd /project
 
-celery -A demo beat -l debug
+celery -A demo beat -l debug -S redbeat.RedBeatScheduler

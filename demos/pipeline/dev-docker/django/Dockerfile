@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11.0-slim
 
 RUN mkdir /build
 WORKDIR /build
@@ -6,22 +6,31 @@ WORKDIR /build
 # Build process dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+    build-essential \
     gcc \
     libc6-dev \
+    python3-dev \
+    python-tk \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# TODO temp until pipelines ready
-COPY ./django-wildcoeus-pipelines/ /build/django-wildcoeus-pipelines/
-RUN pip install ./django-wildcoeus-pipelines
+# Build pyodbc dependencies
+RUN apt-get update \
+    && apt-get install -y g++ \
+    && apt-get install -y unixodbc-dev
 
-# Full python requirements to support development
-COPY ./demo_pipelines/requirements.txt /build/requirements.txt
+# Python requirements
+COPY ./requirements.txt /build/requirements.txt
 RUN pip install -r requirements.txt
 
-ENV WAIT_VERSION 2.7.2
+# todo: temp until we can get django-wildcoeus installable from git
+COPY django-wildcoeus-0.0.1.tar.gz  .
+RUN pip install django-wildcoeus-0.0.1.tar.gz
+
+ENV WAIT_VERSION 2.9.0
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait
 
 # Run Django
 WORKDIR /project
-CMD ["/project/dev-docker/django/run.sh"]
+CMD /wait && "/project/dev-docker/django/run.sh"
