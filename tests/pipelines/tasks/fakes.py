@@ -3,12 +3,12 @@ from unittest.mock import Mock
 
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import BaseTask
+from wildcoeus.pipelines import Task
 
 
 def make_fake_task(input_type=None, config_type=None):
-    class FakeTask(BaseTask):
-        ConfigType = config_type or BaseTask.ConfigType
+    class FakeTask(Task):
+        ConfigType = config_type or Task.ConfigType
         InputType = input_type
 
         def __init__(
