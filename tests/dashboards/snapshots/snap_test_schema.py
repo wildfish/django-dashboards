@@ -241,17 +241,6 @@ snapshots["test_view__dashboards 1"] = [
             },
         ],
     },
-    {
-        "Meta": {"name": "Test Model Dashboard", "slug": "test-model-dashboard"},
-        "components": [
-            {
-                "isDeferred": False,
-                "key": "component_1",
-                "renderType": "Text",
-                "value": "value",
-            }
-        ],
-    },
 ]
 
 snapshots["test_view__dashboards__no_permission 1"] = [
@@ -376,17 +365,6 @@ snapshots["test_view__dashboards__no_permission 1"] = [
                 "renderType": "Text",
                 "value": "value from callable",
             },
-        ],
-    },
-    {
-        "Meta": {"name": "Test Model Dashboard", "slug": "test-model-dashboard"},
-        "components": [
-            {
-                "isDeferred": False,
-                "key": "component_1",
-                "renderType": "Text",
-                "value": "value",
-            }
         ],
     },
     {
@@ -616,17 +594,6 @@ snapshots["test_view__dashboards__permission 1"] = [
                 "renderType": "Text",
                 "value": "value from callable",
             },
-        ],
-    },
-    {
-        "Meta": {"name": "Test Model Dashboard", "slug": "test-model-dashboard"},
-        "components": [
-            {
-                "isDeferred": False,
-                "key": "component_1",
-                "renderType": "Text",
-                "value": "value",
-            }
         ],
     },
 ]

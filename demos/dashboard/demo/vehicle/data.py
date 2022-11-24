@@ -96,8 +96,7 @@ class VehicleData:
 
     @staticmethod
     def fetch_vehicle_details(*args, **kwargs):
-        dashboard = kwargs.get("dashboard")
-        vehicle = dashboard.object
+        vehicle = kwargs.get("object")
         return StatData(
             text=dict_to_table(
                 {

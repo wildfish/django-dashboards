@@ -14,7 +14,7 @@ from wildcoeus.dashboards.utils import get_dashboard_class
 class HasValueProtocol(Protocol):
     dashboard_class: Type[Dashboard]
     kwargs: Dict
-    get_dashboard_kwargs: Callable
+    get_dashboard_context: Callable
 
 
 class DashboardObjectMixin:
@@ -39,14 +39,22 @@ class DashboardObjectMixin:
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get_dashboard(self: HasValueProtocol, request: HttpRequest) -> Dashboard:
-        kwargs = {"request": request}
-        if self.dashboard_class:
-            kwargs[self.dashboard_class._meta.lookup_kwarg] = self.kwargs.get(
+    def get_dashboard_context(self, **context):
+        """kwargs passed to dashboard class"""
+        # extract lookup value from kwargs and assign to key set on meta
+        if (
+            self.dashboard_class._meta.lookup_kwarg
+            and self.dashboard_class._meta.lookup_kwarg
+        ):
+            context[self.dashboard_class._meta.lookup_kwarg] = self.kwargs.get(
                 self.dashboard_class._meta.lookup_kwarg
             )
 
-        return self.dashboard_class(**kwargs)
+        return context
+
+    def get_dashboard(self: HasValueProtocol, **kwargs) -> Dashboard:
+        context = self.get_dashboard_context(**kwargs)
+        return self.dashboard_class(**context)
 
 
 class DashboardView(DashboardObjectMixin, TemplateView):
@@ -57,7 +65,8 @@ class DashboardView(DashboardObjectMixin, TemplateView):
     template_name: str = "wildcoeus/dashboards/dashboard.html"
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**{"dashboard": self.get_dashboard(request)})
+        dashboard = self.get_dashboard(request=request)
+        context = self.get_context_data(**{"dashboard": dashboard})
         return self.render_to_response(context)
 
 
@@ -72,7 +81,7 @@ class ComponentView(DashboardObjectMixin, TemplateView):
         return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        dashboard = self.get_dashboard(request)
+        dashboard = self.get_dashboard(request=request)
         component = self.get_partial_component(dashboard)
 
         if self.is_ajax() and component:
@@ -110,7 +119,7 @@ class FormComponentView(ComponentView):
     """
 
     def post(self, request: HttpRequest, *args, **kwargs):
-        dashboard = self.get_dashboard(request)
+        dashboard = self.get_dashboard(request=request)
         component = self.get_partial_component(dashboard)
         form = component.get_form(request=request)
         if form.is_valid():

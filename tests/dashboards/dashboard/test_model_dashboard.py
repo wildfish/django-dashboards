@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http.response import Http404
+from django.core.exceptions import ObjectDoesNotExist
 
 import pytest
 
@@ -20,7 +20,7 @@ def test__get_object__missing_kwargs__raises_exceptiobn(model_dashboard, rf):
 @pytest.mark.django_db
 def test__get_object__missing_model_404(model_dashboard, rf):
     request = rf.get("/")
-    with pytest.raises(Http404):
+    with pytest.raises(ObjectDoesNotExist):
         model_dashboard(request=request, lookup="1").get_object()
 
 
@@ -44,7 +44,7 @@ def test__get_object__change_lookup_field(model_dashboard, user, rf):
     lookup = user.username
     dashboard = TestModelDashboard(request=request, lookup=lookup)
 
-    assert dashboard.get_object() == user
+    assert dashboard.object == user
 
 
 @pytest.mark.django_db
@@ -61,7 +61,7 @@ def test__get_object__change_lookup_kwarg(user, rf):
     lookup = user.username
     dashboard = TestModelDashboard(request=request, username=lookup)
 
-    assert dashboard.get_object() == user
+    assert dashboard.object == user
 
 
 @pytest.mark.django_db
@@ -83,10 +83,9 @@ def test__get_queryset__no_model__raises_exception(user, rf):
 
     request = rf.get("/")
     lookup = user.pk
-    dashboard = TestModelDashboard(request=request, lookup=lookup)
 
     with pytest.raises(AttributeError):
-        dashboard.get_queryset()
+        TestModelDashboard(request=request, lookup=lookup)
 
 
 @pytest.mark.django_db

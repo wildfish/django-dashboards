@@ -23,7 +23,8 @@ class Component:
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
-    dashboard: Optional[ValueData] = None
+    dashboard: Optional[Any] = None
+    object: Optional[Any] = None
     render_type: Optional[str] = None
     serializable: bool = True
 
@@ -62,14 +63,10 @@ class Component:
         filters: Optional[Dict[str, Any]] = None,
     ) -> ValueData:
         if self.is_deferred and self.defer and call_deferred:
-            value = self.defer(
-                request=request, dashboard=self.dashboard, filters=filters
-            )
+            value = self.defer(request=request, object=self.object, filters=filters)
         else:
             if callable(self.value):
-                value = self.value(
-                    request=request, dashboard=self.dashboard, filters=filters
-                )
+                value = self.value(request=request, object=self.object, filters=filters)
             else:
                 value = self.value
 
