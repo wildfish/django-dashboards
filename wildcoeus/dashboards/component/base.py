@@ -101,21 +101,22 @@ class Component:
         """
         Get the absolute or fetch url to be called when a component is deferred.
         """
-        kwargs = {
-            "app_label": self.dashboard.Meta.app_label,
-            "dashboard": self.dashboard_class,
-            "component": self.key,
-        }
+        # <str:app_label>/<str:dashboard>/<str:component>/
+        args = [
+            self.dashboard.Meta.app_label,
+            self.dashboard_class,
+            self.key,
+        ]
 
-        if hasattr(self.dashboard, "object"):
-            kwargs[self.dashboard._meta.lookup_kwarg] = getattr(
-                self.dashboard.object, self.dashboard._meta.lookup_field
-            )
+        # if this is for an object then add lookup param to args
+        if self.object:
+            # <str:app_label>/<str:dashboard>/<str:lookup>/<str:component>/
+            args.insert(2, getattr(self.object, self.dashboard._meta.lookup_field))
 
         if self.defer_url:
-            url = self.defer_url(reverse_kwargs=kwargs)
+            url = self.defer_url(reverse_args=args)
         else:
-            url = reverse("wildcoeus.dashboards:dashboard_component", kwargs=kwargs)
+            url = reverse("wildcoeus.dashboards:dashboard_component", args=args)
 
         return url
 

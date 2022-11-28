@@ -83,7 +83,7 @@ class VehicleOverviewDashboard(Dashboard):
 
 class VehicleDetailDashboard(ModelDashboard):
     vehicle_details = Stat(
-        value=VehicleData.fetch_vehicle_details, grid_css_classes=Grid.TWO.value
+        defer=VehicleData.fetch_vehicle_details, grid_css_classes=Grid.TWO.value
     )
     map = Map(defer=VehicleData.fetch_last_route, grid_css_classes=Grid.TWO.value)
 

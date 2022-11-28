@@ -114,8 +114,7 @@ class VehicleData:
 
     @staticmethod
     def fetch_last_route(*args, **kwargs):
-        dashboard = kwargs.get("dashboard")
-        vehicle = dashboard.object
+        vehicle = kwargs.get("object")
         locations = vehicle.get_locations_for_last_job()
         lat_coords = [location.lat for location in locations]
         lon_coords = [location.lon for location in locations]
