@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional, Type
 
 from django.apps import apps
 from django.http import HttpRequest
-from django.shortcuts import get_object_or_404
 from django.template import Context
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -92,7 +91,7 @@ class Dashboard(metaclass=DashboardType):
 
     def __init__(self, *args, **kwargs):
         logger.debug(f"Calling init for {self.class_name()}")
-        self.kwargs = kwargs
+        self.object = None
         # set component value/defer to be method calls to get_FOO_value, get_FOO_refer if defined on dashboard
         for key, component in self.components.items():
             if hasattr(self, f"get_{key}_value"):
@@ -131,13 +130,14 @@ class Dashboard(metaclass=DashboardType):
     def get_slug(cls):
         return f"{slugify(cls._meta.app_label)}_{slugify(cls.__name__)}"
 
-    @classmethod
-    def get_components(cls) -> list[Component]:
+    def get_components(self) -> list[Component]:
         components_to_keys = {}
         awaiting_dependents = {}
-        for key, component in cls.components.items():
+        for key, component in self.components.items():
+            if not component.object:
+                component.object = self.object
             if not component.dashboard:
-                component.dashboard = cls
+                component.dashboard = self.__class__
             if not component.key:
                 component.key = key
             if not component.render_type:
@@ -213,8 +213,8 @@ class Dashboard(metaclass=DashboardType):
     def get_absolute_url(cls):
         return reverse(f"wildcoeus.dashboards:{cls.get_slug()}")
 
-    def get_context(self) -> dict:
-        return {"dashboard": self, "components": self.get_components()}
+    def get_context(self, **kwargs) -> dict:
+        return kwargs
 
     def render(self, request: HttpRequest, template_name=None):
         """
@@ -223,8 +223,7 @@ class Dashboard(metaclass=DashboardType):
         - else if layout is set use layout.
         - else render a generic layout by wrapping all components.
         """
-        context = self.get_context()
-        context["request"] = request
+        context = self.get_context(request=request, call_deferred=False)
 
         layout = self.Layout()
 
@@ -247,7 +246,6 @@ class Dashboard(metaclass=DashboardType):
                 *[Card(k, **_get_layout(c)) for k, c in self.components.items()]
             )
 
-        context["call_deferred"] = False
         return layout.components.render(dashboard=self, context=Context(context))
 
     def __str__(self):
@@ -255,9 +253,9 @@ class Dashboard(metaclass=DashboardType):
 
 
 class ModelDashboard(Dashboard):
-    @property
-    def object(self):
-        return self.get_object()
+    def __init__(self, *args, **kwargs):
+        super(ModelDashboard, self).__init__(*args, **kwargs)
+        self.object = self.get_object(**kwargs)
 
     def get_queryset(self):
         if self._meta.model is None:
@@ -271,18 +269,18 @@ class ModelDashboard(Dashboard):
             kwargs={self._meta.lookup_kwarg: self.object.pk},
         )
 
-    def get_object(self):
+    def get_object(self, **kwargs):
         """
         Get django object based on lookup params
         """
         qs = self.get_queryset()
 
-        if self._meta.lookup_kwarg not in self.kwargs:
+        if self._meta.lookup_kwarg not in kwargs:
             raise AttributeError(f"{self._meta.lookup_kwarg} not in kwargs")
 
-        lookup = self.kwargs[self._meta.lookup_kwarg]
+        lookup = kwargs[self._meta.lookup_kwarg]
 
-        return get_object_or_404(qs, **{self._meta.lookup_field: lookup})
+        return qs.get(**{self._meta.lookup_field: lookup})
 
     @classmethod
     def get_urls(cls):
@@ -299,3 +297,6 @@ class ModelDashboard(Dashboard):
                 name=f"{cls.get_slug()}_dashboard_detail",
             ),
         ]
+
+    class Meta:
+        include_in_graphql = False

@@ -6,11 +6,14 @@ from wildcoeus.dashboards.registry import registry
 
 app_name = "wildcoeus.dashboards"
 
-COMPONENT_PATTERN = "<str:app_label>/<str:dashboard>/component/<str:component>/"
-COMPONENT_OBJECT_PATTERN = (
-    "<str:app_label>/<str:dashboard>/<str:lookup>/component/<str:component>/"
-)
-FORM_COMPONENT_PATTERN = "<str:app_label>/<str:dashboard>/<str:component>-form/"
+DASHBOARD_PATTERN = "<str:app_label>/<str:dashboard>/"
+MODEL_DASHBOARD_PATTERN = DASHBOARD_PATTERN + "<str:lookup>/"
+
+COMPONENT_PATTERN = DASHBOARD_PATTERN + "component/<str:component>/"
+COMPONENT_OBJECT_PATTERN = MODEL_DASHBOARD_PATTERN + "component/<str:component>/"
+
+FORM_COMPONENT_PATTERN = DASHBOARD_PATTERN + "<str:component>/form/"
+FORM_COMPONENT_OBJECT_PATTERN = MODEL_DASHBOARD_PATTERN + "<str:component>/form/"
 
 urlpatterns = []
 
@@ -26,12 +29,17 @@ urlpatterns += [
         name="form_component",
     ),
     path(
+        FORM_COMPONENT_OBJECT_PATTERN,
+        views.FormComponentView.as_view(),
+        name="form_component",
+    ),
+    path(
         COMPONENT_PATTERN,
         views.ComponentView.as_view(),
         name="dashboard_component",
     ),
     path(
-        COMPONENT_OBJECT_PATTERN,  # todo: does not work if lookup_kwarg changed
+        COMPONENT_OBJECT_PATTERN,
         views.ComponentView.as_view(),
         name="dashboard_component",
     ),
