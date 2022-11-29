@@ -18,7 +18,7 @@ class FormData:
 
 @dataclass
 class Form(Component):
-    template: str = "wildcoeus/dashboards/components/form/form.html"
+    template_name: str = "wildcoeus/dashboards/components/form/form.html"
     form: Optional[Type[DashboardForm]] = None
     method: str = "get"
 

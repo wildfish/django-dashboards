@@ -8,7 +8,7 @@ from .base import Component
 
 @dataclass
 class Chart(Component):
-    template: str = "wildcoeus/dashboards/components/chart/chart.html"
+    template_name: str = "wildcoeus/dashboards/components/chart/chart.html"
     displayModeBar: Optional[bool] = True
     staticPlot: Optional[bool] = False
 

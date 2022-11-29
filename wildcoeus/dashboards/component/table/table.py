@@ -20,7 +20,7 @@ class BasicTable(Component):
     Basic HTML Table without any js.
     """
 
-    template: str = "wildcoeus/dashboards/components/table/basic.html"
+    template_name: str = "wildcoeus/dashboards/components/table/basic.html"
     columns: Optional[list] = None
     value: Optional[TableData] = None
     defer: Optional[Callable[[HttpRequest], TableData]] = None
@@ -33,7 +33,7 @@ class Table(Component):
     HTML Table with js for pagination, sorting, filtering etc.
     """
 
-    template: str = "wildcoeus/dashboards/components/table/index.html"
+    template_name: str = "wildcoeus/dashboards/components/table/index.html"
     page_size: int = 10
     columns: Optional[list] = None
     searching: Optional[bool] = True

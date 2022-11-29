@@ -19,6 +19,9 @@ class Component:
     value: Optional[ValueData] = None
     defer: Optional[Callable[..., ValueData]] = None
     defer_url: Optional[Callable[..., str]] = None
+    defer_loading_template_name: Optional[
+        str
+    ] = "wildcoeus/dashboards/components/loading.html"
     dependents: Optional[list[str]] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
