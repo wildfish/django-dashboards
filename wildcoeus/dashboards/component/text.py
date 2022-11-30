@@ -9,7 +9,7 @@ from .base import Component
 
 @dataclass
 class Text(Component):
-    template: str = "wildcoeus/dashboards/components/text/text.html"
+    template_name: str = "wildcoeus/dashboards/components/text/text.html"
     mark_safe: bool = False
 
 
@@ -29,7 +29,7 @@ class StatData:
 
 @dataclass
 class Stat(Component):
-    template: str = "wildcoeus/dashboards/components/text/stat.html"
+    template_name: str = "wildcoeus/dashboards/components/text/stat.html"
     href: Optional[str] = None
 
 
@@ -41,7 +41,7 @@ class CTAData:
 
 @dataclass
 class CTA(Component):
-    template: str = "wildcoeus/dashboards/components/cta.html"
+    template_name: str = "wildcoeus/dashboards/components/cta.html"
     value: Optional[CTAData] = None
 
 
@@ -58,7 +58,7 @@ class ProgressData:
 
 @dataclass
 class Progress(Component):
-    template: str = "wildcoeus/dashboards/components/text/progress.html"
+    template_name: str = "wildcoeus/dashboards/components/text/progress.html"
     value: Optional[ProgressData] = None
     defer: Optional[Callable[[HttpRequest], ProgressData]] = None
 
@@ -78,6 +78,6 @@ class TimelineData:
 
 @dataclass
 class Timeline(Component):
-    template: str = "wildcoeus/dashboards/components/text/timeline.html"
+    template_name: str = "wildcoeus/dashboards/components/text/timeline.html"
     value: Optional[TimelineData] = None
     defer: Optional[Callable[[HttpRequest], TimelineData]] = None
