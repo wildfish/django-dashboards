@@ -1,13 +1,16 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+
+from django.core.exceptions import ImproperlyConfigured
+from django.db.models import QuerySet
 from django.utils import timezone
 
 if TYPE_CHECKING:  # pragma: nocover
-    from wildcoeus.pipelines.runners import BasePipelineRunner
+    from wildcoeus.pipelines.runners import PipelineRunner
 
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.reporters.base import BasePipelineReporter
+from wildcoeus.pipelines.reporters.base import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
-from wildcoeus.pipelines.tasks.base import BaseTask
+from wildcoeus.pipelines.tasks.base import Task
 
 
 class PipelineType(type):
@@ -18,7 +21,7 @@ class PipelineType(type):
 
         attrs["tasks"] = {}
         for key, value in list(attrs.items()):
-            if isinstance(value, BaseTask):
+            if isinstance(value, Task):
                 task = attrs.pop(key)
                 task.pipeline_task = key
                 attrs["tasks"][key] = task
@@ -41,18 +44,21 @@ class PipelineType(type):
         return pipeline_class
 
 
-class BasePipeline(metaclass=PipelineType):
+class Pipeline(metaclass=PipelineType):
     title: str = ""
-    tasks: Optional[dict[str, BaseTask]] = {}
+    tasks: Optional[dict[str, Task]] = {}
 
     def __init__(self):
         self.id = pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
-        self.cleaned_tasks: List[Optional[BaseTask]] = []
+        self.cleaned_tasks: List[Optional[Task]] = []
+
+    class Meta:
+        title: str
 
     def clean_parents(
         self,
-        task: BaseTask,
-        reporter: BasePipelineReporter,
+        task: Task,
+        reporter: PipelineReporter,
     ):
         # check against pipeline kets, as parent is relative to the Pipeline, not Task.id which will is
         # full task id.
@@ -75,9 +81,7 @@ class BasePipeline(metaclass=PipelineType):
 
         return task
 
-    def clean_tasks(
-        self, reporter: "BasePipelineReporter"
-    ) -> List[Optional["BaseTask"]]:
+    def clean_tasks(self, reporter: "PipelineReporter") -> List[Optional["Task"]]:
         """
         check that all configs with parents have a task with the parent label present
         """
@@ -92,8 +96,8 @@ class BasePipeline(metaclass=PipelineType):
         self,
         run_id: str,
         input_data: Dict[str, Any],
-        runner: "BasePipelineRunner",
-        reporter: "BasePipelineReporter",
+        runner: "PipelineRunner",
+        reporter: "PipelineReporter",
     ) -> bool:
         reporter.report_pipeline(
             pipeline_id=self.id,
@@ -114,11 +118,10 @@ class BasePipeline(metaclass=PipelineType):
 
         if any(t is None for t in self.cleaned_tasks):
             # if any of the tasks have an invalid config cancel all others
-            self.handle_cancelled(run_id=run_id)
+            self.handle_error(reporter=reporter, run_id=run_id)
             return False
         else:
-            cleaned_tasks = cast(List[BaseTask], self.cleaned_tasks)
-
+            cleaned_tasks = cast(List[Task], self.cleaned_tasks)
             # else mark them all as pending
             for task in cleaned_tasks:
                 # log task is queued
@@ -168,7 +171,7 @@ class BasePipeline(metaclass=PipelineType):
             defaults=defaults
         )
 
-    def handle_cancelled(self, run_id):
+    def handle_error(self, reporter, run_id):
         # if any of the tasks have an invalid config cancel all others
         for task in (t for t in self.cleaned_tasks if t is not None):
             reporter.report_task(
@@ -179,3 +182,30 @@ class BasePipeline(metaclass=PipelineType):
             )
         # update that pipeline has been cancelled
         self.save(run_id, status=PipelineTaskStatus.CANCELLED.value)
+
+
+class ModelPipeline(Pipeline):
+    class Meta:
+        title: str
+        model: Optional[str]
+        queryset = Optional[str]
+
+    @classmethod
+    def get_queryset(cls):
+        """
+        Return the list of items for this pipeline to run against.
+        """
+        if getattr(cls.Meta, "queryset", None) is not None:
+            queryset = cls.Meta.queryset
+            if isinstance(queryset, QuerySet):
+                queryset = queryset.all()
+        elif cls.Meta.model is not None:
+            queryset = cls.Meta.model._default_manager.all()
+        else:
+            raise ImproperlyConfigured(
+                "%(cls)s is missing a QuerySet. Define "
+                "%(cls)s.model, %(cls)s.queryset, or override "
+                "%(cls)s.get_queryset()." % {"cls": cls.__class__.__name__}
+            )
+
+        return queryset

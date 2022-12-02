@@ -2,12 +2,12 @@ import time
 
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import BasePipeline, BaseTask, BaseTaskConfig
+from wildcoeus.pipelines import Pipeline, Task, TaskConfig
 from wildcoeus.pipelines.models import ValueStore
 from wildcoeus.pipelines.registry import pipeline_registry
 
 
-class EchoConfigType(BaseTaskConfig):
+class EchoConfigType(TaskConfig):
     wait: int
 
 
@@ -15,7 +15,7 @@ class EchoInputType(BaseModel):
     message: str
 
 
-class SaveMessageTask(BaseTask):
+class SaveMessageTask(Task):
     title = "Echo message"
     ConfigType = EchoConfigType
     InputType = EchoInputType
@@ -30,7 +30,7 @@ class SaveMessageTask(BaseTask):
         )
 
 
-class EchoMessageTask(BaseTask):
+class EchoMessageTask(Task):
     title = "Echo message from Store"
     ConfigType = EchoConfigType
     InputType = EchoInputType
@@ -45,7 +45,7 @@ class EchoMessageTask(BaseTask):
 
 
 @pipeline_registry.register
-class BasicPipeline(BasePipeline):
+class BasicPipeline(Pipeline):
     save_message = SaveMessageTask(config={"wait": 5})
     echo_message = EchoMessageTask(config={"wait": 5, "parents": ["save_message"]})
 

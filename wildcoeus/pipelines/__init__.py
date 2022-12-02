@@ -1,16 +1,16 @@
-from .base import BasePipeline
-from .reporters import BasePipelineReporter
-from .runners import BasePipelineRunner
+from .base import Pipeline
+from .reporters import PipelineReporter
+from .runners import PipelineRunner
 from .status import PipelineTaskStatus
-from .tasks import BaseTask, BaseTaskConfig, task_registry
+from .tasks import Task, TaskConfig, task_registry
 
 
 __all__ = [
-    "BasePipeline",
-    "BasePipelineReporter",
+    "Pipeline",
+    "PipelineReporter",
     "PipelineTaskStatus",
-    "BasePipelineRunner",
-    "BaseTask",
-    "BaseTaskConfig",
+    "PipelineRunner",
+    "Task",
+    "TaskConfig",
     "task_registry",
 ]

@@ -4,7 +4,7 @@ from django.utils.module_loading import import_string
 
 class Config:
     @property
-    def WILDCOEUS_DEFAULT_PIPELINE_RUNNER(cls) -> str:
+    def WILDCOEUS_DEFAULT_PIPELINE_RUNNER(cls):
         runner = getattr(
             settings,
             "WILDCOEUS_PIPELINE_RUNNER",
@@ -13,7 +13,7 @@ class Config:
         return import_string(runner)()
 
     @property
-    def WILDCOEUS_DEFAULT_PIPELINE_REPORTER(cls) -> str:
+    def WILDCOEUS_DEFAULT_PIPELINE_REPORTER(cls):
         reporter = getattr(
             settings,
             "WILDCOEUS_PIPELINE_REPORTER",

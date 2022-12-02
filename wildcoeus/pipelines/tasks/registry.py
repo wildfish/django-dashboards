@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING, Any, Dict, Type
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from wildcoeus.pipelines import BaseTask
+    from wildcoeus.pipelines import Task
 
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.reporters import BasePipelineReporter
+from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
@@ -15,7 +15,7 @@ class RegistryError(Exception):
 
 class TaskRegistry(object):
     def __init__(self):
-        self.tasks: Dict[str, Type[BaseTask]] = {}
+        self.tasks: Dict[str, Type[Task]] = {}
 
     def register(self, cls):
         task_id = self.get_task_id(cls.__module__, cls.__name__)
@@ -43,9 +43,12 @@ class TaskRegistry(object):
         pipeline_task: str,
         task_id: str,
         config: Dict[str, Any],
-        reporter: BasePipelineReporter,
+        reporter: PipelineReporter,
     ):
         cls = self.get_task_class(task_id)
+
+        print(config)
+        print("*"*50)
 
         if not cls:
             reporter.report_task(
@@ -56,8 +59,9 @@ class TaskRegistry(object):
             )
             return None
 
+        return cls(config=config)
         try:
-            return cls(config=config)
+            print()
         except Exception as e:
             reporter.report_task(
                 pipeline_task=pipeline_task,
