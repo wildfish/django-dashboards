@@ -23,7 +23,7 @@ class TableSerializer(TableMixin):
         fields: List[str],
         first_as_absolute_url: bool = False,
         force_lower: bool = True,
-        field_modifiers: Optional[dict[str, Callable]] = None,
+        field_modifiers: Optional[Dict[str, Callable]] = None,
     ):
         self.filters = filters
         self.fields = fields
@@ -80,7 +80,7 @@ class TableSerializer(TableMixin):
                 ):
                     value = f'<a href="{obj.get_absolute_url()}">{value}</a>'
 
-                if field in self.field_modifiers.keys():
+                if self.field_modifiers and field in self.field_modifiers.keys():
                     value = self.field_modifiers[field](obj)
 
                 values[field] = value

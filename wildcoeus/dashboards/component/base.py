@@ -1,16 +1,44 @@
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.template import Context
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 
 from .. import config
 from ..types import ValueData
+
+
+@dataclass
+class CTA:
+    href: Optional[Union[str, Callable]] = None
+    dashboard: Optional[str] = None
+
+    def get_href(self, obj) -> Optional[str]:
+        """
+        Get CTA, first trying a dashboard by module path if not here as a str or callable.
+        """
+        if self.dashboard:
+            dashboard_class = import_string(self.dashboard)
+            if obj:
+                lookup = getattr(obj, dashboard_class._meta.lookup_field)
+                return reverse_lazy(
+                    f"wildcoeus.dashboards:{dashboard_class.get_slug()}_detail",
+                    args=(lookup,),
+                )
+            else:
+                return reverse_lazy(
+                    f"wildcoeus.dashboards:{dashboard_class.get_slug()}"
+                )
+        elif callable(self.href):
+            return self.href(obj)
+
+        return self.href
 
 
 @dataclass
@@ -22,7 +50,8 @@ class Component:
     defer_loading_template_name: Optional[
         str
     ] = "wildcoeus/dashboards/components/loading.html"
-    dependents: Optional[list[str]] = None
+    dependents: Optional[List[str]] = None
+    cta: Optional[CTA] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None

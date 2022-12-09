@@ -42,3 +42,8 @@ def dashboard_urls(app_label):
 @register.filter(name="lookup")
 def lookup(value, arg):
     return value.get(arg)
+
+
+@register.filter
+def cta_href(cta, obj):
+    return cta.get_href(obj=obj)

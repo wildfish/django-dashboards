@@ -7,11 +7,11 @@ import pytest
 from tests.utils import render_component_test
 from wildcoeus.dashboards.component import CTA
 from wildcoeus.dashboards.component.text import (
-    CTAData,
     Progress,
     ProgressData,
     Stat,
     StatData,
+    Text,
     TimelineData,
 )
 
@@ -23,7 +23,7 @@ pytest_plugins = [
 
 @pytest.mark.parametrize("htmx", [True, False])
 def test_cta_component__renders_value(htmx, dashboard, rf, snapshot):
-    component = CTA(value=CTAData(text="click here", href="/"))
+    component = Text(value="click here", cta=CTA(href="/"))
     component.key = "test"
     component.dashboard = dashboard
     context = Context(
