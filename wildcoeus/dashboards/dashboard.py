@@ -255,7 +255,9 @@ class Dashboard(metaclass=DashboardType):
 class ModelDashboard(Dashboard):
     def __init__(self, *args, **kwargs):
         super(ModelDashboard, self).__init__(*args, **kwargs)
-        self.object = self.get_object(**kwargs)
+        self.object = kwargs.get("object")
+        if not self.object:
+            self.object = self.get_object(**kwargs)
 
     def get_queryset(self):
         if self._meta.model is None:
