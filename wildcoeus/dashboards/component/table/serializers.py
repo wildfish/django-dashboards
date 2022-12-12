@@ -1,6 +1,6 @@
 from datetime import datetime
 from functools import reduce
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.paginator import Page, Paginator
@@ -23,11 +23,13 @@ class TableSerializer(TableMixin):
         fields: List[str],
         first_as_absolute_url: bool = False,
         force_lower: bool = True,
+        field_modifiers: Optional[Dict[str, Callable]] = None,
     ):
         self.filters = filters
         self.fields = fields
         self.first_as_absolute_url = first_as_absolute_url
         self.force_lower = force_lower
+        self.field_modifiers = field_modifiers
 
     def apply_paginator(
         self, data: Union[QuerySet, List], start: int, length: int
@@ -78,6 +80,9 @@ class TableSerializer(TableMixin):
                 ):
                     value = f'<a href="{obj.get_absolute_url()}">{value}</a>'
 
+                if self.field_modifiers and field in self.field_modifiers.keys():
+                    value = self.field_modifiers[field](obj)
+
                 values[field] = value
 
             processed_data.append(values)
@@ -85,7 +90,10 @@ class TableSerializer(TableMixin):
         return processed_data, filtered_count
 
     def serialize(
-        self, data: Union[QuerySet, List], start: int, length: int
+        self,
+        data: Union[QuerySet, List],
+        start: int,
+        length: int,
     ) -> TableData:
         """
         return paginated, filtered and ordered data in a format expected by table.

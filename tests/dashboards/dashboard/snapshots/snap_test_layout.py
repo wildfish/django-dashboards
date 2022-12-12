@@ -15,11 +15,13 @@ snapshots[
 
 
 
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+    
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
 
 
 
@@ -55,11 +57,13 @@ snapshots[
 
 
 
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+    
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
 
 
 
@@ -75,11 +79,13 @@ snapshots[
 
 
 
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+    
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
 
 
 
@@ -99,11 +105,13 @@ snapshots[
 
 
 
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+    
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
 
 
 
@@ -126,11 +134,13 @@ snapshots[
 
 
 
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+    
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
 
 
 
@@ -149,11 +159,13 @@ value
 
 
 
-    <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
-        
+    
+        <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
+            
 value from callable
 
-    </div>
+        </div>
+    
 
 
 """

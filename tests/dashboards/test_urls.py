@@ -51,7 +51,7 @@ def test_include_dashboard_views__true():
             "app1_testadmindashboard",
             "app1_testcomplexdashboard",
             "app1_testdashboardwithlayout",
-            "app1_testmodeldashboard_dashboard_detail",
+            "app1_testmodeldashboard_detail",
         ]
     )
 

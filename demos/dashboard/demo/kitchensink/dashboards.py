@@ -32,7 +32,7 @@ from wildcoeus.dashboards.component.layout import (
     TabContainer,
 )
 from wildcoeus.dashboards.component.table import TableData
-from wildcoeus.dashboards.component.text import CTAData, StatData
+from wildcoeus.dashboards.component.text import StatData
 from wildcoeus.dashboards.dashboard import Dashboard
 from wildcoeus.dashboards.permissions import IsAdminUser
 from wildcoeus.dashboards.registry import registry
@@ -53,12 +53,12 @@ fake = Faker()
 
 
 class DemoDashboard(Dashboard):
-    link = CTA(
-        value=CTAData(
+    link = Text(
+        value="Find out more!",
+        cta=CTA(
             href=reverse_lazy(
                 "wildcoeus.dashboards:kitchensink_demodashboardcustomtemplate"
             ),
-            text="Find out more!",
         ),
     )
     text_example = Text(
@@ -289,11 +289,11 @@ class DynamicDashboard(Dashboard):
         # change the layout
         layout = request.GET.get("layout")
         if layout == "div":
-            self.components["layout_swap"] = CTA(
-                value=CTAData(
+            self.components["layout_swap"] = Text(
+                value="Swap back to Cards",
+                cta=CTA(
                     href=self.get_absolute_url() + "?layout=card",
-                    text="Swap back to Cards",
-                )
+                ),
             )
             self.Layout.components = ComponentLayout(
                 *[
@@ -302,11 +302,11 @@ class DynamicDashboard(Dashboard):
                 ]
             )
         else:
-            self.components["layout_swap"] = CTA(
-                value=CTAData(
+            self.components["layout_swap"] = Text(
+                value="Swap to Fixed Divs",
+                cta=CTA(
                     href=self.get_absolute_url() + "?layout=div",
-                    text="Swap to Fixed Divs",
-                )
+                ),
             )
             self.Layout.components = None
 

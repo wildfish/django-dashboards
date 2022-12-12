@@ -267,7 +267,7 @@ class ModelDashboard(Dashboard):
 
     def get_absolute_url(self):
         return reverse(
-            f"wildcoeus.dashboards:{self.get_slug()}_dashboard_detail",
+            f"wildcoeus.dashboards:{self.get_slug()}_detail",
             kwargs={self._meta.lookup_kwarg: self.object.pk},
         )
 
@@ -296,7 +296,7 @@ class ModelDashboard(Dashboard):
             path(
                 f"{cls._meta.app_label}/{name}/<str:{cls._meta.lookup_kwarg}>/",
                 DashboardView.as_view(dashboard_class=cls),
-                name=f"{cls.get_slug()}_dashboard_detail",
+                name=f"{cls.get_slug()}_detail",
             ),
         ]
 

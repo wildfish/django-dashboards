@@ -104,7 +104,7 @@ def test_model_dashboard__get_urls(model_dashboard, user, rf):
     lookup = user.pk
     urls = model_dashboard(request=request, lookup=lookup).get_urls()
     assert len(urls) == 1
-    assert urls[0].name == "app1_testmodeldashboard_dashboard_detail"
+    assert urls[0].name == "app1_testmodeldashboard_detail"
     assert (
         str(urls[0].pattern)
         == f"app1/testmodeldashboard/<str:{model_dashboard._meta.lookup_kwarg}>/"

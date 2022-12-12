@@ -34,18 +34,6 @@ class Stat(Component):
 
 
 @dataclass
-class CTAData:
-    text: str
-    href: str
-
-
-@dataclass
-class CTA(Component):
-    template_name: str = "wildcoeus/dashboards/components/cta.html"
-    value: Optional[CTAData] = None
-
-
-@dataclass
 class ProgressData:
     @dataclass
     class ProgressItem:
