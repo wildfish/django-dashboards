@@ -12,6 +12,7 @@ from wildcoeus.pipelines import config
 from wildcoeus.pipelines.models import TaskResult
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
+from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
 from wildcoeus.pipelines.status import PipelineTaskStatus
 
@@ -36,19 +37,26 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         self.run_id = str(uuid.uuid4())
 
+        # todo: need to pass it to runner but how
         # are we starting it straight away or passing it off to celery to start
-        if config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER == "wildcoeus.pipelines.runners.eager.Runner":
-            pipeline_cls = registry.get_pipeline_class(kwargs["slug"])
-            if pipeline_cls is None:
-                raise Http404(f"Pipeline {kwargs['slug']} not found in registry")
-
-            # start the pipeline
-            pipeline_cls().start(
-                reporter=config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER,
-                runner=config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER,
-                **self.get_pipeline_context()
+        if isinstance(config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER, EagerRunner):
+            # pipeline_cls = registry.get_pipeline_class(kwargs["slug"])
+            # if pipeline_cls is None:
+            #     raise Http404(f"Pipeline {kwargs['slug']} not found in registry")
+            #
+            # # start the pipeline
+            # pipeline_cls().start(
+            #     reporter=config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER,
+            #     runner=config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER,
+            #     **self.get_pipeline_context()
+            # )
+            print("running eager")
+            # trigger in celery
+            run_pipeline(
+                pipeline_id=kwargs["slug"], input_data={"message": "hello"}, run_id=self.run_id
             )
         else:
+            print("running celery")
             # trigger in celery
             run_pipeline.delay(
                 pipeline_id=kwargs["slug"], input_data={"message": "hello"}, run_id=self.run_id

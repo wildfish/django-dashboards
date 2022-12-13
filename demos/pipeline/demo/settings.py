@@ -253,6 +253,7 @@ class Common(Configuration):
     CELERY_TASK_DEFAULT_QUEUE = "default"
     CELERY_TASK_PROCESSING_QUEUE = "processing"
     CELERY_TASK_HIGHIO_QUEUE = "highio"
+    # CELERY_TASK_ALWAYS_EAGER = True
 
     # CELERY_BEAT_SCHEDULE = {}
 
@@ -263,6 +264,7 @@ class Common(Configuration):
     )
 
     WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.celery.runner.Runner"
+    # WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.eager.Runner"
     WILDCOEUS_PIPELINE_REPORTER = "wildcoeus.pipelines.reporters.logging.LoggingReporter"
 
 

@@ -11,7 +11,7 @@ class LoggingReporter(PipelineReporter):
         pipeline_id: Optional[str],
         pipeline_task: Optional[str],
         task_id: Optional[str],
-        status: PipelineTaskStatus,
+        status: str,
         message: str,
         object_lookup: Optional[dict[str, Any]] = None,
     ):
@@ -21,9 +21,9 @@ class LoggingReporter(PipelineReporter):
 
         if pipeline_id:
             logger.info(
-                f"Pipeline {pipeline_id} changed to state {status.value}: {message} {instance_msg}"
+                f"Pipeline {pipeline_id} changed to state {status}: {message} {instance_msg}"
             )
         else:
             logger.info(
-                f"Task {pipeline_task}:{task_id} changed to state {status.value}: {message} {instance_msg}"
+                f"Task {pipeline_task}:{task_id} changed to state {status}: {message} {instance_msg}"
             )

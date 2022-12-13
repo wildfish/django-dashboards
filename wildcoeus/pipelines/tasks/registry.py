@@ -47,29 +47,16 @@ class TaskRegistry(object):
     ):
         cls = self.get_task_class(task_id)
 
-        print(config)
-        print("*"*50)
-
         if not cls:
             reporter.report_task(
                 pipeline_task=pipeline_task,
                 task_id=task_id,
-                status=PipelineTaskStatus.CONFIG_ERROR,
+                status=PipelineTaskStatus.CONFIG_ERROR.value,
                 message=f"No task named {task_id} is registered",
             )
             return None
 
         return cls(config=config)
-        try:
-            print()
-        except Exception as e:
-            reporter.report_task(
-                pipeline_task=pipeline_task,
-                task_id=task_id,
-                status=PipelineTaskStatus.CONFIG_ERROR,
-                message=str(e),
-            )
-            return None
 
 
 task_registry = TaskRegistry()

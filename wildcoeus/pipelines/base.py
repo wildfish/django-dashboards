@@ -74,7 +74,7 @@ class Pipeline(metaclass=PipelineType):
             reporter.report_task(
                 pipeline_task=task.pipeline_task,
                 task_id=task.task_id,
-                status=PipelineTaskStatus.CONFIG_ERROR,
+                status=PipelineTaskStatus.CONFIG_ERROR.value,
                 message="One or more of the parent ids are not in the pipeline",
             )
             return None
@@ -101,10 +101,11 @@ class Pipeline(metaclass=PipelineType):
     ) -> bool:
         reporter.report_pipeline(
             pipeline_id=self.id,
-            status=PipelineTaskStatus.PENDING,
+            status=PipelineTaskStatus.PENDING.value,
             message="Pipeline is waiting to start",
         )
 
+        print(runner)
         # save that the pipeline has been triggered to run
         self.save(
             run_id=run_id,
@@ -128,7 +129,7 @@ class Pipeline(metaclass=PipelineType):
                 reporter.report_task(
                     pipeline_task=task.pipeline_task,
                     task_id=task.task_id,
-                    status=PipelineTaskStatus.PENDING,
+                    status=PipelineTaskStatus.PENDING.value,
                     message="Task is waiting to start",
                 )
                 # save that each task is pending
@@ -148,7 +149,7 @@ class Pipeline(metaclass=PipelineType):
         # record it is starting
         reporter.report_pipeline(
             pipeline_id=self.id,
-            status=PipelineTaskStatus.RUNNING,
+            status=PipelineTaskStatus.RUNNING.value,
             message="Started",
         )
 
@@ -164,6 +165,7 @@ class Pipeline(metaclass=PipelineType):
         return started
 
     def save(self, run_id: str, **defaults: dict):
+        print("saving pipeline")
         from .models import PipelineExecution
         PipelineExecution.objects.update_or_create(
             pipeline_id=self.id,
@@ -177,7 +179,7 @@ class Pipeline(metaclass=PipelineType):
             reporter.report_task(
                 pipeline_task=task.pipeline_task,
                 task_id=task.task_id,
-                status=PipelineTaskStatus.CANCELLED,
+                status=PipelineTaskStatus.CANCELLED.value,
                 message="Tasks cancelled due to an error in the pipeline config",
             )
         # update that pipeline has been cancelled

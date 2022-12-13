@@ -37,6 +37,7 @@ class Task:
         self.task_id = task_registry.get_task_id(
             self.__module__, self.__class__.__name__
         )
+        self._config = config
         self.cleaned_config = self.clean_config(config)
         self.object = None
 
@@ -79,6 +80,7 @@ class Task:
         reporter: PipelineReporter,
         object_lookup: Optional[dict[str, Any]] = None,
     ):
+        print("running task run_task")
         try:
             cleaned_data = self.clean_input_data(input_data)
             logger.debug(cleaned_data)
@@ -86,7 +88,7 @@ class Task:
             reporter.report_task(
                 pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
-                status=PipelineTaskStatus.RUNNING,
+                status=PipelineTaskStatus.RUNNING.value,
                 message="Task is running",
                 object_lookup=object_lookup,
             )
@@ -121,7 +123,7 @@ class Task:
             reporter.report_task(
                 pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
-                status=PipelineTaskStatus.DONE,
+                status=PipelineTaskStatus.DONE.value,
                 message="Done",
                 object_lookup=object_lookup,
             )

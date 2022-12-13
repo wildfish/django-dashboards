@@ -22,6 +22,7 @@ class SaveMessageTask(Task):
 
     def run(self, pipeline_id: str, run_id: str, cleaned_data):
         time.sleep(self.cleaned_config.wait)
+        print("I am runnings :)")
         ValueStore.store(
             pipeline_id=pipeline_id,
             run_id=run_id,
@@ -36,6 +37,7 @@ class EchoMessageTask(Task):
     InputType = EchoInputType
 
     def run(self, pipeline_id: str, run_id: str, cleaned_data):
+        print("I am running too :)")
         message = ValueStore.get(
             pipeline_id=pipeline_id,
             run_id=run_id,

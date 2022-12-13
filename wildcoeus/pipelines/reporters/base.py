@@ -9,7 +9,7 @@ class PipelineReporter:
         pipeline_id: Optional[str],
         pipeline_task: Optional[str],
         task_id: Optional[str],
-        status: PipelineTaskStatus,
+        status: str,
         message: str,
         object_lookup: Optional[dict[str, Any]] = None,
     ):  # pragma: nocover
@@ -28,7 +28,7 @@ class PipelineReporter:
         self,
         pipeline_task: str,
         task_id: str,
-        status: PipelineTaskStatus,
+        status: str,
         message: str,
         object_lookup: Optional[dict[str, Any]] = None,
     ):
