@@ -105,16 +105,6 @@ def test_dashboard__str(dashboard, rf):
     assert str(dashboard(request)) == "Test Dashboard"
 
 
-def test_dashboard__get_context(dashboard, rf):
-    request = rf.get("/")
-    d = dashboard(request)
-    context = d.get_context()
-
-    assert context["dashboard"] == d
-    assert "components" in context
-    assert len(context["components"]) == 3
-
-
 # def test_dashboard__render__template_name(dashboard, rf, snapshot):
 #     request = rf.get("/")
 #     d = dashboard(request)

@@ -58,7 +58,7 @@ class Vehicle(models.Model):
     objects = VehicleQueryset.as_manager()
 
     def get_locations_for_last_job(self):
-        p = Parameter.objects.get(name="Current Location")
+        p, _ = Parameter.objects.get_or_create(name="Current Location")
         qs = self.data.select_related("parameter").filter(parameter=p)
         if self.last_job_date:
             qs = qs.filter(timestamp__gte=self.last_job_date)

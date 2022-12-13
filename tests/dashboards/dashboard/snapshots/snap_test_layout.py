@@ -16,11 +16,14 @@ snapshots[
 
 
     
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 
 </div><div class="span-6 css_style">
   
@@ -28,7 +31,13 @@ value
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 
 </div>
 </div>"""
@@ -49,11 +58,14 @@ snapshots[
 
 
     
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 
     </div>
     
@@ -68,11 +80,14 @@ snapshots[
 
 
     
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 
 </div>"""
 
@@ -91,17 +106,26 @@ snapshots[
 
 
     
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 
 
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -111,27 +135,39 @@ snapshots[
 
 
     
-    <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 
 
 
 
     <div hx-get="/app1/testdashboard/component/component_2/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 
 
 
 
     
-    <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
+            
 value from callable
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[

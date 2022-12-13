@@ -13,13 +13,15 @@ snapshots[
 
 
 
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/">
-  click here
-</a>
+    <a href="/">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+click here
 
-    </div>
+        </div>
+    </a>
+
+
 """
 
 snapshots[
@@ -28,13 +30,15 @@ snapshots[
 
 
 
-    
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <a href="/">
-  click here
-</a>
+    <a href="/">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+click here
 
-    </div>
+        </div>
+    </a>
+
+
 """
 
 snapshots[
@@ -44,8 +48,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 
 <div class="progress-w-percent">
   <strong class="progress-value">100%</strong>
@@ -54,7 +58,10 @@ snapshots[
   </div>
 </div>
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -64,8 +71,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 
 <div class="progress-w-percent">
   <strong class="progress-value">100%</strong>
@@ -74,7 +81,10 @@ snapshots[
   </div>
 </div>
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -84,8 +94,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 <h5 class="">a</h5>
 <div class="progress-w-percent">
   <strong class="progress-value">100%</strong>
@@ -102,7 +112,10 @@ snapshots[
   </div>
 </div>
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -112,8 +125,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 
 <div class="progress-w-percent">
   <strong class="progress-value">100%</strong>
@@ -122,7 +135,10 @@ snapshots[
   </div>
 </div>
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -132,7 +148,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -142,8 +164,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 <h5 class="">a</h5>
 <div class="progress-w-percent">
   <strong class="progress-value">100%</strong>
@@ -160,7 +182,10 @@ snapshots[
   </div>
 </div>
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -170,8 +195,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2>100%</h2>
@@ -181,7 +206,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -191,8 +219,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2>100%</h2>
@@ -202,7 +230,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -212,8 +243,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2>100%</h2>
@@ -229,7 +260,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -239,8 +273,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2>100%</h2>
@@ -250,7 +284,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -260,7 +297,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -270,8 +313,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2>100%</h2>
@@ -287,7 +330,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -297,9 +343,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -309,9 +358,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -321,9 +373,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -333,9 +388,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -345,7 +403,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -355,7 +419,10 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """

@@ -14,8 +14,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
     <script>
         var data_test = value;
         Plotly.newPlot(
@@ -30,7 +30,10 @@ snapshots[
 <div id="test"></div>
 
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -40,9 +43,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -52,8 +58,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2></h2>
@@ -63,7 +69,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -73,11 +82,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -87,11 +99,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="None">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="None">
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -101,8 +116,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
     <script>
         var data_test = value;
         Plotly.newPlot(
@@ -117,7 +132,10 @@ snapshots[
 <div id="test"></div>
 
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -127,9 +145,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -139,8 +160,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2></h2>
@@ -150,7 +171,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -160,11 +184,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -174,11 +201,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="None">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="None">
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -188,8 +218,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
     <script>
         var data_test = value;
         Plotly.newPlot(
@@ -204,7 +234,10 @@ snapshots[
 <div id="test"></div>
 
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -214,9 +247,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -226,8 +262,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2></h2>
@@ -237,7 +273,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -247,11 +286,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -261,11 +303,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -275,8 +320,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
     <script>
         var data_test = value;
         Plotly.newPlot(
@@ -291,7 +336,10 @@ snapshots[
 <div id="test"></div>
 
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -301,9 +349,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -313,8 +364,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2></h2>
@@ -324,7 +375,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -334,11 +388,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -348,11 +405,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="None">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="None">
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -362,7 +422,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -372,7 +438,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -382,7 +454,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -392,7 +470,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -402,7 +486,13 @@ snapshots[
 
 
     <div hx-get="/app1/testdashboard/component/test/"
-         hx-trigger="intersect once delay:1ms"></div>
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            Loading...
+        </div>
+    </div>
+
+
 """
 
 snapshots[
@@ -412,8 +502,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
     <script>
         var data_test = value;
         Plotly.newPlot(
@@ -428,7 +518,10 @@ snapshots[
 <div id="test"></div>
 
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -438,9 +531,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
-    </div>
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -450,8 +546,8 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="stat">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="stat">
   
   
   <h2></h2>
@@ -461,7 +557,10 @@ snapshots[
   </p>
   
 </div>
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -471,11 +570,14 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            
 value
 
-    </div>
+        </div>
+    
+
+
 """
 
 snapshots[
@@ -485,9 +587,12 @@ snapshots[
 
 
     
-    <div id="component-test-inner" class="dashboard-component-inner fade-in">
-        <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
+        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+            <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
   
 </div>
-    </div>
+        </div>
+    
+
+
 """

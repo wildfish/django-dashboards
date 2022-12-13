@@ -53,6 +53,7 @@ class TestModelDashboard(ModelDashboard):
         name = "Test Model Dashboard"
         model = User
         app_label = "app1"
+        include_in_graphql = False
 
 
 class TestFilterDashboard(Dashboard):

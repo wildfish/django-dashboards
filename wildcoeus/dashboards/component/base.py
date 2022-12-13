@@ -1,16 +1,44 @@
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.template import Context
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 
 from .. import config
 from ..types import ValueData
+
+
+@dataclass
+class CTA:
+    href: Optional[Union[str, Callable]] = None
+    dashboard: Optional[str] = None
+
+    def get_href(self, obj) -> Optional[str]:
+        """
+        Get CTA, first trying a dashboard by module path if not here as a str or callable.
+        """
+        if self.dashboard:
+            dashboard_class = import_string(self.dashboard)
+            if obj:
+                lookup = getattr(obj, dashboard_class._meta.lookup_field)
+                return reverse_lazy(
+                    f"wildcoeus.dashboards:{dashboard_class.get_slug()}_detail",
+                    args=(lookup,),
+                )
+            else:
+                return reverse_lazy(
+                    f"wildcoeus.dashboards:{dashboard_class.get_slug()}"
+                )
+        elif callable(self.href):
+            return self.href(obj)
+
+        return self.href
 
 
 @dataclass
@@ -19,11 +47,16 @@ class Component:
     value: Optional[ValueData] = None
     defer: Optional[Callable[..., ValueData]] = None
     defer_url: Optional[Callable[..., str]] = None
-    dependents: Optional[list[str]] = None
+    defer_loading_template_name: Optional[
+        str
+    ] = "wildcoeus/dashboards/components/loading.html"
+    dependents: Optional[List[str]] = None
+    cta: Optional[CTA] = None
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
-    dashboard: Optional[ValueData] = None
+    dashboard: Optional[Any] = None
+    object: Optional[Any] = None
     render_type: Optional[str] = None
     serializable: bool = True
 
@@ -62,14 +95,10 @@ class Component:
         filters: Optional[Dict[str, Any]] = None,
     ) -> ValueData:
         if self.is_deferred and self.defer and call_deferred:
-            value = self.defer(
-                request=request, dashboard=self.dashboard, filters=filters
-            )
+            value = self.defer(request=request, object=self.object, filters=filters)
         else:
             if callable(self.value):
-                value = self.value(
-                    request=request, dashboard=self.dashboard, filters=filters
-                )
+                value = self.value(request=request, object=self.object, filters=filters)
             else:
                 value = self.value
 
@@ -104,21 +133,22 @@ class Component:
         """
         Get the absolute or fetch url to be called when a component is deferred.
         """
-        kwargs = {
-            "app_label": self.dashboard.Meta.app_label,
-            "dashboard": self.dashboard_class,
-            "component": self.key,
-        }
+        # <str:app_label>/<str:dashboard>/<str:component>/
+        args = [
+            self.dashboard.Meta.app_label,
+            self.dashboard_class,
+            self.key,
+        ]
 
-        if hasattr(self.dashboard, "object"):
-            kwargs[self.dashboard._meta.lookup_kwarg] = getattr(
-                self.dashboard.object, self.dashboard._meta.lookup_field
-            )
+        # if this is for an object then add lookup param to args
+        if self.object:
+            # <str:app_label>/<str:dashboard>/<str:lookup>/<str:component>/
+            args.insert(2, getattr(self.object, self.dashboard._meta.lookup_field))
 
         if self.defer_url:
-            url = self.defer_url(reverse_kwargs=kwargs)
+            url = self.defer_url(reverse_args=args)
         else:
-            url = reverse("wildcoeus.dashboards:dashboard_component", kwargs=kwargs)
+            url = reverse("wildcoeus.dashboards:dashboard_component", args=args)
 
         return url
 
