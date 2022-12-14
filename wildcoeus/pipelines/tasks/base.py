@@ -88,6 +88,7 @@ class Task:
             reporter.report_task(
                 pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.RUNNING.value,
                 message="Task is running",
                 object_lookup=object_lookup,
@@ -123,6 +124,7 @@ class Task:
             reporter.report_task(
                 pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.DONE.value,
                 message="Done",
                 object_lookup=object_lookup,
@@ -156,6 +158,7 @@ class Task:
         reporter.report_task(
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,
+            run_id=run_id,
             status=status,
             message=str(e),
             object_lookup=object_lookup,

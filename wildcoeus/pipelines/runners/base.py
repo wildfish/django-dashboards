@@ -11,37 +11,61 @@ from wildcoeus.pipelines.tasks import Task
 
 class PipelineRunner:
     @staticmethod
-    def _report_task_cancelled(task, reporter, object_lookup=None):
+    def _report_task_cancelled(
+        task: Task, run_id: str, reporter: PipelineReporter, object_lookup=None
+    ):
         reporter.report_task(
             pipeline_task=task.pipeline_task,
             task_id=task.task_id,
+            run_id=run_id,
             status=PipelineTaskStatus.CANCELLED.value,
             message="There was an error running a different task",
             object_lookup=object_lookup,
         )
 
     @staticmethod
-    def _report_pipeline_running(pipeline_id, reporter, object_lookup=None):
+    def _report_pipeline_pending(
+        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+    ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
+            run_id=run_id,
+            status=PipelineTaskStatus.PENDING.value,
+            message="Pipeline is waiting to start",
+            object_lookup=object_lookup,
+        )
+
+    @staticmethod
+    def _report_pipeline_running(
+        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+    ):
+        reporter.report_pipeline(
+            pipeline_id=pipeline_id,
+            run_id=run_id,
             status=PipelineTaskStatus.RUNNING.value,
             message="Running",
             object_lookup=object_lookup,
         )
 
     @staticmethod
-    def _report_pipeline_done(pipeline_id, reporter, object_lookup=None):
+    def _report_pipeline_done(
+        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+    ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
+            run_id=run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
             object_lookup=object_lookup,
         )
 
     @staticmethod
-    def _report_pipeline_error(pipeline_id, reporter, object_lookup=None):
+    def _report_pipeline_error(
+        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+    ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
+            run_id=run_id,
             status=PipelineTaskStatus.RUNTIME_ERROR.value,
             message="Error",
             object_lookup=object_lookup,

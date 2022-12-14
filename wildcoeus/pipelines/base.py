@@ -61,6 +61,7 @@ class Pipeline(metaclass=PipelineType):
         self,
         task: Task,
         reporter: PipelineReporter,
+        run_id: str,
     ):
         # check against pipeline kets, as parent is relative to the Pipeline, not Task.id which will is
         # full task id.
@@ -76,6 +77,7 @@ class Pipeline(metaclass=PipelineType):
             reporter.report_task(
                 pipeline_task=task.pipeline_task,
                 task_id=task.task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.CONFIG_ERROR.value,
                 message="One or more of the parent ids are not in the pipeline",
             )
@@ -83,13 +85,15 @@ class Pipeline(metaclass=PipelineType):
 
         return task
 
-    def clean_tasks(self, reporter: "PipelineReporter") -> List[Optional["Task"]]:
+    def clean_tasks(
+        self, reporter: "PipelineReporter", run_id: str
+    ) -> List[Optional["Task"]]:
         """
         check that all configs with parents have a task with the parent label present
         """
         return list(
             map(
-                lambda t: self.clean_parents(t, reporter) if t else t,
+                lambda t: self.clean_parents(t, reporter, run_id) if t else t,
                 self.tasks.values() if self.tasks else {},
             )
         )
@@ -101,10 +105,11 @@ class Pipeline(metaclass=PipelineType):
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
     ) -> bool:
-        reporter.report_pipeline(
+
+        runner._report_pipeline_pending(
             pipeline_id=self.id,
-            status=PipelineTaskStatus.PENDING.value,
-            message="Pipeline is waiting to start",
+            run_id=run_id,
+            reporter=reporter,
         )
 
         # save that the pipeline has been triggered to run
@@ -116,7 +121,7 @@ class Pipeline(metaclass=PipelineType):
             reporter=reporter.__class__.__name__,
         )
 
-        self.cleaned_tasks = self.clean_tasks(reporter)
+        self.cleaned_tasks = self.clean_tasks(reporter, run_id)
 
         if any(t is None for t in self.cleaned_tasks):
             # if any of the tasks have an invalid config cancel all others
@@ -130,6 +135,7 @@ class Pipeline(metaclass=PipelineType):
                 reporter.report_task(
                     pipeline_task=task.pipeline_task,
                     task_id=task.task_id,
+                    run_id=run_id,
                     status=PipelineTaskStatus.PENDING.value,
                     message="Task is waiting to start",
                 )
@@ -150,6 +156,7 @@ class Pipeline(metaclass=PipelineType):
         # record it is starting
         reporter.report_pipeline(
             pipeline_id=self.id,
+            run_id=run_id,
             status=PipelineTaskStatus.RUNNING.value,
             message="Started",
         )
@@ -181,6 +188,7 @@ class Pipeline(metaclass=PipelineType):
             reporter.report_task(
                 pipeline_task=task.pipeline_task,
                 task_id=task.task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.CANCELLED.value,
                 message="Tasks cancelled due to an error in the pipeline config",
             )

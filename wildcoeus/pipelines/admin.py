@@ -20,6 +20,16 @@ class PipelineExecutionAdmin(admin.ModelAdmin):
     list_display = ("pipeline_id", "run_id", "status", "started")
 
 
-admin.site.register(models.PipelineLog)
-admin.site.register(models.TaskLog)
+@admin.register(models.TaskLog)
+class TaskLogAdmin(admin.ModelAdmin):
+    list_display = ("log_message",)
+    list_filter = ("run_id",)
+
+
+@admin.register(models.PipelineLog)
+class PipelineLogAdmin(admin.ModelAdmin):
+    list_display = ("log_message",)
+    list_filter = ("run_id",)
+
+
 admin.site.register(models.ValueStore)

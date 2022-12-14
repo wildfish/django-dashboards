@@ -38,7 +38,8 @@ class Runner(PipelineRunner):
         celery_task.link_error(
             run_task_report.si(
                 task_id=task.task_id,
-                pipeline_id=pipeline_id,
+                pipeline_task=task.pipeline_task,
+                run_id=run_id,
                 status=PipelineTaskStatus.RUNTIME_ERROR.value,
                 message="Task Error",
                 object_lookup=object_lookup,
@@ -67,6 +68,7 @@ class Runner(PipelineRunner):
             # Report starting
             run_pipeline_report.si(
                 pipeline_id=pipeline_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.RUNNING.value,
                 message="Running",
                 object_lookup=object_lookup,
@@ -85,6 +87,7 @@ class Runner(PipelineRunner):
             # Report Done
             run_pipeline_report.si(
                 pipeline_id=pipeline_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.DONE.value,
                 message="Done",
                 object_lookup=object_lookup,
@@ -95,6 +98,7 @@ class Runner(PipelineRunner):
             # Report pipeline error
             run_pipeline_report.si(
                 pipeline_id=pipeline_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.RUNTIME_ERROR.value,
                 message="Pipeline Error - remaining tasks cancelled",
                 object_lookup=object_lookup,

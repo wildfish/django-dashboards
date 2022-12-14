@@ -46,6 +46,7 @@ class Runner(PipelineRunner):
 
         self._report_pipeline_running(
             pipeline_id=pipeline_id,
+            run_id=run_id,
             reporter=reporter,
             object_lookup=object_lookup,
         )
@@ -72,12 +73,14 @@ class Runner(PipelineRunner):
                 ):
                     self._report_task_cancelled(
                         task=t,
+                        run_id=run_id,
                         reporter=reporter,
                         object_lookup=object_lookup,
                     )
 
                 self._report_pipeline_error(
                     pipeline_id=pipeline_id,
+                    run_id=run_id,
                     reporter=reporter,
                     object_lookup=object_lookup,
                 )
@@ -86,6 +89,7 @@ class Runner(PipelineRunner):
 
         self._report_pipeline_done(
             pipeline_id=pipeline_id,
+            run_id=run_id,
             reporter=reporter,
             object_lookup=object_lookup,
         )

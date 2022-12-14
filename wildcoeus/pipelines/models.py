@@ -14,6 +14,13 @@ class PipelineLog(TimeStampedModel):
     status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices())
     message = models.TextField(blank=True)
 
+    @property
+    def log_message(self):
+        return f"Pipeline {self.pipeline_id}:{self.run_id} changed to state {self.get_status_display()}: {self.message}"
+
+    def __str__(self):
+        return self.log_message
+
 
 class TaskLog(TimeStampedModel):
     pipeline_task = models.CharField(max_length=255)
@@ -25,6 +32,13 @@ class TaskLog(TimeStampedModel):
         default=PipelineTaskStatus.PENDING,
     )
     message = models.TextField(blank=True)
+
+    @property
+    def log_message(self):
+        return f"Task {self.task_id}:{self.pipeline_task}:{self.run_id} changed to state {self.get_status_display()}: {self.message}"
+
+    def __str__(self):
+        return self.log_message
 
 
 class TaskResultQuerySet(QuerySet):
@@ -77,6 +91,7 @@ class TaskResult(models.Model):
         return task_registry.load_task_from_id(
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,
+            run_id=self.run_id,
             config=self.config,
             reporter=reporter,
         )
@@ -99,6 +114,9 @@ class PipelineExecution(models.Model):
 
     def __str__(self):
         return f"{self.pipeline_id} started on {self.started}"
+
+    def get_task_results(self):
+        return TaskResult.objects.filter(run_id=self.run_id)
 
     class Meta:
         ordering = ["-started"]

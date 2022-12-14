@@ -42,6 +42,7 @@ class TaskRegistry(object):
         self,
         pipeline_task: str,
         task_id: str,
+        run_id: str,
         config: Dict[str, Any],
         reporter: PipelineReporter,
     ):
@@ -51,6 +52,7 @@ class TaskRegistry(object):
             reporter.report_task(
                 pipeline_task=pipeline_task,
                 task_id=task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.CONFIG_ERROR.value,
                 message=f"No task named {task_id} is registered",
             )

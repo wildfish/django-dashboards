@@ -38,6 +38,7 @@ def run_pipeline(
 @shared_task
 def run_pipeline_report(
     pipeline_id: str,
+    run_id: str,
     status: str,
     message: str,
     object_lookup: Optional[dict[str, Any]],
@@ -50,6 +51,7 @@ def run_pipeline_report(
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     reporter.report_pipeline(
         pipeline_id=pipeline_id,
+        run_id=run_id,
         status=status,
         message=message,
         object_lookup=object_lookup,
@@ -71,7 +73,7 @@ def run_task(
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
-    tasks = pipeline().clean_tasks(reporter)
+    tasks = pipeline().clean_tasks(reporter, run_id=run_id)
 
     logger.debug(f"{tasks} found in pipeline {pipeline_id}")
 
@@ -92,7 +94,8 @@ def run_task(
 @shared_task
 def run_task_report(
     task_id: str,
-    pipeline_id: str,
+    pipeline_task: str,
+    run_id: str,
     status: str,
     message: str,
     object_lookup: Optional[dict[str, Any]],
@@ -100,12 +103,11 @@ def run_task_report(
     """
     Record a task report update async.
     """
-    logger.debug(f"run_task_report triggered for task {task_id}")
-
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     reporter.report_task(
+        pipeline_task=pipeline_task,
         task_id=task_id,
-        pipeline_id=pipeline_id,
+        run_id=run_id,
         status=status,
         message=message,
         object_lookup=object_lookup,
