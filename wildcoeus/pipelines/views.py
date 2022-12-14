@@ -10,7 +10,12 @@ from django.views.generic.detail import SingleObjectMixin
 
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.models import PipelineExecution, TaskResult
+from wildcoeus.pipelines.models import (
+    PipelineExecution,
+    PipelineLog,
+    TaskLog,
+    TaskResult,
+)
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
@@ -92,6 +97,42 @@ class TaskResultListView(LoginRequiredMixin, ListView):
         #  286 status stops htmx from polling
         response.status_code = 286 if self.all_tasks_completed() else 200
         return response
+
+
+class LogListView(LoginRequiredMixin, TemplateView):
+    template_name = "wildcoeus/pipelines/_log_list.html"
+
+    def all_tasks_completed(self):
+        return (
+            TaskResult.objects.not_completed()
+            .for_run_id(run_id=self.kwargs["run_id"])
+            .count()
+            == 0
+        )
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        #  286 status stops htmx from polling
+        response.status_code = 286 if self.all_tasks_completed() else 200
+        return response
+
+    def get_context_data(self, **kwargs):
+        logs = [
+            (log.created, log.log_message)
+            for log in PipelineLog.objects.filter(run_id=kwargs["run_id"])
+        ]
+        logs.extend(
+            [
+                (log.created, log.log_message)
+                for log in TaskLog.objects.filter(run_id=kwargs["run_id"])
+            ]
+        )
+        logs.sort(key=lambda x: x[0])
+
+        return {
+            **super().get_context_data(**kwargs),
+            "logs": logs,
+        }
 
 
 class TaskResultReRunView(LoginRequiredMixin, SingleObjectMixin, RedirectView):

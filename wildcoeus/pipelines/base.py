@@ -153,14 +153,6 @@ class Pipeline(metaclass=PipelineType):
             started=timezone.now(),
         )
 
-        # record it is starting
-        reporter.report_pipeline(
-            pipeline_id=self.id,
-            run_id=run_id,
-            status=PipelineTaskStatus.RUNNING.value,
-            message="Started",
-        )
-
         # trigger runner to start
         started = runner.start(
             pipeline_id=self.id,

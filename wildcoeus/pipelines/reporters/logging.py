@@ -21,9 +21,9 @@ class LoggingReporter(PipelineReporter):
 
         if pipeline_id:
             logger.info(
-                f"Pipeline {pipeline_id}:{run_id} changed to state {status} {instance_msg}: {message}"
+                f"Pipeline {pipeline_id} changed to state {status} {instance_msg}: {message}"
             )
         else:
             logger.info(
-                f"Task {task_id}:{pipeline_task}:{run_id} changed to state {status} {instance_msg}: {message}"
+                f"Task {pipeline_task} ({task_id}) changed to state {status} {instance_msg}: {message}"
             )

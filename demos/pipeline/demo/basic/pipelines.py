@@ -47,8 +47,8 @@ class EchoMessageTask(Task):
 
 @pipeline_registry.register
 class BasicPipeline(Pipeline):
-    save_message = SaveMessageTask(config={"wait": 1})
-    echo_message = EchoMessageTask(config={"wait": 2, "parents": ["save_message"]})
+    save_message = SaveMessageTask(config={"wait": 2})
+    echo_message = EchoMessageTask(config={"wait": 4, "parents": ["save_message"]})
 
     class Meta:
         title = "Basic pipeline with 2 steps"

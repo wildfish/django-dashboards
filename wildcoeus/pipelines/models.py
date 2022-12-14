@@ -16,7 +16,7 @@ class PipelineLog(TimeStampedModel):
 
     @property
     def log_message(self):
-        return f"Pipeline {self.pipeline_id}:{self.run_id} changed to state {self.get_status_display()}: {self.message}"
+        return f"Pipeline {self.pipeline_id} changed to state {self.get_status_display()}: {self.message}"
 
     def __str__(self):
         return self.log_message
@@ -35,7 +35,7 @@ class TaskLog(TimeStampedModel):
 
     @property
     def log_message(self):
-        return f"Task {self.task_id}:{self.pipeline_task}:{self.run_id} changed to state {self.get_status_display()}: {self.message}"
+        return f"Task {self.pipeline_task} ({self.task_id}) changed to state {self.get_status_display()}: {self.message}"
 
     def __str__(self):
         return self.log_message

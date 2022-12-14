@@ -1,7 +1,12 @@
 {% extends "wildcoeus/pipelines/pipeline.html" %}
-{% block content_title %}Tasks{% endblock content_title %}
+{% block content_title %}Run: {{ run_id }}{% endblock content_title %}
 {% block content %}
-  <div hx-get="{% url "wildcoeus.pipelines:results-list" run_id %}" hx-trigger="load, every 3s">
+  <h4>Tasks</h4>
+  <div hx-get="{% url "wildcoeus.pipelines:results-list" run_id %}" hx-trigger="load, every 1s">
+    LOADING
+  </div>
+  <h4>Logs</h4>
+    <div hx-get="{% url "wildcoeus.pipelines:logs-list" run_id %}" hx-trigger="load, every 1s">
     LOADING
   </div>
 {% endblock %}
