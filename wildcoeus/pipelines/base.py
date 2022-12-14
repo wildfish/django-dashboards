@@ -98,6 +98,22 @@ class Pipeline(metaclass=PipelineType):
             )
         )
 
+    @classmethod
+    def get_iterator(cls):
+        """
+        Pipelines can iterate over an object to run multiple times.
+        """
+        return None
+
+    @staticmethod
+    def get_serializable_pipeline_object(obj):
+        if not obj:
+            return None
+
+        return {
+            "obj": obj,
+        }
+
     def start(
         self,
         run_id: str,
@@ -164,7 +180,7 @@ class Pipeline(metaclass=PipelineType):
 
         return started
 
-    def save(self, run_id: str, **defaults: dict):
+    def save(self, run_id: str, **defaults: Dict[str, Any]):
         from .models import (  # needs to be here or raise AppRegistryNotReady("Apps aren't loaded yet.")
             PipelineExecution,
         )
@@ -213,3 +229,18 @@ class ModelPipeline(Pipeline):
             )
 
         return queryset
+
+    @classmethod
+    def get_iterator(cls):
+        return cls.get_queryset()
+
+    @staticmethod
+    def get_serializable_pipeline_object(obj):
+        if not obj:
+            return None
+
+        return {
+            "pk": obj.pk,
+            "app_label": obj._meta.app_label,
+            "model_name": obj._meta.model_name,
+        }

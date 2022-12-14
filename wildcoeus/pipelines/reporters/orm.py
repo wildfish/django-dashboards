@@ -14,7 +14,8 @@ class ORMReporter(PipelineReporter):
         pipeline_id: Optional[str] = None,
         task_id: Optional[str] = None,
         pipeline_task: Optional[str] = None,
-        object_lookup: Optional[dict[str, Any]] = None,
+        serializable_pipeline_object: Optional[dict[str, Any]] = None,
+        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         if pipeline_id:
             PipelineLog.objects.create(

@@ -19,18 +19,18 @@ def run_pipeline(
     """
     Start a specific pipeline's celery Runner.
     """
+    from wildcoeus.pipelines.runners.celery.runner import Runner
+
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-    runner = config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER
     pipeline_cls = pipeline_registry.get_pipeline_class(pipeline_id)
+
     if not run_id:
         run_id = str(uuid.uuid4())
-
-    logger.debug(f"run_pipeline triggered with run_id {run_id}")
 
     pipeline_cls().start(
         run_id=run_id,
         input_data=input_data,
-        runner=runner,
+        runner=Runner(),
         reporter=reporter,
     )
 
@@ -41,20 +41,18 @@ def run_pipeline_report(
     run_id: str,
     status: str,
     message: str,
-    object_lookup: Optional[dict[str, Any]],
+    serializable_pipeline_object: Optional[dict[str, Any]],
 ):
     """
     Record a pipeline report update async.
     """
-    logger.debug(f"run_pipeline_report triggered for task {pipeline_id}")
-
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     reporter.report_pipeline(
         pipeline_id=pipeline_id,
         run_id=run_id,
         status=status,
         message=message,
-        object_lookup=object_lookup,
+        serializable_pipeline_object=serializable_pipeline_object,
     )
 
 
@@ -64,19 +62,15 @@ def run_task(
     run_id: str,
     pipeline_id: str,
     input_data: Dict[str, Any],
-    object_lookup: Optional[dict[str, Any]],
+    serializable_pipeline_object: Optional[dict[str, Any]],
+    serializable_task_object: Optional[dict[str, Any]],
 ):
     """
     Start a specific task via it's pipeline's runner.
     """
-    logger.debug(f"run_task triggered for task_id {task_id} and run_id {run_id}")
-
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
     tasks = pipeline().clean_tasks(reporter, run_id=run_id)
-
-    logger.debug(f"{tasks} found in pipeline {pipeline_id}")
-
     try:
         task = list(filter(lambda x: x.task_id == task_id, tasks))[0]
     except IndexError:
@@ -87,7 +81,8 @@ def run_task(
         run_id=run_id,
         input_data=input_data,
         reporter=reporter,
-        object_lookup=object_lookup,
+        serializable_pipeline_object=serializable_pipeline_object,
+        serializable_task_object=serializable_task_object,
     )
 
 
@@ -98,7 +93,8 @@ def run_task_report(
     run_id: str,
     status: str,
     message: str,
-    object_lookup: Optional[dict[str, Any]],
+    serializable_pipeline_object: Optional[dict[str, Any]],
+    serializable_task_object: Optional[dict[str, Any]],
 ):
     """
     Record a task report update async.
@@ -110,5 +106,6 @@ def run_task_report(
         run_id=run_id,
         status=status,
         message=message,
-        object_lookup=object_lookup,
+        serializable_pipeline_object=serializable_pipeline_object,
+        serializable_task_object=serializable_task_object,
     )

@@ -29,7 +29,7 @@ def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
     reporter.report_task.assert_called_once_with(
         pipeline_task="fake",
         task_id="missing_task_id",
-        status=PipelineTaskStatus.CONFIG_ERROR,
+        status=PipelineTaskStatus.CONFIG_ERROR.value,
         message="No task named missing_task_id is registered",
     )
 
@@ -54,7 +54,7 @@ def test_request_to_load_a_task_that_exists_with_a_bad_config___error_is_reporte
     reporter.report_task.assert_called_once_with(
         pipeline_task="fake",
         task_id="missing_task_id",
-        status=PipelineTaskStatus.CONFIG_ERROR,
+        status=PipelineTaskStatus.CONFIG_ERROR.value,
         message="No task named missing_task_id is registered",
     )
 

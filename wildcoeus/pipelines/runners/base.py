@@ -1,4 +1,5 @@
 import uuid
+from copy import copy
 from graphlib import TopologicalSorter
 from typing import Any, Dict, List, Optional
 
@@ -12,7 +13,11 @@ from wildcoeus.pipelines.tasks import Task
 class PipelineRunner:
     @staticmethod
     def _report_task_cancelled(
-        task: Task, run_id: str, reporter: PipelineReporter, object_lookup=None
+        task: Task,
+        run_id: str,
+        reporter: PipelineReporter,
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
     ):
         reporter.report_task(
             pipeline_task=task.pipeline_task,
@@ -20,55 +25,68 @@ class PipelineRunner:
             run_id=run_id,
             status=PipelineTaskStatus.CANCELLED.value,
             message="There was an error running a different task",
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=serializable_task_object,
         )
 
     @staticmethod
     def _report_pipeline_pending(
-        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+        pipeline_id: str,
+        run_id: str,
+        reporter: PipelineReporter,
+        serializable_pipeline_object=None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
             run_id=run_id,
             status=PipelineTaskStatus.PENDING.value,
             message="Pipeline is waiting to start",
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
         )
 
     @staticmethod
     def _report_pipeline_running(
-        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+        pipeline_id: str,
+        run_id: str,
+        reporter: PipelineReporter,
+        serializable_pipeline_object=None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
             run_id=run_id,
             status=PipelineTaskStatus.RUNNING.value,
             message="Running",
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
         )
 
     @staticmethod
     def _report_pipeline_done(
-        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+        pipeline_id: str,
+        run_id: str,
+        reporter: PipelineReporter,
+        serializable_pipeline_object=None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
             run_id=run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
         )
 
     @staticmethod
     def _report_pipeline_error(
-        pipeline_id: str, run_id: str, reporter: PipelineReporter, object_lookup=None
+        pipeline_id: str,
+        run_id: str,
+        reporter: PipelineReporter,
+        serializable_pipeline_object=None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
             run_id=run_id,
             status=PipelineTaskStatus.RUNTIME_ERROR.value,
             message="Error",
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
         )
 
     @staticmethod
@@ -83,17 +101,6 @@ class PipelineRunner:
         task_order = tuple(TopologicalSorter(task_graph).static_order())
         tasks_ordered = sorted(tasks, key=lambda t: task_order.index(t.pipeline_task))
         return tasks_ordered
-
-    @staticmethod
-    def object_lookup(obj):
-        if not obj:
-            return None
-
-        return {
-            "pk": obj.pk,
-            "app_label": obj._meta.app_label,
-            "model_name": obj._meta.model_name,
-        }
 
     def start(
         self,
@@ -115,17 +122,18 @@ class PipelineRunner:
         logger.debug("runner.start triggered")
 
         pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
-        if issubclass(pipeline, ModelPipeline):
-            qs = pipeline.get_queryset()
+        iterator = pipeline.get_iterator()
+
+        if iterator:
             runs = []
-            for obj in qs:
+            for pipeline_object in iterator:
                 run = self.start_runner(
                     pipeline_id=pipeline_id,
                     run_id=str(uuid.uuid4()),
                     tasks=tasks,
                     input_data=input_data,
                     reporter=reporter,
-                    obj=obj,
+                    pipeline_object=pipeline_object,
                 )
                 runs.append(run)
             return runs
@@ -145,7 +153,7 @@ class PipelineRunner:
         tasks: List[Task],
         input_data: Dict[str, Any],
         reporter: PipelineReporter,
-        obj: Optional[Any] = None,
+        pipeline_object: Optional[Any] = None,
     ):  # pragma: no cover
         """
         Start runner, is called by start and applies any runner specific steps.

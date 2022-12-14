@@ -12,7 +12,8 @@ class PipelineReporter:
         pipeline_id: Optional[str] = None,
         task_id: Optional[str] = None,
         pipeline_task: Optional[str] = None,
-        object_lookup: Optional[dict[str, Any]] = None,
+        serializable_pipeline_object: Optional[dict[str, Any]] = None,
+        serializable_task_object: Optional[dict[str, Any]] = None,
     ):  # pragma: nocover
         pass
 
@@ -20,16 +21,18 @@ class PipelineReporter:
         self,
         pipeline_id: str,
         run_id: str,
-        status: PipelineTaskStatus,
+        status: str,
         message: str,
-        object_lookup: Optional[dict[str, Any]] = None,
+        serializable_pipeline_object: Optional[dict[str, Any]] = None,
+        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         self.report(
             pipeline_id=pipeline_id,
             run_id=run_id,
             status=status,
             message=message,
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=serializable_task_object,
         )
 
     def report_task(
@@ -39,7 +42,8 @@ class PipelineReporter:
         run_id: str,
         status: str,
         message: str,
-        object_lookup: Optional[dict[str, Any]] = None,
+        serializable_pipeline_object: Optional[dict[str, Any]] = None,
+        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         self.report(
             pipeline_task=pipeline_task,
@@ -47,5 +51,6 @@ class PipelineReporter:
             run_id=run_id,
             status=status,
             message=message,
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=serializable_task_object,
         )
