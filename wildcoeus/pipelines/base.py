@@ -4,9 +4,11 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
 from django.utils import timezone
 
+
 if TYPE_CHECKING:  # pragma: nocover
     from wildcoeus.pipelines.runners import PipelineRunner
 
+from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters.base import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -105,14 +107,13 @@ class Pipeline(metaclass=PipelineType):
             message="Pipeline is waiting to start",
         )
 
-        print(runner)
         # save that the pipeline has been triggered to run
         self.save(
             run_id=run_id,
             status=PipelineTaskStatus.PENDING.value,
             input_data=input_data,
             runner=runner.__class__.__name__,
-            reporter=reporter.__class__.__name__
+            reporter=reporter.__class__.__name__,
         )
 
         self.cleaned_tasks = self.clean_tasks(reporter)
@@ -136,7 +137,7 @@ class Pipeline(metaclass=PipelineType):
                 task.save(
                     pipeline_id=self.id,
                     run_id=run_id,
-                    status=PipelineTaskStatus.PENDING.value
+                    status=PipelineTaskStatus.PENDING.value,
                 )
 
         # save that the pipeline is set to run
@@ -165,12 +166,13 @@ class Pipeline(metaclass=PipelineType):
         return started
 
     def save(self, run_id: str, **defaults: dict):
-        print("saving pipeline")
-        from .models import PipelineExecution
+        from .models import (  # needs to be here or raise AppRegistryNotReady("Apps aren't loaded yet.")
+            PipelineExecution,
+        )
+
+        logger.debug("saving pipeline")
         PipelineExecution.objects.update_or_create(
-            pipeline_id=self.id,
-            run_id=run_id,
-            defaults=defaults
+            pipeline_id=self.id, run_id=run_id, defaults=defaults
         )
 
     def handle_error(self, reporter, run_id):

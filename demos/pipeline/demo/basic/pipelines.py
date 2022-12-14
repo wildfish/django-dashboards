@@ -22,7 +22,6 @@ class SaveMessageTask(Task):
 
     def run(self, pipeline_id: str, run_id: str, cleaned_data):
         time.sleep(self.cleaned_config.wait)
-        print("I am runnings :)")
         ValueStore.store(
             pipeline_id=pipeline_id,
             run_id=run_id,
@@ -37,7 +36,7 @@ class EchoMessageTask(Task):
     InputType = EchoInputType
 
     def run(self, pipeline_id: str, run_id: str, cleaned_data):
-        print("I am running too :)")
+        time.sleep(self.cleaned_config.wait)
         message = ValueStore.get(
             pipeline_id=pipeline_id,
             run_id=run_id,
@@ -48,8 +47,8 @@ class EchoMessageTask(Task):
 
 @pipeline_registry.register
 class BasicPipeline(Pipeline):
-    save_message = SaveMessageTask(config={"wait": 5})
-    echo_message = EchoMessageTask(config={"wait": 5, "parents": ["save_message"]})
+    save_message = SaveMessageTask(config={"wait": 1})
+    echo_message = EchoMessageTask(config={"wait": 2, "parents": ["save_message"]})
 
     class Meta:
         title = "Basic pipeline with 2 steps"

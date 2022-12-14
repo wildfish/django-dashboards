@@ -4,7 +4,7 @@
   <ul>
     {% for pipeline in pipelines %}
       <li>
-        {{ pipeline.title }}
+        --{{ pipeline }}--
         <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">start</a>
       </li>
     {% endfor %}

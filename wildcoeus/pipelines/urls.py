@@ -15,6 +15,11 @@ urlpatterns = [
         name="list",
     ),
     path(
+        "runs/",
+        views.PipelineExecutionListView.as_view(),
+        name="pipeline-execution-list",
+    ),
+    path(
         "<str:slug>/start/",
         views.PipelineStartView.as_view(),
         name="start",

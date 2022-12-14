@@ -5,7 +5,14 @@ from . import models
 
 @admin.register(models.TaskResult)
 class TaskResultAdmin(admin.ModelAdmin):
-    list_display = ("pipeline_id", "pipeline_task", "run_id", "status", "started", "completed")
+    list_display = (
+        "pipeline_id",
+        "pipeline_task",
+        "run_id",
+        "status",
+        "started",
+        "completed",
+    )
 
 
 @admin.register(models.PipelineExecution)

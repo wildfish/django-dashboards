@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count, OuterRef, Subquery
 from django.db.models.query import QuerySet
 
 from django_extensions.db.models import TimeStampedModel
@@ -30,9 +31,20 @@ class TaskResultQuerySet(QuerySet):
     def for_run_id(self, run_id):
         return self.filter(run_id=run_id)
 
-    def not_completed(self, run_id):
+    def not_completed(self):
         statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
-        return self.for_run_id(run_id=run_id).filter(status__in=statues)
+        return self.filter(status__in=statues)
+
+
+class PipelineExecutionQuerySet(QuerySet):
+    def with_task_count(self):
+        tasks_qs = (
+            TaskResult.objects.values_list("run_id")
+            .filter(run_id=OuterRef("run_id"))
+            .annotate(total=Count("task_id"))
+            .values("total")
+        )
+        return PipelineExecution.objects.annotate(task_count=Subquery(tasks_qs))
 
 
 class TaskResult(models.Model):
@@ -73,14 +85,23 @@ class TaskResult(models.Model):
 class PipelineExecution(models.Model):
     pipeline_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255, unique=True)
-    status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices(), default=PipelineTaskStatus.PENDING.value)
+    status = models.CharField(
+        max_length=255,
+        choices=PipelineTaskStatus.choices(),
+        default=PipelineTaskStatus.PENDING.value,
+    )
     input_data = models.JSONField(blank=True, null=True)
-    runner = models.CharField(max_length=255,blank=True, null=True)
-    reporter = models.CharField(max_length=255,blank=True, null=True)
+    runner = models.CharField(max_length=255, blank=True, null=True)
+    reporter = models.CharField(max_length=255, blank=True, null=True)
     started = models.DateTimeField(blank=True, null=True)
+
+    objects = PipelineExecutionQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.pipeline_id} started on {self.started}"
+
+    class Meta:
+        ordering = ["-started"]
 
 
 class ValueStore(TimeStampedModel):

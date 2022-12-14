@@ -6,6 +6,7 @@ import envdir
 from configurations import Configuration
 from kombu import Queue
 
+
 # Common settings
 BASE_DIR = Path(__file__).absolute().parent.parent
 PROJECT_NAME = "demo"
@@ -265,7 +266,9 @@ class Common(Configuration):
 
     WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.celery.runner.Runner"
     # WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.eager.Runner"
-    WILDCOEUS_PIPELINE_REPORTER = "wildcoeus.pipelines.reporters.logging.LoggingReporter"
+    WILDCOEUS_PIPELINE_REPORTER = (
+        "wildcoeus.pipelines.reporters.logging.LoggingReporter"
+    )
 
 
 class Dev(Common):

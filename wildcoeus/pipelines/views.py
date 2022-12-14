@@ -9,12 +9,12 @@ from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.models import TaskResult
+from wildcoeus.pipelines.log import logger
+from wildcoeus.pipelines.models import PipelineExecution, TaskResult
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
-from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
-from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
 
 
 class PipelineListView(LoginRequiredMixin, TemplateView):
@@ -27,6 +27,13 @@ class PipelineListView(LoginRequiredMixin, TemplateView):
         }
 
 
+class PipelineExecutionListView(LoginRequiredMixin, ListView):
+    template_name = "wildcoeus/pipelines/pipeline_execution_list.html"
+
+    def get_queryset(self):
+        return PipelineExecution.objects.with_task_count().all()
+
+
 class PipelineStartView(LoginRequiredMixin, RedirectView):
     def get_pipeline_context(self):
         return {
@@ -37,29 +44,22 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         self.run_id = str(uuid.uuid4())
 
-        # todo: need to pass it to runner but how
         # are we starting it straight away or passing it off to celery to start
         if isinstance(config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER, EagerRunner):
-            # pipeline_cls = registry.get_pipeline_class(kwargs["slug"])
-            # if pipeline_cls is None:
-            #     raise Http404(f"Pipeline {kwargs['slug']} not found in registry")
-            #
-            # # start the pipeline
-            # pipeline_cls().start(
-            #     reporter=config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER,
-            #     runner=config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER,
-            #     **self.get_pipeline_context()
-            # )
-            print("running eager")
-            # trigger in celery
+            logger.debug("running pipeline in eager")
+            # trigger in eager
             run_pipeline(
-                pipeline_id=kwargs["slug"], input_data={"message": "hello"}, run_id=self.run_id
+                pipeline_id=kwargs["slug"],
+                input_data={"message": "hello"},
+                run_id=self.run_id,
             )
         else:
-            print("running celery")
+            logger.debug("running pipeline in celery")
             # trigger in celery
             run_pipeline.delay(
-                pipeline_id=kwargs["slug"], input_data={"message": "hello"}, run_id=self.run_id
+                pipeline_id=kwargs["slug"],
+                input_data={"message": "hello"},
+                run_id=self.run_id,
             )
 
         response = super().get(request, *args, **kwargs)
@@ -79,18 +79,18 @@ class TaskResultListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return TaskResult.objects.for_run_id(run_id=self.kwargs["run_id"])
 
-    def tasks_completed(self):
-        return TaskResult.\
-            objects.\
-            filter(
-                run_id=self.kwargs["run_id"],
-                status__in=[PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
-            ).count() == 0
+    def all_tasks_completed(self):
+        return (
+            TaskResult.objects.not_completed()
+            .for_run_id(run_id=self.kwargs["run_id"])
+            .count()
+            == 0
+        )
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         #  286 status stops htmx from polling
-        response.status_code = 286 if self.tasks_completed() else 200
+        response.status_code = 286 if self.all_tasks_completed() else 200
         return response
 
 

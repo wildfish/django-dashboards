@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pipelines', '0002_rename_last_run_pipelineexecution_started_and_more'),
+        ("pipelines", "0002_rename_last_run_pipelineexecution_started_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pipelineexecution',
-            name='reporter',
+            model_name="pipelineexecution",
+            name="reporter",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='pipelineexecution',
-            name='runner',
+            model_name="pipelineexecution",
+            name="runner",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='pipelineexecution',
-            name='started',
+            model_name="pipelineexecution",
+            name="started",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

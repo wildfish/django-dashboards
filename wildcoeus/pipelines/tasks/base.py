@@ -80,7 +80,7 @@ class Task:
         reporter: PipelineReporter,
         object_lookup: Optional[dict[str, Any]] = None,
     ):
-        print("running task run_task")
+        logger.debug("task.start triggered")
         try:
             cleaned_data = self.clean_input_data(input_data)
             logger.debug(cleaned_data)
@@ -130,8 +130,14 @@ class Task:
 
             return True
         except (InputValidationError, Exception) as e:
-            status = PipelineTaskStatus.VALIDATION_ERROR if isinstance(e, InputValidationError) else PipelineTaskStatus.RUNTIME_ERROR
-            self.handle_exception(reporter, pipeline_id, run_id, object_lookup, e, status)
+            status = (
+                PipelineTaskStatus.VALIDATION_ERROR
+                if isinstance(e, InputValidationError)
+                else PipelineTaskStatus.RUNTIME_ERROR
+            )
+            self.handle_exception(
+                reporter, pipeline_id, run_id, object_lookup, e, status
+            )
 
         return False
 
@@ -145,6 +151,7 @@ class Task:
 
     def handle_exception(self, reporter, pipeline_id, run_id, object_lookup, e, status):
         from ..models import PipelineExecution
+
         # If there is an error running the task record the error
         reporter.report_task(
             pipeline_task=self.pipeline_task,
@@ -169,7 +176,8 @@ class Task:
         )
 
     def save(self, pipeline_id, run_id, status, **defaults):
-        from ..models import TaskResult, PipelineExecution
+        from ..models import PipelineExecution, TaskResult
+
         # add to the defaults
         defaults["status"] = status
         defaults["pipeline_task"] = self.pipeline_task
@@ -185,8 +193,13 @@ class Task:
 
         # if all tasks have ran then flag the PipelineExecution as complete
         if status == PipelineTaskStatus.DONE.value:
-            if TaskResult.objects.not_completed(run_id=run_id).count() == 0:
-                PipelineExecution.objects.filter(pipeline_id=pipeline_id, run_id=run_id).update(status=PipelineTaskStatus.DONE.value)
+            if (
+                TaskResult.objects.not_completed().for_run_id(run_id=run_id).count()
+                == 0
+            ):
+                PipelineExecution.objects.filter(
+                    pipeline_id=pipeline_id, run_id=run_id
+                ).update(status=PipelineTaskStatus.DONE.value)
 
         return result
 

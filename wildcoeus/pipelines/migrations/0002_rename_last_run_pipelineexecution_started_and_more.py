@@ -7,46 +7,58 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pipelines', '0001_initial'),
+        ("pipelines", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='pipelineexecution',
-            old_name='last_run',
-            new_name='started',
+            model_name="pipelineexecution",
+            old_name="last_run",
+            new_name="started",
         ),
         migrations.AddField(
-            model_name='pipelineexecution',
-            name='input_data',
+            model_name="pipelineexecution",
+            name="input_data",
             field=models.JSONField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='pipelineexecution',
-            name='reporter',
+            model_name="pipelineexecution",
+            name="reporter",
             field=models.CharField(default=django.utils.timezone.now, max_length=255),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='pipelineexecution',
-            name='run_id',
-            field=models.CharField(default='sdfsdffsd', max_length=255, unique=True),
+            model_name="pipelineexecution",
+            name="run_id",
+            field=models.CharField(default="sdfsdffsd", max_length=255, unique=True),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='pipelineexecution',
-            name='runner',
-            field=models.CharField(default='sdfsdf', max_length=255),
+            model_name="pipelineexecution",
+            name="runner",
+            field=models.CharField(default="sdfsdf", max_length=255),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='pipelineexecution',
-            name='status',
-            field=models.CharField(choices=[('PENDING', 'PENDING'), ('RUNNING', 'RUNNING'), ('DONE', 'DONE'), ('CONFIG_ERROR', 'CONFIG_ERROR'), ('VALIDATION_ERROR', 'VALIDATION_ERROR'), ('RUNTIME_ERROR', 'RUNTIME_ERROR'), ('CANCELLED', 'CANCELLED')], default='RUNNING', max_length=255),
+            model_name="pipelineexecution",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PENDING", "PENDING"),
+                    ("RUNNING", "RUNNING"),
+                    ("DONE", "DONE"),
+                    ("CONFIG_ERROR", "CONFIG_ERROR"),
+                    ("VALIDATION_ERROR", "VALIDATION_ERROR"),
+                    ("RUNTIME_ERROR", "RUNTIME_ERROR"),
+                    ("CANCELLED", "CANCELLED"),
+                ],
+                default="RUNNING",
+                max_length=255,
+            ),
         ),
         migrations.AlterField(
-            model_name='pipelineexecution',
-            name='pipeline_id',
+            model_name="pipelineexecution",
+            name="pipeline_id",
             field=models.CharField(max_length=255),
         ),
     ]

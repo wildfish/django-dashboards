@@ -3,6 +3,7 @@ from graphlib import TopologicalSorter
 from typing import Any, Dict, List, Optional
 
 from wildcoeus.pipelines import PipelineReporter
+from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
@@ -31,7 +32,10 @@ class PipelineRunner:
     @staticmethod
     def _report_pipeline_done(pipeline_id, reporter, object_lookup=None):
         reporter.report_pipeline(
-            pipeline_id=pipeline_id, status=PipelineTaskStatus.DONE.value, message="Done"
+            pipeline_id=pipeline_id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+            object_lookup=object_lookup,
         )
 
     @staticmethod
@@ -40,6 +44,7 @@ class PipelineRunner:
             pipeline_id=pipeline_id,
             status=PipelineTaskStatus.RUNTIME_ERROR.value,
             message="Error",
+            object_lookup=object_lookup,
         )
 
     @staticmethod
@@ -83,7 +88,7 @@ class PipelineRunner:
         """
         from wildcoeus.pipelines.base import ModelPipeline
 
-        print("running runner.start")
+        logger.debug("runner.start triggered")
 
         pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
         if issubclass(pipeline, ModelPipeline):
@@ -108,8 +113,6 @@ class PipelineRunner:
                 input_data=input_data,
                 reporter=reporter,
             )
-
-        print("done")
 
     def start_runner(
         self,
