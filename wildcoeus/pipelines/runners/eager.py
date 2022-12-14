@@ -1,5 +1,6 @@
 from typing import Any, Dict, Iterable, List, Optional
 
+from ..registry import pipeline_registry
 from ..reporters import PipelineReporter
 from ..tasks import Task
 from .base import PipelineRunner
@@ -39,27 +40,39 @@ class Runner(PipelineRunner):
         tasks: List[Task],
         input_data: Dict[str, Any],
         reporter: PipelineReporter,
-        obj: Optional[Any] = None,
+        pipeline_object: Optional[Any] = None,
     ) -> bool:
 
-        object_lookup = self.object_lookup(obj=obj)
+        pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
+        serializable_pipeline_object = pipeline.get_serializable_pipeline_object(
+            obj=pipeline_object
+        )
 
         self._report_pipeline_running(
             pipeline_id=pipeline_id,
             reporter=reporter,
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
         )
 
         ran_pipeline_tasks: List[str] = []
 
         for task in self._get_next_task(tasks, ran_pipeline_tasks):
-            res = task.start(
-                pipeline_id=pipeline_id,
-                run_id=run_id,
-                input_data=input_data,
-                reporter=reporter,
-                object_lookup=object_lookup,
-            )
+            iterator = task.get_iterator()
+            if not iterator:
+                iterator = [None]
+
+            print(iterator)
+            for i in iterator:
+                print("here")
+                res = task.start(
+                    pipeline_id=pipeline_id,
+                    run_id=run_id,
+                    input_data=input_data,
+                    reporter=reporter,
+                    serializable_pipeline_object=serializable_pipeline_object,
+                    serializable_task_object=task.get_serializable_task_object(i),
+                )
+            print(res)
             if res:
                 ran_pipeline_tasks.append(task.pipeline_task)
             else:
@@ -73,13 +86,13 @@ class Runner(PipelineRunner):
                     self._report_task_cancelled(
                         task=t,
                         reporter=reporter,
-                        object_lookup=object_lookup,
+                        serializable_pipeline_object=serializable_pipeline_object,
                     )
 
                 self._report_pipeline_error(
                     pipeline_id=pipeline_id,
                     reporter=reporter,
-                    object_lookup=object_lookup,
+                    serializable_pipeline_object=serializable_pipeline_object,
                 )
 
                 return False
@@ -87,7 +100,7 @@ class Runner(PipelineRunner):
         self._report_pipeline_done(
             pipeline_id=pipeline_id,
             reporter=reporter,
-            object_lookup=object_lookup,
+            serializable_pipeline_object=serializable_pipeline_object,
         )
 
         return True

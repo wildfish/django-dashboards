@@ -17,17 +17,19 @@ def test_report_task_calls_report_with_task_id_set():
     reporter.report_task(
         pipeline_task="fake",
         task_id="task-id",
-        status=PipelineTaskStatus.PENDING,
+        status=PipelineTaskStatus.PENDING.value,
         message="report message",
-        object_lookup=None,
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
     )
 
     reporter.report_body.assert_called_once_with(
         None,
         "fake",
         "task-id",
-        PipelineTaskStatus.PENDING,
+        PipelineTaskStatus.PENDING.value,
         "report message",
+        None,
         None,
     )
 
@@ -37,16 +39,18 @@ def test_report_pipeline_calls_report_with_task_id_set():
 
     reporter.report_pipeline(
         pipeline_id="pipeline-id",
-        status=PipelineTaskStatus.PENDING,
+        status=PipelineTaskStatus.PENDING.value,
         message="report message",
-        object_lookup=None,
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
     )
 
     reporter.report_body.assert_called_once_with(
         "pipeline-id",
         None,
         None,
-        PipelineTaskStatus.PENDING,
+        PipelineTaskStatus.PENDING.value,
         "report message",
+        None,
         None,
     )

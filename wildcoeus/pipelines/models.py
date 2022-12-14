@@ -73,10 +73,14 @@ class TaskResult(models.Model):
 class PipelineExecution(models.Model):
     pipeline_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255, unique=True)
-    status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices(), default=PipelineTaskStatus.PENDING.value)
+    status = models.CharField(
+        max_length=255,
+        choices=PipelineTaskStatus.choices(),
+        default=PipelineTaskStatus.PENDING.value,
+    )
     input_data = models.JSONField(blank=True, null=True)
-    runner = models.CharField(max_length=255,blank=True, null=True)
-    reporter = models.CharField(max_length=255,blank=True, null=True)
+    runner = models.CharField(max_length=255, blank=True, null=True)
+    reporter = models.CharField(max_length=255, blank=True, null=True)
     started = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):

@@ -16,12 +16,37 @@ def test_task():
 
 
 @pytest.fixture
+def test_task_iterator():
+    class TestTaskIterator(Task):
+        def run(self, *args, **kwargs):
+            return True
+
+        @classmethod
+        def get_iterator(cls):
+            return range(0, 3)
+
+    return TestTaskIterator
+
+
+@pytest.fixture
 def test_pipeline(test_task):
     class TestPipeline(Pipeline):
         first = test_task(config={})
 
         class Meta:
             title = "Test Pipeline"
+
+    return TestPipeline
+
+
+@pytest.fixture
+def test_iterator_pipeline(test_task):
+    class TestPipeline(Pipeline):
+        first = test_task(config={})
+
+        @classmethod
+        def get_iterator(cls):
+            return range(0, 3)
 
     return TestPipeline
 

@@ -65,13 +65,13 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
     reporter.report_task.assert_any_call(
         pipeline_task="good",
         task_id="test_pipeline_start.GoodConfigA",
-        status=PipelineTaskStatus.PENDING,
+        status=PipelineTaskStatus.PENDING.value,
         message="Task is waiting to start",
     )
     reporter.report_task.assert_any_call(
         pipeline_task="also_good",
         task_id="test_pipeline_start.GoodConfigB",
-        status=PipelineTaskStatus.PENDING,
+        status=PipelineTaskStatus.PENDING.value,
         message="Task is waiting to start",
     )
 
@@ -122,14 +122,14 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
     reporter.report_task.assert_any_call(
         pipeline_task="good",
         task_id="test_pipeline_start.GoodConfigA",
-        status=PipelineTaskStatus.PENDING,
+        status=PipelineTaskStatus.PENDING.value,
         message="Task is waiting to start",
     )
 
     reporter.report_task.assert_any_call(
         pipeline_task="also_good",
         task_id="test_pipeline_start.GoodConfigB",
-        status=PipelineTaskStatus.PENDING,
+        status=PipelineTaskStatus.PENDING.value,
         message="Task is waiting to start",
     )
 
@@ -174,7 +174,7 @@ def test_tasks_has_a_missing_parent___error_is_raised():
     reporter.report_task.assert_any_call(
         pipeline_task="bad",
         task_id="test_pipeline_start.BadConfig",
-        status=PipelineTaskStatus.CONFIG_ERROR,
+        status=PipelineTaskStatus.CONFIG_ERROR.value,
         message="One or more of the parent ids are not in the pipeline",
     )
 

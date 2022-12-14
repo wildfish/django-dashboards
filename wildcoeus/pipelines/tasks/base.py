@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional, Type
 
+from django.core.exceptions import ImproperlyConfigured
+from django.db.models import QuerySet
 from django.utils import timezone
 
 from pydantic import BaseModel, ValidationError
@@ -39,16 +41,48 @@ class Task:
         )
         self._config = config
         self.cleaned_config = self.clean_config(config)
-        self.object = None
+        self.pipeline_object = None
+        self.task_object = None
 
-    def get_object(self, object_lookup: Dict[str, Any]):
+    @classmethod
+    def get_iterator(cls):
+        """
+        Pipelines can iterate over an object to run multiple times.
+        """
+        return None
+
+    def get_serializable_task_object(self, obj):
+        if not obj:
+            return None
+
+        return {
+            "obj": obj,
+        }
+
+    def get_object(
+        self,
+        serializable_object: Dict[str, Any],
+    ):
+        if not serializable_object:
+            return None
+
+        if all(
+            key in serializable_object.keys()
+            for key in ["pk", "app_label", "model_name"]
+        ):
+            return self.get_django_object(serializable_object)
+        else:
+            return serializable_object
+
+    @staticmethod
+    def get_django_object(serializable_object: Dict[str, Any]):
         from django.contrib.contenttypes.models import ContentType
 
         object_type = ContentType.objects.get(
-            model=object_lookup.get("model_name"),
-            app_label=object_lookup.get("app_label"),
+            model=serializable_object.get("model_name"),
+            app_label=serializable_object.get("app_label"),
         )
-        self.object = object_type.get_object_for_this_type(pk=object_lookup.get("pk"))
+        return object_type.get_object_for_this_type(pk=serializable_object.get("pk"))
 
     def clean_config(self, config: Dict[str, Any]):
         try:
@@ -78,9 +112,9 @@ class Task:
         run_id: str,
         input_data: Dict[str, Any],
         reporter: PipelineReporter,
-        object_lookup: Optional[dict[str, Any]] = None,
+        serializable_pipeline_object: Optional[dict[str, Any]] = None,
+        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
-        print("running task run_task")
         try:
             cleaned_data = self.clean_input_data(input_data)
             logger.debug(cleaned_data)
@@ -90,7 +124,8 @@ class Task:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.RUNNING.value,
                 message="Task is running",
-                object_lookup=object_lookup,
+                serializable_pipeline_object=serializable_pipeline_object,
+                serializable_task_object=serializable_task_object,
             )
 
             # record the task is running
@@ -102,8 +137,11 @@ class Task:
                 input_data=cleaned_data.dict() if cleaned_data else None,
             )
 
-            if object_lookup:
-                self.get_object(object_lookup)
+            if serializable_pipeline_object:
+                self.pipeline_object = self.get_object(serializable_pipeline_object)
+
+            if serializable_task_object:
+                self.task_object = self.get_object(serializable_task_object)
 
             # run the task
             self.run(
@@ -125,13 +163,26 @@ class Task:
                 task_id=self.task_id,
                 status=PipelineTaskStatus.DONE.value,
                 message="Done",
-                object_lookup=object_lookup,
+                serializable_pipeline_object=serializable_pipeline_object,
+                serializable_task_object=serializable_task_object,
             )
 
             return True
         except (InputValidationError, Exception) as e:
-            status = PipelineTaskStatus.VALIDATION_ERROR if isinstance(e, InputValidationError) else PipelineTaskStatus.RUNTIME_ERROR
-            self.handle_exception(reporter, pipeline_id, run_id, object_lookup, e, status)
+            status = (
+                PipelineTaskStatus.VALIDATION_ERROR.value
+                if isinstance(e, InputValidationError)
+                else PipelineTaskStatus.RUNTIME_ERROR.value
+            )
+            self.handle_exception(
+                reporter=reporter,
+                pipeline_id=pipeline_id,
+                run_id=run_id,
+                serializable_pipeline_object=serializable_pipeline_object,
+                serializable_task_object=serializable_task_object,
+                exception=e,
+                status=status,
+            )
 
         return False
 
@@ -143,33 +194,45 @@ class Task:
     ):  # pragma: no cover
         raise NotImplementedError("run not implemented")
 
-    def handle_exception(self, reporter, pipeline_id, run_id, object_lookup, e, status):
+    def handle_exception(
+        self,
+        reporter,
+        pipeline_id,
+        run_id,
+        serializable_pipeline_object,
+        serializable_task_object,
+        exception,
+        status,
+    ):
         from ..models import PipelineExecution
+
         # If there is an error running the task record the error
         reporter.report_task(
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,
             status=status,
-            message=str(e),
-            object_lookup=object_lookup,
+            message=str(exception),
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=serializable_task_object,
         )
 
         # update the task result as failed
         self.save(
             pipeline_id=pipeline_id,
             run_id=run_id,
-            status=status.value,
+            status=status,
         )
 
         # update PipelineExecution (if present) as failed
         PipelineExecution.objects.filter(pipeline_id=pipeline_id, run_id=run_id).update(
             pipeline_id=pipeline_id,
             run_id=run_id,
-            status=status.value,
+            status=status,
         )
 
     def save(self, pipeline_id, run_id, status, **defaults):
-        from ..models import TaskResult, PipelineExecution
+        from ..models import PipelineExecution, TaskResult
+
         # add to the defaults
         defaults["status"] = status
         defaults["pipeline_task"] = self.pipeline_task
@@ -186,9 +249,52 @@ class Task:
         # if all tasks have ran then flag the PipelineExecution as complete
         if status == PipelineTaskStatus.DONE.value:
             if TaskResult.objects.not_completed(run_id=run_id).count() == 0:
-                PipelineExecution.objects.filter(pipeline_id=pipeline_id, run_id=run_id).update(status=PipelineTaskStatus.DONE.value)
+                PipelineExecution.objects.filter(
+                    pipeline_id=pipeline_id, run_id=run_id
+                ).update(status=PipelineTaskStatus.DONE.value)
 
         return result
+
+
+class ModelTask(Task):
+    class Meta:
+        model: Optional[str]
+        queryset = Optional[str]
+
+    @classmethod
+    def get_queryset(cls):
+        """
+        Return the list of items for this task to run against.
+        """
+        if getattr(cls.Meta, "queryset", None) is not None:
+            queryset = cls.Meta.queryset
+            if isinstance(queryset, QuerySet):
+                queryset = queryset.all()
+        elif cls.Meta.model is not None:
+            queryset = cls.Meta.model._default_manager.all()
+        else:
+            raise ImproperlyConfigured(
+                "%(cls)s is missing a QuerySet. Define "
+                "%(cls)s.model, %(cls)s.queryset, or override "
+                "%(cls)s.get_queryset()." % {"cls": cls.__class__.__name__}
+            )
+
+        return queryset
+
+    @classmethod
+    def get_iterator(cls):
+        return cls.get_queryset()
+
+    @staticmethod
+    def get_serializable_task_object(obj):
+        if not obj:
+            return None
+
+        return {
+            "pk": obj.pk,
+            "app_label": obj._meta.app_label,
+            "model_name": obj._meta.model_name,
+        }
 
 
 class TaskError(Exception):

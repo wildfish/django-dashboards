@@ -7,7 +7,7 @@ from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.eager import Runner
 
 
-pytestmark = pytest.mark.django_db
+pytestmark = pytest.mark.django_db()
 
 
 def test_task_have_no_parents___tasks_are_ran_in_configured_order():
@@ -17,9 +17,13 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
         def run(self, *args, **kwargs):
             return True
 
+    class TestTaskTwo(Task):
+        def run(self, *args, **kwargs):
+            return True
+
     class TestPipeline(Pipeline):
         first = TestTask(config={})
-        second = TestTask(config={})
+        second = TestTaskTwo(config={})
 
         class Meta:
             title = "Test Pipeline"
@@ -33,17 +37,19 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
         call(
             pipeline_task="first",
             task_id="test_eager_runner.TestTask",
-            status=PipelineTaskStatus.RUNNING,
+            status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
-            object_lookup=None,
+            serializable_pipeline_object=None,
+            serializable_task_object=None,
         )
     ) < reporter.report_task.call_args_list.index(
         call(
             pipeline_task="second",
-            task_id="test_eager_runner.TestTask",
-            status=PipelineTaskStatus.RUNNING,
+            task_id="test_eager_runner.TestTaskTwo",
+            status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
-            object_lookup=None,
+            serializable_pipeline_object=None,
+            serializable_task_object=None,
         )
     )
 
@@ -55,9 +61,13 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
         def run(self, *args, **kwargs):
             return True
 
+    class TestTaskTwo(Task):
+        def run(self, *args, **kwargs):
+            return True
+
     class TestPipeline(Pipeline):
         parent = TestTask(config={})
-        child = TestTask(config={"parents": ["parent"]})
+        child = TestTaskTwo(config={"parents": ["parent"]})
 
         class Meta:
             title = "Test Pipeline"
@@ -71,17 +81,19 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
         call(
             pipeline_task="parent",
             task_id="test_eager_runner.TestTask",
-            status=PipelineTaskStatus.RUNNING,
+            status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
-            object_lookup=None,
+            serializable_pipeline_object=None,
+            serializable_task_object=None,
         )
     ) < reporter.report_task.call_args_list.index(
         call(
             pipeline_task="child",
-            task_id="test_eager_runner.TestTask",
-            status=PipelineTaskStatus.RUNNING,
+            task_id="test_eager_runner.TestTaskTwo",
+            status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
-            object_lookup=None,
+            serializable_pipeline_object=None,
+            serializable_task_object=None,
         )
     )
 
@@ -114,16 +126,19 @@ def test_first_task_fails___other_tasks_are_cancelled():
     reporter.report_task.assert_any_call(
         pipeline_task="bad",
         task_id="test_eager_runner.BadTask",
-        status=PipelineTaskStatus.RUNTIME_ERROR,
+        status=PipelineTaskStatus.RUNTIME_ERROR.value,
         message="Test error",
-        object_lookup=None,
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
     )
+
     reporter.report_task.assert_any_call(
         pipeline_task="good",
         task_id="test_eager_runner.GoodTask",
-        status=PipelineTaskStatus.CANCELLED,
+        status=PipelineTaskStatus.CANCELLED.value,
         message="There was an error running a different task",
-        object_lookup=None,
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
     )
 
     good_task_start.assert_not_called()

@@ -4,6 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
 from django.utils import timezone
 
+
 if TYPE_CHECKING:  # pragma: nocover
     from wildcoeus.pipelines.runners import PipelineRunner
 
@@ -92,6 +93,22 @@ class Pipeline(metaclass=PipelineType):
             )
         )
 
+    @classmethod
+    def get_iterator(cls):
+        """
+        Pipelines can iterate over an object to run multiple times.
+        """
+        return None
+
+    @staticmethod
+    def get_serializable_pipeline_object(obj):
+        if not obj:
+            return None
+
+        return {
+            "obj": obj,
+        }
+
     def start(
         self,
         run_id: str,
@@ -105,14 +122,13 @@ class Pipeline(metaclass=PipelineType):
             message="Pipeline is waiting to start",
         )
 
-        print(runner)
         # save that the pipeline has been triggered to run
         self.save(
             run_id=run_id,
             status=PipelineTaskStatus.PENDING.value,
             input_data=input_data,
             runner=runner.__class__.__name__,
-            reporter=reporter.__class__.__name__
+            reporter=reporter.__class__.__name__,
         )
 
         self.cleaned_tasks = self.clean_tasks(reporter)
@@ -136,7 +152,7 @@ class Pipeline(metaclass=PipelineType):
                 task.save(
                     pipeline_id=self.id,
                     run_id=run_id,
-                    status=PipelineTaskStatus.PENDING.value
+                    status=PipelineTaskStatus.PENDING.value,
                 )
 
         # save that the pipeline is set to run
@@ -164,13 +180,11 @@ class Pipeline(metaclass=PipelineType):
 
         return started
 
-    def save(self, run_id: str, **defaults: dict):
-        print("saving pipeline")
+    def save(self, run_id: str, **defaults: Dict[str, Any]):
         from .models import PipelineExecution
+
         PipelineExecution.objects.update_or_create(
-            pipeline_id=self.id,
-            run_id=run_id,
-            defaults=defaults
+            pipeline_id=self.id, run_id=run_id, defaults=defaults
         )
 
     def handle_error(self, reporter, run_id):
@@ -211,3 +225,18 @@ class ModelPipeline(Pipeline):
             )
 
         return queryset
+
+    @classmethod
+    def get_iterator(cls):
+        return cls.get_queryset()
+
+    @staticmethod
+    def get_serializable_pipeline_object(obj):
+        if not obj:
+            return None
+
+        return {
+            "pk": obj.pk,
+            "app_label": obj._meta.app_label,
+            "model_name": obj._meta.model_name,
+        }

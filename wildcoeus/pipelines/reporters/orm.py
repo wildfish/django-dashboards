@@ -16,7 +16,7 @@ class ORMReporter(PipelineReporter):
         task_id: Optional[str],
         status: str,
         message: str,
-        object_lookup: Optional[dict[str, Any]] = None,
+        obj: Optional[dict[str, Any]] = None,
     ):
         if pipeline_id:
             PipelineLog.objects.create(
