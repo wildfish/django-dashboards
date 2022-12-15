@@ -2,7 +2,6 @@ import os
 from os import environ
 from pathlib import Path
 
-import envdir
 from configurations import Configuration
 from kombu import Queue
 
@@ -332,19 +331,3 @@ class Deployed(Common):
     SERVER_EMAIL = ""
 
     ALLOWED_HOSTS = [get_env_variable("ALLOWED_HOSTS")]
-
-    @classmethod
-    def post_setup(cls):
-        super(Deployed, cls).post_setup()
-        if cls.SENTRY_ENABLED:
-            sentry_sdk.init(
-                dsn=cls.SENTRY_DSN,
-                integrations=[
-                    DjangoIntegration(),
-                    RedisIntegration(),
-                ],
-                send_default_pii=True,
-                environment=_lower_django_configuration,
-                # glitchtip doesn't really support sampling, disabled for now.
-                traces_sample_rate=0,
-            )

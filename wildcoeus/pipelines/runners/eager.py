@@ -61,9 +61,7 @@ class Runner(PipelineRunner):
             if not iterator:
                 iterator = [None]
 
-            print(iterator)
             for i in iterator:
-                print("here")
                 res = task.start(
                     pipeline_id=pipeline_id,
                     run_id=run_id,
@@ -72,7 +70,7 @@ class Runner(PipelineRunner):
                     serializable_pipeline_object=serializable_pipeline_object,
                     serializable_task_object=task.get_serializable_task_object(i),
                 )
-            print(res)
+
             if res:
                 ran_pipeline_tasks.append(task.pipeline_task)
             else:

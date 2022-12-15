@@ -1,5 +1,4 @@
 import logging
-from unittest.mock import Mock
 
 from django.contrib.auth.models import User
 
@@ -72,8 +71,6 @@ def test_task_have_no_parents___tasks_are_added_to_chain_in_configured_order(
 def test_task_with_parents___tasks_are_added_to_chain_in_configured_order(
     celery_worker, logger
 ):
-    reporter = Mock()
-
     class TaskFirst(Task):
         def run(self, *args, **kwargs):
             return True
@@ -182,8 +179,8 @@ def test_iterator_pipeline(celery_worker, logger):
 
     run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
-    one_for = f"| pipeline object: {{'obj': 1}}"
-    two_for = f"| pipeline object: {{'obj': 2}}"
+    one_for = "| pipeline object: {{'obj': 1}}"
+    two_for = "| pipeline object: {{'obj': 2}}"
 
     assert [
         "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
@@ -229,22 +226,22 @@ def test_iterator__iterate_task(celery_worker, logger):
 
     run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
-    one_for = f"| task object: {{'obj': 1}}"
-    two_for = f"| task object: {{'obj': 2}}"
+    one_for = "| task object: {{'obj': 1}}"
+    two_for = "| task object: {{'obj': 2}}"
 
     assert [
         "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
         "Task first:test_celery_runner.TaskFirst changed to state PENDING: Task is waiting to start",
         "Task second:test_celery_runner.TaskSecond changed to state PENDING: Task is waiting to start",
         "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Started",
-        f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
-        f"Task first:test_celery_runner.TaskFirst changed to state RUNNING: Task is running",
-        f"Task first:test_celery_runner.TaskFirst changed to state DONE: Done",
+        "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
+        "Task first:test_celery_runner.TaskFirst changed to state RUNNING: Task is running",
+        "Task first:test_celery_runner.TaskFirst changed to state DONE: Done",
         f"Task second:test_celery_runner.TaskSecond changed to state RUNNING: Task is running {one_for}",
         f"Task second:test_celery_runner.TaskSecond changed to state DONE: Done {one_for}",
         f"Task second:test_celery_runner.TaskSecond changed to state RUNNING: Task is running {two_for}",
         f"Task second:test_celery_runner.TaskSecond changed to state DONE: Done {two_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
+        "Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
     ] == [rec.message for rec in logger.records]
 
 
@@ -282,14 +279,14 @@ def test_model__iterate_task(celery_worker, logger):
         "Task first:test_celery_runner.TaskFirst changed to state PENDING: Task is waiting to start",
         "Task second:test_celery_runner.TaskSecond changed to state PENDING: Task is waiting to start",
         "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Started",
-        f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
-        f"Task first:test_celery_runner.TaskFirst changed to state RUNNING: Task is running",
-        f"Task first:test_celery_runner.TaskFirst changed to state DONE: Done",
+        "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
+        "Task first:test_celery_runner.TaskFirst changed to state RUNNING: Task is running",
+        "Task first:test_celery_runner.TaskFirst changed to state DONE: Done",
         f"Task second:test_celery_runner.TaskSecond changed to state RUNNING: Task is running {user_one_for}",
         f"Task second:test_celery_runner.TaskSecond changed to state DONE: Done {user_one_for}",
         f"Task second:test_celery_runner.TaskSecond changed to state RUNNING: Task is running {user_two_for}",
         f"Task second:test_celery_runner.TaskSecond changed to state DONE: Done {user_two_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
+        "Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
     ] == [rec.message for rec in logger.records]
 
 
@@ -327,4 +324,4 @@ def test__task_to_celery_tasks__queue_defined():
         serializable_pipeline_object=None,
     )
 
-    assert without_queue_result[0].options["queue"] == None
+    assert not without_queue_result[0].options["queue"]

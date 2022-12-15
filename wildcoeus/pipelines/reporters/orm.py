@@ -1,11 +1,8 @@
 from typing import Any, Optional
 
-from django.utils import timezone
-
 from wildcoeus.pipelines import PipelineReporter
 
-from ..models import PipelineExecution, PipelineLog, TaskLog
-from ..status import PipelineTaskStatus
+from ..models import PipelineLog, TaskLog
 
 
 class ORMReporter(PipelineReporter):
