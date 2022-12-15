@@ -8,7 +8,7 @@ class Config:
         runner = getattr(
             settings,
             "WILDCOEUS_PIPELINE_RUNNER",
-            "wildcoeus.pipelines.runners.celery.Runner",
+            "wildcoeus.pipelines.runners.eager.Runner",
         )
         return import_string(runner)()
 

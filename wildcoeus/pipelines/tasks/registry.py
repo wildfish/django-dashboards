@@ -51,21 +51,12 @@ class TaskRegistry(object):
             reporter.report_task(
                 pipeline_task=pipeline_task,
                 task_id=task_id,
-                status=PipelineTaskStatus.CONFIG_ERROR,
+                status=PipelineTaskStatus.CONFIG_ERROR.value,
                 message=f"No task named {task_id} is registered",
             )
             return None
 
-        try:
-            return cls(config=config)
-        except Exception as e:
-            reporter.report_task(
-                pipeline_task=pipeline_task,
-                task_id=task_id,
-                status=PipelineTaskStatus.CONFIG_ERROR,
-                message=str(e),
-            )
-            return None
+        return cls(config=config)
 
 
 task_registry = TaskRegistry()

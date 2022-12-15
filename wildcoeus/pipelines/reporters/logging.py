@@ -2,7 +2,6 @@ from typing import Any, Optional
 
 from wildcoeus.pipelines import PipelineReporter
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class LoggingReporter(PipelineReporter):
@@ -11,19 +10,27 @@ class LoggingReporter(PipelineReporter):
         pipeline_id: Optional[str],
         pipeline_task: Optional[str],
         task_id: Optional[str],
-        status: PipelineTaskStatus,
+        status: str,
         message: str,
-        object_lookup: Optional[dict[str, Any]] = None,
+        serializable_pipeline_object: Optional[dict[str, Any]] = None,
+        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
-        instance_msg = ""
-        if object_lookup:
-            instance_msg = f"for {object_lookup}"
+        pipeline_object_msg = None
+        if serializable_pipeline_object:
+            pipeline_object_msg = f"pipeline object: {serializable_pipeline_object}"
+
+        task_object_msg = None
+        if serializable_task_object:
+            task_object_msg = f"task object: {serializable_task_object}"
+
+        messages = [message, pipeline_object_msg]
 
         if pipeline_id:
-            logger.info(
-                f"Pipeline {pipeline_id} changed to state {status.value}: {message} {instance_msg}"
-            )
+            message = " | ".join([m for m in messages if m])
+            logger.info(f"Pipeline {pipeline_id} changed to state {status}: {message}")
         else:
+            messages.append(task_object_msg)
+            message = " | ".join([m for m in messages if m])
             logger.info(
-                f"Task {pipeline_task}:{task_id} changed to state {status.value}: {message} {instance_msg}"
+                f"Task {pipeline_task}:{task_id} changed to state {status}: {message}"
             )

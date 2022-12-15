@@ -18,10 +18,12 @@ pre-commit
 
 # Testing
 django-webtest
+fakeredis
 model-bakery
 py
 pytest
 pytest-black
+pytest-celery
 pytest-cov
 pytest-django
 pytest-isort

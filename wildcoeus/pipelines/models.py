@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.query import QuerySet
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -25,6 +26,15 @@ class TaskLog(TimeStampedModel):
     message = models.TextField(blank=True)
 
 
+class TaskResultQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(run_id=run_id)
+
+    def not_completed(self, run_id):
+        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
+        return self.for_run_id(run_id=run_id).filter(status__in=statues)
+
+
 class TaskResult(models.Model):
     pipeline_id = models.CharField(max_length=255)
     pipeline_task = models.CharField(max_length=255)
@@ -35,6 +45,8 @@ class TaskResult(models.Model):
     input_data = models.JSONField(blank=True, null=True)
     started = models.DateTimeField(blank=True, null=True)
     completed = models.DateTimeField(blank=True, null=True)
+
+    objects = TaskResultQuerySet.as_manager()
 
     class Meta:
         unique_together = ("task_id", "run_id")
@@ -59,16 +71,25 @@ class TaskResult(models.Model):
 
 
 class PipelineExecution(models.Model):
-    pipeline_id = models.CharField(max_length=255, unique=True)
-    last_run = models.DateTimeField()
+    pipeline_id = models.CharField(max_length=255)
+    run_id = models.CharField(max_length=255, unique=True)
+    status = models.CharField(
+        max_length=255,
+        choices=PipelineTaskStatus.choices(),
+        default=PipelineTaskStatus.PENDING.value,
+    )
+    input_data = models.JSONField(blank=True, null=True)
+    runner = models.CharField(max_length=255, blank=True, null=True)
+    reporter = models.CharField(max_length=255, blank=True, null=True)
+    started = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.pipeline_id} started on {self.last_run}"
+        return f"{self.pipeline_id} started on {self.started}"
 
 
 class ValueStore(TimeStampedModel):
     """
-    Used to pass lightweight data between tasks
+    Used to store lightweight data between tasks
     """
 
     pipeline_id = models.CharField(max_length=255)

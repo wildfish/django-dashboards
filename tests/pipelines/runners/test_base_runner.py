@@ -74,6 +74,25 @@ def test_start__start_runner_called(test_pipeline):
         assert runner.call_count == 1
 
 
+def test_start__iterator__start_runner_called(test_iterator_pipeline):
+    reporter = Mock()
+    fake_user(_quantity=3)
+    tasks = test_iterator_pipeline().clean_tasks(reporter)
+    pipeline_registry.register(test_iterator_pipeline)
+
+    with patch(
+        "wildcoeus.pipelines.runners.base.PipelineRunner.start_runner"
+    ) as runner:
+        PipelineRunner().start(
+            pipeline_id="tests.pipelines.fixtures.TestPipeline",
+            run_id="1",
+            tasks=tasks,
+            input_data={},
+            reporter=reporter,
+        )
+        assert runner.call_count == 3
+
+
 def test_start__model__start_runner_called(test_model_pipeline):
     reporter = Mock()
     fake_user(_quantity=3)

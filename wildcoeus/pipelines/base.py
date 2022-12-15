@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
+from django.utils import timezone
 
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -74,7 +75,7 @@ class Pipeline(metaclass=PipelineType):
             reporter.report_task(
                 pipeline_task=task.pipeline_task,
                 task_id=task.task_id,
-                status=PipelineTaskStatus.CONFIG_ERROR,
+                status=PipelineTaskStatus.CONFIG_ERROR.value,
                 message="One or more of the parent ids are not in the pipeline",
             )
             return None
@@ -92,6 +93,22 @@ class Pipeline(metaclass=PipelineType):
             )
         )
 
+    @classmethod
+    def get_iterator(cls):
+        """
+        Pipelines can iterate over an object to run multiple times.
+        """
+        return None
+
+    @staticmethod
+    def get_serializable_pipeline_object(obj):
+        if not obj:
+            return None
+
+        return {
+            "obj": obj,
+        }
+
     def start(
         self,
         run_id: str,
@@ -101,33 +118,58 @@ class Pipeline(metaclass=PipelineType):
     ) -> bool:
         reporter.report_pipeline(
             pipeline_id=self.id,
-            status=PipelineTaskStatus.PENDING,
+            status=PipelineTaskStatus.PENDING.value,
             message="Pipeline is waiting to start",
+        )
+
+        # save that the pipeline has been triggered to run
+        self.save(
+            run_id=run_id,
+            status=PipelineTaskStatus.PENDING.value,
+            input_data=input_data,
+            runner=runner.__class__.__name__,
+            reporter=reporter.__class__.__name__,
         )
 
         self.cleaned_tasks = self.clean_tasks(reporter)
 
         if any(t is None for t in self.cleaned_tasks):
             # if any of the tasks have an invalid config cancel all others
-            for task in (t for t in self.cleaned_tasks if t is not None):
-                reporter.report_task(
-                    pipeline_task=task.pipeline_task,
-                    task_id=task.task_id,
-                    status=PipelineTaskStatus.CANCELLED,
-                    message="Tasks cancelled due to an error in the pipeline config",
-                )
+            self.handle_error(reporter=reporter, run_id=run_id)
             return False
         else:
             cleaned_tasks = cast(List[Task], self.cleaned_tasks)
             # else mark them all as pending
             for task in cleaned_tasks:
+                # log task is queued
                 reporter.report_task(
                     pipeline_task=task.pipeline_task,
                     task_id=task.task_id,
-                    status=PipelineTaskStatus.PENDING,
+                    status=PipelineTaskStatus.PENDING.value,
                     message="Task is waiting to start",
                 )
+                # save that each task is pending
+                task.save(
+                    pipeline_id=self.id,
+                    run_id=run_id,
+                    status=PipelineTaskStatus.PENDING.value,
+                )
 
+        # save that the pipeline is set to run
+        self.save(
+            run_id=run_id,
+            status=PipelineTaskStatus.RUNNING.value,
+            started=timezone.now(),
+        )
+
+        # record it is starting
+        reporter.report_pipeline(
+            pipeline_id=self.id,
+            status=PipelineTaskStatus.RUNNING.value,
+            message="Started",
+        )
+
+        # trigger runner to start
         started = runner.start(
             pipeline_id=self.id,
             run_id=run_id,
@@ -136,15 +178,26 @@ class Pipeline(metaclass=PipelineType):
             reporter=reporter,
         )
 
-        # record when it started
-        if started:
-            reporter.report_pipeline(
-                pipeline_id=self.id,
-                status=PipelineTaskStatus.RUNNING,
-                message="Started",
-            )
-
         return started
+
+    def save(self, run_id: str, **defaults: Dict[str, Any]):
+        from .models import PipelineExecution
+
+        PipelineExecution.objects.update_or_create(
+            pipeline_id=self.id, run_id=run_id, defaults=defaults
+        )
+
+    def handle_error(self, reporter, run_id):
+        # if any of the tasks have an invalid config cancel all others
+        for task in (t for t in self.cleaned_tasks if t is not None):
+            reporter.report_task(
+                pipeline_task=task.pipeline_task,
+                task_id=task.task_id,
+                status=PipelineTaskStatus.CANCELLED.value,
+                message="Tasks cancelled due to an error in the pipeline config",
+            )
+        # update that pipeline has been cancelled
+        self.save(run_id, status=PipelineTaskStatus.CANCELLED.value)
 
 
 class ModelPipeline(Pipeline):
@@ -172,3 +225,18 @@ class ModelPipeline(Pipeline):
             )
 
         return queryset
+
+    @classmethod
+    def get_iterator(cls):
+        return cls.get_queryset()
+
+    @staticmethod
+    def get_serializable_pipeline_object(obj):
+        if not obj:
+            return None
+
+        return {
+            "pk": obj.pk,
+            "app_label": obj._meta.app_label,
+            "model_name": obj._meta.model_name,
+        }
