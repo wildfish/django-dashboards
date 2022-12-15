@@ -1,4 +1,4 @@
-from .base import Task, TaskConfig, ModelTask
+from .base import ModelTask, Task, TaskConfig
 from .registry import task_registry
 
 
