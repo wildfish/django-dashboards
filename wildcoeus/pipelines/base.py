@@ -8,7 +8,6 @@ from django.utils import timezone
 if TYPE_CHECKING:  # pragma: nocover
     from wildcoeus.pipelines.runners import PipelineRunner
 
-from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters.base import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -47,17 +46,21 @@ class PipelineType(type):
 
 
 class Pipeline(metaclass=PipelineType):
-    title: str = ""
     tasks: Optional[dict[str, Task]] = {}
 
     def __init__(self):
-        self.id = (
-            self.get_id()
-        )  # pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
+        self.id = self.get_id()
         self.cleaned_tasks: List[Optional[Task]] = []
 
     class Meta:
         title: str
+
+    def __str__(self):
+        return (
+            self.Meta.title
+            if hasattr(self.Meta, "title") and self.Meta.title
+            else self.get_id()
+        )
 
     def clean_parents(
         self,

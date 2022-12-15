@@ -1,4 +1,3 @@
-import uuid
 from graphlib import TopologicalSorter
 from typing import Any, Dict, List, Optional
 
@@ -116,8 +115,6 @@ class PipelineRunner:
 
         TODO rate limiter on iterators.
         """
-        from wildcoeus.pipelines.base import ModelPipeline
-
         logger.debug("runner.start triggered")
 
         pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
@@ -128,7 +125,7 @@ class PipelineRunner:
             for pipeline_object in iterator:
                 run = self.start_runner(
                     pipeline_id=pipeline_id,
-                    run_id=str(uuid.uuid4()),
+                    run_id=run_id,
                     tasks=tasks,
                     input_data=input_data,
                     reporter=reporter,

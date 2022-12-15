@@ -1,6 +1,5 @@
 import uuid
 
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.urls import reverse_lazy
@@ -17,7 +16,6 @@ from wildcoeus.pipelines.models import (
     TaskResult,
 )
 from wildcoeus.pipelines.registry import pipeline_registry as registry
-from wildcoeus.pipelines.reporters.logging import LoggingReporter
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
 
@@ -36,11 +34,14 @@ class PipelineExecutionListView(LoginRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/pipeline_execution_list.html"
 
     def get_queryset(self):
-        return PipelineExecution.objects.with_task_count().all()
+        return PipelineExecution.objects.with_task_count().filter(
+            pipeline_id=self.kwargs["slug"]
+        )
 
 
 class PipelineStartView(LoginRequiredMixin, RedirectView):
     def get(self, request, *args, **kwargs):
+        # generate an id for the new run
         self.run_id = str(uuid.uuid4())
 
         # are we starting it straight away or passing it off to celery to start
@@ -134,20 +135,19 @@ class TaskResultReRunView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-        task = self.object.get_task_instance(reporter)
+        task = self.object.get_task_instance()
         if task is None:
             raise Http404()
 
         # start the task again
         if isinstance(config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER, EagerRunner):
             run_task(
-                    task_id=self.object.task_id,
-                    run_id=self.object.run_id,
-                    pipeline_id=self.object.pipeline_id,
-                    input_data=self.object.input_data,
-                    serializable_pipeline_object=None,
-                    serializable_task_object=None,
+                task_id=self.object.task_id,
+                run_id=self.object.run_id,
+                pipeline_id=self.object.pipeline_id,
+                input_data=self.object.input_data,
+                serializable_pipeline_object=None,
+                serializable_task_object=None,
             )
         else:
             run_task.delay(

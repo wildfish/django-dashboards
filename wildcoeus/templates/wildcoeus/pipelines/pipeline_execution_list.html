@@ -1,5 +1,5 @@
 {% extends "wildcoeus/pipelines/pipeline.html" %}
-{% block content_title %}Pipeline Executions{% endblock content_title %}
+{% block content_title %}Pipeline Executions: {{ slug }} ({{ object_list|length }}){% endblock content_title %}
 {% block content %}
   <table class="table">
   <thead>

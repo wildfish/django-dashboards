@@ -52,3 +52,28 @@ class BasicPipeline(Pipeline):
 
     class Meta:
         title = "Basic pipeline with 2 steps"
+
+
+class TestTaskIterator(Task):
+    ConfigType = EchoConfigType
+    InputType = EchoInputType
+
+    def run(self, *args, **kwargs):
+        time.sleep(self.cleaned_config.wait)
+        return True
+
+    @classmethod
+    def get_iterator(cls):
+        return range(0, 3)
+
+
+@pipeline_registry.register
+class TestIteratorPipeline(Pipeline):
+    first = TestTaskIterator(config={"wait": 2})
+
+    @classmethod
+    def get_iterator(cls):
+        return range(0, 3)
+
+    # class Meta:
+    #     title = "Pipeline with Iterator"

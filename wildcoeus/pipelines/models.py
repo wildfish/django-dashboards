@@ -4,6 +4,7 @@ from django.db.models.query import QuerySet
 
 from django_extensions.db.models import TimeStampedModel
 
+from wildcoeus.pipelines import config
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
 
@@ -87,7 +88,9 @@ class TaskResult(models.Model):
 
         return None
 
-    def get_task_instance(self, reporter):
+    def get_task_instance(self):
+        reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
+
         return task_registry.load_task_from_id(
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,

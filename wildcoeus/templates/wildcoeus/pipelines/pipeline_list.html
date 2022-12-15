@@ -1,13 +1,16 @@
 {% extends "wildcoeus/pipelines/pipeline.html" %}
 {% block content_title %}Current Pipelines{% endblock content_title %}
 {% block content %}
-  <ul>
+  <table class="table table-striped">
     {% for pipeline in pipelines %}
-      <li>
-        --{{ pipeline }}--
-        <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">start</a>
-      </li>
+      <tr>
+        <td>{{ pipeline }}</td>
+        <td>
+          <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">start</a> |
+          <a href="{% url "wildcoeus.pipelines:pipeline-execution-list" pipeline.id %}" class="btn btn-success">runs</a>
+        </td>
+      </tr>
     {% endfor %}
-  </ul>
+  </table>
 {% endblock %}
 

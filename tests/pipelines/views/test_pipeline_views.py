@@ -5,8 +5,8 @@ from django.urls import reverse
 import pytest
 from model_bakery import baker
 
-from tests.pipelines.tasks.fakes import make_fake_task
-from wildcoeus.pipelines import PipelineTaskStatus
+from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task
+from wildcoeus.pipelines.registry import pipeline_registry
 
 
 pytest_plugins = [
@@ -20,10 +20,10 @@ pytestmark = pytest.mark.django_db
     "url",
     [
         reverse("wildcoeus.pipelines:list"),
-        reverse("wildcoeus.pipelines:pipeline-execution-list"),
+        reverse("wildcoeus.pipelines:pipeline-execution-list", args=["pipeline-slug"]),
         reverse("wildcoeus.pipelines:results-list", args=["123"]),
         reverse("wildcoeus.pipelines:logs-list", args=["123"]),
-        reverse("wildcoeus.pipelines:start", args=["pipeline"]),
+        reverse("wildcoeus.pipelines:start", args=["pipeline-slug"]),
         reverse("wildcoeus.pipelines:rerun-task", args=["1"]),
     ],
 )
@@ -46,7 +46,9 @@ def test_pipeline_execution_list(client, user):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
 
     client.force_login(user)
-    response = client.get(reverse("wildcoeus.pipelines:pipeline-execution-list"))
+    response = client.get(
+        reverse("wildcoeus.pipelines:pipeline-execution-list", args=[pe.pipeline_id])
+    )
 
     assert response.status_code == 200
     assert "object_list" in list(response.context_data.keys())
@@ -58,9 +60,14 @@ def test_pipeline_execution_list_queries_pinned(
     client, user, django_assert_num_queries
 ):
     client.force_login(user)
+    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
 
     with django_assert_num_queries(3):
-        client.get(reverse("wildcoeus.pipelines:pipeline-execution-list"))
+        client.get(
+            reverse(
+                "wildcoeus.pipelines:pipeline-execution-list", args=[pe.pipeline_id]
+            )
+        )
 
 
 def test_results_list__tasks_completed(client, user):
@@ -166,9 +173,24 @@ def test_start__celery(run_pipeline, client, user, settings):
 
 
 def test_rerun_task(client, user):
-    task = make_fake_task(input_type=None)()
+    class TestTaskFirst(Task):
+        def run(self, *args, **kwargs):
+            return True
+
+    class TestPipeline(Pipeline):
+        first = TestTaskFirst(config={})
+
+        class Meta:
+            title = "Test Pipeline"
+
+    pipeline = TestPipeline()
+    pipeline_registry.register(TestPipeline)
+
     tr = baker.make_recipe(
-        "pipelines.fake_task_result", pipeline_task="fake", task_id=task.task_id
+        "pipelines.fake_task_result",
+        pipeline_id=pipeline.get_id(),
+        pipeline_task="first",
+        task_id="test_pipeline_views.TestTaskFirst",
     )
     client.force_login(user)
     response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=[tr.pk]))
