@@ -11,7 +11,10 @@
     </tr>
     {% for pipeline in pipelines %}
       <tr>
-        <td>{{ pipeline }}</td>
+        <td>
+          {{ pipeline }}<br />
+          <small>{{ pipeline.id }}</small>
+        </td>
         <td>{{ pipeline.tasks|length }}</td>
         <td>
           <a href="{% url "wildcoeus.pipelines:pipeline-execution-list" pipeline.id %}" class="btn btn-success">
@@ -20,7 +23,7 @@
         </td>
         <td>{{ last_ran|lookup:pipeline.id }}</td>
         <td>
-          <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">start</a>
+          <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">run</a>
         </td>
       </tr>
     {% endfor %}
