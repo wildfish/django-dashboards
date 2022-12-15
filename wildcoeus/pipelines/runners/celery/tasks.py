@@ -18,9 +18,10 @@ def run_pipeline(
     """
     Start a specific pipeline's celery Runner.
     """
-    from wildcoeus.pipelines.runners.celery.runner import Runner
-
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
+    Runner = (
+        config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER
+    )  # needed as this is also called from eager
     pipeline_cls = pipeline_registry.get_pipeline_class(pipeline_id)
 
     if not run_id:
@@ -29,7 +30,7 @@ def run_pipeline(
     pipeline_cls().start(
         run_id=run_id,
         input_data=input_data,
-        runner=Runner(),
+        runner=Runner,
         reporter=reporter,
     )
 

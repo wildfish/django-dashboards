@@ -1,5 +1,5 @@
 {% extends "wildcoeus/pipelines/pipeline.html" %}
-{% load wildcoeus %}
+{% load pipelines %}
 {% block content_title %}Current Pipelines ({{ pipelines|length }}){% endblock content_title %}
 {% block content %}
   <table class="table table-striped">
@@ -18,10 +18,10 @@
         <td>{{ pipeline.tasks|length }}</td>
         <td>
           <a href="{% url "wildcoeus.pipelines:pipeline-execution-list" pipeline.id %}" class="btn btn-success">
-            {{ runs|lookup:pipeline.id }}
+            {{ runs|lookup:pipeline.id|default_if_none:0 }}
           </a>
         </td>
-        <td>{{ last_ran|lookup:pipeline.id }}</td>
+        <td>{{ last_ran|lookup:pipeline.id|default_if_none:0 }}</td>
         <td>
           <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">run</a>
         </td>
