@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count, Max
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView
@@ -24,8 +25,18 @@ class PipelineListView(LoginRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/pipeline_list.html"
 
     def get_context_data(self, **kwargs):
+        qs = (
+            PipelineExecution.objects.values("pipeline_id")
+            .annotate(total=Count("pipeline_id"), last_ran=Max("started"))
+            .order_by("pipeline_id")
+        )
+        runs = {x["pipeline_id"]: x["total"] for x in qs}
+        last_ran = {x["pipeline_id"]: x["last_ran"] for x in qs}
+
         return {
             **super().get_context_data(**kwargs),
+            "runs": runs,
+            "last_ran": last_ran,
             "pipelines": registry.get_all_registered_pipelines(),
         }
 
@@ -37,6 +48,12 @@ class PipelineExecutionListView(LoginRequiredMixin, ListView):
         return PipelineExecution.objects.with_task_count().filter(
             pipeline_id=self.kwargs["slug"]
         )
+
+    def get_context_data(self, **kwargs):
+        return {
+            **super().get_context_data(**kwargs),
+            "slug": self.kwargs["slug"],
+        }
 
 
 class PipelineStartView(LoginRequiredMixin, RedirectView):
