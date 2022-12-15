@@ -18,7 +18,7 @@ from wildcoeus.pipelines.models import (
 )
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
-from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
+from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
 
 
@@ -40,12 +40,6 @@ class PipelineExecutionListView(LoginRequiredMixin, ListView):
 
 
 class PipelineStartView(LoginRequiredMixin, RedirectView):
-    def get_pipeline_context(self):
-        return {
-            "run_id": str(self.run_id),
-            "input_data": {"message": "hello"},  # todo: can this be made from a form?
-        }
-
     def get(self, request, *args, **kwargs):
         self.run_id = str(uuid.uuid4())
 
@@ -55,7 +49,7 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
             # trigger in eager
             run_pipeline(
                 pipeline_id=kwargs["slug"],
-                input_data={"message": "hello"},
+                input_data={"message": "hello"},  # todo: how do we handle this?
                 run_id=self.run_id,
             )
         else:
@@ -63,7 +57,7 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
             # trigger in celery
             run_pipeline.delay(
                 pipeline_id=kwargs["slug"],
-                input_data={"message": "hello"},
+                input_data={"message": "hello"},  # todo: how do we handle this?
                 run_id=self.run_id,
             )
 
@@ -140,22 +134,33 @@ class TaskResultReRunView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        reporter = LoggingReporter()
+        reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
         task = self.object.get_task_instance(reporter)
         if task is None:
             raise Http404()
-        # todo: needs to run by either celery or eager - how do we know
+
         # start the task again
-        task.start(
-            pipeline_id=self.object.pipeline_id,
-            run_id=self.object.run_id,
-            input_data=self.object.input_data,
-            reporter=reporter,
-        )
-        messages.add_message(request, messages.INFO, "Task has been re-ran")
+        if isinstance(config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER, EagerRunner):
+            run_task(
+                    task_id=self.object.task_id,
+                    run_id=self.object.run_id,
+                    pipeline_id=self.object.pipeline_id,
+                    input_data=self.object.input_data,
+                    serializable_pipeline_object=None,
+                    serializable_task_object=None,
+            )
+        else:
+            run_task.delay(
+                task_id=self.object.task_id,
+                run_id=self.object.run_id,
+                pipeline_id=self.object.pipeline_id,
+                input_data=self.object.input_data,
+                serializable_pipeline_object=None,
+                serializable_task_object=None,
+            )
 
         response = super().get(request, *args, **kwargs)
         return response
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("wildcoeus.pipelines:run", args=(self.object.run_id,))
+        return reverse_lazy("wildcoeus.pipelines:results", args=(self.object.run_id,))

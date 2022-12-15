@@ -1,18 +1,9 @@
-  <table class="table table-striped">
-  <tbody>
+<div>
+<code>
   {% for log in logs %}
-    <tr>
-      <td>
-        <strong>{{ log.0|date:"c" }}</strong>
-      </td>
-      <td>
-        {{ log.1 }}
-      </td>
-    </tr>
+    <p>[{{ log.0|date:"c" }}]: {{ log.1 }}</p>
   {% empty %}
-    <tr>
-      <td>No Logs...</td>
-    </tr>
+    <p>No logs recorded</p>
   {% endfor %}
-  </tbody>
-  </table>
+</code>
+</div>

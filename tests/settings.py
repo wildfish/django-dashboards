@@ -88,3 +88,5 @@ DATABASES = {
 }
 
 ROOT_URLCONF = "tests.urls"
+
+CELERY_TASK_ALWAYS_EAGER = True
