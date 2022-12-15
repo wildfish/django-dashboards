@@ -180,7 +180,7 @@ class Pipeline(metaclass=PipelineType):
 
         return started
 
-    def save(self, run_id: str, **defaults: Dict[str, Any]):
+    def save(self, run_id: str, **defaults):
         from .models import PipelineExecution
 
         PipelineExecution.objects.update_or_create(

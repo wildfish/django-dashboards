@@ -49,6 +49,10 @@ class Runner(PipelineRunner):
                     serializable_task_object=task.get_serializable_task_object(i),
                 )
             )
+
+            # set to queue if defined in config
+            celery_task.set(queue=getattr(task.cleaned_config, "celery_queue", None))
+
             tasks.append(celery_task)
 
         return tasks

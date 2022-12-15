@@ -9,6 +9,7 @@ from tests.dashboards.fakes import fake_user
 from wildcoeus.pipelines import Pipeline, Task
 from wildcoeus.pipelines.base import ModelPipeline
 from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.runners.celery.runner import Runner
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
 from wildcoeus.pipelines.tasks.base import ModelTask
 
@@ -290,3 +291,40 @@ def test_model__iterate_task(celery_worker, logger):
         f"Task second:test_celery_runner.TaskSecond changed to state DONE: Done {user_two_for}",
         f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
     ] == [rec.message for rec in logger.records]
+
+
+def test__task_to_celery_tasks__queue_defined():
+    class TaskWithQueue(Task):
+        def run(self, *args, **kwargs):
+            return True
+
+    class TaskWithoutQueue(Task):
+        def run(self, *args, **kwargs):
+            return True
+
+    class TestPipeline(Pipeline):
+        with_queue = TaskWithQueue(config={"celery_queue": "else"})
+        without_queue = TaskWithoutQueue(config={})
+
+        class Meta:
+            title = "Test Pipeline"
+
+    with_queue_result = Runner()._task_to_celery_tasks(
+        task=TestPipeline().tasks["with_queue"],
+        pipeline_id="test_celery_runner.TestPipeline",
+        run_id="123",
+        input_data={},
+        serializable_pipeline_object=None,
+    )
+
+    assert with_queue_result[0].options["queue"] == "else"
+
+    without_queue_result = Runner()._task_to_celery_tasks(
+        task=TestPipeline().tasks["without_queue"],
+        pipeline_id="test_celery_runner.TestPipeline",
+        run_id="123",
+        input_data={},
+        serializable_pipeline_object=None,
+    )
+
+    assert without_queue_result[0].options["queue"] == None
