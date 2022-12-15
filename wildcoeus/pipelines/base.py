@@ -194,7 +194,6 @@ class Pipeline(metaclass=PipelineType):
             PipelineExecution,
         )
 
-        logger.debug("saving pipeline")
         PipelineExecution.objects.update_or_create(
             pipeline_id=self.id, run_id=run_id, defaults=defaults
         )

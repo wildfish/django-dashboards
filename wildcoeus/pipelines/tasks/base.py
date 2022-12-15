@@ -19,6 +19,9 @@ class TaskConfig(BaseModel):
         []
     )  # task ids that are required to have finished before this task can be started
 
+    # celery specific
+    celery_queue: Optional[str] = None
+
 
 class Task:
     pipeline_task: str  # The attribute this tasks is named against - set via __new__ on Pipeline

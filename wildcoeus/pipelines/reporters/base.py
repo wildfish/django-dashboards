@@ -1,7 +1,5 @@
 from typing import Any, Optional
 
-from wildcoeus.pipelines.status import PipelineTaskStatus
-
 
 class PipelineReporter:
     def report(
