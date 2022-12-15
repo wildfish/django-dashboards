@@ -2,7 +2,7 @@ from .base import Pipeline
 from .reporters import PipelineReporter
 from .runners import PipelineRunner
 from .status import PipelineTaskStatus
-from .tasks import Task, TaskConfig, task_registry
+from .tasks import ModelTask, Task, TaskConfig, task_registry
 
 
 __all__ = [
@@ -12,5 +12,6 @@ __all__ = [
     "PipelineRunner",
     "Task",
     "TaskConfig",
+    "ModelTask",
     "task_registry",
 ]
