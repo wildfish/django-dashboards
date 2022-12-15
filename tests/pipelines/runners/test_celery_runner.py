@@ -179,8 +179,8 @@ def test_iterator_pipeline(celery_worker, logger):
 
     run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
-    one_for = "| pipeline object: {{'obj': 1}}"
-    two_for = "| pipeline object: {{'obj': 2}}"
+    one_for = "| pipeline object: {'obj': 1}"
+    two_for = "| pipeline object: {'obj': 2}"
 
     assert [
         "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
@@ -226,8 +226,8 @@ def test_iterator__iterate_task(celery_worker, logger):
 
     run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
-    one_for = "| task object: {{'obj': 1}}"
-    two_for = "| task object: {{'obj': 2}}"
+    one_for = "| task object: {'obj': 1}"
+    two_for = "| task object: {'obj': 2}"
 
     assert [
         "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
