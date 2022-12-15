@@ -1,11 +1,8 @@
 from typing import Any, Optional
 
-from django.utils import timezone
-
 from wildcoeus.pipelines import PipelineReporter
 
-from ..models import PipelineExecution, PipelineLog, TaskLog
-from ..status import PipelineTaskStatus
+from ..models import PipelineLog, TaskLog
 
 
 class ORMReporter(PipelineReporter):
@@ -16,7 +13,8 @@ class ORMReporter(PipelineReporter):
         task_id: Optional[str],
         status: str,
         message: str,
-        obj: Optional[dict[str, Any]] = None,
+        serializable_pipeline_object: Optional[dict[str, Any]] = None,
+        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         if pipeline_id:
             PipelineLog.objects.create(
