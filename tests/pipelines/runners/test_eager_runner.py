@@ -37,6 +37,7 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
         call(
             pipeline_task="first",
             task_id="test_eager_runner.TestTask",
+            run_id="123",
             status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
             serializable_pipeline_object=None,
@@ -46,6 +47,7 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
         call(
             pipeline_task="second",
             task_id="test_eager_runner.TestTaskTwo",
+            run_id="123",
             status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
             serializable_pipeline_object=None,
@@ -81,6 +83,7 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
         call(
             pipeline_task="parent",
             task_id="test_eager_runner.TestTask",
+            run_id="123",
             status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
             serializable_pipeline_object=None,
@@ -90,6 +93,7 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
         call(
             pipeline_task="child",
             task_id="test_eager_runner.TestTaskTwo",
+            run_id="123",
             status=PipelineTaskStatus.RUNNING.value,
             message="Task is running",
             serializable_pipeline_object=None,
@@ -126,6 +130,7 @@ def test_first_task_fails___other_tasks_are_cancelled():
     reporter.report_task.assert_any_call(
         pipeline_task="bad",
         task_id="test_eager_runner.BadTask",
+        run_id="123",
         status=PipelineTaskStatus.RUNTIME_ERROR.value,
         message="Test error",
         serializable_pipeline_object=None,
@@ -135,6 +140,7 @@ def test_first_task_fails___other_tasks_are_cancelled():
     reporter.report_task.assert_any_call(
         pipeline_task="good",
         task_id="test_eager_runner.GoodTask",
+        run_id="123",
         status=PipelineTaskStatus.CANCELLED.value,
         message="There was an error running a different task",
         serializable_pipeline_object=None,

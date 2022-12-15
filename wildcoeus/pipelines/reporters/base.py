@@ -20,9 +20,9 @@ class PipelineReporter:
     def report_pipeline(
         self,
         pipeline_id: str,
-        run_id: str,
         status: str,
         message: str,
+        run_id: Optional[str] = "",
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
         serializable_task_object: Optional[dict[str, Any]] = None,
     ):
@@ -39,9 +39,9 @@ class PipelineReporter:
         self,
         pipeline_task: str,
         task_id: str,
-        run_id: str,
         status: str,
         message: str,
+        run_id: Optional[str] = "",
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
         serializable_task_object: Optional[dict[str, Any]] = None,
     ):

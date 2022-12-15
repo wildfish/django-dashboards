@@ -25,7 +25,7 @@ def test_graph_order__no_parents(test_task):
         class Meta:
             title = "Test Pipeline"
 
-    tasks = TestPipeline().clean_tasks(reporter)
+    tasks = TestPipeline().clean_tasks(reporter, run_id="123")
     ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)
 
     assert len(ordered_tasks) == 2
@@ -45,7 +45,7 @@ def test_graph_order__with_parents(test_task):
         class Meta:
             title = "Test Pipeline"
 
-    tasks = TestPipeline().clean_tasks(reporter)
+    tasks = TestPipeline().clean_tasks(reporter, run_id="123")
     ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)
 
     assert len(ordered_tasks) == 4
@@ -58,14 +58,13 @@ def test_graph_order__with_parents(test_task):
 def test_start__start_runner_called(test_pipeline):
     reporter = Mock()
 
-    tasks = test_pipeline().clean_tasks(reporter)
-    pipeline_registry.register(test_pipeline)
+    tasks = test_pipeline().clean_tasks(reporter, run_id="123")
 
     with patch(
         "wildcoeus.pipelines.runners.base.PipelineRunner.start_runner"
     ) as runner:
         PipelineRunner().start(
-            pipeline_id="tests.pipelines.fixtures.TestPipeline",
+            pipeline_id=test_pipeline.get_id(),
             run_id="1",
             tasks=tasks,
             input_data={},
@@ -77,14 +76,13 @@ def test_start__start_runner_called(test_pipeline):
 def test_start__iterator__start_runner_called(test_iterator_pipeline):
     reporter = Mock()
     fake_user(_quantity=3)
-    tasks = test_iterator_pipeline().clean_tasks(reporter)
-    pipeline_registry.register(test_iterator_pipeline)
+    tasks = test_iterator_pipeline().clean_tasks(reporter, run_id="123")
 
     with patch(
         "wildcoeus.pipelines.runners.base.PipelineRunner.start_runner"
     ) as runner:
         PipelineRunner().start(
-            pipeline_id="tests.pipelines.fixtures.TestPipeline",
+            pipeline_id=test_iterator_pipeline.get_id(),
             run_id="1",
             tasks=tasks,
             input_data={},
@@ -96,14 +94,13 @@ def test_start__iterator__start_runner_called(test_iterator_pipeline):
 def test_start__model__start_runner_called(test_model_pipeline):
     reporter = Mock()
     fake_user(_quantity=3)
-    tasks = test_model_pipeline().clean_tasks(reporter)
-    pipeline_registry.register(test_model_pipeline)
+    tasks = test_model_pipeline().clean_tasks(reporter, run_id="123")
 
     with patch(
         "wildcoeus.pipelines.runners.base.PipelineRunner.start_runner"
     ) as runner:
         PipelineRunner().start(
-            pipeline_id="tests.pipelines.fixtures.TestPipeline",
+            pipeline_id=test_model_pipeline.get_id(),
             run_id="1",
             tasks=tasks,
             input_data={},
@@ -115,14 +112,13 @@ def test_start__model__start_runner_called(test_model_pipeline):
 def test_start__model_qs__start_runner_called(test_model_pipeline_qs):
     reporter = Mock()
     fake_user(_quantity=3)
-    tasks = test_model_pipeline_qs().clean_tasks(reporter)
-    pipeline_registry.register(test_model_pipeline_qs)
+    tasks = test_model_pipeline_qs().clean_tasks(reporter, run_id="123")
 
     with patch(
         "wildcoeus.pipelines.runners.base.PipelineRunner.start_runner"
     ) as runner:
         PipelineRunner().start(
-            pipeline_id="tests.pipelines.fixtures.TestPipeline",
+            pipeline_id=test_model_pipeline_qs.get_id(),
             run_id="1",
             tasks=tasks,
             input_data={},

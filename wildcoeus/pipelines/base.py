@@ -51,7 +51,9 @@ class Pipeline(metaclass=PipelineType):
     tasks: Optional[dict[str, Task]] = {}
 
     def __init__(self):
-        self.id = pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
+        self.id = (
+            self.get_id()
+        )  # pipeline_registry.get_slug(self.__module__, self.__class__.__name__)
         self.cleaned_tasks: List[Optional[Task]] = []
 
     class Meta:
@@ -97,6 +99,13 @@ class Pipeline(metaclass=PipelineType):
                 self.tasks.values() if self.tasks else {},
             )
         )
+
+    @classmethod
+    def get_id(cls):
+        """
+        generate id based on where the pipeline is created
+        """
+        return pipeline_registry.get_slug(cls.__module__, cls.__name__)
 
     @classmethod
     def get_iterator(cls):
@@ -180,7 +189,7 @@ class Pipeline(metaclass=PipelineType):
 
         return started
 
-    def save(self, run_id: str, **defaults: Dict[str, Any]):
+    def save(self, run_id: str, **defaults):
         from .models import (  # needs to be here or raise AppRegistryNotReady("Apps aren't loaded yet.")
             PipelineExecution,
         )
@@ -190,7 +199,7 @@ class Pipeline(metaclass=PipelineType):
             pipeline_id=self.id, run_id=run_id, defaults=defaults
         )
 
-    def handle_error(self, reporter, run_id):
+    def handle_error(self, reporter, run_id: str):
         # if any of the tasks have an invalid config cancel all others
         for task in (t for t in self.cleaned_tasks if t is not None):
             reporter.report_task(

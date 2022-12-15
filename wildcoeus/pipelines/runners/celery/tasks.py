@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 from celery import shared_task
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.registry import pipeline_registry
 
 
