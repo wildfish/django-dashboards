@@ -6,7 +6,10 @@
             '{{ component.key }}',
             data_{{ component.key }}.data,
             data_{{ component.key }}.layout,
-            {showLink: false},
+            {
+                showLink: false,
+                responsive: {{ component.responsive|yesno:"true,false" }}
+            },
         );
     </script>
 {% endwith %}

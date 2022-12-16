@@ -9,6 +9,7 @@ from .base import Component
 @dataclass
 class Map(Component):
     template_name: str = "wildcoeus/dashboards/components/map/map.html"
+    responsive: Optional[bool] = True
 
     # Maps return json or for now str, we need better validation around this.
     # we should also probably accept objects which have a to_json() on them
