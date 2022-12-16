@@ -134,8 +134,7 @@ class Dashboard(metaclass=DashboardType):
         components_to_keys = {}
         awaiting_dependents = {}
         for key, component in self.components.items():
-            if not component.object:
-                component.object = self.object
+            component.object = self.object
             if not component.dashboard:
                 component.dashboard = self.__class__
             if not component.key:
