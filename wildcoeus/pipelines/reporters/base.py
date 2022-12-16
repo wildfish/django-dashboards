@@ -4,11 +4,11 @@ from typing import Any, Optional
 class PipelineReporter:
     def report(
         self,
-        run_id: str,
         status: str,
         message: str,
         pipeline_id: Optional[str] = None,
         task_id: Optional[str] = None,
+        run_id: Optional[str] = "",
         pipeline_task: Optional[str] = None,
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
         serializable_task_object: Optional[dict[str, Any]] = None,

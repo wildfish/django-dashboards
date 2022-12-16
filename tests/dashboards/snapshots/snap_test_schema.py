@@ -245,6 +245,29 @@ snapshots["test_view__dashboards 1"] = [
 
 snapshots["test_view__dashboards__no_permission 1"] = [
     {
+        "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+            },
+            {
+                "isDeferred": True,
+                "key": "component_2",
+                "renderType": "Text",
+                "value": None,
+            },
+            {
+                "isDeferred": False,
+                "key": "component_3",
+                "renderType": "Text",
+                "value": "value from callable",
+            },
+        ],
+    },
+    {
         "Meta": {"name": "Test Filter Dashboard", "slug": "test-filter-dashboard"},
         "components": [
             {
@@ -346,75 +369,6 @@ snapshots["test_view__dashboards__no_permission 1"] = [
             "name": "Test Dashboard with Layout",
             "slug": "test-dashboard-with-layout",
         },
-        "components": [
-            {
-                "isDeferred": False,
-                "key": "component_1",
-                "renderType": "Text",
-                "value": "value",
-            },
-            {
-                "isDeferred": True,
-                "key": "component_2",
-                "renderType": "Text",
-                "value": None,
-            },
-            {
-                "isDeferred": False,
-                "key": "component_3",
-                "renderType": "Text",
-                "value": "value from callable",
-            },
-        ],
-    },
-    {
-        "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
-        "components": [
-            {
-                "isDeferred": False,
-                "key": "component_1",
-                "renderType": "Text",
-                "value": "value",
-            },
-            {
-                "isDeferred": True,
-                "key": "component_2",
-                "renderType": "Text",
-                "value": None,
-            },
-            {
-                "isDeferred": False,
-                "key": "component_3",
-                "renderType": "Text",
-                "value": "value from callable",
-            },
-        ],
-    },
-    {
-        "Meta": {"name": "ExtraDashboard", "slug": "extradashboard"},
-        "components": [
-            {
-                "isDeferred": False,
-                "key": "component_1",
-                "renderType": "Text",
-                "value": "value",
-            },
-            {
-                "isDeferred": True,
-                "key": "component_2",
-                "renderType": "Text",
-                "value": None,
-            },
-            {
-                "isDeferred": False,
-                "key": "component_3",
-                "renderType": "Text",
-                "value": "value from callable",
-            },
-        ],
-    },
-    {
-        "Meta": {"name": "GQLDashboard", "slug": "gqldashboard"},
         "components": [
             {
                 "isDeferred": False,

@@ -4,7 +4,6 @@ import pytest
 
 from tests.dashboards.fakes import fake_user
 from wildcoeus.pipelines import Pipeline
-from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.base import PipelineRunner
 
 
