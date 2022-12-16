@@ -1,5 +1,5 @@
 {% with "data_"|add:component.key as data_key %}
-    <script>
+    <script type="module">
         var data_{{ component.key }} = {{rendered_value|safe}};
 
         Plotly.newPlot(
