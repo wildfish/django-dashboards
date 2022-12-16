@@ -1,7 +1,7 @@
 import uuid
 
 from django.contrib.auth.mixins import AccessMixin
-from django.db.models import Count, Max
+from django.db.models import Avg, Count, F, Max
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView
@@ -44,10 +44,20 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
         runs = {x["pipeline_id"]: x["total"] for x in qs}
         last_ran = {x["pipeline_id"]: x["last_ran"] for x in qs}
 
+        # todo: Wrong as it needs to be grouped on run_id when doing the average
+        t_qs = (
+            TaskResult.objects.values("pipeline_id")
+            .annotate(average_runtime=Avg(F("completed") - F("started")))
+            .order_by("pipeline_id")
+        )
+
+        average_runtime = {x["pipeline_id"]: x["average_runtime"] for x in t_qs}
+
         return {
             **super().get_context_data(**kwargs),
             "runs": runs,
             "last_ran": last_ran,
+            "average_runtime": average_runtime,
             "pipelines": registry.get_all_registered_pipelines(),
         }
 

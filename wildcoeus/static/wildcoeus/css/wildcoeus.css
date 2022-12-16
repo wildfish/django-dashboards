@@ -2,6 +2,7 @@
   --shadow: rgba(154, 161, 171, 0.15);
   --off-black: #1e1e1e;
   --grey: #ececec;
+  --white: #fff;
 }
 
 * {
@@ -210,4 +211,62 @@ a.active {
     border: solid 1px var(--shadow);
     color: var(--off-black);
     padding: 10px;
+}
+
+/* pipeline styles */
+.pipeline-logs {
+  background-color: var(--off-black);
+  padding: 5px;
+  color: var(--grey);
+  height: 50vh;
+  overflow: auto;
+}
+
+.breadcrumbs{
+    background-color: var(--grey);
+    border: solid 1px var(--shadow);
+    color: var(--off-black);
+    padding: 1rem;
+    margin-bottom: 15px;
+    text-align: left;
+    text-shadow: 1px 1px 1px #fff;
+}
+
+.text-bg-primary {
+    color: #fff!important;
+    background-color: RGBA(13,110,253,1)!important;
+}
+
+.text-bg-success {
+    color: #fff!important;
+    background-color: RGBA(25,135,84,1)!important;
+}
+
+.text-bg-danger {
+    color: #fff!important;
+    background-color: RGBA(220,53,69,1)!important;
+}
+
+.table-success {
+    --table-color: #000;
+    --table-bg: #d1e7dd;
+    --table-border-color: #bcd0c7;
+}
+
+.table-danger {
+    --table-color: #000;
+    --table-bg: #f8d7da;
+    --table-border-color: #dfc2c4;
+}
+
+.table-primary {
+    --table-color: #000;
+    --table-bg: #cfe2ff;
+    --btable-border-color: #bacbe6;
+}
+
+.result-table {
+    color: var(--table-color);
+    border-color: var(--table-border-color);
+    background-color: var(--table-bg);
 }

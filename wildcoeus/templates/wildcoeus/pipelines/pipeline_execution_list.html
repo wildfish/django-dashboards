@@ -1,5 +1,10 @@
 {% extends "wildcoeus/pipelines/pipeline.html" %}
+{% load pipelines %}
 {% block content_title %}Pipeline Executions: {{ slug }} ({{ object_list|length }}){% endblock content_title %}
+{% block breadcrumbs %}
+  {{ block.super }}
+    / {{ slug }} / Runs
+{% endblock breadcrumbs %}
 {% block content %}
   <table class="table">
   <thead>
@@ -7,6 +12,7 @@
     <th>Pipeline</th>
     <th>Tasks</th>
     <th>Started On</th>
+    <th>Duration</th>
     <th>Status</th>
   </tr>
   </thead>
@@ -19,6 +25,7 @@
         </td>
         <td>{{ object.task_count|default_if_none:"0" }}</td>
         <td>{{ object.started|default_if_none:"NOT STARTED" }}</td>
+        <td>{{ object.duration|duration|default_if_none:"N/A" }}</td>
         <td>{{ object.get_status_display }}</td>
       </tr>
     {% endfor %}

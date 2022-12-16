@@ -1,5 +1,13 @@
 from django.db import models
-from django.db.models import Count, OuterRef, Subquery
+from django.db.models import (
+    Count,
+    ExpressionWrapper,
+    F,
+    OuterRef,
+    Subquery,
+    Sum,
+    fields,
+)
 from django.db.models.query import QuerySet
 
 from django_extensions.db.models import TimeStampedModel
@@ -50,6 +58,12 @@ class TaskResultQuerySet(QuerySet):
         statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
         return self.filter(status__in=statues)
 
+    def with_duration(self):
+        duration = ExpressionWrapper(
+            F("completed") - F("started"), output_field=fields.DurationField()
+        )
+        return self.annotate(duration=duration)
+
 
 class PipelineExecutionQuerySet(QuerySet):
     def with_task_count(self):
@@ -59,7 +73,15 @@ class PipelineExecutionQuerySet(QuerySet):
             .annotate(total=Count("task_id"))
             .values("total")
         )
-        return PipelineExecution.objects.annotate(task_count=Subquery(tasks_qs))
+        duration_qs = (
+            TaskResult.objects.values("run_id")
+            .filter(run_id=OuterRef("run_id"), status=PipelineTaskStatus.DONE.value)
+            .annotate(duration=Sum(F("completed") - F("started")))
+            .values("duration")
+        )
+        return PipelineExecution.objects.annotate(
+            task_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
+        )
 
 
 class TaskResult(models.Model):
@@ -83,7 +105,11 @@ class TaskResult(models.Model):
 
     @property
     def duration(self):
-        if self.completed and self.started:
+        if (
+            self.status == PipelineTaskStatus.DONE.value
+            and self.completed
+            and self.started
+        ):
             return (self.completed - self.started).seconds
 
         return None

@@ -1,4 +1,5 @@
-  <table class="table">
+{% load humanize %}
+<table class="table">
   <thead>
   <tr>
     <th>Task</th>
@@ -10,20 +11,20 @@
   </thead>
   <tbody>
   {% for task in object_list %}
-    <tr>
+    <tr class=" result-table {% if task.status == "RUNNING" %}table-primary{% elif task.status == "DONE" %}table-success{% elif task.status == "VALIDATION_ERROR" %}table-danger{% endif %}">
       <td>
         {{ task.pipeline_task }}
         <p><small>{{ task.task_id }}</small></p>
       </td>
       <td>
-        {{ task.get_status_display }}
+        {{ task.get_status_display }} - {{ task.status }}
       </td>
       <td>
-        {{ task.started }}
+        {{ task.started|naturaltime }}
       </td>
       <td>
         {% if task.completed %}
-        {{ task.completed }} ({{ task.duration }} seconds)
+        {{ task.completed }} ({{ task.duration|default_if_none:"-" }} seconds)
         {% else %}
           NOT COMPLETED
         {% endif %}
@@ -34,4 +35,4 @@
     </tr>
   {% endfor %}
   </tbody>
-  </table>
+</table>
