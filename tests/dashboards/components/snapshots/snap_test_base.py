@@ -16,13 +16,17 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             
-    <script>
+    <script type="module">
         var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
             data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
+            {
+                displayModeBar: "hover",
+                staticPlot: false,
+                responsive: true
+            },
         );
     </script>
 
@@ -118,13 +122,17 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             
-    <script>
+    <script type="module">
         var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
             data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
+            {
+                displayModeBar: "hover",
+                staticPlot: false,
+                responsive: true
+            },
         );
     </script>
 
@@ -220,13 +228,17 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             
-    <script>
+    <script type="module">
         var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
             data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
+            {
+                displayModeBar: "hover",
+                staticPlot: false,
+                responsive: true
+            },
         );
     </script>
 
@@ -322,13 +334,17 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             
-    <script>
+    <script type="module">
         var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
             data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
+            {
+                displayModeBar: "hover",
+                staticPlot: false,
+                responsive: true
+            },
         );
     </script>
 
@@ -504,13 +520,17 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             
-    <script>
+    <script type="module">
         var data_test = value;
         Plotly.newPlot(
             'test',
             data_test.data,
             data_test.layout,
-            {displayModeBar: "hover", staticPlot: false},
+            {
+                displayModeBar: "hover",
+                staticPlot: false,
+                responsive: true
+            },
         );
     </script>
 
