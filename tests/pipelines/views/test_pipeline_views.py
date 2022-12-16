@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 
 from django.urls import reverse
 
@@ -156,7 +156,11 @@ def test_start__eager(run_pipeline, client, user):
     client.force_login(user)
     response = client.get(reverse("wildcoeus.pipelines:start", args=["pipeline-slug"]))
 
-    assert run_pipeline.call_count == 1
+    run_pipeline.assert_called_once_with(
+        pipeline_id="pipeline-slug",
+        input_data=ANY,
+        run_id=ANY,
+    )
     assert response.status_code == 302
 
 
@@ -168,11 +172,16 @@ def test_start__celery(run_pipeline, client, user, settings):
     client.force_login(user)
     response = client.get(reverse("wildcoeus.pipelines:start", args=["pipeline-slug"]))
 
-    assert run_pipeline.call_count == 1
+    run_pipeline.assert_called_once_with(
+        pipeline_id="pipeline-slug",
+        input_data=ANY,
+        run_id=ANY,
+    )
     assert response.status_code == 302
 
 
-def test_rerun_task(client, user):
+@patch("wildcoeus.pipelines.views.run_task")
+def test_rerun_task(run_task, client, user):
     class TestTaskFirst(Task):
         def run(self, *args, **kwargs):
             return True
@@ -194,6 +203,15 @@ def test_rerun_task(client, user):
     )
     client.force_login(user)
     response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=[tr.pk]))
+
+    run_task.assert_called_once_with(
+        pipeline_id=tr.pipeline_id,
+        task_id=tr.task_id,
+        run_id=tr.run_id,
+        input_data=tr.input_data,
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
+    )
 
     assert response.status_code == 302
 

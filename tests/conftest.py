@@ -30,4 +30,3 @@ def auto_pipeline_registry():
 @pytest.fixture(autouse=True)
 def reset_registry():
     task_registry.reset()
-    # pipeline_registry.reset()
