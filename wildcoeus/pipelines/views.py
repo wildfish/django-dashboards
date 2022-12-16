@@ -1,6 +1,6 @@
 import uuid
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import AccessMixin
 from django.db.models import Count, Max
 from django.http import Http404
 from django.urls import reverse_lazy
@@ -23,7 +23,16 @@ from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
 
 
-class PipelineListView(LoginRequiredMixin, TemplateView):
+class IsStaffRequiredMixin(AccessMixin):
+    """Verify that the current user is_staff."""
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
+
+
+class PipelineListView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/pipeline_list.html"
 
     def get_context_data(self, **kwargs):
@@ -43,7 +52,7 @@ class PipelineListView(LoginRequiredMixin, TemplateView):
         }
 
 
-class PipelineExecutionListView(LoginRequiredMixin, ListView):
+class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/pipeline_execution_list.html"
 
     def get_queryset(self):
@@ -58,7 +67,7 @@ class PipelineExecutionListView(LoginRequiredMixin, ListView):
         }
 
 
-class PipelineStartView(LoginRequiredMixin, FormView):
+class PipelineStartView(IsStaffRequiredMixin, FormView):
     template_name = "wildcoeus/pipelines/pipeline_start.html"
     form_class = PipelineStartForm
 
@@ -105,11 +114,11 @@ class PipelineStartView(LoginRequiredMixin, FormView):
         return reverse_lazy("wildcoeus.pipelines:results", args=(self.run_id,))
 
 
-class TaskResultView(LoginRequiredMixin, TemplateView):
+class TaskResultView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/results_list.html"
 
 
-class TaskResultListView(LoginRequiredMixin, ListView):
+class TaskResultListView(IsStaffRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/_results_list.html"
 
     def get_queryset(self):
@@ -130,7 +139,7 @@ class TaskResultListView(LoginRequiredMixin, ListView):
         return response
 
 
-class LogListView(LoginRequiredMixin, TemplateView):
+class LogListView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/_log_list.html"
 
     def all_tasks_completed(self):
@@ -166,7 +175,7 @@ class LogListView(LoginRequiredMixin, TemplateView):
         }
 
 
-class TaskResultReRunView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
+class TaskResultReRunView(IsStaffRequiredMixin, SingleObjectMixin, RedirectView):
     model = TaskResult
 
     def get(self, request, *args, **kwargs):

@@ -34,8 +34,8 @@ def test_view__no_permission(url, client):
     assert response.status_code == 302
 
 
-def test_pipeline_list(client, user):
-    client.force_login(user)
+def test_pipeline_list(client, staff):
+    client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:list"))
 
     assert response.status_code == 200
@@ -43,10 +43,10 @@ def test_pipeline_list(client, user):
     assert len(response.context_data["pipelines"]) == 4
 
 
-def test_pipeline_execution_list(client, user):
+def test_pipeline_execution_list(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
 
-    client.force_login(user)
+    client.force_login(staff)
     response = client.get(
         reverse("wildcoeus.pipelines:pipeline-execution-list", args=[pe.pipeline_id])
     )
@@ -58,9 +58,9 @@ def test_pipeline_execution_list(client, user):
 
 
 def test_pipeline_execution_list_queries_pinned(
-    client, user, django_assert_num_queries
+    client, staff, django_assert_num_queries
 ):
-    client.force_login(user)
+    client.force_login(staff)
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
 
     with django_assert_num_queries(3):
@@ -71,11 +71,11 @@ def test_pipeline_execution_list_queries_pinned(
         )
 
 
-def test_results_list__tasks_completed(client, user):
+def test_results_list__tasks_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     te = baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
 
-    client.force_login(user)
+    client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
 
     assert response.status_code == 286
@@ -84,7 +84,7 @@ def test_results_list__tasks_completed(client, user):
     assert te[0] in response.context_data["object_list"]
 
 
-def test_results_list__tasks_not_completed(client, user):
+def test_results_list__tasks_not_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id)
     baker.make_recipe(
@@ -93,14 +93,14 @@ def test_results_list__tasks_not_completed(client, user):
         status=PipelineTaskStatus.PENDING.value,
     )
 
-    client.force_login(user)
+    client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
 
     assert response.status_code == 200
 
 
-def test_results_list_queries_pinned(client, user, django_assert_num_queries):
-    client.force_login(user)
+def test_results_list_queries_pinned(client, staff, django_assert_num_queries):
+    client.force_login(staff)
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     te = baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
 
@@ -108,13 +108,13 @@ def test_results_list_queries_pinned(client, user, django_assert_num_queries):
         client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
 
 
-def test_log_list__tasks_completed(client, user):
+def test_log_list__tasks_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     te = baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
     pl = baker.make_recipe("pipelines.fake_pipeline_log", run_id=pe.run_id, _quantity=3)
     tl = baker.make_recipe("pipelines.fake_task_log", run_id=pe.run_id, _quantity=3)
 
-    client.force_login(user)
+    client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id]))
 
     assert response.status_code == 286
@@ -124,7 +124,7 @@ def test_log_list__tasks_completed(client, user):
     assert tl[0].log_message in [x[1] for x in response.context_data["logs"]]
 
 
-def test_log_list__tasks_not_completed(client, user):
+def test_log_list__tasks_not_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id)
     baker.make_recipe(
@@ -135,14 +135,14 @@ def test_log_list__tasks_not_completed(client, user):
     baker.make_recipe("pipelines.fake_pipeline_log", run_id=pe.run_id)
     baker.make_recipe("pipelines.fake_task_log", run_id=pe.run_id)
 
-    client.force_login(user)
+    client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id]))
 
     assert response.status_code == 200
 
 
-def test_log_list_queries_pinned(client, user, django_assert_num_queries):
-    client.force_login(user)
+def test_log_list_queries_pinned(client, staff, django_assert_num_queries):
+    client.force_login(staff)
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
     baker.make_recipe("pipelines.fake_pipeline_log", run_id=pe.run_id)
@@ -152,8 +152,8 @@ def test_log_list_queries_pinned(client, user, django_assert_num_queries):
         client.get(reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id]))
 
 
-def test_start__get(client, user, test_pipeline):
-    client.force_login(user)
+def test_start__get(client, staff, test_pipeline):
+    client.force_login(staff)
     response = client.get(
         reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()])
     )
@@ -162,8 +162,8 @@ def test_start__get(client, user, test_pipeline):
 
 
 @patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__eager__post(run_pipeline, client, user, test_pipeline):
-    client.force_login(user)
+def test_start__eager__post(run_pipeline, client, staff, test_pipeline):
+    client.force_login(staff)
     response = client.post(
         reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
     )
@@ -178,11 +178,11 @@ def test_start__eager__post(run_pipeline, client, user, test_pipeline):
 
 
 @patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__celery__post(run_pipeline, client, user, settings, test_pipeline):
+def test_start__celery__post(run_pipeline, client, staff, settings, test_pipeline):
     settings.WILDCOEUS_DEFAULT_PIPELINE_RUNNER = (
         "wildcoeus.pipelines.runners.celery.runner.Runner"
     )
-    client.force_login(user)
+    client.force_login(staff)
     response = client.post(
         reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
     )
@@ -196,7 +196,7 @@ def test_start__celery__post(run_pipeline, client, user, settings, test_pipeline
 
 
 @patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__post__with_formdata(run_pipeline, client, user):
+def test_start__post__with_formdata(run_pipeline, client, staff):
     class MessageInputType(BaseModel):
         message: str
 
@@ -215,7 +215,7 @@ def test_start__post__with_formdata(run_pipeline, client, user):
     test_pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    client.force_login(user)
+    client.force_login(staff)
     response = client.post(
         reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]),
         data={"message": "test"},
@@ -230,7 +230,7 @@ def test_start__post__with_formdata(run_pipeline, client, user):
 
 
 @patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__post__with_no_formdata(run_pipeline, client, user):
+def test_start__post__with_no_formdata(run_pipeline, client, staff):
     class MessageInputType(BaseModel):
         message: str
 
@@ -249,7 +249,7 @@ def test_start__post__with_no_formdata(run_pipeline, client, user):
     test_pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    client.force_login(user)
+    client.force_login(staff)
     response = client.post(
         reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
     )
@@ -259,7 +259,7 @@ def test_start__post__with_no_formdata(run_pipeline, client, user):
 
 
 @patch("wildcoeus.pipelines.views.run_task")
-def test_rerun_task__post(run_task, client, user):
+def test_rerun_task__post(run_task, client, staff):
     class TestTaskFirst(Task):
         def run(self, *args, **kwargs):
             return True
@@ -279,7 +279,7 @@ def test_rerun_task__post(run_task, client, user):
         pipeline_task="first",
         task_id="test_pipeline_views.TestTaskFirst",
     )
-    client.force_login(user)
+    client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=[tr.pk]))
 
     run_task.assert_called_once_with(
@@ -294,9 +294,9 @@ def test_rerun_task__post(run_task, client, user):
     assert response.status_code == 302
 
 
-def test_rerun_task__no_task(client, user):
+def test_rerun_task__no_task(client, staff):
     tr = baker.make_recipe("pipelines.fake_task_result", pipeline_task="fake")
-    client.force_login(user)
+    client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=[tr.pk]))
 
     assert response.status_code == 404
