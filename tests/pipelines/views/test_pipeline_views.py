@@ -4,6 +4,7 @@ from django.urls import reverse
 
 import pytest
 from model_bakery import baker
+from pydantic import BaseModel
 
 from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task
 from wildcoeus.pipelines.registry import pipeline_registry
@@ -151,13 +152,25 @@ def test_log_list_queries_pinned(client, user, django_assert_num_queries):
         client.get(reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id]))
 
 
-@patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__eager(run_pipeline, client, user):
+def test_start__get(client, user, test_pipeline):
     client.force_login(user)
-    response = client.get(reverse("wildcoeus.pipelines:start", args=["pipeline-slug"]))
+    response = client.get(
+        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()])
+    )
 
+    assert response.status_code == 200
+
+
+@patch("wildcoeus.pipelines.views.run_pipeline")
+def test_start__eager__post(run_pipeline, client, user, test_pipeline):
+    client.force_login(user)
+    response = client.post(
+        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
+    )
+
+    print(response.__dict__)
     run_pipeline.assert_called_once_with(
-        pipeline_id="pipeline-slug",
+        pipeline_id=test_pipeline.get_id(),
         input_data=ANY,
         run_id=ANY,
     )
@@ -165,23 +178,88 @@ def test_start__eager(run_pipeline, client, user):
 
 
 @patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__celery(run_pipeline, client, user, settings):
+def test_start__celery__post(run_pipeline, client, user, settings, test_pipeline):
     settings.WILDCOEUS_DEFAULT_PIPELINE_RUNNER = (
         "wildcoeus.pipelines.runners.celery.runner.Runner"
     )
     client.force_login(user)
-    response = client.get(reverse("wildcoeus.pipelines:start", args=["pipeline-slug"]))
+    response = client.post(
+        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
+    )
 
     run_pipeline.assert_called_once_with(
-        pipeline_id="pipeline-slug",
+        pipeline_id=test_pipeline.get_id(),
         input_data=ANY,
         run_id=ANY,
     )
     assert response.status_code == 302
 
 
+@patch("wildcoeus.pipelines.views.run_pipeline")
+def test_start__post__with_formdata(run_pipeline, client, user):
+    class MessageInputType(BaseModel):
+        message: str
+
+    class TestTaskFirst(Task):
+        InputType = MessageInputType
+
+        def run(self, *args, **kwargs):
+            return True
+
+    class TestPipeline(Pipeline):
+        first = TestTaskFirst(config={})
+
+        class Meta:
+            title = "Test Pipeline"
+
+    test_pipeline = TestPipeline()
+    pipeline_registry.register(TestPipeline)
+
+    client.force_login(user)
+    response = client.post(
+        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]),
+        data={"message": "test"},
+    )
+
+    run_pipeline.assert_called_once_with(
+        pipeline_id=test_pipeline.get_id(),
+        input_data=ANY,
+        run_id=ANY,
+    )
+    assert response.status_code == 302
+
+
+@patch("wildcoeus.pipelines.views.run_pipeline")
+def test_start__post__with_no_formdata(run_pipeline, client, user):
+    class MessageInputType(BaseModel):
+        message: str
+
+    class TestTaskFirst(Task):
+        InputType = MessageInputType
+
+        def run(self, *args, **kwargs):
+            return True
+
+    class TestPipeline(Pipeline):
+        first = TestTaskFirst(config={})
+
+        class Meta:
+            title = "Test Pipeline"
+
+    test_pipeline = TestPipeline()
+    pipeline_registry.register(TestPipeline)
+
+    client.force_login(user)
+    response = client.post(
+        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
+    )
+
+    run_pipeline.assert_not_called()
+    assert response.status_code == 200
+
+
 @patch("wildcoeus.pipelines.views.run_task")
-def test_rerun_task(run_task, client, user):
+def test_rerun_task__post(run_task, client, user):
     class TestTaskFirst(Task):
         def run(self, *args, **kwargs):
             return True

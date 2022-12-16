@@ -56,7 +56,6 @@ class BasicPipeline(Pipeline):
 
 class TestTaskIterator(Task):
     ConfigType = EchoConfigType
-    InputType = EchoInputType
 
     def run(self, *args, **kwargs):
         time.sleep(self.cleaned_config.wait)
@@ -75,5 +74,5 @@ class TestIteratorPipeline(Pipeline):
     def get_iterator(cls):
         return range(0, 3)
 
-    # class Meta:
-    #     title = "Pipeline with Iterator"
+    class Meta:
+        title = "Pipeline with Iterator"

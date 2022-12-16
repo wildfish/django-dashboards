@@ -4,11 +4,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Max
 from django.http import Http404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, TemplateView
+from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
 from wildcoeus.pipelines import config
+from wildcoeus.pipelines.forms import PipelineStartForm
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.models import (
     PipelineExecution,
@@ -16,6 +17,7 @@ from wildcoeus.pipelines.models import (
     TaskLog,
     TaskResult,
 )
+from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
@@ -56,8 +58,26 @@ class PipelineExecutionListView(LoginRequiredMixin, ListView):
         }
 
 
-class PipelineStartView(LoginRequiredMixin, RedirectView):
-    def get(self, request, *args, **kwargs):
+class PipelineStartView(LoginRequiredMixin, FormView):
+    template_name = "wildcoeus/pipelines/pipeline_start.html"
+    form_class = PipelineStartForm
+
+    def get_context_data(self, **kwargs):
+        pipeline_cls = pipeline_registry.get_pipeline_class(self.kwargs["slug"])
+        return {
+            **super().get_context_data(**kwargs),
+            "pipeline": pipeline_cls,
+        }
+
+    def get_form_kwargs(self):
+        pipeline_cls = pipeline_registry.get_pipeline_class(self.kwargs["slug"])
+
+        return {
+            **super().get_form_kwargs(),
+            "pipeline_cls": pipeline_cls,
+        }
+
+    def form_valid(self, form):
         # generate an id for the new run
         self.run_id = str(uuid.uuid4())
 
@@ -66,23 +86,22 @@ class PipelineStartView(LoginRequiredMixin, RedirectView):
             logger.debug("running pipeline in eager")
             # trigger in eager
             run_pipeline(
-                pipeline_id=kwargs["slug"],
-                input_data={"message": "hello"},  # todo: how do we handle this?
+                pipeline_id=self.kwargs["slug"],
+                input_data=form.cleaned_data,
                 run_id=self.run_id,
             )
         else:
             logger.debug("running pipeline in celery")
             # trigger in celery
             run_pipeline.delay(
-                pipeline_id=kwargs["slug"],
-                input_data={"message": "hello"},  # todo: how do we handle this?
+                pipeline_id=self.kwargs["slug"],
+                input_data=form.cleaned_data,
                 run_id=self.run_id,
             )
 
-        response = super().get(request, *args, **kwargs)
-        return response
+        return super().form_valid(form)
 
-    def get_redirect_url(self, *args, **kwargs):
+    def get_success_url(self, *args, **kwargs):
         return reverse_lazy("wildcoeus.pipelines:results", args=(self.run_id,))
 
 
