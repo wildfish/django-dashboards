@@ -13,17 +13,20 @@
   {% for task in object_list %}
     <tr class=" result-table {% if task.status == "RUNNING" %}table-primary{% elif task.status == "DONE" %}table-success{% elif task.status == "VALIDATION_ERROR" %}table-danger{% endif %}">
       <td>
-        {{ task.pipeline_task }}
+        <strong>{{ task.pipeline_task }}</strong><br />
+        <em>
+          {{ task.serializable_pipeline_object|default_if_none:"" }} {{ task.serializable_task_object|default_if_none:"" }}
+        </em>
         <p><small>{{ task.task_id }}</small></p>
       </td>
       <td>
-        {{ task.get_status_display }} - {{ task.status }}
+        {{ task.get_status_display }}
       </td>
       <td>
         {{ task.started|naturaltime }}
       </td>
       <td>
-        {% if task.completed %}
+        {% if task.status == 'DONE' %}
         {{ task.completed }} ({{ task.duration|default_if_none:"-" }} seconds)
         {% else %}
           NOT COMPLETED

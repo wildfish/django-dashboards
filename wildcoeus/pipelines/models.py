@@ -89,6 +89,8 @@ class TaskResult(models.Model):
     pipeline_task = models.CharField(max_length=255)
     task_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255)
+    serializable_pipeline_object = models.JSONField(blank=True, null=True)
+    serializable_task_object = models.JSONField(blank=True, null=True)
     status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices())
     config = models.JSONField(blank=True, null=True)
     input_data = models.JSONField(blank=True, null=True)
@@ -96,9 +98,6 @@ class TaskResult(models.Model):
     completed = models.DateTimeField(blank=True, null=True)
 
     objects = TaskResultQuerySet.as_manager()
-
-    class Meta:
-        unique_together = ("task_id", "run_id")
 
     def __str__(self):
         return f"{self.task_id} ({self.run_id})"
@@ -128,7 +127,8 @@ class TaskResult(models.Model):
 
 class PipelineExecution(models.Model):
     pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255, unique=True)
+    run_id = models.CharField(max_length=255)
+    serializable_pipeline_object = models.JSONField(blank=True, null=True)
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
@@ -149,6 +149,7 @@ class PipelineExecution(models.Model):
 
     class Meta:
         ordering = ["-started"]
+        unique_together = ("run_id", "serializable_pipeline_object")
 
 
 class ValueStore(TimeStampedModel):

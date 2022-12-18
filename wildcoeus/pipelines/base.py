@@ -119,7 +119,7 @@ class Pipeline(metaclass=PipelineType):
 
     @staticmethod
     def get_serializable_pipeline_object(obj):
-        if not obj:
+        if obj is None:
             return None
 
         return {
@@ -132,7 +132,40 @@ class Pipeline(metaclass=PipelineType):
         input_data: Dict[str, Any],
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
+    ):
+        iterator = self.get_iterator()
+
+        if iterator:
+            for pipeline_object in iterator:
+                self.start_pipeline(
+                    run_id=run_id,
+                    input_data=input_data,
+                    runner=runner,
+                    reporter=reporter,
+                    pipeline_object=pipeline_object,
+                )
+        else:
+            return self.start_pipeline(
+                run_id=run_id,
+                input_data=input_data,
+                runner=runner,
+                reporter=reporter,
+            )
+
+        return True
+
+    def start_pipeline(
+        self,
+        run_id: str,
+        input_data: Dict[str, Any],
+        runner: "PipelineRunner",
+        reporter: "PipelineReporter",
+        pipeline_object: Optional[Any] = None,
     ) -> bool:
+
+        serializable_pipeline_object = self.get_serializable_pipeline_object(
+            obj=pipeline_object
+        )
 
         runner._report_pipeline_pending(
             pipeline_id=self.id,
@@ -143,6 +176,7 @@ class Pipeline(metaclass=PipelineType):
         # save that the pipeline has been triggered to run
         self.save(
             run_id=run_id,
+            serializable_pipeline_object=serializable_pipeline_object,
             status=PipelineTaskStatus.PENDING.value,
             input_data=input_data,
             runner=runner.__class__.__name__,
@@ -153,7 +187,11 @@ class Pipeline(metaclass=PipelineType):
 
         if any(t is None for t in self.cleaned_tasks):
             # if any of the tasks have an invalid config cancel all others
-            self.handle_error(reporter=reporter, run_id=run_id)
+            self.handle_error(
+                reporter=reporter,
+                serializable_pipeline_object=serializable_pipeline_object,
+                run_id=run_id,
+            )
             return False
         else:
             cleaned_tasks = cast(List[Task], self.cleaned_tasks)
@@ -167,16 +205,11 @@ class Pipeline(metaclass=PipelineType):
                     status=PipelineTaskStatus.PENDING.value,
                     message="Task is waiting to start",
                 )
-                # save that each task is pending
-                task.save(
-                    pipeline_id=self.id,
-                    run_id=run_id,
-                    status=PipelineTaskStatus.PENDING.value,
-                )
 
         # save that the pipeline is set to run
         self.save(
             run_id=run_id,
+            serializable_pipeline_object=serializable_pipeline_object,
             status=PipelineTaskStatus.RUNNING.value,
             started=timezone.now(),
         )
@@ -188,20 +221,36 @@ class Pipeline(metaclass=PipelineType):
             tasks=cleaned_tasks,
             input_data=input_data,
             reporter=reporter,
+            pipeline_object=pipeline_object,
         )
 
         return started
 
-    def save(self, run_id: str, **defaults):
+    def save(
+        self,
+        run_id: str,
+        serializable_pipeline_object: Optional[Dict[str, Any]],
+        **defaults
+    ):
         from .models import (  # needs to be here or raise AppRegistryNotReady("Apps aren't loaded yet.")
             PipelineExecution,
         )
 
-        PipelineExecution.objects.update_or_create(
-            pipeline_id=self.id, run_id=run_id, defaults=defaults
+        lookup = dict(
+            pipeline_id=self.id,
+            run_id=run_id,
         )
+        if serializable_pipeline_object:
+            lookup["serializable_pipeline_object"] = serializable_pipeline_object
 
-    def handle_error(self, reporter, run_id: str):
+        PipelineExecution.objects.update_or_create(**lookup, defaults=defaults)
+
+    def handle_error(
+        self,
+        reporter,
+        run_id: str,
+        serializable_pipeline_object: Optional[Dict[str, Any]],
+    ):
         # if any of the tasks have an invalid config cancel all others
         for task in (t for t in self.cleaned_tasks if t is not None):
             reporter.report_task(
@@ -212,7 +261,11 @@ class Pipeline(metaclass=PipelineType):
                 message="Tasks cancelled due to an error in the pipeline config",
             )
         # update that pipeline has been cancelled
-        self.save(run_id, status=PipelineTaskStatus.CANCELLED.value)
+        self.save(
+            run_id,
+            serializable_pipeline_object=serializable_pipeline_object,
+            status=PipelineTaskStatus.CANCELLED.value,
+        )
 
 
 class ModelPipeline(Pipeline):

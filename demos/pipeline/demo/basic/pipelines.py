@@ -63,7 +63,7 @@ class TestTaskIterator(Task):
 
     @classmethod
     def get_iterator(cls):
-        return range(0, 25)
+        return range(0, 3)
 
 
 @pipeline_registry.register
@@ -72,7 +72,7 @@ class TestIteratorPipeline(Pipeline):
 
     @classmethod
     def get_iterator(cls):
-        return range(0, 5)
+        return range(0, 2)
 
     class Meta:
         title = "Pipeline with Iterator"

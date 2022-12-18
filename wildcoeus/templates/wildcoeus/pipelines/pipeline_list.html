@@ -27,7 +27,7 @@
             {{ runs|lookup:pipeline.id|default_if_none:0 }}
           </a>
         </td>
-        <td>{{ last_ran|lookup:pipeline.id|naturaltime }}</td>
+        <td>{{ last_ran|lookup:pipeline.id|naturaltime|default_if_none:"Never" }}</td>
         <td>{{ average_runtime|lookup:pipeline.id|duration|default_if_none:"N/A" }}</td>
         <td>
           <a href="{% url "wildcoeus.pipelines:start" pipeline.id %}" class="btn btn-success">run</a>
