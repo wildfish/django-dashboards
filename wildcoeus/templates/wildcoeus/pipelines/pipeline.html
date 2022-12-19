@@ -1,5 +1,9 @@
-{% extends "wildcoeus/dashboards/base.html" %}
+{% extends "wildcoeus/pipelines/base.html" %}
 {% load static %}
+
+{% block breadcrumbs %}
+  <a href="{% url "wildcoeus.pipelines:list" %}">Home</a>
+{% endblock breadcrumbs %}
 
 {% block wildcoeus_js %}
     {{ block.super }}

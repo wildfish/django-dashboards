@@ -4,11 +4,12 @@ from typing import Any, Optional
 class PipelineReporter:
     def report(
         self,
-        pipeline_id: Optional[str],
-        pipeline_task: Optional[str],
-        task_id: Optional[str],
         status: str,
         message: str,
+        run_id: Optional[str] = None,
+        pipeline_id: Optional[str] = None,
+        task_id: Optional[str] = None,
+        pipeline_task: Optional[str] = None,
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
         serializable_task_object: Optional[dict[str, Any]] = None,
     ):  # pragma: nocover
@@ -19,17 +20,17 @@ class PipelineReporter:
         pipeline_id: str,
         status: str,
         message: str,
+        run_id: Optional[str] = "",
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
         serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         self.report(
-            pipeline_id,
-            None,
-            None,
-            status,
-            message,
-            serializable_pipeline_object,
-            serializable_task_object,
+            pipeline_id=pipeline_id,
+            run_id=run_id,
+            status=status,
+            message=message,
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=serializable_task_object,
         )
 
     def report_task(
@@ -38,15 +39,16 @@ class PipelineReporter:
         task_id: str,
         status: str,
         message: str,
+        run_id: Optional[str] = "",
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
         serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         self.report(
-            None,
-            pipeline_task,
-            task_id,
-            status,
-            message,
-            serializable_pipeline_object,
-            serializable_task_object,
+            pipeline_task=pipeline_task,
+            task_id=task_id,
+            run_id=run_id,
+            status=status,
+            message=message,
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=serializable_task_object,
         )

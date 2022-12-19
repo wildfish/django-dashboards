@@ -9,6 +9,7 @@ from wildcoeus.dashboards.component.layout import HR, ComponentLayout, Div
 from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
 from wildcoeus.dashboards.forms import DashboardForm
+from wildcoeus.dashboards.registry import registry
 
 
 class TestDashboard(Dashboard):
@@ -106,3 +107,11 @@ class TestDashboardWithLayout(TestDashboard):
                 ),
             ),
         )
+
+
+registry.register(TestDashboard)
+registry.register(TestFilterDashboard)
+registry.register(TestAdminDashboard)
+registry.register(TestComplexDashboard)
+registry.register(TestDashboardWithLayout)
+registry.register(TestModelDashboard)

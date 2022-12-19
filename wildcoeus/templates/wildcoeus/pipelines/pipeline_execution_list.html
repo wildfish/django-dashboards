@@ -1,0 +1,35 @@
+{% extends "wildcoeus/pipelines/pipeline.html" %}
+{% load pipelines %}
+{% block content_title %}Pipeline Executions: {{ slug }} ({{ object_list|length }}){% endblock content_title %}
+{% block breadcrumbs %}
+  {{ block.super }}
+    / {{ slug }} / Runs
+{% endblock breadcrumbs %}
+{% block content %}
+  <table class="table">
+  <thead>
+  <tr>
+    <th>Pipeline</th>
+    <th>Tasks</th>
+    <th>Started On</th>
+    <th>Duration</th>
+    <th>Status</th>
+  </tr>
+  </thead>
+  <tbody>
+    {% for object in object_list %}
+      <tr>
+        <td>
+          <a href="{% url "wildcoeus.pipelines:results" object.run_id %}">{{ object.pipeline_id }}</a>
+          <p><small>- {{ object.run_id }}</small></p>
+        </td>
+        <td>{{ object.task_count|default_if_none:"0" }}</td>
+        <td>{{ object.started|default_if_none:"NOT STARTED" }}</td>
+        <td>{{ object.duration|duration|default_if_none:"N/A" }}</td>
+        <td>{{ object.get_status_display }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+{% endblock %}
+

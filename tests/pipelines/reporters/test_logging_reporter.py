@@ -16,7 +16,7 @@ def test_report_task_writes_the_message_to_info(caplog):
         serializable_task_object=None,
     )
 
-    assert "Task fake:task_id changed to state DONE: Done" in caplog.text
+    assert "Task fake (task_id) changed to state DONE: Done" in caplog.text
 
 
 def test_report_task_writes_the_message_to_info__with_object(caplog):
@@ -31,7 +31,7 @@ def test_report_task_writes_the_message_to_info__with_object(caplog):
         serializable_task_object={"object": 2},
     )
     assert (
-        "Task fake:task_id changed to state DONE: Done | pipeline object: {'object': 1} | task object: {'object': 2}"
+        "Task fake (task_id) changed to state DONE: Done | pipeline object: {'object': 1} | task object: {'object': 2}"
         in caplog.text
     )
 

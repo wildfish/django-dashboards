@@ -23,10 +23,10 @@ class PipeLineRegistry(object):
     def register(self, cls):
         slug = self.get_slug(cls.__module__, cls.__name__)
         if slug in self.pipelines:
-            raise RegistryError(f"Multiple pipelines with {slug} have been registered.")
-
-        logger.debug(f"registering pipeline {slug}")
-        self.pipelines[slug] = cls
+            logger.warn(f"{slug} already registered")
+        else:
+            logger.debug(f"registering pipeline {slug}")
+            self.pipelines[slug] = cls
 
     def get_all_registered_pipelines(self):
         return list(self.pipelines.values())

@@ -24,13 +24,13 @@ def test_report_task_calls_report_with_task_id_set():
     )
 
     reporter.report_body.assert_called_once_with(
-        None,
-        "fake",
-        "task-id",
-        PipelineTaskStatus.PENDING.value,
-        "report message",
-        None,
-        None,
+        pipeline_task="fake",
+        task_id="task-id",
+        run_id="",
+        status="PENDING",
+        message="report message",
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
     )
 
 
@@ -46,11 +46,10 @@ def test_report_pipeline_calls_report_with_task_id_set():
     )
 
     reporter.report_body.assert_called_once_with(
-        "pipeline-id",
-        None,
-        None,
-        PipelineTaskStatus.PENDING.value,
-        "report message",
-        None,
-        None,
+        pipeline_id="pipeline-id",
+        run_id="",
+        status="PENDING",
+        message="report message",
+        serializable_pipeline_object=None,
+        serializable_task_object=None,
     )

@@ -33,7 +33,7 @@ class TaskRegistry(object):
     def reset(self):
         self.tasks = {}
 
-    def get_task_class(self, task_id):
+    def get_task_class(self, task_id: str):
         if task_id in self.tasks.keys():
             return self.tasks[task_id]
         return None
@@ -42,6 +42,7 @@ class TaskRegistry(object):
         self,
         pipeline_task: str,
         task_id: str,
+        run_id: str,
         config: Dict[str, Any],
         reporter: PipelineReporter,
     ):
@@ -51,12 +52,16 @@ class TaskRegistry(object):
             reporter.report_task(
                 pipeline_task=pipeline_task,
                 task_id=task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.CONFIG_ERROR.value,
                 message=f"No task named {task_id} is registered",
             )
             return None
 
-        return cls(config=config)
+        task = cls(config=config)
+        task.pipeline_task = pipeline_task
+
+        return task
 
 
 task_registry = TaskRegistry()

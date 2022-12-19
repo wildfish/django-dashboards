@@ -1,4 +1,3 @@
-import logging
 import uuid
 from typing import Any, Dict, Optional
 
@@ -8,7 +7,8 @@ from wildcoeus.pipelines import config
 from wildcoeus.pipelines.registry import pipeline_registry
 
 
-logger = logging.getLogger(__name__)
+class TaskError(Exception):
+    pass
 
 
 @shared_task
@@ -21,6 +21,7 @@ def run_pipeline(
     from wildcoeus.pipelines.runners.celery.runner import Runner
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
+    runner = Runner()
     pipeline_cls = pipeline_registry.get_pipeline_class(pipeline_id)
 
     if not run_id:
@@ -29,7 +30,7 @@ def run_pipeline(
     pipeline_cls().start(
         run_id=run_id,
         input_data=input_data,
-        runner=Runner(),
+        runner=runner,
         reporter=reporter,
     )
 
@@ -37,6 +38,7 @@ def run_pipeline(
 @shared_task
 def run_pipeline_report(
     pipeline_id: str,
+    run_id: str,
     status: str,
     message: str,
     serializable_pipeline_object: Optional[dict[str, Any]],
@@ -47,6 +49,7 @@ def run_pipeline_report(
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     reporter.report_pipeline(
         pipeline_id=pipeline_id,
+        run_id=run_id,
         status=status,
         message=message,
         serializable_pipeline_object=serializable_pipeline_object,
@@ -67,8 +70,12 @@ def run_task(
     """
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
-    tasks = pipeline().clean_tasks(reporter)
-    task = list(filter(lambda x: x.task_id == task_id, tasks))[0]
+    tasks = pipeline().clean_tasks(reporter, run_id=run_id)
+    try:
+        task = list(filter(lambda x: x.task_id == task_id, tasks))[0]
+    except IndexError:
+        raise TaskError(f"cannot find task in pipeline {pipeline_id} with id {task_id}")
+
     task.start(
         pipeline_id=pipeline_id,
         run_id=run_id,
@@ -82,7 +89,8 @@ def run_task(
 @shared_task
 def run_task_report(
     task_id: str,
-    pipeline_id: str,
+    pipeline_task: str,
+    run_id: str,
     status: str,
     message: str,
     serializable_pipeline_object: Optional[dict[str, Any]],
@@ -91,11 +99,11 @@ def run_task_report(
     """
     Record a task report update async.
     """
-    logger.error(f"this is an error {status} =- {task_id}")
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     reporter.report_task(
+        pipeline_task=pipeline_task,
         task_id=task_id,
-        pipeline_id=pipeline_id,
+        run_id=run_id,
         status=status,
         message=message,
         serializable_pipeline_object=serializable_pipeline_object,

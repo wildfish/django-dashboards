@@ -55,7 +55,7 @@ class Task:
         return None
 
     def get_serializable_task_object(self, obj):
-        if not obj:
+        if obj is None:
             return None
 
         return {
@@ -125,6 +125,7 @@ class Task:
             reporter.report_task(
                 pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.RUNNING.value,
                 message="Task is running",
                 serializable_pipeline_object=serializable_pipeline_object,
@@ -135,6 +136,8 @@ class Task:
             self.save(
                 pipeline_id=pipeline_id,
                 run_id=run_id,
+                serializable_pipeline_object=serializable_pipeline_object,
+                serializable_task_object=serializable_task_object,
                 status=PipelineTaskStatus.RUNNING.value,
                 started=timezone.now(),
                 input_data=cleaned_data.dict() if cleaned_data else None,
@@ -157,6 +160,8 @@ class Task:
             self.save(
                 pipeline_id=pipeline_id,
                 run_id=run_id,
+                serializable_pipeline_object=serializable_pipeline_object,
+                serializable_task_object=serializable_task_object,
                 status=PipelineTaskStatus.DONE.value,
                 completed=timezone.now(),
             )
@@ -164,6 +169,7 @@ class Task:
             reporter.report_task(
                 pipeline_task=self.pipeline_task,
                 task_id=self.task_id,
+                run_id=run_id,
                 status=PipelineTaskStatus.DONE.value,
                 message="Done",
                 serializable_pipeline_object=serializable_pipeline_object,
@@ -213,6 +219,7 @@ class Task:
         reporter.report_task(
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,
+            run_id=run_id,
             status=status,
             message=str(exception),
             serializable_pipeline_object=serializable_pipeline_object,
@@ -223,6 +230,8 @@ class Task:
         self.save(
             pipeline_id=pipeline_id,
             run_id=run_id,
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=serializable_task_object,
             status=status,
         )
 
@@ -230,10 +239,19 @@ class Task:
         PipelineExecution.objects.filter(pipeline_id=pipeline_id, run_id=run_id).update(
             pipeline_id=pipeline_id,
             run_id=run_id,
+            serializable_pipeline_object=serializable_pipeline_object,  # todo: should we do them all?
             status=status,
         )
 
-    def save(self, pipeline_id, run_id, status, **defaults):
+    def save(
+        self,
+        pipeline_id,
+        run_id,
+        serializable_pipeline_object,
+        serializable_task_object,
+        status,
+        **defaults
+    ):
         from ..models import PipelineExecution, TaskResult
 
         # add to the defaults
@@ -241,17 +259,28 @@ class Task:
         defaults["pipeline_task"] = self.pipeline_task
         defaults["config"] = self.cleaned_config.dict() if self.cleaned_config else None
 
-        result, _ = TaskResult.objects.update_or_create(
+        lookup = dict(
             pipeline_id=pipeline_id,
-            pipeline_task=self.pipeline_task,
             task_id=self.task_id,
             run_id=run_id,
+        )
+        if serializable_task_object:
+            lookup["serializable_task_object"] = serializable_task_object
+
+        if serializable_pipeline_object:
+            lookup["serializable_pipeline_object"] = serializable_pipeline_object
+
+        result, _ = TaskResult.objects.update_or_create(
+            **lookup,
             defaults=defaults,
         )
 
         # if all tasks have ran then flag the PipelineExecution as complete
         if status == PipelineTaskStatus.DONE.value:
-            if TaskResult.objects.not_completed(run_id=run_id).count() == 0:
+            if (
+                TaskResult.objects.not_completed().for_run_id(run_id=run_id).count()
+                == 0
+            ):
                 PipelineExecution.objects.filter(
                     pipeline_id=pipeline_id, run_id=run_id
                 ).update(status=PipelineTaskStatus.DONE.value)

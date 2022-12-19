@@ -7,11 +7,12 @@ from wildcoeus.pipelines.log import logger
 class LoggingReporter(PipelineReporter):
     def report(
         self,
-        pipeline_id: Optional[str],
-        pipeline_task: Optional[str],
-        task_id: Optional[str],
         status: str,
         message: str,
+        run_id: Optional[str] = None,
+        pipeline_id: Optional[str] = None,
+        task_id: Optional[str] = None,
+        pipeline_task: Optional[str] = None,
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
         serializable_task_object: Optional[dict[str, Any]] = None,
     ):
@@ -32,5 +33,5 @@ class LoggingReporter(PipelineReporter):
             messages.append(task_object_msg)
             message = " | ".join([m for m in messages if m])
             logger.info(
-                f"Task {pipeline_task}:{task_id} changed to state {status}: {message}"
+                f"Task {pipeline_task} ({task_id}) changed to state {status}: {message}"
             )

@@ -15,6 +15,11 @@ urlpatterns = [
         name="list",
     ),
     path(
+        "<str:slug>/runs/",
+        views.PipelineExecutionListView.as_view(),
+        name="pipeline-execution-list",
+    ),
+    path(
         "<str:slug>/start/",
         views.PipelineStartView.as_view(),
         name="start",
@@ -28,6 +33,11 @@ urlpatterns = [
         "<str:run_id>/results/list/",
         views.TaskResultListView.as_view(),
         name="results-list",
+    ),
+    path(
+        "<str:run_id>/logs/",
+        views.LogListView.as_view(),
+        name="logs-list",
     ),
     path(
         "task-result/<str:pk>/rerun/",

@@ -50,6 +50,7 @@ class Runner(PipelineRunner):
 
         self._report_pipeline_running(
             pipeline_id=pipeline_id,
+            run_id=run_id,
             reporter=reporter,
             serializable_pipeline_object=serializable_pipeline_object,
         )
@@ -83,12 +84,14 @@ class Runner(PipelineRunner):
                 ):
                     self._report_task_cancelled(
                         task=t,
+                        run_id=run_id,
                         reporter=reporter,
                         serializable_pipeline_object=serializable_pipeline_object,
                     )
 
                 self._report_pipeline_error(
                     pipeline_id=pipeline_id,
+                    run_id=run_id,
                     reporter=reporter,
                     serializable_pipeline_object=serializable_pipeline_object,
                 )
@@ -97,6 +100,7 @@ class Runner(PipelineRunner):
 
         self._report_pipeline_done(
             pipeline_id=pipeline_id,
+            run_id=run_id,
             reporter=reporter,
             serializable_pipeline_object=serializable_pipeline_object,
         )
