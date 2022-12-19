@@ -170,6 +170,7 @@ class Pipeline(metaclass=PipelineType):
         runner._report_pipeline_pending(
             pipeline_id=self.id,
             run_id=run_id,
+            serializable_pipeline_object=serializable_pipeline_object,
             reporter=reporter,
         )
 

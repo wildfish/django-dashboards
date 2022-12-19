@@ -13,8 +13,8 @@ class PipelineRunner:
         task: Task,
         run_id: str,
         reporter: PipelineReporter,
-        serializable_pipeline_object=None,
-        serializable_task_object=None,
+        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
+        serializable_task_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_task(
             pipeline_task=task.pipeline_task,
@@ -31,7 +31,7 @@ class PipelineRunner:
         pipeline_id: str,
         run_id: str,
         reporter: PipelineReporter,
-        serializable_pipeline_object=None,
+        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
@@ -46,7 +46,7 @@ class PipelineRunner:
         pipeline_id: str,
         run_id: str,
         reporter: PipelineReporter,
-        serializable_pipeline_object=None,
+        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
@@ -61,7 +61,7 @@ class PipelineRunner:
         pipeline_id: str,
         run_id: str,
         reporter: PipelineReporter,
-        serializable_pipeline_object=None,
+        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,
@@ -76,7 +76,7 @@ class PipelineRunner:
         pipeline_id: str,
         run_id: str,
         reporter: PipelineReporter,
-        serializable_pipeline_object=None,
+        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_pipeline(
             pipeline_id=pipeline_id,

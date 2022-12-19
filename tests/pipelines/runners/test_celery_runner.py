@@ -133,7 +133,7 @@ def test_model_pipeline(celery_worker, logger):
     user_two_for = f"| pipeline object: {{'pk': {users[1].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
 
     assert [
-        "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
+        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {user_one_for}",
         "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
         "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
         f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {user_one_for}",
@@ -142,6 +142,9 @@ def test_model_pipeline(celery_worker, logger):
         f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {user_one_for}",
         f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {user_one_for}",
         f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done {user_one_for}",
+        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {user_two_for}",
+        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
+        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
         f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {user_two_for}",
         f"Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running {user_two_for}",
         f"Task first (test_celery_runner.TaskFirst) changed to state DONE: Done {user_two_for}",
@@ -180,7 +183,7 @@ def test_iterator_pipeline(celery_worker, logger):
     two_for = "| pipeline object: {'obj': 2}"
 
     assert [
-        "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
+        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {one_for}",
         "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
         "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
         f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {one_for}",
@@ -189,6 +192,9 @@ def test_iterator_pipeline(celery_worker, logger):
         f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {one_for}",
         f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {one_for}",
         f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done {one_for}",
+        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {two_for}",
+        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
+        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
         f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {two_for}",
         f"Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running {two_for}",
         f"Task first (test_celery_runner.TaskFirst) changed to state DONE: Done {two_for}",
