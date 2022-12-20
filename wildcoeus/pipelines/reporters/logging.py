@@ -34,7 +34,7 @@ class LoggingReporter(PipelineReporter):
             message = " | ".join([m for m in messages if m])
             logger.info(f"Pipeline {pipeline_id} changed to state {status}: {message}")
             self._write_log_to_file(
-                run_id, f"Pipeline {pipeline_id} changed to state {status}: {message}\n"
+                f"Pipeline {pipeline_id} changed to state {status}: {message}\n", run_id,
             )
         else:
             messages.append(task_object_msg)
@@ -43,12 +43,16 @@ class LoggingReporter(PipelineReporter):
                 f"Task {pipeline_task} ({task_id}) changed to state {status}: {message}"
             )
             self._write_log_to_file(
-                run_id,
                 f"Task {pipeline_task} ({task_id}) changed to state {status}: {message}\n",
+                run_id,
             )
 
     @classmethod
-    def _write_log_to_file(cls, run_id: str, content: str):
+    def _write_log_to_file(cls, content: str, run_id: Optional[str] = None):
+        # need a run id to write file
+        if run_id is None:
+            return
+
         fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
         path = get_log_path(run_id)
         d = now().strftime("%d/%b/%Y %H:%M:%S")

@@ -131,7 +131,7 @@ def test_log_list__with_file__tasks_completed(client, staff, snapshot):
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
         pe = baker.make_recipe("pipelines.fake_pipeline_execution")
         expected_content = "Some example text"
-        LoggingReporter._write_log_to_file(pe.run_id, expected_content)
+        LoggingReporter._write_log_to_file(expected_content, pe.run_id)
 
         client.force_login(staff)
         response = client.get(
