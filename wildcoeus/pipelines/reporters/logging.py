@@ -34,7 +34,8 @@ class LoggingReporter(PipelineReporter):
             message = " | ".join([m for m in messages if m])
             logger.info(f"Pipeline {pipeline_id} changed to state {status}: {message}")
             self._write_log_to_file(
-                f"Pipeline {pipeline_id} changed to state {status}: {message}\n", run_id,
+                f"Pipeline {pipeline_id} changed to state {status}: {message}\n",
+                run_id,
             )
         else:
             messages.append(task_object_msg)
