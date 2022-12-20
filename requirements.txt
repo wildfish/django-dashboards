@@ -97,6 +97,8 @@ filelock==3.8.0
     #   virtualenv
 flake8==5.0.4
     # via pytest-flake8
+freezegun==1.2.2
+    # via pytest-freezegun
 graphql-core==3.2.3
     # via strawberry-graphql
 h11==0.14.0
@@ -196,6 +198,7 @@ pytest==7.2.0
     #   pytest-cov
     #   pytest-django
     #   pytest-flake8
+    #   pytest-freezegun
     #   pytest-isort
     #   pytest-mypy
 pytest-black==0.3.12
@@ -208,6 +211,8 @@ pytest-django==4.5.2
     # via -r requirements.in
 pytest-flake8==1.1.1
     # via -r requirements.in
+pytest-freezegun==0.4.2
+    # via -r requirements.in
 pytest-isort==3.0.0
     # via -r requirements.in
 pytest-mypy==0.10.0
@@ -215,6 +220,7 @@ pytest-mypy==0.10.0
 python-dateutil==2.8.2
     # via
     #   faker
+    #   freezegun
     #   strawberry-graphql
 python-multipart==0.0.5
     # via strawberry-graphql

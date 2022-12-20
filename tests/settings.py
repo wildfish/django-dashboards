@@ -5,6 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).absolute().parent.parent
 PROJECT_NAME = "testing"
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 

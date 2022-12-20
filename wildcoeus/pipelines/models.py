@@ -13,7 +13,7 @@ from django.db.models.query import QuerySet
 from django_extensions.db.models import TimeStampedModel
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
 
 
@@ -146,6 +146,10 @@ class PipelineExecution(models.Model):
 
     def get_task_results(self):
         return TaskResult.objects.filter(run_id=self.run_id)
+
+    @property
+    def failed(self):
+        return self.status in FAILED_STATUES
 
     class Meta:
         ordering = ["-started"]
