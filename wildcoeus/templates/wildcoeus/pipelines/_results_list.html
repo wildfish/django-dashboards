@@ -11,7 +11,7 @@
   </thead>
   <tbody>
   {% for task in object_list %}
-    <tr class=" result-table {% if task.status == "RUNNING" %}table-primary{% elif task.status == "DONE" %}table-success{% elif task.status == "VALIDATION_ERROR" %}table-danger{% endif %}">
+    <tr class="result-table {% if task.status == "RUNNING" %}table-primary{% elif task.status == "DONE" %}table-success{% elif task.status == "VALIDATION_ERROR" %}table-danger{% endif %}">
       <td>
         <strong>{{ task.pipeline_task }}</strong><br />
         <em>
