@@ -29,7 +29,7 @@ class Config:
             "WILDCOEUS_CLEAR_LOG_DAYS",
             30,
         )
-        return import_string(days)()
+        return days
 
     @property
     def WILDCOEUS_LOG_FILE_STORAGE(cls):
