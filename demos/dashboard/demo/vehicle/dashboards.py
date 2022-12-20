@@ -3,6 +3,7 @@ from enum import Enum
 from demo.vehicle.data import VehicleData
 from demo.vehicle.forms import VehicleTypeFilterForm
 from demo.vehicle.models import Vehicle
+from demo.vehicle.tables import VehicleTableSerializer
 
 from wildcoeus.dashboards import config
 from wildcoeus.dashboards.component import Form, Map, Stat, Table
@@ -52,7 +53,9 @@ class VehicleOverviewDashboard(Dashboard):
     map = Map(
         defer=VehicleData.fetch_current_locations, grid_css_classes=Grid.ONE.value
     )
-    vehicles = Table(defer=VehicleData.fetch_vehicles, grid_css_classes=Grid.ONE.value)
+    vehicles = Table(
+        defer=VehicleTableSerializer.serialize, grid_css_classes=Grid.ONE.value
+    )
 
     class Meta:
         name = "Summary"

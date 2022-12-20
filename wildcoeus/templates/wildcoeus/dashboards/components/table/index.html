@@ -6,7 +6,7 @@
   {% if not component.is_deferred %}
     {{ rendered_value|json_script:data_key }}
   {% endif %}
-  {{ component.columns|json_script:columns_key }}
+  {{ rendered_value.columns_datatables|json_script:columns_key }}
   <script type="module">
       var columns_{{ component.key }} = JSON.parse(document.getElementById('{{ columns_key }}').textContent);
 

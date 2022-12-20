@@ -1,51 +1,55 @@
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
-from django.db.models import F, Q, QuerySet
+from django.db.models import CharField, F, Q, QuerySet
 from django.db.models.functions import Lower
 
 
 class TableFilterMixin:
-    filters: dict
-    fields: list
+    Meta: Any
 
-    def filter(self, data: Union[QuerySet, List]) -> Union[List, QuerySet]:
+    @classmethod
+    def filter(
+        cls, data: Union[QuerySet, List], filters: Dict[str, Any]
+    ) -> Union[List, QuerySet]:
         if isinstance(data, QuerySet):
-            return self._queryset_filter(data)
+            return cls._queryset_filter(data, filters)
         else:
-            return self._list_filter(data)
+            return cls._list_filter(data, filters)
 
-    def _queryset_filter(self, qs: QuerySet) -> QuerySet:
+    @classmethod
+    def _queryset_filter(cls, qs: QuerySet, filters: Dict[str, Any]) -> QuerySet:
         """
         Apply filtering on  a queryset based on the search[value] and
         columns[{field}][search][value] column request params.
         """
 
-        global_search_value = self.filters.get("search[value]")
+        global_search_value = filters.get("search[value]")
         # used to filter out non model fields
         model_fields = [f.name for f in qs.model._meta.get_fields()]
 
         q_list = Q()
-
+        fields = list(cls.Meta.columns.keys())
         # Search all fields by adding a Q for each.
-        for field in self.fields:
+        for field in fields:
             if field in model_fields and global_search_value:
                 q_list |= Q(**{f"{field}__icontains": global_search_value})
 
         # Search in individual fields by checking for a request value at index.
-        for o, field in enumerate(self.fields):
-            field_search_value = self.filters.get(f"columns[{o}][search][value]")
+        for o, field in enumerate(fields):
+            field_search_value = filters.get(f"columns[{o}][search][value]")
             if field in model_fields and field_search_value:
-                q_list &= Q(**{f"{self.fields[o]}__icontains": field_search_value})
+                q_list &= Q(**{f"{fields[o]}__icontains": field_search_value})
 
         return qs.filter(q_list)
 
-    def _list_filter(self, data: List) -> List:
+    @classmethod
+    def _list_filter(cls, data: List, filters: Dict[str, Any]) -> List:
         """
         Apply filtering to a list based on the search[value] request params and
         columns[{field}][search][value] column request params.
         """
 
-        global_search_value = self.filters.get("search[value]")
+        global_search_value = filters.get("search[value]")
 
         if global_search_value:
             data = [
@@ -59,8 +63,8 @@ class TableFilterMixin:
             fields_to_search = {}
 
             # Search in individual fields by checking for a request value at index.
-            for o, field in enumerate(self.fields):
-                field_search_value = self.filters.get(f"columns[{o}][search][value]")
+            for o, field in enumerate(cls.Meta.columns.keys()):
+                field_search_value = filters.get(f"columns[{o}][search][value]")
                 if field_search_value:
                     fields_to_search[field] = field_search_value
 
@@ -75,32 +79,39 @@ class TableFilterMixin:
 
 
 class TableSortMixin:
-    filters: dict
-    fields: list
-    force_lower: bool
+    Meta: Any
 
-    def sort(self, data: Union[QuerySet, List]) -> Union[List, QuerySet]:
+    @classmethod
+    def sort(
+        cls, data: Union[QuerySet, List], filters: Dict[str, Any]
+    ) -> Union[List, QuerySet]:
         if isinstance(data, QuerySet):
-            return self._queryset_sort(data)
+            return cls._queryset_sort(data, filters)
         else:
-            return self._list_sort(data)
+            return cls._list_sort(data, filters)
 
-    def _queryset_sort(self, qs: QuerySet) -> QuerySet:
+    @classmethod
+    def _queryset_sort(cls, qs: QuerySet, filters: Dict[str, Any]) -> QuerySet:
         """
         Apply ordering to a queryset based on the order[{field}][column] column request params.
         """
         orders = []
-        for o in range(len(self.fields)):
-            order_index = self.filters.get(f"order[{o}][column]")
+        fields = list(cls.Meta.columns.keys())
+
+        for o in range(len(fields)):
+            order_index = filters.get(f"order[{o}][column]")
             if order_index is not None:
-                if self.force_lower:
-                    field = Lower(self.fields[int(order_index)])
+                field = fields[int(order_index)]
+                if cls.Meta.force_lower and isinstance(
+                    qs.model._meta.get_field(field), CharField
+                ):
+                    field = Lower(field)
                 else:
-                    field = F(self.fields[int(order_index)])
+                    field = F(field)
 
                 ordered_field = (
                     field.desc(nulls_last=True)
-                    if self.filters.get(f"order[{o}][dir]") == "desc"
+                    if filters.get(f"order[{o}][dir]") == "desc"
                     else field.asc(nulls_last=True)
                 )
                 orders.append(ordered_field)
@@ -110,21 +121,24 @@ class TableSortMixin:
 
         return qs
 
-    def _list_sort(self, data: List) -> List:
+    @classmethod
+    def _list_sort(cls, data: List, filters: Dict[str, Any]) -> List:
         """
         Apply ordering to a list based on the order[{field}][column] column request params.
         """
 
         def conditionally_apply_lower(v):
-            if self.force_lower and isinstance(v, str):
+            if cls.Meta.force_lower and isinstance(v, str):
                 return v.lower()
             return v
 
-        for o in range(len(self.fields)):
-            order_index = self.filters.get(f"order[{o}][column]")
+        fields = list(cls.Meta.columns.keys())
+
+        for o in range(len(fields)):
+            order_index = filters.get(f"order[{o}][column]")
             if order_index is not None:
-                field = self.fields[int(order_index)]
-                direction = self.filters.get(f"order[{o}][dir]")
+                field = fields[int(order_index)]
+                direction = filters.get(f"order[{o}][dir]")
                 data = sorted(
                     data,
                     key=lambda x: conditionally_apply_lower(x[field]),
@@ -135,11 +149,14 @@ class TableSortMixin:
 
 
 class TableCountMixin:
-    def count(self, data: Union[QuerySet, List]):
+    Meta: Any
+
+    @classmethod
+    def count(cls, data: Union[QuerySet, List]):
         if isinstance(data, QuerySet):
-            return self._queryset_count(data)
+            return cls._queryset_count(data)
         else:
-            return self._list_count(data)
+            return cls._list_count(data)
 
     @staticmethod
     def _list_count(data: List) -> int:
@@ -150,5 +167,9 @@ class TableCountMixin:
         return qs.count()
 
 
-class TableMixin(TableFilterMixin, TableSortMixin, TableCountMixin):
+class TableMixin(
+    TableFilterMixin,
+    TableSortMixin,
+    TableCountMixin,
+):
     pass

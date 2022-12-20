@@ -1,8 +1,7 @@
 import tempfile
-from unittest.mock import patch, ANY
+from unittest.mock import patch
 
 from django.test.utils import override_settings
-
 from django.urls import reverse
 
 import pytest
@@ -112,7 +111,6 @@ def test_results_list_queries_pinned(client, staff, django_assert_num_queries):
         client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
 
 
-
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
 def test_log_list__tasks_completed(client, staff, snapshot):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
@@ -125,7 +123,6 @@ def test_log_list__tasks_completed(client, staff, snapshot):
 
     assert response.status_code == 286
     assert "logs" in list(response.context_data.keys())
-
     snapshot.assert_match(response.context_data["logs"])
 
 
@@ -192,25 +189,6 @@ def test_start__post(client, staff, test_pipeline):
     )
 
     assert response.status_code == 302
-
-
-@patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__celery__post(run_pipeline, client, staff, settings, test_pipeline):
-    settings.WILDCOEUS_DEFAULT_PIPELINE_RUNNER = (
-        "wildcoeus.pipelines.runners.celery.runner.Runner"
-    )
-    client.force_login(staff)
-    response = client.post(
-        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
-    )
-
-    run_pipeline.assert_called_once_with(
-        pipeline_id=test_pipeline.get_id(),
-        input_data=ANY,
-        run_id=ANY,
-    )
-    assert response.status_code == 302
-
 
 
 def test_start__post__with_formdata(client, staff):

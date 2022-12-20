@@ -3,8 +3,6 @@ import json
 import plotly.express as px
 from demo.kitchensink.models import FlatText
 
-from wildcoeus.dashboards.component.table import TableData, TableSerializer
-
 
 class DashboardData:
     def _apply_filter_age_range(self):
@@ -191,99 +189,6 @@ class DashboardData:
             )
 
         return json.dumps(dict(data=[na, europe, asia]))
-
-    @staticmethod
-    def fetch_table_data(*args, **kwargs) -> TableData:
-        """
-        Mock return some results for tabular.
-        """
-        data = [
-            {
-                "id": 1,
-                "name": "Oli Bob",
-                "progress": 12,
-                "gender": "male",
-                "rating": 1,
-                "col": "red",
-                "dob": "19/02/1984",
-                "car": 1,
-            },
-            {
-                "id": 2,
-                "name": "Mary May",
-                "progress": 1,
-                "gender": "female",
-                "rating": 2,
-                "col": "blue",
-                "dob": "14/05/1982",
-                "car": True,
-            },
-            {
-                "id": 3,
-                "name": "Christine Lobowski",
-                "progress": 42,
-                "gender": "female",
-                "rating": 0,
-                "col": "green",
-                "dob": "22/05/1982",
-                "car": "true",
-            },
-            {
-                "id": 4,
-                "name": "Brendon Philips",
-                "progress": 100,
-                "gender": "male",
-                "rating": 1,
-                "col": "orange",
-                "dob": "01/08/1980",
-            },
-            {
-                "id": 5,
-                "name": "Margret Marmajuke",
-                "progress": 16,
-                "gender": "female",
-                "rating": 5,
-                "col": "yellow",
-                "dob": "31/01/1999",
-            },
-            {
-                "id": 6,
-                "name": "Frank Harbours",
-                "progress": 38,
-                "gender": "male",
-                "rating": 4,
-                "col": "red",
-                "dob": "12/05/1966",
-                "car": 1,
-            },
-        ]
-
-        # data = data * 20
-
-        # searching and sorting params
-        filters = kwargs["filters"]
-        # pagination
-        start = int(filters.get("start", 0))
-        length = int(filters.get("length", 5))
-
-        fields = [
-            "id",
-            "name",
-            "progress",
-            "gender",
-            "rating",
-            "col",
-            "dob",
-            "car",
-        ]
-
-        # filter the data
-        table_serializer = TableSerializer(
-            filters=filters,
-            fields=fields,
-        )
-
-        return table_serializer.serialize(data, start, length)
 
     @staticmethod
     def fetch_scatter_map_data(*args, **kwargs) -> str:

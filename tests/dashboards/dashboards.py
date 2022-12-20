@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from wildcoeus.dashboards import permissions
 from wildcoeus.dashboards.component import Chart, Form, Table, Text
 from wildcoeus.dashboards.component.layout import HR, ComponentLayout, Div
-from wildcoeus.dashboards.component.table import TableData
+from wildcoeus.dashboards.component.table import TableSerializer
 from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
 from wildcoeus.dashboards.forms import DashboardForm
 from wildcoeus.dashboards.registry import registry
@@ -22,13 +22,20 @@ class TestDashboard(Dashboard):
         app_label = "app1"
 
 
+class TestTableSerializer(TableSerializer):
+    class Meta:
+        columns = {"a": "A", "b": "B"}
+
+    @classmethod
+    def get_data(cls, *args, **kwargs):
+        return [{"a": "Value", "b": "Value b"}]
+
+
 class TestComplexDashboard(TestDashboard):
     component_4 = Text(defer=lambda **kwargs: "value")
     component_3 = Text(defer=lambda **kwargs: "value")
     component_5 = Text(value="<div></div>", mark_safe=True)
-    component_6 = Table(
-        value=TableData(data=[{"a": "Value", "b": "Value b"}]), columns=["a", "b"]
-    )
+    component_6 = Table(value=TestTableSerializer.serialize)
     component_7 = Chart(
         value=json.dumps(dict(data=[dict(x=["a"], y=["b"])], layout={}))
     )

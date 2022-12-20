@@ -3,7 +3,6 @@ from typing import Any, Dict, Optional
 
 from celery import shared_task
 
-from wildcoeus.pipelines.runners.celery.runner import Runner
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.registry import pipeline_registry
 
@@ -19,6 +18,8 @@ def run_pipeline(
     """
     Start a specific pipeline's celery Runner.
     """
+    from wildcoeus.pipelines.runners.celery.runner import Runner
+
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     runner = Runner()
     pipeline_cls = pipeline_registry.get_pipeline_class(pipeline_id)

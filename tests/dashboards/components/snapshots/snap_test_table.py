@@ -50,7 +50,7 @@ snapshots[
   
     <script id="data_test" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">null</script>
+  <script id="columns_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
@@ -124,7 +124,7 @@ snapshots[
 
 
   
-  <script id="columns_test" type="application/json">null</script>
+  <script id="columns_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
@@ -211,7 +211,7 @@ snapshots[
   
     <script id="data_test" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">null</script>
+  <script id="columns_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
@@ -287,7 +287,7 @@ snapshots[
   
     <script id="data_test" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">null</script>
+  <script id="columns_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
@@ -395,7 +395,7 @@ snapshots[
   
     <script id="data_test" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">null</script>
+  <script id="columns_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
