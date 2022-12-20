@@ -26,6 +26,9 @@
           }
 
       {% else %}
+          $.ajaxSetup({
+             headers: { "X-CSRFToken": JSON.parse(document.body.getAttribute("hx-headers"))["X-CSRFToken"]}
+          });
           var options = {
               destroy: true,
               scrollX: true,
@@ -39,7 +42,7 @@
               pageLength: {{ component.page_size|default:25 }},
               ajax: {
                   url: "{{ component.get_absolute_url }}",
-                  contentType: "application/json",
+                  type: "POST",
                   dataFilter: function(data){
                     let json = jQuery.parseJSON( data );
                     json.recordsTotal = json.total;

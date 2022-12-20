@@ -4,14 +4,14 @@
   <table id="{{ component.key }}_table" class="{{ component.css_classes }}" style="width:100%">
     <thead>
     {% for column in columns %}
-      <th>{{ column.title }}</th>
+      <th>{{ column.title|safe }}</th>
     {% endfor %}
     </thead>
     <tbody>
     {% for row in rendered_value.data %}
     <tr>
       {% for column in columns %}
-      <td>{{ row|lookup:column.data }}</td>
+      <td>{{ row|lookup:column.data|safe }}</td>
       {% endfor %}
     </tr>
     {% endfor %}

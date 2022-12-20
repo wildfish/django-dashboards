@@ -129,6 +129,9 @@ snapshots[
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
 
       
+          $.ajaxSetup({
+             headers: { "X-CSRFToken": JSON.parse(document.body.getAttribute("hx-headers"))["X-CSRFToken"]}
+          });
           var options = {
               destroy: true,
               scrollX: true,
@@ -142,7 +145,7 @@ snapshots[
               pageLength: 10,
               ajax: {
                   url: "/app1/testdashboard/component/test/",
-                  contentType: "application/json",
+                  type: "POST",
                   dataFilter: function(data){
                     let json = jQuery.parseJSON( data );
                     json.recordsTotal = json.total;

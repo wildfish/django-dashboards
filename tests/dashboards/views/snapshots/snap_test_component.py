@@ -52,3 +52,5 @@ value
 
 
 """
+
+snapshots["test_post__json 1"] = b'"value"'
