@@ -1,5 +1,7 @@
+import tempfile
 from unittest.mock import patch
 
+from django.test.utils import override_settings
 from django.urls import reverse
 
 import pytest
@@ -8,6 +10,7 @@ from pydantic import BaseModel
 
 from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task
 from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.reporters.logging import LoggingReporter
 
 
 pytest_plugins = [
@@ -108,20 +111,38 @@ def test_results_list_queries_pinned(client, staff, django_assert_num_queries):
         client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
 
 
-def test_log_list__tasks_completed(client, staff):
+@pytest.mark.freeze_time("2022-12-20 13:23:55")
+def test_log_list__tasks_completed(client, staff, snapshot):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
-    pl = baker.make_recipe("pipelines.fake_pipeline_log", run_id=pe.run_id, _quantity=3)
-    tl = baker.make_recipe("pipelines.fake_task_log", run_id=pe.run_id, _quantity=3)
+    baker.make_recipe("pipelines.fake_pipeline_log", run_id=pe.run_id, _quantity=3)
+    baker.make_recipe("pipelines.fake_task_log", run_id=pe.run_id, _quantity=3)
 
     client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id]))
 
     assert response.status_code == 286
     assert "logs" in list(response.context_data.keys())
-    assert len(response.context_data["logs"]) == 6
-    assert pl[0].log_message in [x[1] for x in response.context_data["logs"]]
-    assert tl[0].log_message in [x[1] for x in response.context_data["logs"]]
+    snapshot.assert_match(response.context_data["logs"])
+
+
+@pytest.mark.freeze_time("2022-12-20 13:23:55")
+def test_log_list__with_file__tasks_completed(client, staff, snapshot):
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+        expected_content = "Some example text"
+        LoggingReporter._write_log_to_file(pe.run_id, expected_content)
+
+        client.force_login(staff)
+        response = client.get(
+            reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id])
+        )
+
+        assert response.status_code == 286
+        assert (
+            response.context_data["logs"]
+            == f"[20/Dec/2022 13:23:55]: {expected_content}"
+        )
 
 
 def test_log_list__tasks_not_completed(client, staff):

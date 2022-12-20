@@ -1,14 +1,14 @@
 import uuid
 
 from django.contrib.auth.mixins import AccessMixin
-from django.db.models import Avg, Count, F, Max
+from django.db.models import Avg, Count, F, Max, Q
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
-from wildcoeus.pipelines import config
+from wildcoeus.pipelines import PipelineTaskStatus, config
 from wildcoeus.pipelines.forms import PipelineStartForm
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.models import (
@@ -21,6 +21,8 @@ from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
+from wildcoeus.pipelines.status import FAILED_STATUES
+from wildcoeus.pipelines.storage import get_log_path
 
 
 class IsStaffRequiredMixin(AccessMixin):
@@ -38,10 +40,20 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         qs = (
             PipelineExecution.objects.values("pipeline_id")
-            .annotate(total=Count("pipeline_id"), last_ran=Max("started"))
+            .annotate(
+                total_success=Count(
+                    "pipeline_id", filter=Q(status=PipelineTaskStatus.DONE.value)
+                ),
+                total_failed=Count(
+                    "pipeline_id",
+                    filter=Q(status__in=FAILED_STATUES),
+                ),
+                last_ran=Max("started"),
+            )
             .order_by("pipeline_id")
         )
-        runs = {x["pipeline_id"]: x["total"] for x in qs}
+        runs = {x["pipeline_id"]: x["total_success"] for x in qs}
+        failed = {x["pipeline_id"]: x["total_failed"] for x in qs}
         last_ran = {x["pipeline_id"]: x["last_ran"] for x in qs}
 
         # todo: Wrong as it needs to be grouped on run_id when doing the average
@@ -56,6 +68,7 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
         return {
             **super().get_context_data(**kwargs),
             "runs": runs,
+            "failed": failed,
             "last_ran": last_ran,
             "average_runtime": average_runtime,
             "pipelines": registry.get_all_registered_pipelines(),
@@ -165,6 +178,35 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
             == 0
         )
 
+    def _get_orm_logs(self, run_id):
+        logs = [
+            (log.created, log.log_message)
+            for log in PipelineLog.objects.filter(run_id=run_id)
+        ]
+        logs.extend(
+            [
+                (log.created, log.log_message)
+                for log in TaskLog.objects.filter(run_id=run_id)
+            ]
+        )
+        logs.sort(key=lambda x: x[0])
+
+        return "\n".join(
+            [f"[{log[0].strftime('%d/%b/%Y %H:%M:%S')}]: {log[1]}" for log in logs]
+        )
+
+    def get_logs(self, run_id):
+        fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
+        path = get_log_path(run_id)
+
+        if fs.exists(path):
+            with fs.open(path, "r") as f:
+                logs = f.read()
+        else:
+            logs = self._get_orm_logs(run_id=run_id)
+
+        return logs
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         #  286 status stops htmx from polling
@@ -172,21 +214,9 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
         return response
 
     def get_context_data(self, **kwargs):
-        logs = [
-            (log.created, log.log_message)
-            for log in PipelineLog.objects.filter(run_id=kwargs["run_id"])
-        ]
-        logs.extend(
-            [
-                (log.created, log.log_message)
-                for log in TaskLog.objects.filter(run_id=kwargs["run_id"])
-            ]
-        )
-        logs.sort(key=lambda x: x[0])
-
         return {
             **super().get_context_data(**kwargs),
-            "logs": logs,
+            "logs": self.get_logs(kwargs["run_id"]),
         }
 
 

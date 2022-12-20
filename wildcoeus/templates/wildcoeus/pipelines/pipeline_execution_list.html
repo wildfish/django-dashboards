@@ -18,7 +18,7 @@
   </thead>
   <tbody>
     {% for object in object_list %}
-      <tr>
+      <tr {% if object.failed %}class="result-table table-danger"{% endif %}>
         <td>
           <a href="{% url "wildcoeus.pipelines:results" object.run_id %}">{{ object.pipeline_id }}</a>
           <p><small>- {{ object.run_id }}</small></p>

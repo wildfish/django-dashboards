@@ -1,7 +1,11 @@
 from typing import Any, Optional
 
-from wildcoeus.pipelines import PipelineReporter
+from django.core.files.base import ContentFile
+from django.utils.timezone import now
+
+from wildcoeus.pipelines import PipelineReporter, config
 from wildcoeus.pipelines.log import logger
+from wildcoeus.pipelines.storage import get_log_path
 
 
 class LoggingReporter(PipelineReporter):
@@ -29,9 +33,31 @@ class LoggingReporter(PipelineReporter):
         if pipeline_id:
             message = " | ".join([m for m in messages if m])
             logger.info(f"Pipeline {pipeline_id} changed to state {status}: {message}")
+            self._write_log_to_file(
+                run_id, f"Pipeline {pipeline_id} changed to state {status}: {message}\n"
+            )
         else:
             messages.append(task_object_msg)
             message = " | ".join([m for m in messages if m])
             logger.info(
                 f"Task {pipeline_task} ({task_id}) changed to state {status}: {message}"
             )
+            self._write_log_to_file(
+                run_id,
+                f"Task {pipeline_task} ({task_id}) changed to state {status}: {message}\n",
+            )
+
+    @classmethod
+    def _write_log_to_file(cls, run_id: str, content: str):
+        fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
+        path = get_log_path(run_id)
+        d = now().strftime("%d/%b/%Y %H:%M:%S")
+        content = f"[{d}]: {content}"
+
+        if not fs.exists(path):
+            fs.save(path, ContentFile(content))
+        else:
+            file = fs.open(path, "a+")
+            file.write(content)
+            fs.save(path, file)
+            file.close()
