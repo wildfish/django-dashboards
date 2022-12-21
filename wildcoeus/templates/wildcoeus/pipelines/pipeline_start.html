@@ -7,8 +7,14 @@
 {% endblock breadcrumbs %}
 {% block content %}
 
-  <p>{% if form.fields %}Fill in any required data and {% endif %}press Start to run pipline</p>
+  <p>The following tasks will be ran:</p>
+  <ol>
+  {% for item in tasks %}
+    <li>{{ item.0 }}: {{ item.1.title }}</li>
+  {% endfor %}
+  </ol>
 
+  <p>{% if form.fields %}Fill in any required data and {% endif %}press Start to run the pipline.</p>
   <form method="post">
   {% csrf_token %}
     {{ form.as_p }}

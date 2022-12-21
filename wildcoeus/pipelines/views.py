@@ -96,9 +96,11 @@ class PipelineStartView(IsStaffRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         pipeline_cls = pipeline_registry.get_pipeline_class(self.kwargs["slug"])
+        tasks = list(pipeline_cls.tasks.items())
         return {
             **super().get_context_data(**kwargs),
             "pipeline": pipeline_cls,
+            "tasks": tasks,
         }
 
     def get_form_kwargs(self):

@@ -10,3 +10,5 @@ Pipelines
    :maxdepth: 1
    :caption: Contents:
 
+   howto/quickstart.rst
+
