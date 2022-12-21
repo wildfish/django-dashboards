@@ -49,7 +49,8 @@ class DashboardType(type):
         # Look for an application configuration to attach the model to.
         app_config = apps.get_containing_app_config(module)
 
-        if app_config is None:
+        meta_app_label = getattr(meta, "app_label", None)
+        if app_config is None and meta_app_label is None:
             if name not in (
                 "ModelDashboard",
                 "Dashboard",
@@ -61,7 +62,9 @@ class DashboardType(type):
                     "INSTALLED_APPS." % (module, name)
                 )
         else:
-            dashboard_class._meta.app_label = app_config.label
+            dashboard_class._meta.app_label = (
+                app_config.label if app_config else meta_app_label
+            )
 
         if base_meta:
             if not hasattr(meta, "name"):
@@ -115,6 +118,7 @@ class Dashboard(metaclass=DashboardType):
         permission_classes: Optional[List[BasePermission]] = None
         template_name: Optional[str] = None
         model = None
+        app_label = "dashboards"
         lookup_kwarg: str = "lookup"  # url parameter name
         lookup_field: str = "pk"  # model field
 

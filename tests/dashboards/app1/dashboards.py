@@ -9,6 +9,7 @@ from wildcoeus.dashboards.component.layout import HR, ComponentLayout, Div
 from wildcoeus.dashboards.component.table import TableSerializer
 from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
 from wildcoeus.dashboards.forms import DashboardForm
+from wildcoeus.dashboards.registry import registry
 
 
 class TestDashboard(Dashboard):
@@ -112,3 +113,12 @@ class TestDashboardWithLayout(TestDashboard):
 
 class TestNoMetaDashboard(Dashboard):
     component_1 = Text(value="value")
+
+
+registry.register(TestDashboard)
+registry.register(TestFilterDashboard)
+registry.register(TestAdminDashboard)
+registry.register(TestComplexDashboard)
+registry.register(TestDashboardWithLayout)
+registry.register(TestModelDashboard)
+registry.register(TestNoMetaDashboard)

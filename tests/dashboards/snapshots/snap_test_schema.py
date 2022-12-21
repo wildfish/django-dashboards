@@ -246,6 +246,17 @@ snapshots["test_view__dashboards 1"] = [
             },
         ],
     },
+    {
+        "Meta": {"name": "TestNoMetaDashboard", "slug": "testnometadashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+            }
+        ],
+    },
 ]
 
 snapshots["test_view__dashboards__no_permission 1"] = [
@@ -398,6 +409,17 @@ snapshots["test_view__dashboards__no_permission 1"] = [
                 "renderType": "Text",
                 "value": "value from callable",
             },
+        ],
+    },
+    {
+        "Meta": {"name": "TestNoMetaDashboard", "slug": "testnometadashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+            }
         ],
     },
 ]
@@ -563,6 +585,17 @@ snapshots["test_view__dashboards__permission 1"] = [
                 "renderType": "Text",
                 "value": "value from callable",
             },
+        ],
+    },
+    {
+        "Meta": {"name": "TestNoMetaDashboard", "slug": "testnometadashboard"},
+        "components": [
+            {
+                "isDeferred": False,
+                "key": "component_1",
+                "renderType": "Text",
+                "value": "value",
+            }
         ],
     },
 ]

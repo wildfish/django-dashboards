@@ -51,7 +51,7 @@ def test_get_by_app_label(dashboard):
     registry.register(ExtraDashboard)
 
     assert registry.get_by_app_label("new") == [ExtraDashboard]
-    assert len(registry.get_by_app_label("app1")) == 6  # the fixture created ones
+    assert len(registry.get_by_app_label("app1")) == 7  # the fixture created ones
 
 
 def test_get_by_slug(dashboard):
