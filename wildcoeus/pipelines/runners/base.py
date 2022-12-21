@@ -108,40 +108,6 @@ class PipelineRunner:
         reporter: PipelineReporter,
         pipeline_object: Optional[Any] = None,
     ):
-        """
-        Start a pipeline, if this is a standard Pipeline, start_runner is called as normal.
-
-        If this is a ModelPipeline, we run against each instance in the queryset.
-
-        TODO rate limiter on iterators.
-        """
-        logger.debug("runner.start triggered")
-
-        # pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
-        # iterator = pipeline.get_iterator()
-        #
-        # if iterator:
-        #     runs = []
-        #     for pipeline_object in iterator:
-        #         run = self.start_runner(
-        #             pipeline_id=pipeline_id,
-        #             run_id=run_id,
-        #             tasks=tasks,
-        #             input_data=input_data,
-        #             reporter=reporter,
-        #             pipeline_object=pipeline_object,
-        #         )
-        #         runs.append(run)
-        #     return runs
-        # else:
-        #     return self.start_runner(
-        #         pipeline_id=pipeline_id,
-        #         run_id=run_id,
-        #         tasks=tasks,
-        #         input_data=input_data,
-        #         reporter=reporter,
-        #     )
-
         return self.start_runner(
             pipeline_id=pipeline_id,
             run_id=run_id,
