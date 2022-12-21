@@ -12,6 +12,7 @@ django_eventstream
 django_silk
 faker
 httpx
+model_bakery
 plotly
 psutil
 psycopg2

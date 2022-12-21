@@ -6,7 +6,7 @@
   {% if not component.is_deferred %}
     {{ rendered_value|json_script:data_key }}
   {% endif %}
-  {{ component.columns|json_script:columns_key }}
+  {{ rendered_value.columns_datatables|json_script:columns_key }}
   <script type="module">
       var columns_{{ component.key }} = JSON.parse(document.getElementById('{{ columns_key }}').textContent);
 
@@ -26,6 +26,9 @@
           }
 
       {% else %}
+          $.ajaxSetup({
+             headers: { "X-CSRFToken": JSON.parse(document.body.getAttribute("hx-headers"))["X-CSRFToken"]}
+          });
           var options = {
               destroy: true,
               scrollX: true,
@@ -39,7 +42,7 @@
               pageLength: {{ component.page_size|default:25 }},
               ajax: {
                   url: "{{ component.get_absolute_url }}",
-                  contentType: "application/json",
+                  type: "POST",
                   dataFilter: function(data){
                     let json = jQuery.parseJSON( data );
                     json.recordsTotal = json.total;

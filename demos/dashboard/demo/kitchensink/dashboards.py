@@ -8,6 +8,7 @@ import psutil
 from demo.kitchensink.components import SharedComponent, SSEChart, SSEStat
 from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
+from demo.kitchensink.tables import ExampleTableSerializer
 from faker import Faker
 
 from wildcoeus.dashboards import config
@@ -31,7 +32,6 @@ from wildcoeus.dashboards.component.layout import (
     Tab,
     TabContainer,
 )
-from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.component.text import StatData
 from wildcoeus.dashboards.dashboard import Dashboard
 from wildcoeus.dashboards.permissions import IsAdminUser
@@ -114,48 +114,11 @@ class DemoDashboard(Dashboard):
     )
     table_example = Table(
         page_size=5,
-        columns=[
-            {"data": "id", "title": "ID"},
-            {"data": "name", "title": "Name"},
-            {"data": "progress", "title": "Progress"},
-            {"data": "gender", "title": "Gender"},
-            {"data": "dob", "title": "DOB"},
-        ],
-        defer=DashboardData.fetch_table_data,
+        defer=ExampleTableSerializer.serialize,
         grid_css_classes=Grid.TWO.value,
     )
     table_example_not_deferred = BasicTable(
-        columns=[
-            {"data": "id", "title": "ID"},
-            {"data": "name", "title": "Name"},
-            {"data": "progress", "title": "Progress"},
-            {"data": "gender", "title": "Gender"},
-            {"data": "dob", "title": "DOB"},
-        ],
-        value=TableData(
-            data=[
-                {
-                    "id": 1,
-                    "name": "Oli Bob",
-                    "progress": 12,
-                    "gender": "male",
-                    "rating": 1,
-                    "col": "red",
-                    "dob": "19/02/1984",
-                    "car": 1,
-                },
-                {
-                    "id": 2,
-                    "name": "Bob Oli",
-                    "progress": 2,
-                    "gender": "male",
-                    "rating": 5,
-                    "col": "blue",
-                    "dob": "21/04/1995",
-                    "car": 0,
-                },
-            ],
-        ),
+        value=ExampleTableSerializer.serialize,
         grid_css_classes=Grid.TWO.value,
     )
     scatter_map_example = Map(
@@ -183,7 +146,7 @@ class DemoDashboardWithLayout(DemoDashboard):
         defer=lambda **kwargs: "some calculated text", grid_css_classes=Grid.THREE.value
     )
     table_example = Table(
-        defer=DashboardData.fetch_table_data, grid_css_classes=Grid.ONE.value
+        defer=ExampleTableSerializer.serialize, grid_css_classes=Grid.ONE.value
     )
 
     class Meta:

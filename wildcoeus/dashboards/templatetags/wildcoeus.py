@@ -39,7 +39,7 @@ def dashboard_urls(app_label):
     }
 
 
-@register.filter(name="lookup")
+@register.filter()
 def lookup(value, arg):
     return value.get(arg)
 

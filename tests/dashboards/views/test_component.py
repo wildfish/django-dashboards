@@ -38,6 +38,33 @@ def test_get__json(rf, dashboard, snapshot):
     snapshot.assert_match(response.content)
 
 
+def test_post(rf, dashboard):
+    request = rf.get("/")
+    view = ComponentView(dashboard_class=dashboard)
+    view.setup(request=request, component="component_1")
+    response = view.post(request, {})
+
+    assert response.status_code == 200
+    assert list(response.context_data.keys()) == ["component", "dashboard", "view"]
+    assert isinstance(response.context_data["dashboard"], dashboard)
+
+
+def test_post__json(rf, dashboard, snapshot):
+    request = rf.get("/app1/TestDashboard/component_2/")
+    request.htmx = False
+    request.headers = {"x-requested-with": "XMLHttpRequest"}
+    view = ComponentView(dashboard_class=dashboard)
+    view.setup(
+        request,
+        component="component_2",
+    )
+    response = view.post(request, {})
+
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "application/json"
+    snapshot.assert_match(response.content)
+
+
 def test_get_template_names__partial(rf, dashboard):
     view = ComponentView(dashboard_class=dashboard)
     view.setup(rf.get("/app1/TestDashboard/component_1/"))

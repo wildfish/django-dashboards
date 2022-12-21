@@ -65,3 +65,6 @@ class AsyncComponentView(ComponentView):
         return HttpResponse(
             "Async<br/>" + "<hr/>".join([str(r.status_code) for r in responses])
         )
+
+    async def post(self, *args, **kwargs):
+        return self.get(*args, **kwargs)

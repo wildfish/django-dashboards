@@ -85,7 +85,9 @@ class ComponentView(DashboardObjectMixin, TemplateView):
         component = self.get_partial_component(dashboard)
 
         if self.is_ajax() and component:
-            filters = request.GET.dict()
+            filters = (
+                request.GET.dict() if request.method == "GET" else request.POST.dict()
+            )
             # Return json, calling the deferred value.
             return HttpResponse(
                 json.dumps(
@@ -102,6 +104,12 @@ class ComponentView(DashboardObjectMixin, TemplateView):
             )
 
             return self.render_to_response(context)
+
+    def post(self, *args, **kwargs):
+        """
+        Allow post, for Ajax post requests i.e post based filtered
+        """
+        return self.get(*args, **kwargs)
 
     def get_partial_component(self, dashboard):
         for component in dashboard.get_components():

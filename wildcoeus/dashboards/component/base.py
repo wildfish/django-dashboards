@@ -112,7 +112,9 @@ class Component:
     ) -> str:
         request = context.get("request")
         if request:
-            filters = request.GET.dict()
+            filters = (
+                request.GET.dict() if request.method == "GET" else request.POST.dict()
+            )
         else:
             filters = {}
 

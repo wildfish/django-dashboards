@@ -201,10 +201,15 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_6",
                 "renderType": "Table",
                 "value": {
+                    "columns": {"a": "A", "b": "B"},
+                    "columns_datatables": [
+                        {"data": "a", "title": "A"},
+                        {"data": "b", "title": "B"},
+                    ],
                     "data": [{"a": "Value", "b": "Value b"}],
-                    "draw": 0,
-                    "filtered": 0,
-                    "total": 0,
+                    "draw": 1,
+                    "filtered": 1,
+                    "total": 1,
                 },
             },
             {
@@ -350,10 +355,15 @@ snapshots["test_view__dashboards__no_permission 1"] = [
                 "key": "component_6",
                 "renderType": "Table",
                 "value": {
+                    "columns": {"a": "A", "b": "B"},
+                    "columns_datatables": [
+                        {"data": "a", "title": "A"},
+                        {"data": "b", "title": "B"},
+                    ],
                     "data": [{"a": "Value", "b": "Value b"}],
-                    "draw": 0,
-                    "filtered": 0,
-                    "total": 0,
+                    "draw": 1,
+                    "filtered": 1,
+                    "total": 1,
                 },
             },
             {
@@ -510,10 +520,15 @@ snapshots["test_view__dashboards__permission 1"] = [
                 "key": "component_6",
                 "renderType": "Table",
                 "value": {
+                    "columns": {"a": "A", "b": "B"},
+                    "columns_datatables": [
+                        {"data": "a", "title": "A"},
+                        {"data": "b", "title": "B"},
+                    ],
                     "data": [{"a": "Value", "b": "Value b"}],
-                    "draw": 0,
-                    "filtered": 0,
-                    "total": 0,
+                    "draw": 1,
+                    "filtered": 1,
+                    "total": 1,
                 },
             },
             {

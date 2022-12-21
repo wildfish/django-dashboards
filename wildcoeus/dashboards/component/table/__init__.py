@@ -1,5 +1,5 @@
-from .serializers import TableSerializer
-from .table import BasicTable, Table, TableData
+from .serializers import SerializedTable, TableSerializer
+from .table import BasicTable, Table
 
 
-__all__ = ["BasicTable", "Table", "TableData", "TableSerializer"]
+__all__ = ["BasicTable", "Table", "TableSerializer", "SerializedTable"]

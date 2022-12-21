@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.forms import model_to_dict
 from django.template import Context
 
@@ -10,14 +11,57 @@ import pytest
 from tests.dashboards.fakes import fake_user
 from tests.utils import render_component_test
 from wildcoeus.dashboards.component import BasicTable, Table
-from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.component.table.mixins import TableFilterMixin, TableSortMixin
-from wildcoeus.dashboards.component.table.serializers import TableSerializer
+from wildcoeus.dashboards.component.table.serializers import (
+    SerializedTable,
+    TableSerializer,
+)
 
 
 pytest_plugins = [
     "tests.dashboards.fixtures",
 ]
+
+
+@pytest.fixture()
+def test_user_serializer__qs():
+    class TestTableSerializer(TableSerializer):
+        class Meta:
+            columns = {"username": "Username", "first_name": "First"}
+            queryset = User.objects.all()
+
+        @staticmethod
+        def get_first_name_value(obj):
+            return obj.first_name.upper()
+
+    return TestTableSerializer
+
+
+@pytest.fixture()
+def test_user_serializer__list():
+    class TestTableSerializer(TableSerializer):
+        class Meta:
+            columns = {"username": "Username", "first_name": "First"}
+
+        @classmethod
+        def get_data(cls, *args, **kwargs):
+            return [model_to_dict(u) for u in User.objects.all()]
+
+        @staticmethod
+        def get_first_name_value(obj):
+            return obj["first_name"].upper()
+
+    return TestTableSerializer
+
+
+@pytest.fixture()
+def test_user_serializer__model():
+    class TestTableSerializer(TableSerializer):
+        class Meta:
+            columns = {"username": "Username", "first_name": "First"}
+            model = User
+
+    return TestTableSerializer
 
 
 @pytest.mark.parametrize("component_class", [Table, BasicTable])
@@ -52,9 +96,12 @@ def test_filter__table_queryset__global__one_field(dashboard):
     data = User.objects.all()
     expected = [abc]
 
-    result = TableSerializer(
-        filters={"search[value]": "abc"}, fields=["username"]
-    ).filter(data)
+    class TestTableSerializer(TableSerializer):
+        class Meta:
+            columns = {"username": "Username"}
+            queryset = User.objects.all()
+
+    result = TestTableSerializer.filter(data, {"search[value]": "abc"})
 
     assert list(result) == expected
 
@@ -67,131 +114,127 @@ def test_filter__table_list__global__one_field(dashboard):
     data = map(model_to_dict, User.objects.all())
     expected = list(map(model_to_dict, [abc]))
 
-    result = TableSerializer(
-        filters={"search[value]": "abc"}, fields=["username"]
-    ).filter(data)
+    class TestTableSerializer(TableSerializer):
+        class Meta:
+            columns = {"username": "Username"}
+
+    result = TestTableSerializer.filter(data, {"search[value]": "abc"})
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-def test_filter__table_queryset__global__two_field(dashboard):
+def test_filter__table_queryset__global__two_field(dashboard, test_user_serializer__qs):
     abc = fake_user(username="abc")
     xyz = fake_user(username="xyz", first_name="abc")
 
     data = User.objects.all()
     expected = [abc, xyz]
 
-    result = TableSerializer(
-        filters={"search[value]": "abc"}, fields=["username", "first_name"]
-    ).filter(data)
+    result = test_user_serializer__qs.filter(data, {"search[value]": "abc"})
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-def test_filter__table_list__global__two_field(dashboard):
+def test_filter__table_list__global__two_field(dashboard, test_user_serializer__list):
     abc = fake_user(username="abc")
     xyz = fake_user(username="xyz", first_name="abc")
 
     data = map(model_to_dict, User.objects.all())
     expected = list(map(model_to_dict, [abc, xyz]))
 
-    result = TableSerializer(
-        filters={"search[value]": "abc"}, fields=["username", "first_name"]
-    ).filter(data)
+    result = test_user_serializer__list.filter(data, {"search[value]": "abc"})
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-def test_filter__table_queryset__individual__find_on_username(dashboard):
+def test_filter__table_queryset__individual__find_on_username(
+    dashboard, test_user_serializer__qs
+):
     abc = fake_user(username="abc")
     fake_user(username="xyz", first_name="abc")
 
     data = User.objects.all()
     expected = [abc]
 
-    result = TableSerializer(
-        filters={"columns[0][search][value]": "abc"}, fields=["username", "first_name"]
-    ).filter(data)
+    result = test_user_serializer__qs.filter(data, {"columns[0][search][value]": "abc"})
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-def test_filter__table_list__individual__find_on_username(dashboard):
+def test_filter__table_list__individual__find_on_username(
+    dashboard, test_user_serializer__list
+):
     abc = fake_user(username="abc")
     fake_user(username="xyz", first_name="abc")
 
     data = map(model_to_dict, User.objects.all())
     expected = list(map(model_to_dict, [abc]))
 
-    result = TableSerializer(
-        filters={"columns[0][search][value]": "abc"}, fields=["username", "first_name"]
-    ).filter(data)
+    result = test_user_serializer__list.filter(
+        data, {"columns[0][search][value]": "abc"}
+    )
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-def test_filter__table_queryset__individual__find_on_first_name(dashboard):
+def test_filter__table_queryset__individual__find_on_first_name(
+    dashboard, test_user_serializer__qs
+):
     xyz = fake_user(username="xyz", first_name="abc")
 
     data = User.objects.all()
     expected = [xyz]
-    # if filter_class == TableFilter:
-    #     # as if a list of data instead
-    #     data = map(model_to_dict, data)
-    #     expected = list(map(model_to_dict, expected))
 
-    result = TableSerializer(
-        filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
-    ).filter(data)
+    result = test_user_serializer__qs.filter(data, {"columns[1][search][value]": "abc"})
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-def test_filter__table_list__individual__find_on_first_name(dashboard):
+def test_filter__table_list__individual__find_on_first_name(
+    dashboard, test_user_serializer__list
+):
     xyz = fake_user(username="xyz", first_name="abc")
 
     data = map(model_to_dict, User.objects.all())
     expected = list(map(model_to_dict, [xyz]))
 
-    result = TableSerializer(
-        filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
-    ).filter(data)
+    result = test_user_serializer__list.filter(
+        data, {"columns[1][search][value]": "abc"}
+    )
 
     assert list(result) == expected
 
 
 @pytest.mark.django_db
-def test_count__table_list(dashboard):
+def test_count__table_list(dashboard, test_user_serializer__list):
     fake_user(username="xyz", first_name="abc")
 
     data = list(map(model_to_dict, User.objects.all()))
     expected = User.objects.count()
 
-    result = TableSerializer(
-        filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
-    ).count(data)
+    result = test_user_serializer__list.filter(
+        data, {"columns[1][search][value]": "abc"}
+    )
 
-    assert result == expected
+    assert len(result) == expected
 
 
 @pytest.mark.django_db
-def test_count__table_queryset(dashboard):
+def test_count__table_queryset(dashboard, test_user_serializer__qs):
     fake_user(username="xyz", first_name="abc")
 
     data = User.objects.all()
     expected = data.count()
 
-    result = TableSerializer(
-        filters={"columns[1][search][value]": "abc"}, fields=["username", "first_name"]
-    ).count(data)
+    result = test_user_serializer__qs.filter(data, {"columns[1][search][value]": "abc"})
 
-    assert result == expected
+    assert result.count() == expected
 
 
 @pytest.mark.django_db
@@ -217,7 +260,9 @@ def test_count__table_queryset(dashboard):
         ),
     ],
 )
-def test_sort__table_queryset(filters, force_lower, expected_order):
+def test_sort__table_queryset(
+    filters, force_lower, expected_order, test_user_serializer__qs
+):
     one = fake_user(username="abc", first_name="123")
     two = fake_user(username="xyz", first_name="345")
     three = fake_user(username="CBA", first_name="012")
@@ -225,9 +270,9 @@ def test_sort__table_queryset(filters, force_lower, expected_order):
     data = User.objects.all()
     users = [one, two, three]
 
-    result = TableSerializer(
-        filters=filters, fields=["username", "first_name"], force_lower=force_lower
-    ).sort(data)
+    test_user_serializer__qs.Meta.force_lower = force_lower
+
+    result = test_user_serializer__qs.sort(data, filters)
 
     assert list(result) == [users[i] for i in expected_order]
 
@@ -255,7 +300,9 @@ def test_sort__table_queryset(filters, force_lower, expected_order):
         ),
     ],
 )
-def test_sort__table_list(filters, force_lower, expected_order):
+def test_sort__table_list(
+    filters, force_lower, expected_order, test_user_serializer__list
+):
     one = fake_user(username="abc", first_name="123")
     two = fake_user(username="xyz", first_name="345")
     three = fake_user(username="CBA", first_name="012")
@@ -263,27 +310,25 @@ def test_sort__table_list(filters, force_lower, expected_order):
     data = map(model_to_dict, User.objects.all())
     users = list(map(model_to_dict, [one, two, three]))
 
-    result = TableSerializer(
-        filters=filters, fields=["username", "first_name"], force_lower=force_lower
-    ).sort(data)
+    test_user_serializer__list.Meta.force_lower = force_lower
+
+    result = test_user_serializer__list.sort(data, filters)
 
     assert list(result) == [users[i] for i in expected_order]
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("length", [5, 10, -1])
-def test_serializer__queryset(length):
+def test_serializer__queryset(length, test_user_serializer__qs):
     for u in range(0, 11):
         fake_user()
 
     data = User.objects.all()
-    result = TableSerializer(
-        fields=["username", "first_name", "is_staff", "last_login", "date_joined"],
-        filters={},
-    ).serialize(data, start=0, length=length)
+
+    result = test_user_serializer__qs.serialize(filters={"length": length})
 
     expected_length = length if length > 0 else data.count()
-    assert isinstance(result, TableData)
+    assert isinstance(result, SerializedTable)
     assert len(result.data) == expected_length
     assert result.draw == 1
     assert result.total == 11
@@ -292,18 +337,16 @@ def test_serializer__queryset(length):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("length", [5, 10, -1])
-def test_serializer__list(length):
+def test_serializer__model(length, test_user_serializer__model):
     for u in range(0, 11):
         fake_user()
 
-    data = list(User.objects.all())
-    result = TableSerializer(
-        fields=["username", "first_name", "is_staff", "last_login", "date_joined"],
-        filters={},
-    ).serialize(data, start=0, length=length)
+    data = User.objects.all()
 
-    expected_length = length if length > 0 else len(data)
-    assert isinstance(result, TableData)
+    result = test_user_serializer__model.serialize(filters={"length": length})
+
+    expected_length = length if length > 0 else data.count()
+    assert isinstance(result, SerializedTable)
     assert len(result.data) == expected_length
     assert result.draw == 1
     assert result.total == 11
@@ -311,26 +354,57 @@ def test_serializer__list(length):
 
 
 @pytest.mark.django_db
-def test_serializer__sort_and_filter_applied():
+@pytest.mark.parametrize("length", [5, 10, -1])
+def test_serializer__list(length, test_user_serializer__list):
+    for u in range(0, 11):
+        fake_user()
+
+    data = list(User.objects.all())
+
+    result = test_user_serializer__list.serialize(filters={"length": length})
+
+    expected_length = length if length > 0 else len(data)
+    assert isinstance(result, SerializedTable)
+    assert len(result.data) == expected_length
+    assert result.draw == 1
+    assert result.total == 11
+    assert result.filtered == 11
+
+
+@pytest.mark.django_db
+def test_serializer__value_mapping__queryset(test_user_serializer__qs):
+    first_names = []
+    for u in range(0, 11):
+        user = fake_user(first_name=f"name {u}")
+        first_names.append(user.first_name.upper())
+
+    result = test_user_serializer__qs.serialize()
+
+    assert [r["first_name"] for r in result.data] == first_names[:5]
+
+
+@pytest.mark.django_db
+def test_serializer__value_mapping__list(test_user_serializer__list):
+    first_names = []
+    for u in range(0, 11):
+        user = fake_user(first_name=f"name {u}")
+        first_names.append(user.first_name.upper())
+
+    result = test_user_serializer__list.serialize()
+
+    assert [r["first_name"] for r in result.data] == first_names[:5]
+
+
+@pytest.mark.django_db
+def test_serializer__sort_and_filter_applied(test_user_serializer__qs):
     for u in range(0, 11):
         fake_user(username=str(u))
 
-    data = User.objects.all()
-
     with patch.object(TableSortMixin, "sort") as mock_sort:
         with patch.object(TableFilterMixin, "filter") as mock_filter:
-            result = TableSerializer(
-                fields=[
-                    "username",
-                    "first_name",
-                    "is_staff",
-                    "last_login",
-                    "date_joined",
-                ],
-                filters={"order[0][column]": 0, "order[0][dir]": "desc"},
-            ).serialize(data, start=0, length=5)
+            result = test_user_serializer__qs.serialize()
 
-    assert isinstance(result, TableData)
+    assert isinstance(result, SerializedTable)
     assert mock_sort.call_count == 1
     assert mock_filter.call_count == 1
 
@@ -343,30 +417,35 @@ def test_serializer__related_field():
         content_type=ContentType.objects.get_for_model(User),
     )
 
-    data = Permission.objects.filter(codename="test")
-    result = TableSerializer(
-        fields=["name", "content_type__name"],
-        filters={},
-    ).serialize(data=data, start=0, length=5)
+    class TestTableSerializer(TableSerializer):
+        class Meta:
+            columns = {"name": "name", "content_type__name": "ct_name"}
 
-    assert isinstance(result, TableData)
+        @classmethod
+        def get_data(cls, *args, **kwargs):
+            return Permission.objects.filter(codename="test")
+
+    result = TestTableSerializer.serialize()
+
+    assert isinstance(result, SerializedTable)
     assert result.data[0]["content_type__name"] == "user"
 
 
 @pytest.mark.django_db
 def test_serializer__invalid_fields():
-    data = User.objects.all()
-    result = TableSerializer(
-        fields=["x", "y"],
-        filters={},
-    ).serialize(data=data, start=0, length=5)
+    class TestTableSerializer(TableSerializer):
+        class Meta:
+            columns = {"x": "name", "y": "ct_name"}
+            model = User
 
-    assert isinstance(result, TableData)
+    result = TestTableSerializer.serialize()
+
+    assert isinstance(result, SerializedTable)
     assert len(result.data) == 0
 
 
 @pytest.mark.django_db
-def test_serializer__first_as_absolute_url():
+def test_serializer__first_as_absolute_url(test_user_serializer__qs):
     fake_user(username="abc", first_name="one")
     fake_user(username="def", first_name="two")
 
@@ -378,15 +457,22 @@ def test_serializer__first_as_absolute_url():
             app_label = "test"
             proxy = True
 
-    data = ProxyUser.objects.all()
-    result = TableSerializer(
-        fields=["username", "first_name"],
-        filters={},
-        first_as_absolute_url=True,
-    ).serialize(data=data, start=0, length=5)
+    test_user_serializer__qs.Meta.queryset = ProxyUser.objects.all()
+    test_user_serializer__qs.Meta.first_as_absolute_url = True
 
-    assert isinstance(result, TableData)
+    result = test_user_serializer__qs.serialize()
+
+    assert isinstance(result, SerializedTable)
     assert result.data == [
-        {"username": '<a href="/test/abc">abc</a>', "first_name": "one"},
-        {"username": '<a href="/test/def">def</a>', "first_name": "two"},
+        {"username": '<a href="/test/abc">abc</a>', "first_name": "ONE"},
+        {"username": '<a href="/test/def">def</a>', "first_name": "TWO"},
     ]
+
+
+@pytest.mark.django_db
+def test_no_columns():
+    with pytest.raises(ImproperlyConfigured):
+
+        class TestTableSerializer(TableSerializer):
+            class Meta:
+                model = User

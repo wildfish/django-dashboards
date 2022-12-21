@@ -6,7 +6,6 @@ from django.utils.safestring import mark_safe
 
 from demo.vehicle.models import Data, Parameter, Vehicle
 
-from wildcoeus.dashboards.component.table import TableData
 from wildcoeus.dashboards.component.text import StatData
 
 
@@ -71,27 +70,6 @@ class VehicleData:
         return StatData(
             text=str(qs.requires_service().count()),
             sub_text="REQUIRES SERVICE",
-        )
-
-    @staticmethod
-    def fetch_vehicles(request, **kwargs):
-        def yes_no(d):
-            return "Yes" if d else "No"
-
-        filters = kwargs.get("filters") or {}
-        qs = VehicleData.get_queryset(filters)
-
-        return TableData(
-            data=[
-                {
-                    "Reg": v.number_plate,  # f"<a href='?number_plate={v.number_plate}'>{v.number_plate}</a>",
-                    "Type": v.get_type_display(),
-                    "In Use": yes_no(v.in_use),
-                    "Available": yes_no(v.available),
-                    "Last Job": str(v.last_job_date or "-"),
-                }
-                for v in qs
-            ],
         )
 
     @staticmethod
