@@ -20,7 +20,7 @@
     {% if image_url %}
         <img class="card-img-top" src="{{image_url}}" alt="{{ element_id }}">
     {% endif %}
-    <div class="card-body{% if heading %} pt-0{% endif %}">
+    <div class="card-body{% if heading %} card-heading{% endif %}">
       {{ components }}
     </div>
     {% if footer %}

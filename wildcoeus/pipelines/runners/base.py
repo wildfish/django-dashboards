@@ -2,7 +2,6 @@ from graphlib import TopologicalSorter
 from typing import Any, Dict, List, Optional
 
 from wildcoeus.pipelines import PipelineReporter
-from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 
