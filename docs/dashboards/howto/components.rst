@@ -40,12 +40,12 @@ HTMX triggers are then used to fetch ``two``and ``three``.
 
 In this example note that ``three`` calls a function, this can be any callable that accepts the kwargs
 
-    * request
-        *A Django HttpRequest*
-    * dashboard
-        *A wildcoeus.dashboards.Dashboard instance)*
-    * filters
-        *A dict containing the GET params of the request*
+* request
+    *A Django HttpRequest*
+* dashboard
+    *A wildcoeus.dashboards.Dashboard instance)*
+* filters
+    *A dict containing the GET params of the request*
 
 ``defer_url``
 
@@ -103,6 +103,8 @@ TODO BELOW
 
 ``trigger_on``
 
+``CTA``
+
 
 Included components
 ===================
@@ -114,11 +116,6 @@ TODO example
 
 Stat
 ++++
-
-TODO example
-
-CTA
-+++
 
 TODO example
 
@@ -149,18 +146,115 @@ When rendered with as a Django view without the built-in templates, plotly.js (m
 Table
 +++++
 
-TODO example
-
 When rendered with as a Django view without the built-in templates, datatables.js will be applied to the table component.
+
+To make tables easier to add to a component, you can subclass `TableSerializer` and pass
+it's `serialize` function directly to defer or value. This will give you a searchable and sortable
+table component:
+
+::
+
+    # dashboards.py
+    ...
+    table_example = Table(
+        defer=ExampleTableSerializer.serialize,
+    )
+
+
+::
+
+    # tables.py
+    from wildcoeus.dashboards.component.table import TableSerializer
+
+    class ExampleTableSerializer(TableSerializer):
+        class Meta:
+            title = "Example table"
+            columns = {
+                "id": "Title",
+                "name": "Name",
+                "progress": "Progress",
+                "gender": "Gender",
+                "dob": "DOB",
+            }
+
+        @staticmethod
+        def get_data(**kwargs):
+            return [
+                {
+                    "id": 1,
+                    "name": f"Name",
+                    "progress": 1,
+                    "gender": "male",
+                    "rating": 1,
+                    "col": 1,
+                    "dob": "19/02/1984",
+                }
+            ]
+
+Serializer can also be driven directly from Meta.model, Meta.queryset or defining a get_queryset(obj) method:
+
+::
+
+    class ExampleTableSerializer(TableSerializer):
+        class Meta:
+            title = "Staff table"
+            columns = {
+                "id": "ID",
+                "first_name": "First Name",
+            }
+            # model = User
+            # queryset = User.objects.all()
+
+        @classmethod
+        def get_queryset(cls, **kwargs):
+            """
+            kwargs are passed through from value/defer as above
+            """
+            return User.objects.filter(is_staff=True)
+
+
+You can also customise any of the columns in the serializer via `get_FOO_value`:
+
+::
+
+    class ExampleTableSerializer(TableSerializer):
+        ...
+
+        @staticmethod
+        def get_first_name_value(obj):
+            return obj.first_name.upper()
+
+Additional `Table` attributes
+
+* page_size
+    * int (default=10) to set the paging size*
+* searching/paging/ordering
+    * bool (default=True) to enable datatables features*
+
+
+Additional `TableSerializer` Meta attributes
+
+* first_as_absolute_url
+    * bool (default=False) if the model or object has a get_absolute_url use it in the first column.
+* force_lower
+    * bool (default=True) forces searching and sorting of data to use lower values.
+
 
 BasicTable
 ++++++++++
 
+Basic tables work the same as table, with the js, search & sort disabled.
+
+::
+
+    table_example_not_deferred = BasicTable(
+        value=ExampleTableSerializer.serialize,
+    )
+
 Form
 ++++
 
-
-
+TODO
 
 Custom components
 =================
