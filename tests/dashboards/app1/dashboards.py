@@ -9,7 +9,6 @@ from wildcoeus.dashboards.component.layout import HR, ComponentLayout, Div
 from wildcoeus.dashboards.component.table import TableSerializer
 from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
 from wildcoeus.dashboards.forms import DashboardForm
-from wildcoeus.dashboards.registry import registry
 
 
 class TestDashboard(Dashboard):
@@ -19,7 +18,6 @@ class TestDashboard(Dashboard):
 
     class Meta:
         name = "Test Dashboard"
-        app_label = "app1"
 
 
 class TestTableSerializer(TableSerializer):
@@ -42,7 +40,6 @@ class TestComplexDashboard(TestDashboard):
 
     class Meta:
         name = "Test Complex Dashboard"
-        app_label = "app1"
 
 
 class TestAdminDashboard(Dashboard):
@@ -50,7 +47,6 @@ class TestAdminDashboard(Dashboard):
 
     class Meta:
         name = "Test Admin Dashboard"
-        app_label = "app1"
         permission_classes = [permissions.IsAdminUser]
 
 
@@ -92,13 +88,11 @@ class TestFilterDashboard(Dashboard):
 
     class Meta:
         name = "Test Filter Dashboard"
-        app_label = "app1"
 
 
 class TestDashboardWithLayout(TestDashboard):
     class Meta:
         name = "Test Dashboard with Layout"
-        app_label = "app1"
 
     class Layout:
         components = ComponentLayout(
@@ -116,9 +110,5 @@ class TestDashboardWithLayout(TestDashboard):
         )
 
 
-registry.register(TestDashboard)
-registry.register(TestFilterDashboard)
-registry.register(TestAdminDashboard)
-registry.register(TestComplexDashboard)
-registry.register(TestDashboardWithLayout)
-registry.register(TestModelDashboard)
+class TestNoMetaDashboard(Dashboard):
+    component_1 = Text(value="value")

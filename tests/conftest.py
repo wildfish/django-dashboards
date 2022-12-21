@@ -1,6 +1,6 @@
 import pytest
 
-from tests.dashboards import dashboards
+from tests.dashboards.app1 import dashboards
 from tests.pipelines import pipelines
 from wildcoeus.dashboards.registry import registry
 from wildcoeus.pipelines.registry import pipeline_registry
@@ -16,6 +16,7 @@ def auto_registry():
     registry.register(dashboards.TestComplexDashboard)
     registry.register(dashboards.TestDashboardWithLayout)
     registry.register(dashboards.TestModelDashboard)
+    registry.register(dashboards.TestNoMetaDashboard)
 
 
 @pytest.fixture(autouse=True)

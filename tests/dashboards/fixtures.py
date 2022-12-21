@@ -5,13 +5,14 @@ from django.contrib.auth.models import User
 import pytest
 import strawberry
 
-from tests.dashboards.dashboards import (
+from tests.dashboards.app1.dashboards import (
     TestAdminDashboard,
     TestComplexDashboard,
     TestDashboard,
     TestDashboardWithLayout,
     TestFilterDashboard,
     TestModelDashboard,
+    TestNoMetaDashboard,
 )
 from wildcoeus.dashboards.schema import DashboardQuery
 
@@ -58,6 +59,11 @@ def filter_dashboard():
 @pytest.fixture
 def dashboard_with_layout(dashboard):
     return TestDashboardWithLayout
+
+
+@pytest.fixture
+def no_meta_dashboard(dashboard):
+    return TestNoMetaDashboard
 
 
 @pytest.fixture
