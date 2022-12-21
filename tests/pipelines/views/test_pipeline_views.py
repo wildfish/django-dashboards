@@ -9,6 +9,7 @@ from model_bakery import baker
 from pydantic import BaseModel
 
 from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task
+from wildcoeus.pipelines.models import PipelineExecution
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
 
@@ -184,11 +185,13 @@ def test_start__get(client, staff, test_pipeline):
 
 def test_start__post(client, staff, test_pipeline):
     client.force_login(staff)
-    response = client.post(
-        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
-    )
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        response = client.post(
+            reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
+        )
 
     assert response.status_code == 302
+    assert PipelineExecution.objects.count() == 1
 
 
 def test_start__post__with_formdata(client, staff):
@@ -211,16 +214,17 @@ def test_start__post__with_formdata(client, staff):
     pipeline_registry.register(TestPipeline)
 
     client.force_login(staff)
-    response = client.post(
-        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]),
-        data={"message": "test"},
-    )
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        response = client.post(
+            reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]),
+            data={"message": "test"},
+        )
 
     assert response.status_code == 302
+    assert PipelineExecution.objects.count() == 1
 
 
-@patch("wildcoeus.pipelines.views.run_pipeline")
-def test_start__post__with_no_formdata(run_pipeline, client, staff):
+def test_start__post__with_no_formdata(client, staff):
     class MessageInputType(BaseModel):
         message: str
 
@@ -240,11 +244,14 @@ def test_start__post__with_no_formdata(run_pipeline, client, staff):
     pipeline_registry.register(TestPipeline)
 
     client.force_login(staff)
-    response = client.post(
-        reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
-    )
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        response = client.post(
+            reverse("wildcoeus.pipelines:start", args=[test_pipeline.get_id()]), data={}
+        )
 
-    run_pipeline.assert_not_called()
+    assert response.context_data["form"].errors == {
+        "message": ["This field is required."]
+    }
     assert response.status_code == 200
 
 
@@ -270,7 +277,8 @@ def test_rerun_task__post(run_task, client, staff):
         task_id="test_pipeline_views.TestTaskFirst",
     )
     client.force_login(staff)
-    response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=[tr.pk]))
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=[tr.pk]))
 
     run_task.assert_called_once_with(
         pipeline_id=tr.pipeline_id,
@@ -285,8 +293,7 @@ def test_rerun_task__post(run_task, client, staff):
 
 
 def test_rerun_task__no_task(client, staff):
-    tr = baker.make_recipe("pipelines.fake_task_result", pipeline_task="fake")
     client.force_login(staff)
-    response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=[tr.pk]))
+    response = client.get(reverse("wildcoeus.pipelines:rerun-task", args=["123"]))
 
     assert response.status_code == 404

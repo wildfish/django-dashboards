@@ -1,6 +1,8 @@
 import logging
+import tempfile
 
 from django.contrib.auth.models import User
+from django.test.utils import override_settings
 
 import pytest
 
@@ -52,7 +54,8 @@ def test_task_have_no_parents___tasks_are_added_to_chain_in_configured_order(
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
     assert [
         "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
@@ -90,7 +93,8 @@ def test_task_with_parents___tasks_are_added_to_chain_in_configured_order(
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
     assert [
         "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
@@ -127,7 +131,8 @@ def test_model_pipeline(celery_worker, logger):
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
     user_one_for = f"| pipeline object: {{'pk': {users[0].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
     user_two_for = f"| pipeline object: {{'pk': {users[1].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
@@ -177,7 +182,8 @@ def test_iterator_pipeline(celery_worker, logger):
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
     one_for = "| pipeline object: {'obj': 1}"
     two_for = "| pipeline object: {'obj': 2}"
@@ -226,7 +232,8 @@ def test_iterator__iterate_task(celery_worker, logger):
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
     one_for = "| task object: {'obj': 1}"
     two_for = "| task object: {'obj': 2}"
@@ -270,7 +277,8 @@ def test_model__iterate_task(celery_worker, logger):
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
 
-    run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
+    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
+        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
 
     user_one_for = f"| task object: {{'pk': {users[0].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
     user_two_for = f"| task object: {{'pk': {users[1].pk}, 'app_label': 'auth', 'model_name': 'user'}}"

@@ -51,7 +51,7 @@ class LoggingReporter(PipelineReporter):
     @classmethod
     def _write_log_to_file(cls, content: str, run_id: Optional[str] = None):
         # need a run id to write file
-        if run_id is None:
+        if not run_id:
             return
 
         fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE

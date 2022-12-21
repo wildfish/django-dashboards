@@ -10,6 +10,7 @@ from wildcoeus.pipelines.models import (
     TaskLog,
     TaskResult,
 )
+from wildcoeus.pipelines.storage import get_log_path
 
 
 class Command(BaseCommand):
@@ -26,7 +27,20 @@ class Command(BaseCommand):
 
         today = now().today()
         deletion_date = today - timedelta(days=days)
-        PipelineExecution.objects.filter(started__lt=deletion_date).delete()
-        TaskResult.objects.filter(started__lt=deletion_date).delete()
-        TaskLog.objects.filter(created__lt=deletion_date).delete()
-        PipelineLog.objects.filter(created__lt=deletion_date).delete()
+
+        run_ids = list(
+            PipelineExecution.objects.filter(started__lt=deletion_date).values_list(
+                "run_id", flat=True
+            )
+        )
+
+        if run_ids:
+            PipelineExecution.objects.filter(run_id__in=run_ids).delete()
+            TaskResult.objects.filter(run_id__in=run_ids).delete()
+            TaskLog.objects.filter(run_id__in=run_ids).delete()
+            PipelineLog.objects.filter(run_id__in=run_ids).delete()
+
+            for run_id in run_ids:
+                path = get_log_path(run_id)
+                fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
+                fs.delete(path)
