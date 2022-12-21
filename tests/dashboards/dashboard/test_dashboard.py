@@ -1,6 +1,6 @@
 import pytest
 
-from tests.dashboards.dashboards import TestDashboard, TestModelDashboard
+from tests.dashboards.app1.dashboards import TestDashboard, TestModelDashboard
 from wildcoeus.dashboards.component import Text
 from wildcoeus.dashboards.dashboard import Dashboard
 

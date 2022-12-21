@@ -46,23 +46,25 @@ class DashboardType(type):
         base_meta = getattr(dashboard_class, "_meta", None)
         dashboard_class._meta = meta
 
-        if getattr(meta, "app_label", None) is None:
-            # Look for an application configuration to attach the model to.
-            app_config = apps.get_containing_app_config(module)
+        # Look for an application configuration to attach the model to.
+        app_config = apps.get_containing_app_config(module)
 
-            if app_config is None:
-                if name not in (
-                    "ModelDashboard",
-                    "Dashboard",
-                ):  # TODO needs better way to exclude the base class?
+        meta_app_label = getattr(meta, "app_label", None)
+        if app_config is None and meta_app_label is None:
+            if name not in (
+                "ModelDashboard",
+                "Dashboard",
+            ):  # TODO needs better way to exclude the base class?
 
-                    raise RuntimeError(
-                        "Model class %s.%s doesn't declare an explicit "
-                        "app_label and isn't in an application in "
-                        "INSTALLED_APPS." % (module, name)
-                    )
-            else:
-                dashboard_class._meta.app_label = app_config.label
+                raise RuntimeError(
+                    "Model class %s.%s doesn't declare an explicit "
+                    "app_label and isn't in an application in "
+                    "INSTALLED_APPS." % (module, name)
+                )
+        else:
+            dashboard_class._meta.app_label = (
+                app_config.label if app_config else meta_app_label
+            )
 
         if base_meta:
             if not hasattr(meta, "name"):
@@ -116,6 +118,7 @@ class Dashboard(metaclass=DashboardType):
         permission_classes: Optional[List[BasePermission]] = None
         template_name: Optional[str] = None
         model = None
+        app_label = "dashboards"
         lookup_kwarg: str = "lookup"  # url parameter name
         lookup_field: str = "pk"  # model field
 

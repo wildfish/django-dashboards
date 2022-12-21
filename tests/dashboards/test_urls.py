@@ -52,6 +52,9 @@ def test_include_dashboard_views__true():
             "app1_testcomplexdashboard",
             "app1_testdashboardwithlayout",
             "app1_testmodeldashboard_detail",
+            "app1_testnometadashboard",  # app1_ even with no meta
+            "form_component",
+            "dashboard_component",
         ]
     )
 
@@ -67,6 +70,7 @@ def test_include_dashboard_views__false(swap_include_urls_patterns):
             "app1_testadmindashboard",
             "app1_testcomplexdashboard",
             "app1_testdashboardwithlayout",
-            "app1_testmodeldashboard_dashboard_detail",
+            "app1_testmodeldashboard_detail",
+            "app1_testnometadashboard",
         ]
     )
