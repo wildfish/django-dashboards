@@ -138,6 +138,6 @@ class FormComponentView(ComponentView):
                     content_type="application/json",
                 )
 
-            return HttpResponseRedirect(component.get_absolute_url())
+            # return HttpResponseRedirect(component.get_absolute_url())
 
         return self.get(request, *args, **kwargs)

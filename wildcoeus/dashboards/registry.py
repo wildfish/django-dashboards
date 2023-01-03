@@ -22,6 +22,8 @@ class Registry(object):
         else:
             logger.warn(f"{cls.get_slug()} already registered")
 
+        return cls
+
     def get_all_dashboards(self):
         return self.dashboards
 
