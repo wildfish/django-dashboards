@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
