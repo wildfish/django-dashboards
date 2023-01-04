@@ -5,6 +5,7 @@ from django.http import HttpRequest
 from django.urls import reverse, reverse_lazy
 
 import psutil
+from demo.kitchensink.charts import ExampleChartSerializer, ExampleStackedChartSerializer, ExampleBubbleChartSerializer
 from demo.kitchensink.components import SharedComponent, SSEChart, SSEStat
 from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
@@ -60,28 +61,32 @@ class DemoDashboard(Dashboard):
                 "wildcoeus.dashboards:kitchensink_demodashboardcustomtemplate"
             ),
         ),
+        grid_css_classes=Grid.FOUR.value,
     )
     text_example = Text(
         value="Rendered on load",
+        grid_css_classes=Grid.FOUR.value,
     )
     html_example = Text(
         value="<strong>HTML also rendered on load</strong>",
         mark_safe=True,
+        grid_css_classes=Grid.FOUR.value,
     )
     calculated_example = Text(
         defer=lambda **kwargs: "Deferred text",
+        grid_css_classes=Grid.FOUR.value,
     )
     form_example = Form(
         form=AnimalForm,
         method="get",
         dependents=["chart_example", "stacked_chart_example", "stat_three"],
     )
-    chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
+    chart_example = Chart(value=ExampleChartSerializer.serialize)
     stacked_chart_example = Chart(
-        defer=DashboardData.fetch_stacked_bar_chart_data,
-        poll_rate=5,
+        defer=ExampleStackedChartSerializer.serialize,
+        poll_rate=60,
     )
-    bubble_chart_example = Chart(defer=DashboardData.fetch_bubble_chart_data)
+    bubble_chart_example = Chart(defer=ExampleBubbleChartSerializer.serialize)
     filter_form = Form(
         form=ExampleForm,
         method="get",

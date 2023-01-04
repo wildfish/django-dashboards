@@ -3,7 +3,7 @@ from typing import Callable, Optional
 
 from django.http import HttpRequest
 
-from .base import Component
+from wildcoeus.dashboards.component import Component
 
 
 @dataclass
