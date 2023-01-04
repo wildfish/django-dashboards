@@ -9,6 +9,10 @@ django-extensions
 pydantic
 strawberry-graphql[debug-server]
 
+# Charts
+pandas
+plotly
+
 # Dev tools
 Faker
 ipython
