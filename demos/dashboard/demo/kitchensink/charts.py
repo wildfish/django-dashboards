@@ -78,15 +78,15 @@ class ExampleChartSerializer(BarChartSerializer):
     )
 
     class Meta:
-        title = "Medals"
+        title = "Total Medals"
 
     @classmethod
     def get_data(cls, *args, **kwargs):
         df = px.data.medals_long()
         filters = kwargs.get("filters") or {}
-        if "animal" in filters and filters["animal"] in df:
-            animal = filters["animal"]
-            df = {animal: df[animal]}
+        if "medal" in filters and filters["medal"] != "all":
+            medal = filters["medal"]
+            return df.query(f"medal == '{medal}'")
 
         return df
 
@@ -97,15 +97,15 @@ class ExampleStackedChartSerializer(BarChartSerializer):
     color = "medal"
 
     class Meta:
-        title = "Medals Stacked"
+        title = "Medals Split"
 
     @classmethod
     def get_data(cls, *args, **kwargs):
         df = px.data.medals_long()
         filters = kwargs.get("filters") or {}
-        if "animal" in filters and filters["animal"] in df:
-            animal = filters["animal"]
-            df = {animal: df[animal]}
+        if "medal" in filters and filters["medal"] != "all":
+            medal = filters["medal"]
+            return df.query(f"medal == '{medal}'")
 
         return df
 

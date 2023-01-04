@@ -13,7 +13,7 @@ from demo.kitchensink.charts import (
 )
 from demo.kitchensink.components import SharedComponent, SSEChart, SSEStat
 from demo.kitchensink.data import DashboardData
-from demo.kitchensink.forms import AnimalForm, ExampleForm
+from demo.kitchensink.forms import ExampleForm, MedalForm
 from demo.kitchensink.tables import ExampleTableSerializer
 from faker import Faker
 
@@ -82,7 +82,7 @@ class DemoDashboard(Dashboard):
         grid_css_classes=Grid.FOUR.value,
     )
     form_example = Form(
-        form=AnimalForm,
+        form=MedalForm,
         method="get",
         dependents=["chart_example", "stacked_chart_example"],
     )
@@ -118,7 +118,7 @@ class DemoDashboard(Dashboard):
     )
     gauge_one = Chart(
         defer=ExampleGaugeChartSerializer.serialize,
-        poll_rate=1,
+        poll_rate=5,
         grid_css_classes=Grid.FOUR.value,
     )
     gauge_two = Chart(

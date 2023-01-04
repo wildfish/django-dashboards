@@ -14,12 +14,12 @@ class ExampleForm(DashboardForm):
     )
 
 
-class AnimalForm(DashboardForm):
-    animal = forms.ChoiceField(
+class MedalForm(DashboardForm):
+    medal = forms.ChoiceField(
         choices=(
             ("all", "All"),
-            ("giraffes", "Giraffe"),
-            ("orangutans", "Orangutan"),
-            ("monkeys", "Monkey"),
+            ("gold", "Gold"),
+            ("silver", "Silver"),
+            ("bronze", "Bronze"),
         )
     )
