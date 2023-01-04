@@ -75,7 +75,7 @@ class Common(Configuration):
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
         "django_extensions",
-        'django_eventstream',
+        "django_eventstream",
         # "django_celery_results",
         # pipelines
         "wildcoeus",
@@ -94,7 +94,7 @@ class Common(Configuration):
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
-        'django_grip.GripMiddleware',
+        "django_grip.GripMiddleware",
     ]
 
     ROOT_URLCONF = "demo.urls"
@@ -272,7 +272,7 @@ class Common(Configuration):
         "wildcoeus.pipelines.reporters.logging.LoggingReporter"
     )
 
-    GRIP_URL = 'http://localhost:5561'
+    GRIP_URL = "http://localhost:5561"
     EVENTSTREAM_ALLOW_ORIGIN = "http://127.0.0.1:8000"
 
 

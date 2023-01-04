@@ -43,9 +43,15 @@ class RepoStats(models.Model):
 
 
 class RepoStatsChange(models.Model):
-    repo = models.ForeignKey(Repo, related_name="stats_change", on_delete=models.CASCADE)
-    early_stats = models.ForeignKey(RepoStats, related_name="early_change", on_delete=models.CASCADE)
-    late_stats = models.ForeignKey(RepoStats, related_name="late_change", on_delete=models.CASCADE)
+    repo = models.ForeignKey(
+        Repo, related_name="stats_change", on_delete=models.CASCADE
+    )
+    early_stats = models.ForeignKey(
+        RepoStats, related_name="early_change", on_delete=models.CASCADE
+    )
+    late_stats = models.ForeignKey(
+        RepoStats, related_name="late_change", on_delete=models.CASCADE
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

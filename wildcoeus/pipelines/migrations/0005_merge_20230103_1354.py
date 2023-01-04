@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pipelines', '0004_alter_pipelineexecution_options_and_more'),
-        ('pipelines', '0004_alter_pipelineexecution_status'),
+        ("pipelines", "0004_alter_pipelineexecution_options_and_more"),
+        ("pipelines", "0004_alter_pipelineexecution_status"),
     ]
 
-    operations = [
-    ]
+    operations = []

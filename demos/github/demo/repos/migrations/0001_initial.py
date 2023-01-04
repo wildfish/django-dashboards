@@ -8,54 +8,105 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Repo',
+            name="Repo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255)),
-                ('full_name', models.CharField(max_length=255, unique=True)),
-                ('gh_id', models.BigIntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255)),
+                ("full_name", models.CharField(max_length=255, unique=True)),
+                ("gh_id", models.BigIntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='RepoStats',
+            name="RepoStats",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('gh_url', models.URLField()),
-                ('homepage', models.URLField(blank=True)),
-                ('description', models.TextField(blank=True, default='')),
-                ('language', models.CharField(max_length=255)),
-                ('gh_created_at', models.DateTimeField()),
-                ('gh_updated_at', models.DateTimeField()),
-                ('gh_pushed_at', models.DateTimeField()),
-                ('stars_count', models.BigIntegerField(default=None, null=True)),
-                ('watchers_count', models.BigIntegerField(default=None, null=True)),
-                ('forks_count', models.BigIntegerField(default=None, null=True)),
-                ('open_issues_count', models.BigIntegerField(default=None, null=True)),
-                ('repo', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='stats', to='repos.repo')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("gh_url", models.URLField()),
+                ("homepage", models.URLField(blank=True)),
+                ("description", models.TextField(blank=True, default="")),
+                ("language", models.CharField(max_length=255)),
+                ("gh_created_at", models.DateTimeField()),
+                ("gh_updated_at", models.DateTimeField()),
+                ("gh_pushed_at", models.DateTimeField()),
+                ("stars_count", models.BigIntegerField(default=None, null=True)),
+                ("watchers_count", models.BigIntegerField(default=None, null=True)),
+                ("forks_count", models.BigIntegerField(default=None, null=True)),
+                ("open_issues_count", models.BigIntegerField(default=None, null=True)),
+                (
+                    "repo",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="stats",
+                        to="repos.repo",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='RepoStatsChange',
+            name="RepoStatsChange",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('stars_count', models.BigIntegerField(default=None, null=True)),
-                ('watchers_count', models.BigIntegerField(default=None, null=True)),
-                ('forks_count', models.BigIntegerField(default=None, null=True)),
-                ('open_issues_count', models.BigIntegerField(default=None, null=True)),
-                ('early_stats', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='early_change', to='repos.repostats')),
-                ('late_stats', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='late_change', to='repos.repostats')),
-                ('repo', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='stats_change', to='repos.repo')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("stars_count", models.BigIntegerField(default=None, null=True)),
+                ("watchers_count", models.BigIntegerField(default=None, null=True)),
+                ("forks_count", models.BigIntegerField(default=None, null=True)),
+                ("open_issues_count", models.BigIntegerField(default=None, null=True)),
+                (
+                    "early_stats",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="early_change",
+                        to="repos.repostats",
+                    ),
+                ),
+                (
+                    "late_stats",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="late_change",
+                        to="repos.repostats",
+                    ),
+                ),
+                (
+                    "repo",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="stats_change",
+                        to="repos.repo",
+                    ),
+                ),
             ],
         ),
     ]

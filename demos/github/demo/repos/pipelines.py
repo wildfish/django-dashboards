@@ -12,9 +12,7 @@ from wildcoeus.pipelines.registry import pipeline_registry
 
 
 def build_event(key, value, change=None):
-    stat = Stat(
-        value={"text": value, "sub_text": change or "-"}, key=key
-    )
+    stat = Stat(value={"text": value, "sub_text": change or "-"}, key=key)
 
     return render_to_string(
         stat.template_name,
@@ -36,9 +34,7 @@ class CalcRepoStatsChanges(Task):
     def run(self, pipeline_id: str, run_id: str, cleaned_data: RepoTaskInput):
         late, early = RepoStats.objects.filter(
             repo__full_name=cleaned_data.full_name
-        ).order_by(
-            "-updated_at"
-        )[:2]
+        ).order_by("-updated_at")[:2]
 
         change = RepoStatsChange.objects.create(
             repo=late.repo,
@@ -50,10 +46,32 @@ class CalcRepoStatsChanges(Task):
             open_issues_count=late.open_issues_count - early.open_issues_count,
         )
 
-        send_event("test", f"repos-{cleaned_data.full_name}-stars", build_event("stars", late.stars_count, change.stars_count), json_encode=False)
-        send_event("test", f"repos-{cleaned_data.full_name}-forks", build_event("forks", late.forks_count, change.forks_count), json_encode=False)
-        send_event("test", f"repos-{cleaned_data.full_name}-watchers", build_event("watchers", late.watchers_count, change.watchers_count), json_encode=False)
-        send_event("test", f"repos-{cleaned_data.full_name}-open_issues", build_event("open_issues", late.open_issues_count, change.open_issues_count), json_encode=False)
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-stars",
+            build_event("stars", late.stars_count, change.stars_count),
+            json_encode=False,
+        )
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-forks",
+            build_event("forks", late.forks_count, change.forks_count),
+            json_encode=False,
+        )
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-watchers",
+            build_event("watchers", late.watchers_count, change.watchers_count),
+            json_encode=False,
+        )
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-open_issues",
+            build_event(
+                "open_issues", late.open_issues_count, change.open_issues_count
+            ),
+            json_encode=False,
+        )
 
 
 class FetchLatestRepoStats(Task):
@@ -64,7 +82,11 @@ class FetchLatestRepoStats(Task):
         res = requests.get(f"https://api.github.com/repos/{cleaned_data.full_name}")
 
         if res.status_code < 200 or res.status_code >= 400:
-            send_event(f"repos-{cleaned_data.full_name}", "message", {"error": res.text, "status": res.status_code})
+            send_event(
+                f"repos-{cleaned_data.full_name}",
+                "message",
+                {"error": res.text, "status": res.status_code},
+            )
             raise Exception(f"Bad response from github: {res.status_code} - {res.text}")
 
         data = res.json()
@@ -74,7 +96,7 @@ class FetchLatestRepoStats(Task):
             defaults={
                 "name": data.get("name"),
                 "gh_id": data.get("id"),
-            }
+            },
         )[0]
 
         stat = RepoStats.objects.create(
@@ -92,10 +114,30 @@ class FetchLatestRepoStats(Task):
             open_issues_count=data.get("open_issues_count"),
         )
 
-        send_event("test", f"repos-{cleaned_data.full_name}-stars", build_event("stars", stat.stars_count), json_encode=False)
-        send_event("test", f"repos-{cleaned_data.full_name}-forks", build_event("forks", stat.forks_count), json_encode=False)
-        send_event("test", f"repos-{cleaned_data.full_name}-watchers", build_event("watchers", stat.watchers_count), json_encode=False)
-        send_event("test", f"repos-{cleaned_data.full_name}-open_issues", build_event("open_issues", stat.open_issues_count), json_encode=False)
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-stars",
+            build_event("stars", stat.stars_count),
+            json_encode=False,
+        )
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-forks",
+            build_event("forks", stat.forks_count),
+            json_encode=False,
+        )
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-watchers",
+            build_event("watchers", stat.watchers_count),
+            json_encode=False,
+        )
+        send_event(
+            "test",
+            f"repos-{cleaned_data.full_name}-open_issues",
+            build_event("open_issues", stat.open_issues_count),
+            json_encode=False,
+        )
 
 
 @pipeline_registry.register
