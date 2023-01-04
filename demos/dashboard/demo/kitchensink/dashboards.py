@@ -5,7 +5,12 @@ from django.http import HttpRequest
 from django.urls import reverse, reverse_lazy
 
 import psutil
-from demo.kitchensink.charts import ExampleChartSerializer, ExampleStackedChartSerializer, ExampleBubbleChartSerializer
+from demo.kitchensink.charts import (
+    ExampleBubbleChartSerializer,
+    ExampleChartSerializer,
+    ExampleGaugeChartSerializer,
+    ExampleStackedChartSerializer,
+)
 from demo.kitchensink.components import SharedComponent, SSEChart, SSEStat
 from demo.kitchensink.data import DashboardData
 from demo.kitchensink.forms import AnimalForm, ExampleForm
@@ -79,21 +84,31 @@ class DemoDashboard(Dashboard):
     form_example = Form(
         form=AnimalForm,
         method="get",
-        dependents=["chart_example", "stacked_chart_example", "stat_three"],
+        dependents=["chart_example", "stacked_chart_example"],
     )
     chart_example = Chart(value=ExampleChartSerializer.serialize)
     stacked_chart_example = Chart(
         defer=ExampleStackedChartSerializer.serialize,
-        poll_rate=60,
     )
-    bubble_chart_example = Chart(defer=ExampleBubbleChartSerializer.serialize)
+    bubble_chart_example = Chart(
+        defer=ExampleBubbleChartSerializer.serialize,
+        grid_css_classes=Grid.ONE.value,
+    )
     filter_form = Form(
         form=ExampleForm,
         method="get",
         dependents=["line_chart_example", "stat_three"],
+        grid_css_classes=Grid.TWO.value,
+    )
+    stat_three = Stat(
+        defer=lambda **kwargs: {
+            "text": "33%",
+            "sub_text": kwargs.get("filters", {}).get("country", "all"),
+        },
+        grid_css_classes=Grid.TWO.value,
     )
     line_chart_example = Chart(
-        defer=DashboardData.fetch_scatter_chart_data, grid_css_classes=Grid.DOUBLE.value
+        defer=DashboardData.fetch_scatter_chart_data, grid_css_classes=Grid.ONE.value
     )
     stat_one = Stat(
         value={"text": "100%", "sub_text": "increase"}, grid_css_classes=Grid.FOUR.value
@@ -101,18 +116,13 @@ class DemoDashboard(Dashboard):
     stat_two = Stat(
         value={"text": "88%", "sub_text": "increase"}, grid_css_classes=Grid.FOUR.value
     )
-    stat_three = Stat(
-        defer=lambda **kwargs: {
-            "text": "33%",
-            "sub_text": kwargs.get("filters", {}).get("country", "all"),
-        },
+    gauge_one = Chart(
+        defer=ExampleGaugeChartSerializer.serialize,
+        poll_rate=1,
         grid_css_classes=Grid.FOUR.value,
     )
-    gauge_one = Chart(
-        defer=DashboardData.fetch_gauge_chart_data, grid_css_classes=Grid.TWO.value
-    )
     gauge_two = Chart(
-        defer=DashboardData.fetch_gauge_chart_data_two, grid_css_classes=Grid.TWO.value
+        defer=DashboardData.fetch_gauge_chart_data_two, grid_css_classes=Grid.FOUR.value
     )
     free_text_example = Text(
         defer=DashboardData.fetch_html, mark_safe=True, grid_css_classes=Grid.ONE.value

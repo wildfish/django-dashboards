@@ -1,5 +1,5 @@
-from .serializers import ChartSerializer, BarChartSerializer, ScatterChartSerializer, HistogramChartSerializer
 from .chart import Chart
+from .serializers import ChartSerializer
 
 
-__all__ = ["Chart", "ChartSerializer", "BarChartSerializer", "ScatterChartSerializer", "HistogramChartSerializer"]
+__all__ = ["Chart", "ChartSerializer"]

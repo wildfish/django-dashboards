@@ -1,51 +1,10 @@
-import json
-
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Callable
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
 
 import pandas as pd
-import plotly.express as px
-
-
-class PlotyExpressHelper:
-    @staticmethod
-    def empty_chart(title):
-        return json.dumps(
-            {
-                "layout": {
-                    "xaxis": {"visible": False},
-                    "yaxis": {"visible": False},
-                    "annotations": [
-                        {
-                            "text": f"{title} - No data",
-                            "xref": "paper",
-                            "yref": "paper",
-                            "showarrow": False,
-                            "font": {"size": 28},
-                        }
-                    ],
-                }
-            }
-        )
-
-    @staticmethod
-    def _all(fig):
-        fig.update_layout(template="seaborn")
-        return fig
-
-    @classmethod
-    def chart_layout(
-        cls, fig, slider: bool = False, layout: Optional[Dict[str, Any]] = None
-    ):
-        fig = cls._all(fig)
-        fig.update_xaxes(rangeslider_visible=slider)
-
-        if layout:
-            fig.update_layout(**layout)
-
-        return fig.update_layout()
+import plotly.graph_objs as go
 
 
 class ChartSerializerType(type):
@@ -57,22 +16,12 @@ class ChartSerializerType(type):
         chart_serializer_class._meta = meta
 
         if base_meta:
-            if not hasattr(meta, "title"):
-                chart_serializer_class._meta.title = base_meta.title
             if not hasattr(meta, "queryset"):
                 chart_serializer_class._meta.queryset = base_meta.queryset
             if not hasattr(meta, "model"):
                 chart_serializer_class._meta.model = base_meta.model
-            if not hasattr(meta, "layout"):
-                chart_serializer_class._meta.layout = base_meta.layout
-            if not hasattr(meta, "color"):
-                chart_serializer_class._meta.color = base_meta.color
-            if not hasattr(meta, "orientation"):
-                chart_serializer_class._meta.orientation = base_meta.orientation
-            if not hasattr(meta, "barmode"):
-                chart_serializer_class._meta.barmode = base_meta.barmode
-            if not hasattr(meta, "mode"):
-                chart_serializer_class._meta.mode = base_meta.mode
+            if not hasattr(meta, "title"):
+                chart_serializer_class._meta.title = base_meta.title
             if not hasattr(meta, "width"):
                 chart_serializer_class._meta.width = base_meta.width
             if not hasattr(meta, "height"):
@@ -82,39 +31,51 @@ class ChartSerializerType(type):
 
 
 class ChartSerializer(metaclass=ChartSerializerType):
+    meta_layout_attrs = ["title", "width", "height"]
+    layout: Optional[Dict[str, Any]] = None
+
     class Meta:
         fields: List[str]
-        title: Optional[str] = None
         model: Optional[str] = None
         queryset: Optional[str] = None
-        layout: Optional[Dict[str, Any]] = None
-        mode: Optional[str] = None
-        color: Optional[str] = None
-        orientation: Optional[str] = None
-        barmode: Optional[str] = None
+        title: Optional[str] = None
         width: Optional[int] = None
         height: Optional[int] = None
 
     @classmethod
-    def serialize(cls, **serialize_kwargs) -> str:
+    def serialize(cls, **serialize_kwargs) -> Callable:
         def _serialize(**kwargs) -> str:
             df = cls.get_data(**serialize_kwargs, **kwargs)
             fig = cls.to_fig(df)
-            fig = PlotyExpressHelper.chart_layout(fig, layout=cls.Meta.layout)
-
+            fig = cls.apply_layout(fig)
             return fig.to_json()
 
         return _serialize
 
     @classmethod
-    def get_fields(cls):
+    def get_fields(cls) -> List[str]:
         return cls.Meta.fields
 
     @classmethod
-    def get_data(cls, *args, **kwargs):
+    def apply_layout(cls, fig: go.Figure):
+        layout = cls.layout or {}
+
+        for attr in cls.meta_layout_attrs:
+            layout.setdefault(attr, getattr(cls.Meta, attr))
+
+        return fig.update_layout(**layout)
+
+    @classmethod
+    def convert_to_df(cls, data: Any, columns: List) -> pd.DataFrame:
+        df = pd.DataFrame(data, columns=columns)
+        return df
+
+    @classmethod
+    def get_data(cls, *args, **kwargs) -> pd.DataFrame:
+        fields = cls.get_fields()
         queryset = cls.get_queryset(*args, **kwargs)
-        queryset = queryset.values(*cls.get_fields())
-        df = pd.DataFrame(queryset.iterator(), columns=cls.get_fields())
+        queryset = queryset.values(*fields)
+        df = cls.convert_to_df(queryset.iterator(), fields)
 
         return df
 
@@ -139,99 +100,5 @@ class ChartSerializer(metaclass=ChartSerializerType):
         return queryset
 
     @classmethod
-    def to_fig(cls, df) -> str:
-        raise ImproperlyConfigured("ChartSerializer must have to_fig defined")
-
-
-class ScatterChartSerializer(ChartSerializer):
-    class Meta:
-        x: Optional[str] = None
-        y: Optional[str] = None
-        color: Optional[str] = None
-        mode: Optional[str] = "lines+markers"
-
-    @classmethod
-    def get_x(cls, df) -> str:
-        return cls.Meta.x
-
-    @classmethod
-    def get_y(cls, df) -> str:
-        return cls.Meta.y
-
-    @classmethod
-    def to_fig(cls, df) -> str:
-        fig = px.scatter(
-            df,
-            x=cls.get_x(df),
-            y=cls.get_y(df),
-            color=cls.Meta.color,
-            title=cls.Meta.title,
-            width=cls.Meta.width,
-            height=cls.Meta.height,
-        )
-        fig = fig.update_traces(mode=cls.Meta.mode)
-
-        return fig
-
-
-class BarChartSerializer(ChartSerializer):
-    class Meta:
-        x: Optional[str] = None
-        y: Optional[str] = None
-        color: Optional[str] = None
-        orientation: Optional[str] = "v"
-
-    @classmethod
-    def get_x(cls, df) -> str:
-        return cls.Meta.x
-
-    @classmethod
-    def get_y(cls, df) -> str:
-        return cls.Meta.y
-
-    @classmethod
-    def to_fig(cls, df) -> str:
-        fig = px.bar(
-            df,
-            x=cls.get_x(df),
-            y=cls.get_y(df),
-            color=cls.Meta.color,
-            orientation=cls.Meta.orientation,
-            title=cls.Meta.title,
-            width=cls.Meta.width,
-            height=cls.Meta.height,
-        )
-
-        return fig
-
-
-class HistogramChartSerializer(ChartSerializer):
-    class Meta:
-        x: Optional[str] = None
-        y: Optional[str] = None
-        color: Optional[str] = None
-        barmode: Optional[str] = 'group'
-
-    @classmethod
-    def get_x(cls, df) -> str:
-        return cls.Meta.x
-
-    @classmethod
-    def get_y(cls, df) -> str:
-        return cls.Meta.y
-
-    @classmethod
-    def to_fig(cls, df) -> str:
-        fig = px.histogram(
-            df,
-            x=cls.get_x(df),
-            y=cls.get_y(df),
-            color=cls.Meta.color,
-            barmode=cls.Meta.barmode,
-            text_auto=True,
-            title=cls.Meta.title,
-            width=cls.Meta.width,
-            height=cls.Meta.height,
-        )
-
-        return fig
+    def to_fig(cls, data: Any) -> go.Figure:
+        raise NotImplementedError
