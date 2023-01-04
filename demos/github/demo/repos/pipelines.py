@@ -1,5 +1,3 @@
-from time import sleep
-
 import requests
 from django.template.loader import render_to_string
 from django_eventstream import send_event
