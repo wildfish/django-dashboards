@@ -61,7 +61,6 @@ class FetchLatestRepoStats(Task):
     InputType = RepoTaskInput
 
     def run(self, pipeline_id: str, run_id: str, cleaned_data: RepoTaskInput):
-        sleep(2)
         res = requests.get(f"https://api.github.com/repos/{cleaned_data.full_name}")
 
         if res.status_code < 200 or res.status_code >= 400:

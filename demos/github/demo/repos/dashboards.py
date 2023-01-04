@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from wildcoeus.dashboards.component.layout import ComponentLayout, Card
 from .forms import SearchForm
 from .models import Repo
 from wildcoeus.dashboards.component import Stat, Form
@@ -52,3 +53,12 @@ class RepoDashboard(Dashboard):
     class Meta:
         name = "Github Stats Fetcher"
         model = Repo
+
+    class Layout(Dashboard.Layout):
+        components = ComponentLayout(
+            Card("form", grid_css_classes="span-12"),
+            Card("stars"),
+            Card("watchers"),
+            Card("open_issues"),
+            Card("forks"),
+        )

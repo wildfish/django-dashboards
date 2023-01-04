@@ -24,68 +24,52 @@ services:
     ports:
       - "6379:6379"
 
-  django:
-    build:
-      # TODO change back to local context once pipelines is finished
-      context: ../
-      dockerfile: "./dev-docker/django/Dockerfile"
-    environment:
-      DJANGO_CONFIGURATION: DevDocker
-      DATABASE_HOST: postgres
-      DATABASE_NAME: demo
-      DATABASE_USER: demo
-      DATABASE_PASSWORD: demo
-      DJANGO_REDIS_HOST: redis
-    ports:
-      - "8000:8000"
-    volumes:
-      - ".:/project"
-    depends_on:
-      - postgres
-      - redis
-
-  celery_beat:
-    build:
-      # TODO change back to local context once pipelines is finished
-      context: ../
-      dockerfile: "./dev-docker/django/Dockerfile"
-    entrypoint: "./dev-docker/django/celery_beat.sh"
-    environment:
-      DJANGO_CONFIGURATION: DevDocker
-      DATABASE_HOST: postgres
-      DATABASE_NAME: demo
-      DATABASE_USER: demo
-      DATABASE_PASSWORD: demo
-      DJANGO_REDIS_HOST: redis
-    links:
-      - postgres
-      - redis
-      - celery_worker
-    volumes:
-      - ".:/project"
-
-
-  celery_worker:
-    build:
-      # TODO change back to local context once pipelines is finished
-      context: ../
-      dockerfile: "./dev-docker/django/Dockerfile"
-    entrypoint: "./dev-docker/django/celery_worker.sh"
-    environment:
-      DJANGO_CONFIGURATION: DevDocker
-      DATABASE_HOST: postgres
-      DATABASE_NAME: demo
-      DATABASE_USER: demo
-      DATABASE_PASSWORD: demo
-      DJANGO_REDIS_HOST: redis
-    links:
-      - postgres
-      - redis
-    volumes:
-      - ".:/project"
+  #
+  # CURRENTLY RUN DJANGO AND CELERY LOCALLY TO AVOID ISSUES WITH INSTALLING THE PACKAGE
+  #
+  # django:
+  #   build:
+  #     # TODO change back to local context once pipelines is finished
+  #     context: ../
+  #     dockerfile: "./dev-docker/django/Dockerfile"
+  #   environment:
+  #     DJANGO_CONFIGURATION: DevDocker
+  #     DATABASE_HOST: postgres
+  #     DATABASE_NAME: demo
+  #     DATABASE_USER: demo
+  #     DATABASE_PASSWORD: demo
+  #     DJANGO_REDIS_HOST: redis
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ".:/project"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+#
+  # celery_worker:
+  #   build:
+  #     # TODO change back to local context once pipelines is finished
+  #     context: ../
+  #     dockerfile: "./dev-docker/django/Dockerfile"
+  #   entrypoint: "./dev-docker/django/celery_worker.sh"
+  #   environment:
+  #     DJANGO_CONFIGURATION: DevDocker
+  #     DATABASE_HOST: postgres
+  #     DATABASE_NAME: demo
+  #     DATABASE_USER: demo
+  #     DATABASE_PASSWORD: demo
+  #     DJANGO_REDIS_HOST: redis
+  #   links:
+  #     - postgres
+  #     - redis
+  #   volumes:
+  #     - ".:/project"
 
   pushpin:
     image: fanout/pushpin
-    ports:
-      - "7999:7999"
-      - "5560-5563:5560-5563"
+    environment:
+      target: '127.0.0.1:8000'
+    volumes:
+      - "./pushpin.conf:/etc/pushpin/:rw"
+    network_mode: host

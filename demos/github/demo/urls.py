@@ -15,12 +15,7 @@ urlpatterns = [
     path(
         'events/',
         include(django_eventstream.urls),
-        {"channels": [
-            "repo-{full_name}-stars",
-            "repo-{full_name}-watchers",
-            "repo-{full_name}-open_issues",
-            "repo-{full_name}-forks",
-        ]},
+        {"channels": ["test"]},
     ),
 ]
 

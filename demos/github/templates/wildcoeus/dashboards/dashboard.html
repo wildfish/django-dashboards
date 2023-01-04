@@ -5,6 +5,7 @@
 {% block wildcoeus_js %}
     {{ block.super }}
     {% include "wildcoeus/dashboards/includes/static/js.html" %}
+    <script src="{% static 'wildcoeus/vendor/js/htmx.sse.min.js' %}"></script>
 {% endblock %}
 
 {% block wildcoeus_style %}
