@@ -147,7 +147,7 @@ snapshots[
 
 
 
-    <div hx-get="/app1/testdashboard/component/test/"
+    <div hx-get="/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
             Loading...
@@ -296,7 +296,7 @@ snapshots[
 
 
 
-    <div hx-get="/app1/testdashboard/component/test/"
+    <div hx-get="/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
             Loading...
@@ -402,7 +402,7 @@ snapshots[
 
 
 
-    <div hx-get="/app1/testdashboard/component/test/"
+    <div hx-get="/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
             Loading...

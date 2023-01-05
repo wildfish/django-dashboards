@@ -1,12 +1,14 @@
-import requests
 from django.template.loader import render_to_string
+
+import requests
 from django_eventstream import send_event
 from pydantic import BaseModel
 
 from wildcoeus.dashboards.component import Stat
-from .models import Repo, RepoStats, RepoStatsChange
 from wildcoeus.pipelines import Pipeline, Task
 from wildcoeus.pipelines.registry import pipeline_registry
+
+from .models import Repo, RepoStats, RepoStatsChange
 
 
 def build_event(key, value, change=None):

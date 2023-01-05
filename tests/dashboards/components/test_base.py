@@ -87,7 +87,7 @@ def test_get_value(component_kwargs, call_deferred, expected, rf):
 @pytest.mark.parametrize(
     "component_kwargs,expected",
     [
-        ({}, "/app1/testdashboard/component/None/"),
+        ({}, "/app1/testdashboard/@component/None/"),
         (
             {"defer_url": lambda **k: k},
             {
@@ -111,7 +111,7 @@ def test_get_absolute_url(component_kwargs, expected, dashboard):
 @pytest.mark.parametrize(
     "component_kwargs,expected",
     [
-        ({}, "/app1/testdashboard/1/component/first/"),
+        ({}, "/app1/testdashboard/1/@component/first/"),
         (
             {"defer_url": lambda **k: k},
             {

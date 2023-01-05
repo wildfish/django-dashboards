@@ -9,11 +9,11 @@ app_name = "wildcoeus.dashboards"
 DASHBOARD_PATTERN = "<str:app_label>/<str:dashboard>/"
 MODEL_DASHBOARD_PATTERN = DASHBOARD_PATTERN + "<str:lookup>/"
 
-COMPONENT_PATTERN = DASHBOARD_PATTERN + "component/<str:component>/"
-COMPONENT_OBJECT_PATTERN = MODEL_DASHBOARD_PATTERN + "component/<str:component>/"
+COMPONENT_PATTERN = DASHBOARD_PATTERN + "@component/<slug:component>/"
+COMPONENT_OBJECT_PATTERN = MODEL_DASHBOARD_PATTERN + "@component/<slug:component>/"
 
-FORM_COMPONENT_PATTERN = DASHBOARD_PATTERN + "<str:component>/form/"
-FORM_COMPONENT_OBJECT_PATTERN = MODEL_DASHBOARD_PATTERN + "<str:component>/form/"
+FORM_COMPONENT_PATTERN = DASHBOARD_PATTERN + "<slug:component>/@form/"
+FORM_COMPONENT_OBJECT_PATTERN = MODEL_DASHBOARD_PATTERN + "<slug:component>/@form/"
 
 urlpatterns = []
 

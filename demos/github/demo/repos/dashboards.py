@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from wildcoeus.dashboards.component.layout import ComponentLayout, Card
-from .forms import SearchForm
-from .models import Repo
-from wildcoeus.dashboards.component import Stat, Form
+from wildcoeus.dashboards.component import Form, Stat
+from wildcoeus.dashboards.component.layout import Card, ComponentLayout
 from wildcoeus.dashboards.dashboard import Dashboard
 from wildcoeus.dashboards.registry import registry
+
+from .forms import SearchForm
+from .models import Repo
 
 
 def get_change_stat_data(prop, **kwargs):

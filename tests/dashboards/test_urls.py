@@ -1,6 +1,6 @@
 from importlib import reload
 
-from django.urls import reverse
+from django.urls import NoReverseMatch, resolve, reverse
 
 import pytest
 
@@ -74,3 +74,94 @@ def test_include_dashboard_views__false(swap_include_urls_patterns):
             "app1_testnometadashboard",
         ]
     )
+
+
+def assert_url_roundtrip(url_name, **kwargs):
+    url = reverse(url_name, kwargs=kwargs)
+
+    resolved = resolve(url)
+
+    assert f"{resolved.namespace}:{resolved.url_name}" == url_name
+    assert resolved.kwargs == kwargs
+
+
+def test_dashboard_component_named_form___component_view_does_not_clash_with_the_component_form_url():
+    assert_url_roundtrip(
+        "wildcoeus.dashboards:dashboard_component",
+        app_label="foo",
+        dashboard="bar",
+        component="form",
+    )
+
+
+def test_model_dashboard_component_named_form___component_view_does_not_clash_with_the_component_form_url():
+    assert_url_roundtrip(
+        "wildcoeus.dashboards:dashboard_component",
+        app_label="foo",
+        dashboard="bar",
+        lookup="baz",
+        component="form",
+    )
+
+
+def test_dashboard_form_named_component___form_view_does_not_clash_with_the_component_url():
+    assert_url_roundtrip(
+        "wildcoeus.dashboards:form_component",
+        app_label="foo",
+        dashboard="bar",
+        component="component",
+    )
+
+
+def test_model_dashboard_form_named_component___form_view_does_not_clash_with_the_component_url():
+    assert_url_roundtrip(
+        "wildcoeus.dashboards:form_component",
+        app_label="foo",
+        dashboard="bar",
+        lookup="baz",
+        component="component",
+    )
+
+
+def test_at_is_not_valid_in_form_and_component_names():
+    with pytest.raises(NoReverseMatch):
+        reverse(
+            "wildcoeus.dashboards:dashboard_component",
+            kwargs={
+                "app_label": "foo",
+                "dashboard": "bar",
+                "component": "@form",
+            },
+        )
+
+    with pytest.raises(NoReverseMatch):
+        reverse(
+            "wildcoeus.dashboards:dashboard_component",
+            kwargs={
+                "app_label": "foo",
+                "dashboard": "bar",
+                "lookup": "baz",
+                "component": "@form",
+            },
+        )
+
+    with pytest.raises(NoReverseMatch):
+        reverse(
+            "wildcoeus.dashboards:form_component",
+            kwargs={
+                "app_label": "foo",
+                "dashboard": "bar",
+                "component": "@component",
+            },
+        )
+
+    with pytest.raises(NoReverseMatch):
+        reverse(
+            "wildcoeus.dashboards:form_component",
+            kwargs={
+                "app_label": "foo",
+                "dashboard": "bar",
+                "lookup": "baz",
+                "component": "@component",
+            },
+        )

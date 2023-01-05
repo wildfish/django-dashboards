@@ -15,7 +15,7 @@ snapshots[
 
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <form hx-get="/app1/testdashboard/test/form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><p><label for="id_number">Number:</label><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></p></form>
+            <form hx-get="/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><p><label for="id_number">Number:</label><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></p></form>
         </div>
     
 
@@ -30,7 +30,7 @@ snapshots[
 
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <form hx-get="/app1/testdashboard/test/form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><p><label for="id_number">Number:</label><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></p></form>
+            <form hx-get="/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><p><label for="id_number">Number:</label><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></p></form>
         </div>
     
 
