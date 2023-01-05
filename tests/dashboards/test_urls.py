@@ -82,7 +82,7 @@ def assert_url_roundtrip(url_name, **kwargs):
     resolved = resolve(url)
 
     assert f"{resolved.namespace}:{resolved.url_name}" == url_name
-    assert resolved.captured_kwargs == kwargs
+    assert resolved.kwargs == kwargs
 
 
 def test_dashboard_component_named_form___component_view_does_not_clash_with_the_component_form_url():
