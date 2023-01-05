@@ -63,7 +63,7 @@ def test_post(filter_dashboard, rf):
     view.setup(request=request, component="filter_component")
     response = view.post(request)
 
-    assert response.status_code == 302
+    assert response.status_code == 200
 
 
 def test_post_ajax(filter_dashboard, rf, snapshot):

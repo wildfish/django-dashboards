@@ -24,16 +24,6 @@ if config.Config().WILDCOEUS_INCLUDE_DASHBOARD_VIEWS:
 
 urlpatterns += [
     path(
-        FORM_COMPONENT_PATTERN,
-        views.FormComponentView.as_view(),
-        name="form_component",
-    ),
-    path(
-        FORM_COMPONENT_OBJECT_PATTERN,
-        views.FormComponentView.as_view(),
-        name="form_component",
-    ),
-    path(
         COMPONENT_PATTERN,
         views.ComponentView.as_view(),
         name="dashboard_component",
@@ -42,5 +32,15 @@ urlpatterns += [
         COMPONENT_OBJECT_PATTERN,
         views.ComponentView.as_view(),
         name="dashboard_component",
+    ),
+    path(
+        FORM_COMPONENT_PATTERN,
+        views.FormComponentView.as_view(),
+        name="form_component",
+    ),
+    path(
+        FORM_COMPONENT_OBJECT_PATTERN,
+        views.FormComponentView.as_view(),
+        name="form_component",
     ),
 ]

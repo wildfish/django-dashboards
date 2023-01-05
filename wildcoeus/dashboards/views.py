@@ -3,7 +3,7 @@ from typing import Callable, Dict, Optional, Protocol, Type
 
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpRequest, HttpResponse
 from django.views.generic import TemplateView
 
 from wildcoeus.dashboards.dashboard import Dashboard
@@ -138,6 +138,6 @@ class FormComponentView(ComponentView):
                     content_type="application/json",
                 )
 
-            return HttpResponseRedirect(component.get_absolute_url())
+            # return HttpResponseRedirect(component.get_absolute_url())
 
         return self.get(request, *args, **kwargs)
