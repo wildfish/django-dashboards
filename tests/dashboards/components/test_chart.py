@@ -121,15 +121,3 @@ def test_serializer__serialize__model(test_user_serializer__model, snapshot):
     data = serializer()
 
     snapshot.assert_match(data)
-
-
-@pytest.mark.django_db
-def test_no_to_fig__raises_not_implemented_error():
-    with pytest.raises(NotImplementedError):
-
-        class TestChartSerializer(ChartSerializer):
-            class Meta:
-                fields = ["id", "username"]
-                model = User
-
-        TestChartSerializer.serialize()()

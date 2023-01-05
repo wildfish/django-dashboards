@@ -1,3 +1,4 @@
+import json
 from typing import Any, Callable, Dict, List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
@@ -45,9 +46,33 @@ class ChartSerializer(metaclass=ChartSerializerType):
         height: Optional[int] = None
 
     @classmethod
+    def empty_chart(cls):
+        return json.dumps(
+            {
+                "layout": {
+                    "xaxis": {"visible": False},
+                    "yaxis": {"visible": False},
+                    "annotations": [
+                        {
+                            "text": f"{cls.Meta.title} - No data",
+                            "xref": "paper",
+                            "yref": "paper",
+                            "showarrow": False,
+                            "font": {"size": 28},
+                        }
+                    ],
+                }
+            }
+        )
+
+    @classmethod
     def serialize(cls, **serialize_kwargs) -> Callable:
         def _serialize(**kwargs) -> str:
             df = cls.get_data(**serialize_kwargs, **kwargs)
+
+            if isinstance(df, pd.DataFrame) and df.empty:
+                return cls.empty_chart()
+
             fig = cls.to_fig(df)
             fig = cls.apply_layout(fig)
             return fig.to_json()
@@ -69,8 +94,7 @@ class ChartSerializer(metaclass=ChartSerializerType):
 
     @classmethod
     def convert_to_df(cls, data: Any, columns: List = None) -> pd.DataFrame:
-        df = pd.DataFrame(data, columns=columns)
-        return df
+        return pd.DataFrame(data, columns=columns)
 
     @classmethod
     def get_data(cls, *args, **kwargs) -> pd.DataFrame:
@@ -78,8 +102,11 @@ class ChartSerializer(metaclass=ChartSerializerType):
         queryset = cls.get_queryset(*args, **kwargs)
         if fields:
             queryset = queryset.values(*fields)
-        df = cls.convert_to_df(queryset.iterator(), fields)
 
+        try:
+            df = cls.convert_to_df(queryset.iterator(), fields)
+        except KeyError:
+            return pd.DataFrame()
         return df
 
     @classmethod
