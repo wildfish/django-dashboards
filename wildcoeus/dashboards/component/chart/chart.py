@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional, Type, Union
 
-from django.http import HttpRequest
+
+if TYPE_CHECKING:
+    from wildcoeus.dashboards.component.chart import ChartSerializer
 
 from wildcoeus.dashboards.component import Component
 
@@ -13,7 +15,5 @@ class Chart(Component):
     staticPlot: Optional[bool] = False
     responsive: Optional[bool] = True
 
-    # Charts return json or for now str, we need better validation around this.
-    # we should also probably accept objects which have a to_json() on them
-    value: Optional[str] = None
-    defer: Optional[Callable[[HttpRequest], str]] = None
+    value: Optional[Union[Callable[..., Any], Type["ChartSerializer"]]] = None
+    defer: Optional[Union[Callable[..., Any], Type["ChartSerializer"]]] = None

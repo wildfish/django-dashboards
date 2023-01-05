@@ -16,6 +16,8 @@ class ChartSerializerType(type):
         chart_serializer_class._meta = meta
 
         if base_meta:
+            if not hasattr(meta, "fields"):
+                chart_serializer_class._meta.fields = base_meta.fields
             if not hasattr(meta, "queryset"):
                 chart_serializer_class._meta.queryset = base_meta.queryset
             if not hasattr(meta, "model"):
@@ -35,7 +37,7 @@ class ChartSerializer(metaclass=ChartSerializerType):
     layout: Optional[Dict[str, Any]] = None
 
     class Meta:
-        fields: List[str]
+        fields: Optional[List[str]] = None
         model: Optional[str] = None
         queryset: Optional[str] = None
         title: Optional[str] = None
@@ -53,7 +55,7 @@ class ChartSerializer(metaclass=ChartSerializerType):
         return _serialize
 
     @classmethod
-    def get_fields(cls) -> List[str]:
+    def get_fields(cls) -> Optional[List[str]]:
         return cls.Meta.fields
 
     @classmethod
@@ -66,7 +68,7 @@ class ChartSerializer(metaclass=ChartSerializerType):
         return fig.update_layout(**layout)
 
     @classmethod
-    def convert_to_df(cls, data: Any, columns: List) -> pd.DataFrame:
+    def convert_to_df(cls, data: Any, columns: List = None) -> pd.DataFrame:
         df = pd.DataFrame(data, columns=columns)
         return df
 
@@ -74,7 +76,8 @@ class ChartSerializer(metaclass=ChartSerializerType):
     def get_data(cls, *args, **kwargs) -> pd.DataFrame:
         fields = cls.get_fields()
         queryset = cls.get_queryset(*args, **kwargs)
-        queryset = queryset.values(*fields)
+        if fields:
+            queryset = queryset.values(*fields)
         df = cls.convert_to_df(queryset.iterator(), fields)
 
         return df

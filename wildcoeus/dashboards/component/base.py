@@ -95,8 +95,19 @@ class Component:
         filters: Optional[Dict[str, Any]] = None,
     ) -> ValueData:
         if self.is_deferred and self.defer and call_deferred:
-            value = self.defer(request=request, object=self.object, filters=filters)
+            serializable = getattr(self.defer, "serialize", None)
+            if serializable:
+                self.defer = serializable
+
+            if callable(self.defer):
+                value = self.defer(request=request, object=self.object, filters=filters)
+            else:
+                value = self.defer
         else:
+            serializable = getattr(self.value, "serialize", None)
+            if serializable:
+                self.value = serializable
+
             if callable(self.value):
                 value = self.value(request=request, object=self.object, filters=filters)
             else:

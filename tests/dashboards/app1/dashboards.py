@@ -34,9 +34,11 @@ class TestComplexDashboard(TestDashboard):
     component_4 = Text(defer=lambda **kwargs: "value")
     component_3 = Text(defer=lambda **kwargs: "value")
     component_5 = Text(value="<div></div>", mark_safe=True)
-    component_6 = Table(value=TestTableSerializer.serialize)
+    component_6 = Table(value=TestTableSerializer)
     component_7 = Chart(
-        value=json.dumps(dict(data=[dict(x=["a"], y=["b"])], layout={}))
+        value=lambda **kwargs: json.dumps(
+            dict(data=[dict(x=["a"], y=["b"])], layout={})
+        )
     )
 
     class Meta:

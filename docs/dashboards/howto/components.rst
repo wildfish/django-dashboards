@@ -157,7 +157,7 @@ table component:
     # dashboards.py
     ...
     table_example = Table(
-        defer=ExampleTableSerializer.serialize,
+        defer=ExampleTableSerializer,
     )
 
 
@@ -248,7 +248,7 @@ Basic tables work the same as table, with the js, search & sort disabled.
 ::
 
     table_example_not_deferred = BasicTable(
-        value=ExampleTableSerializer.serialize,
+        value=ExampleTableSerializer,
     )
 
 Form

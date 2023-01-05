@@ -129,11 +129,11 @@ class DemoDashboard(Dashboard):
     )
     table_example = Table(
         page_size=5,
-        defer=ExampleTableSerializer.serialize,
+        defer=ExampleTableSerializer,
         grid_css_classes=Grid.TWO.value,
     )
     table_example_not_deferred = BasicTable(
-        value=ExampleTableSerializer.serialize,
+        value=ExampleTableSerializer,
         grid_css_classes=Grid.TWO.value,
     )
     scatter_map_example = Map(
@@ -160,9 +160,7 @@ class DemoDashboardWithLayout(DemoDashboard):
     calculated_example = Text(
         defer=lambda **kwargs: "some calculated text", grid_css_classes=Grid.THREE.value
     )
-    table_example = Table(
-        defer=ExampleTableSerializer.serialize, grid_css_classes=Grid.ONE.value
-    )
+    table_example = Table(defer=ExampleTableSerializer, grid_css_classes=Grid.ONE.value)
 
     class Meta:
         name = "With Layout"
