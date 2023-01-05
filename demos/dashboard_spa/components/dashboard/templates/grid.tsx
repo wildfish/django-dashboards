@@ -7,7 +7,7 @@ import * as componentStyles from "@/components/component/index.module.scss";
 
 export const DashboardGrid = ({dashboard}: {dashboard: Dashboard}) => (
     <>
-        <h1>{dashboard.Meta.name} (Grid applied)</h1>
+        <h1>{dashboard.Meta.verbose_name} (Grid applied)</h1>
         <div className={styles.dashboardContainer}>
         {dashboard.components.map(c =>
             <div className={`${componentStyles.component} ${styles[`${c.gridCssClasses}`]}`} key={c.key}>

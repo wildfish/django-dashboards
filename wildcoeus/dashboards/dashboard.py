@@ -41,8 +41,13 @@ class DashboardType(type):
         dashboard_class.components = components
 
         module = attrs.pop("__module__")
+
+        # in the default case when no Meta was set on the dashboard
+        # make a copy of the base class so that we can modify it
+        # without breaking the base version
         attr_meta = attrs.get("Meta", None)
-        meta = attr_meta or getattr(dashboard_class, "Meta", None)
+        meta = attr_meta or type("Meta", (getattr(dashboard_class, "Meta", None),), {})
+
         base_meta = getattr(dashboard_class, "_meta", None)
         dashboard_class._meta = meta
 
@@ -57,7 +62,7 @@ class DashboardType(type):
             ):  # TODO needs better way to exclude the base class?
 
                 raise RuntimeError(
-                    "Model class %s.%s doesn't declare an explicit "
+                    "Dashboard class %s.%s doesn't declare an explicit "
                     "app_label and isn't in an application in "
                     "INSTALLED_APPS." % (module, name)
                 )
@@ -66,9 +71,16 @@ class DashboardType(type):
                 app_config.label if app_config else meta_app_label
             )
 
-        if base_meta:
-            if not hasattr(meta, "name"):
+        if name not in (
+            "ModelDashboard",
+            "Dashboard",
+        ):  # TODO needs better way to exclude the base class?
+            if not hasattr(dashboard_class._meta, "name"):
                 dashboard_class._meta.name = name
+            if not getattr(dashboard_class._meta, "verbose_name", None):
+                dashboard_class._meta.verbose_name = dashboard_class._meta.name
+
+        if base_meta:
             if not hasattr(meta, "model"):
                 dashboard_class._meta.model = base_meta.model
             if not hasattr(meta, "lookup_kwarg"):
@@ -113,6 +125,7 @@ class Dashboard(metaclass=DashboardType):
 
     class Meta:
         name: str
+        verbose_name: str = ""
         include_in_graphql: bool = True
         include_in_menu: bool = True
         permission_classes: Optional[List[BasePermission]] = None
@@ -251,7 +264,7 @@ class Dashboard(metaclass=DashboardType):
         return layout.components.render(dashboard=self, context=Context(context))
 
     def __str__(self):
-        return self.Meta.name
+        return self._meta.name
 
 
 class ModelDashboard(Dashboard):

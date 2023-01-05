@@ -115,6 +115,17 @@ class TestNoMetaDashboard(Dashboard):
     component_1 = Text(value="value")
 
 
+class TestDashboardWithMetaName(Dashboard):
+    class Meta:
+        name = "Meta Name"
+
+
+class TestDashboardWithMetaVerboseName(Dashboard):
+    class Meta:
+        name = "Meta Name"
+        verbose_name = "Meta Verbose Name"
+
+
 registry.register(TestDashboard)
 registry.register(TestFilterDashboard)
 registry.register(TestAdminDashboard)
@@ -122,3 +133,5 @@ registry.register(TestComplexDashboard)
 registry.register(TestDashboardWithLayout)
 registry.register(TestModelDashboard)
 registry.register(TestNoMetaDashboard)
+registry.register(TestDashboardWithMetaName)
+registry.register(TestDashboardWithMetaVerboseName)

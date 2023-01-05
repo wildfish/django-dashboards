@@ -75,6 +75,7 @@ class DeferredComponentSchema(ComponentSchema):
 @strawberry.type
 class DashboardMetaSchema:
     name: str
+    verbose_name: str
     dashboard: strawberry.Private[Dashboard]
     slug: str = strawberry.field(resolver=lambda root: slugify(root.name))
 
@@ -106,7 +107,11 @@ def get_dashboards(info: Info) -> list[DashboardSchema]:
         ):
             instance = dashboard_cls(request=info.context.get("request"))
             schema = DashboardSchema(
-                Meta=DashboardMetaSchema(name=instance.Meta.name, dashboard=instance),
+                Meta=DashboardMetaSchema(
+                    name=instance._meta.name,
+                    verbose_name=instance._meta.verbose_name,
+                    dashboard=instance,
+                ),
                 components=[c for c in instance.get_components() if c.serializable],
             )
             dashboards.append(schema)

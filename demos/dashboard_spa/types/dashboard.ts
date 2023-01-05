@@ -68,6 +68,7 @@ export type HTMLComponent = {
 
 export type DashboardMeta = {
   name: string,
+  verbose_name: string,
   slug: string,
   layoutJson: any
 }

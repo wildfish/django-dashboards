@@ -44,9 +44,9 @@ class Registry(object):
 
     def get_graphql_dashboards(self):
         return {
-            dashboard.Meta.name: dashboard
+            dashboard._meta.name: dashboard
             for dashboard in self.dashboards
-            if dashboard.Meta.include_in_graphql
+            if dashboard._meta.include_in_graphql
         }
 
     def get_urls(self):
