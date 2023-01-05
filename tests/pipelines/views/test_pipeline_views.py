@@ -65,9 +65,9 @@ def test_pipeline_execution_list_queries_pinned(
     client, staff, django_assert_num_queries
 ):
     client.force_login(staff)
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_execution", _quantity=50)
 
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(4):
         client.get(
             reverse(
                 "wildcoeus.pipelines:pipeline-execution-list", args=[pe.pipeline_id]
