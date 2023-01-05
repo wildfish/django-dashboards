@@ -53,7 +53,19 @@ class Command(BaseCommand):
             exit()
 
         run_id = str(uuid.uuid4())
-        input_data = {}  # TODO if there is any we'd need this as arg maybe?
+        input_data = {}
+
+        # if there are any input types ask the user to enter a value.
+        tasks = pipeline_cls.tasks.values() if pipeline_cls.tasks else []
+
+        for task in tasks:
+            if task.InputType:
+                for f in task.InputType.__fields__.values():
+                    if f.name not in input_data:
+                        values = self._handle_input(
+                            text=f"enter input value for {f.name}"
+                        )
+                        input_data[f"{f.name}"] = values
 
         if selected_action == "c":
             exit()

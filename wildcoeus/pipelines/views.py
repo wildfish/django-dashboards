@@ -77,6 +77,7 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
 
 class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/pipeline_execution_list.html"
+    paginate_by = 30
 
     def get_queryset(self):
         return PipelineExecution.objects.with_task_count().filter(
