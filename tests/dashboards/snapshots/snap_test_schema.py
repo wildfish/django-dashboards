@@ -115,7 +115,7 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "filter_component",
                 "renderType": "Form",
                 "value": {
-                    "action": "/app1/testfilterdashboard/filter_component/form/",
+                    "action": "/app1/testfilterdashboard/filter_component/@form/",
                     "dependents": ["dependent_component_1", "dependent_component_2"],
                     "form": [
                         {
@@ -291,7 +291,7 @@ snapshots["test_view__dashboards__no_permission 1"] = [
                 "key": "filter_component",
                 "renderType": "Form",
                 "value": {
-                    "action": "/app1/testfilterdashboard/filter_component/form/",
+                    "action": "/app1/testfilterdashboard/filter_component/@form/",
                     "dependents": ["dependent_component_1", "dependent_component_2"],
                     "form": [
                         {
@@ -456,7 +456,7 @@ snapshots["test_view__dashboards__permission 1"] = [
                 "key": "filter_component",
                 "renderType": "Form",
                 "value": {
-                    "action": "/app1/testfilterdashboard/filter_component/form/",
+                    "action": "/app1/testfilterdashboard/filter_component/@form/",
                     "dependents": ["dependent_component_1", "dependent_component_2"],
                     "form": [
                         {

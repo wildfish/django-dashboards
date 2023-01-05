@@ -1,7 +1,7 @@
 from django import forms
 
-from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
 from wildcoeus.dashboards.forms import DashboardForm
+from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
 
 
 class SearchForm(DashboardForm):
