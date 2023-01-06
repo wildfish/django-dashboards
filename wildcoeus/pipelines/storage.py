@@ -1,6 +1,3 @@
-import os
-
-from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
 
@@ -11,8 +8,8 @@ def get_log_path(run_id: str):
 
 class LogFileSystemStorage(FileSystemStorage):
     def get_available_name(self, name, max_length=None):
-        """override file if already available"""
+        """delete file if already exists so we can keep the same name"""
         if self.exists(name):
-            os.remove(os.path.join(settings.MEDIA_ROOT, name))
+            self.delete(name)
 
         return name
