@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
 from django.utils import timezone
 
 
@@ -275,29 +274,20 @@ class ModelPipeline(Pipeline):
         model: Optional[str]
         queryset = Optional[str]
 
-    @classmethod
-    def get_queryset(cls):
-        """
-        Return the list of items for this pipeline to run against.
-        """
-        if getattr(cls.Meta, "queryset", None) is not None:
-            queryset = cls.Meta.queryset
-            if isinstance(queryset, QuerySet):
-                queryset = queryset.all()
-        elif cls.Meta.model is not None:
-            queryset = cls.Meta.model._default_manager.all()
+    def get_queryset(self, *args, **kwargs):
+        if self.Meta.model is not None:
+            queryset = self.Meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
-                "%(cls)s is missing a QuerySet. Define "
-                "%(cls)s.model, %(cls)s.queryset, or override "
-                "%(cls)s.get_queryset()." % {"cls": cls.__class__.__name__}
+                "%(self)s is missing a QuerySet. Define "
+                "%(self)s.model or override "
+                "%(self)s.get_queryset()." % {"self": self.__class__.__name__}
             )
 
         return queryset
 
-    @classmethod
-    def get_iterator(cls):
-        return cls.get_queryset()
+    def get_iterator(self):
+        return self.get_queryset()
 
     @staticmethod
     def get_serializable_pipeline_object(obj):

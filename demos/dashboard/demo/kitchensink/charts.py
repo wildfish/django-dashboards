@@ -14,28 +14,24 @@ class ScatterChartSerializer(ChartSerializer):
     color: Optional[str] = None
     mode: Optional[str] = "markers"
 
-    @classmethod
-    def get_x(cls, df) -> str:
-        return cls.x
+    def get_x(self, df) -> str:
+        return self.x
 
-    @classmethod
-    def get_y(cls, df) -> str:
-        return cls.y
+    def get_y(self, df) -> str:
+        return self.y
 
-    @classmethod
-    def get_size(cls, df) -> str:
-        return cls.size
+    def get_size(self, df) -> str:
+        return self.size
 
-    @classmethod
-    def to_fig(cls, df) -> go.Figure:
+    def to_fig(self, df) -> go.Figure:
         fig = px.scatter(
             df,
-            x=cls.get_x(df),
-            y=cls.get_y(df),
-            size=cls.get_size(df),
-            color=cls.color,
+            x=self.get_x(df),
+            y=self.get_y(df),
+            size=self.get_size(df),
+            color=self.color,
         )
-        fig = fig.update_traces(mode=cls.mode)
+        fig = fig.update_traces(mode=self.mode)
 
         return fig
 
@@ -46,22 +42,19 @@ class BarChartSerializer(ChartSerializer):
     color: Optional[str] = None
     barmode: Optional[str] = "group"
 
-    @classmethod
-    def get_x(cls, df) -> str:
-        return cls.x
+    def get_x(self, df) -> str:
+        return self.x
 
-    @classmethod
-    def get_y(cls, df) -> str:
-        return cls.y
+    def get_y(self, df) -> str:
+        return self.y
 
-    @classmethod
-    def to_fig(cls, df) -> go.Figure:
+    def to_fig(self, df) -> go.Figure:
         fig = px.histogram(
             df,
-            x=cls.get_x(df),
-            y=cls.get_y(df),
-            color=cls.color,
-            barmode=cls.barmode,
+            x=self.get_x(df),
+            y=self.get_y(df),
+            color=self.color,
+            barmode=self.barmode,
             text_auto=True,
         )
 
@@ -80,8 +73,7 @@ class ExampleChartSerializer(BarChartSerializer):
     class Meta:
         title = "Total Medals"
 
-    @classmethod
-    def get_data(cls, *args, **kwargs):
+    def get_data(self, *args, **kwargs):
         df = px.data.medals_long()
         filters = kwargs.get("filters") or {}
         if "medal" in filters and filters["medal"] != "all":
@@ -99,8 +91,7 @@ class ExampleStackedChartSerializer(BarChartSerializer):
     class Meta:
         title = "Medals Split"
 
-    @classmethod
-    def get_data(cls, *args, **kwargs):
+    def get_data(self, *args, **kwargs):
         df = px.data.medals_long()
         filters = kwargs.get("filters") or {}
         if "medal" in filters and filters["medal"] != "all":
@@ -119,8 +110,7 @@ class ExampleBubbleChartSerializer(ScatterChartSerializer):
     class Meta:
         title = "Bubble Chart Example"
 
-    @classmethod
-    def get_data(cls, *args, **kwargs):
+    def get_data(self, *args, **kwargs):
         return px.data.iris()
 
 
@@ -128,12 +118,10 @@ class ExampleGaugeChartSerializer(ChartSerializer):
     class Meta:
         title = "Gauge Speed Example"
 
-    @classmethod
-    def get_data(cls, *args, **kwargs):
+    def get_data(self, *args, **kwargs):
         return random.randint(200, 500)
 
-    @classmethod
-    def to_fig(cls, data) -> go.Figure:
+    def to_fig(self, data) -> go.Figure:
         fig = go.Figure(
             go.Indicator(
                 mode="gauge+number", value=data, domain={"x": [0, 1], "y": [0, 1]}

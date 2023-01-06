@@ -1,7 +1,8 @@
-from typing import Any, Callable, Dict, List, Optional
+import json
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
 
 import pandas as pd
 import plotly.graph_objs as go
@@ -16,8 +17,8 @@ class ChartSerializerType(type):
         chart_serializer_class._meta = meta
 
         if base_meta:
-            if not hasattr(meta, "queryset"):
-                chart_serializer_class._meta.queryset = base_meta.queryset
+            if not hasattr(meta, "fields"):
+                chart_serializer_class._meta.fields = base_meta.fields
             if not hasattr(meta, "model"):
                 chart_serializer_class._meta.model = base_meta.model
             if not hasattr(meta, "title"):
@@ -34,71 +35,83 @@ class ChartSerializer(metaclass=ChartSerializerType):
     meta_layout_attrs = ["title", "width", "height"]
     layout: Optional[Dict[str, Any]] = None
 
+    @dataclass
     class Meta:
-        fields: List[str]
+        fields: Optional[List[str]] = None
         model: Optional[str] = None
         queryset: Optional[str] = None
         title: Optional[str] = None
         width: Optional[int] = None
         height: Optional[int] = None
 
+    def empty_chart(self):
+        return json.dumps(
+            {
+                "layout": {
+                    "xaxis": {"visible": False},
+                    "yaxis": {"visible": False},
+                    "annotations": [
+                        {
+                            "text": f"{self.Meta.title} - No data",
+                            "xref": "paper",
+                            "yref": "paper",
+                            "showarrow": False,
+                            "font": {"size": 28},
+                        }
+                    ],
+                }
+            }
+        )
+
     @classmethod
-    def serialize(cls, **serialize_kwargs) -> Callable:
-        def _serialize(**kwargs) -> str:
-            df = cls.get_data(**serialize_kwargs, **kwargs)
-            fig = cls.to_fig(df)
-            fig = cls.apply_layout(fig)
-            return fig.to_json()
+    def serialize(cls, **kwargs) -> str:
+        self = cls()
+        df = self.get_data(**kwargs)
 
-        return _serialize
+        if isinstance(df, pd.DataFrame) and df.empty:
+            return self.empty_chart()
 
-    @classmethod
-    def get_fields(cls) -> List[str]:
-        return cls.Meta.fields
+        fig = self.to_fig(df)
+        fig = self.apply_layout(fig)
+        return fig.to_json()
 
-    @classmethod
-    def apply_layout(cls, fig: go.Figure):
-        layout = cls.layout or {}
+    def get_fields(self) -> Optional[List[str]]:
+        return self.Meta.fields
 
-        for attr in cls.meta_layout_attrs:
-            layout.setdefault(attr, getattr(cls.Meta, attr))
+    def apply_layout(self, fig: go.Figure):
+        layout = self.layout or {}
+
+        for attr in self.meta_layout_attrs:
+            layout.setdefault(attr, getattr(self.Meta, attr))
 
         return fig.update_layout(**layout)
 
-    @classmethod
-    def convert_to_df(cls, data: Any, columns: List) -> pd.DataFrame:
-        df = pd.DataFrame(data, columns=columns)
+    def convert_to_df(self, data: Any, columns: List = None) -> pd.DataFrame:
+        return pd.DataFrame(data, columns=columns)
+
+    def get_data(self, *args, **kwargs) -> pd.DataFrame:
+        fields = self.get_fields()
+        queryset = self.get_queryset(*args, **kwargs)
+        if fields:
+            queryset = queryset.values(*fields)
+
+        try:
+            df = self.convert_to_df(queryset.iterator(), fields)
+        except KeyError:
+            return pd.DataFrame()
         return df
 
-    @classmethod
-    def get_data(cls, *args, **kwargs) -> pd.DataFrame:
-        fields = cls.get_fields()
-        queryset = cls.get_queryset(*args, **kwargs)
-        queryset = queryset.values(*fields)
-        df = cls.convert_to_df(queryset.iterator(), fields)
-
-        return df
-
-    @classmethod
-    def get_queryset(cls, *args, **kwargs):
-        """
-        Return the list of items for this pipeline to run against.
-        """
-        if getattr(cls.Meta, "queryset", None) is not None:
-            queryset = cls.Meta.queryset
-            if isinstance(queryset, QuerySet):
-                queryset = queryset.all()
-        elif cls.Meta.model is not None:
-            queryset = cls.Meta.model._default_manager.all()
+    def get_queryset(self, *args, **kwargs):
+        if self.Meta.model is not None:
+            queryset = self.Meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
-                "%(cls)s is missing a QuerySet. Define "
-                "%(cls)s.model, %(cls)s.queryset, or override "
-                "%(cls)s.get_queryset()." % {"cls": cls.__class__.__name__}
+                "%(self)s is missing a QuerySet. Define "
+                "%(self)s.model or override "
+                "%(self)s.get_queryset()." % {"self": self.__class__.__name__}
             )
 
         return queryset
 
-    @classmethod
-    def to_fig(cls, data: Any) -> go.Figure:
+    def to_fig(self, data: Any) -> go.Figure:
         raise NotImplementedError

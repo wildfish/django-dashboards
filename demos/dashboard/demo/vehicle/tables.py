@@ -14,6 +14,5 @@ class VehicleTableSerializer(TableSerializer):
             "next_mot_due": "MOT Due",
         }
 
-    @classmethod
-    def get_queryset(cls, **kwargs):
+    def get_queryset(self, **kwargs):
         return VehicleData.get_queryset(filters=kwargs["filters"])

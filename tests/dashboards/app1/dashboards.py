@@ -25,8 +25,7 @@ class TestTableSerializer(TableSerializer):
     class Meta:
         columns = {"a": "A", "b": "B"}
 
-    @classmethod
-    def get_data(cls, *args, **kwargs):
+    def get_data(self, *args, **kwargs):
         return [{"a": "Value", "b": "Value b"}]
 
 
@@ -34,9 +33,11 @@ class TestComplexDashboard(TestDashboard):
     component_4 = Text(defer=lambda **kwargs: "value")
     component_3 = Text(defer=lambda **kwargs: "value")
     component_5 = Text(value="<div></div>", mark_safe=True)
-    component_6 = Table(value=TestTableSerializer.serialize)
+    component_6 = Table(value=TestTableSerializer)
     component_7 = Chart(
-        value=json.dumps(dict(data=[dict(x=["a"], y=["b"])], layout={}))
+        value=lambda **kwargs: json.dumps(
+            dict(data=[dict(x=["a"], y=["b"])], layout={})
+        )
     )
 
     class Meta:

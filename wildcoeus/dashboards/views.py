@@ -88,6 +88,7 @@ class ComponentView(DashboardObjectMixin, TemplateView):
             filters = (
                 request.GET.dict() if request.method == "GET" else request.POST.dict()
             )
+
             # Return json, calling the deferred value.
             return HttpResponse(
                 json.dumps(

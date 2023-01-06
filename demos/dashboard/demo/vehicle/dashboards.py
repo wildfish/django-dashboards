@@ -53,9 +53,7 @@ class VehicleOverviewDashboard(Dashboard):
     map = Map(
         defer=VehicleData.fetch_current_locations, grid_css_classes=Grid.ONE.value
     )
-    vehicles = Table(
-        defer=VehicleTableSerializer.serialize, grid_css_classes=Grid.ONE.value
-    )
+    vehicles = Table(defer=VehicleTableSerializer, grid_css_classes=Grid.ONE.value)
 
     class Meta:
         name = "Summary"

@@ -126,7 +126,9 @@ def test_model_pipeline(celery_worker, logger):
 
         class Meta:
             title = "Test Pipeline"
-            queryset = User.objects.all()
+
+        def get_queryset(self, *args, **kwargs):
+            return User.objects.all()
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -264,8 +266,8 @@ def test_model__iterate_task(celery_worker, logger):
         def run(self, *args, **kwargs):
             return True
 
-        class Meta:
-            queryset = User.objects.all()
+        def get_queryset(self, *args, **kwargs):
+            return User.objects.all()
 
     class TestPipeline(Pipeline):
         first = TaskFirst(config={})

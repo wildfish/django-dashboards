@@ -157,7 +157,7 @@ table component:
     # dashboards.py
     ...
     table_example = Table(
-        defer=ExampleTableSerializer.serialize,
+        defer=ExampleTableSerializer,
     )
 
 
@@ -191,7 +191,7 @@ table component:
                 }
             ]
 
-Serializer can also be driven directly from Meta.model, Meta.queryset or defining a get_queryset(obj) method:
+Serializer can also be driven directly from Meta.model or defining a get_queryset(obj) method:
 
 ::
 
@@ -203,7 +203,6 @@ Serializer can also be driven directly from Meta.model, Meta.queryset or definin
                 "first_name": "First Name",
             }
             # model = User
-            # queryset = User.objects.all()
 
         @classmethod
         def get_queryset(cls, **kwargs):
@@ -248,7 +247,7 @@ Basic tables work the same as table, with the js, search & sort disabled.
 ::
 
     table_example_not_deferred = BasicTable(
-        value=ExampleTableSerializer.serialize,
+        value=ExampleTableSerializer,
     )
 
 Form

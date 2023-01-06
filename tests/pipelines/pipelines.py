@@ -12,8 +12,7 @@ class TestTaskIterator(Task):
     def run(self, *args, **kwargs):
         return True
 
-    @classmethod
-    def get_iterator(cls):
+    def get_iterator(self):
         return range(0, 3)
 
 
@@ -27,8 +26,7 @@ class TestPipeline(Pipeline):
 class TestIteratorPipeline(Pipeline):
     first = TestTask(config={})
 
-    @classmethod
-    def get_iterator(cls):
+    def get_iterator(self):
         return range(0, 3)
 
 
@@ -45,4 +43,6 @@ class TestModelPipelineQS(ModelPipeline):
 
     class Meta:
         title = "Test Pipeline"
-        queryset = User.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        return User.objects.all()
