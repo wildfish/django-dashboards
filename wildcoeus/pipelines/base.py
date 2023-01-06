@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
 from django.utils import timezone
 
 

@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
 from django.utils import timezone
 
 from pydantic import BaseModel, ValidationError
