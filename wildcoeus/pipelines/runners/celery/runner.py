@@ -3,9 +3,10 @@ from typing import Any, Dict, List, Optional
 
 from celery import chain
 
-from wildcoeus.pipelines import PipelineReporter, PipelineTaskStatus
 from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.runners import PipelineRunner
+from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 
 from .tasks import run_pipeline_report, run_task, run_task_report

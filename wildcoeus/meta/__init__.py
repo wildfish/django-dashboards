@@ -69,3 +69,6 @@ class ClassWithMeta:
             )
         else:
             cls._meta.app_label = app_config.label if app_config else meta_app_label
+
+    def __str__(self):
+        return self._meta.verbose_name

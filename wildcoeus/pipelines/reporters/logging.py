@@ -3,9 +3,11 @@ from typing import Any, Optional
 from django.core.files.base import ContentFile
 from django.utils.timezone import now
 
-from wildcoeus.pipelines import PipelineReporter, config
+from wildcoeus.pipelines import config
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.storage import get_log_path
+
+from . import PipelineReporter
 
 
 class LoggingReporter(PipelineReporter):

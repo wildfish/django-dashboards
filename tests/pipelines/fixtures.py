@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 import pytest
 
-from tests.pipelines import pipelines
+from tests.pipelines.app import pipelines
 
 
 @pytest.fixture

@@ -1,8 +1,8 @@
 import pytest
 
-from wildcoeus.pipelines import PipelineTaskStatus
 from wildcoeus.pipelines.models import PipelineLog, TaskLog
 from wildcoeus.pipelines.reporters.orm import ORMReporter
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 pytestmark = pytest.mark.django_db

@@ -7,12 +7,11 @@ from django.test.utils import override_settings
 import pytest
 
 from tests.dashboards.fakes import fake_user
-from wildcoeus.pipelines import Pipeline, Task
-from wildcoeus.pipelines.base import ModelPipeline
+from wildcoeus.pipelines.base import ModelPipeline, Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.celery.runner import Runner
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
-from wildcoeus.pipelines.tasks.base import ModelTask
+from wildcoeus.pipelines.tasks.base import ModelTask, Task
 
 
 pytestmark = pytest.mark.django_db
@@ -49,7 +48,7 @@ def test_task_have_no_parents___tasks_are_added_to_chain_in_configured_order(
         second = TaskSecond(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -88,7 +87,7 @@ def test_task_with_parents___tasks_are_added_to_chain_in_configured_order(
         second = TaskSecond(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -125,7 +124,7 @@ def test_model_pipeline(celery_worker, logger):
         second = TaskSecond(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
         def get_queryset(self, *args, **kwargs):
             return User.objects.all()
@@ -175,7 +174,7 @@ def test_iterator_pipeline(celery_worker, logger):
         second = TaskSecond(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
         @classmethod
         def get_iterator(cls):
@@ -229,7 +228,7 @@ def test_iterator__iterate_task(celery_worker, logger):
         second = TaskSecond(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -274,7 +273,7 @@ def test_model__iterate_task(celery_worker, logger):
         second = TaskSecond(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -314,7 +313,7 @@ def test__task_to_celery_tasks__queue_defined():
         without_queue = TaskWithoutQueue(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     with_queue_result = Runner()._task_to_celery_tasks(
         task=TestPipeline().tasks["with_queue"],

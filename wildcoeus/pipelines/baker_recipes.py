@@ -3,13 +3,13 @@ from django.utils.timezone import make_aware
 from faker import Faker
 from model_bakery.recipe import Recipe, seq
 
-from wildcoeus.pipelines import PipelineTaskStatus
 from wildcoeus.pipelines.models import (
     PipelineExecution,
     PipelineLog,
     TaskLog,
     TaskResult,
 )
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 fake = Faker()

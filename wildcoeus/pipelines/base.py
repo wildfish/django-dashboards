@@ -1,7 +1,10 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
 
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Model
 from django.utils import timezone
+
+from wildcoeus.meta import ClassWithMeta
 
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -44,22 +47,59 @@ class PipelineType(type):
         return pipeline_class
 
 
-class Pipeline(metaclass=PipelineType):
+class Pipeline(ClassWithMeta):
     tasks: Optional[dict[str, Task]] = {}
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # collect all the components from all the base classes
+        cls.tasks = {}
+        for base in reversed(cls.__bases__):
+            if not hasattr(base, "tasks") or not isinstance(base.tasks, dict):
+                continue
+
+            for k, v in ((k, v) for k, v in base.tasks.items() if isinstance(v, Task)):
+                cls.tasks[k] = v
+
+        # add all components from the current class
+        for k, v in ((k, v) for k, v in cls.__dict__.items() if isinstance(v, Task)):
+            cls.tasks[k] = v
+
+        for key, task in list(cls.tasks.items()):
+            task.pipeline_task = key
+
+        #
+        # attrs["tasks"] = {}
+        # for key, value in list(attrs.items()):
+        #     if isinstance(value, Task):
+        #         task = attrs.pop(key)
+        #         task.pipeline_task = key
+        #         attrs["tasks"][key] = task
+        #
+        # pipeline_class = super().__new__(mcs, name, bases, attrs)
+        # tasks = {}
+        # for base in reversed(pipeline_class.__mro__):
+        #     # Collect tasks from base class.
+        #     if hasattr(base, "tasks"):
+        #         tasks.update(base.tasks)
+        #
+        #     # Field shadowing.
+        #     for attr, value in base.__dict__.items():
+        #         if value is None and attr in tasks:
+        #             tasks.pop(attr)
+        #
+        # # add tasks to class.
+        # pipeline_class.tasks = tasks
+        #
+        # return pipeline_class
 
     def __init__(self):
         self.id = self.get_id()
         self.cleaned_tasks: List[Optional[Task]] = []
 
-    class Meta:
-        title: str
-
     def __str__(self):
-        return (
-            self.Meta.title
-            if hasattr(self.Meta, "title") and self.Meta.title
-            else self.get_id()
-        )
+        return self._meta.verbose_name
 
     def clean_parents(
         self,
@@ -269,14 +309,14 @@ class Pipeline(metaclass=PipelineType):
 
 
 class ModelPipeline(Pipeline):
+    _meta: Type["ModelPipeline.Meta"]
+
     class Meta:
-        title: str
-        model: Optional[str]
-        queryset = Optional[str]
+        model: Optional[Model] = None
 
     def get_queryset(self, *args, **kwargs):
-        if self.Meta.model is not None:
-            queryset = self.Meta.model._default_manager.all()
+        if self._meta.model is not None:
+            queryset = self._meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
                 "%(self)s is missing a QuerySet. Define "

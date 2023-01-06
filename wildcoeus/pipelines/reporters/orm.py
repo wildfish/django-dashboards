@@ -1,8 +1,7 @@
 from typing import Any, Optional
 
-from wildcoeus.pipelines import PipelineReporter
-
 from ..models import PipelineLog, TaskLog
+from . import PipelineReporter
 
 
 class ORMReporter(PipelineReporter):

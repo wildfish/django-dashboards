@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
-from wildcoeus.pipelines import PipelineReporter, PipelineTaskStatus
+from wildcoeus.pipelines.reporters import PipelineReporter
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class Reporter(PipelineReporter):

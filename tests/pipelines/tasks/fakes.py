@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import Task
+from wildcoeus.pipelines.tasks import Task
 
 
 def make_fake_task(input_type=None, config_type=None):

@@ -8,7 +8,7 @@ from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
-from wildcoeus.pipelines import PipelineTaskStatus, config
+from wildcoeus.pipelines import config
 from wildcoeus.pipelines.forms import PipelineStartForm
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.models import (
@@ -21,7 +21,7 @@ from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
-from wildcoeus.pipelines.status import FAILED_STATUES
+from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 from wildcoeus.pipelines.storage import get_log_path
 
 

@@ -5,8 +5,9 @@ import pytest
 from pydantic import BaseModel
 
 from tests.dashboards.fakes import fake_user
-from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task, TaskConfig
-from wildcoeus.pipelines.tasks.base import ConfigValidationError
+from wildcoeus.pipelines.base import Pipeline
+from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.tasks.base import ConfigValidationError, Task, TaskConfig
 
 
 pytest_plugins = [
@@ -32,7 +33,7 @@ def test_one_task_has_a_bad_config___error_is_reported_runner_is_not_started_tas
             good = GoodConfig(config={"value": "1"})
 
             class Meta:
-                title = "Test Pipeline"
+                app_label = "pipelinetest"
 
     assert (
         str(e.value)
@@ -58,7 +59,7 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
         also_good = GoodConfigB(config={"value": "1"})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
@@ -113,7 +114,7 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
         also_good = GoodConfigB(config={"value": "1"})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
@@ -172,7 +173,7 @@ def test_tasks_has_a_missing_parent___error_is_raised():
         good = GoodConfig(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
@@ -214,7 +215,7 @@ def test_pipeline__iterator__all_tasks_have_a_good_config___runner_is_started_ta
             return range(0, 2)
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
@@ -277,7 +278,7 @@ def test_pipeline___model__all_tasks_have_a_good_config___runner_is_started_task
 
     reporter.report_task.assert_any_call(
         pipeline_task="first",
-        task_id="tests.pipelines.pipelines.TestTask",
+        task_id="tests.pipelines.app.pipelines.TestTask",
         run_id=run_id,
         status=PipelineTaskStatus.PENDING.value,
         message="Task is waiting to start",
@@ -322,7 +323,7 @@ def test_pipeline___model_qs__all_tasks_have_a_good_config___runner_is_started_t
 
     reporter.report_task.assert_any_call(
         pipeline_task="first",
-        task_id="tests.pipelines.pipelines.TestTask",
+        task_id="tests.pipelines.app.pipelines.TestTask",
         run_id=run_id,
         status=PipelineTaskStatus.PENDING.value,
         message="Task is waiting to start",
