@@ -25,8 +25,7 @@ class TestTableSerializer(TableSerializer):
     class Meta:
         columns = {"a": "A", "b": "B"}
 
-    @classmethod
-    def get_data(cls, *args, **kwargs):
+    def get_data(self, *args, **kwargs):
         return [{"a": "Value", "b": "Value b"}]
 
 

@@ -28,7 +28,9 @@ def test_user_serializer__qs():
     class TestTableSerializer(TableSerializer):
         class Meta:
             columns = {"username": "Username", "first_name": "First"}
-            queryset = User.objects.all()
+
+        def get_queryset(self, *args, **kwargs):
+            return User.objects.all()
 
         @staticmethod
         def get_first_name_value(obj):
@@ -43,8 +45,7 @@ def test_user_serializer__list():
         class Meta:
             columns = {"username": "Username", "first_name": "First"}
 
-        @classmethod
-        def get_data(cls, *args, **kwargs):
+        def get_data(self, *args, **kwargs):
             return [model_to_dict(u) for u in User.objects.all()]
 
         @staticmethod
@@ -421,8 +422,7 @@ def test_serializer__related_field():
         class Meta:
             columns = {"name": "name", "content_type__name": "ct_name"}
 
-        @classmethod
-        def get_data(cls, *args, **kwargs):
+        def get_data(self, *args, **kwargs):
             return Permission.objects.filter(codename="test")
 
     result = TestTableSerializer.serialize()
@@ -457,7 +457,7 @@ def test_serializer__first_as_absolute_url(test_user_serializer__qs):
             app_label = "test"
             proxy = True
 
-    test_user_serializer__qs.Meta.queryset = ProxyUser.objects.all()
+    test_user_serializer__qs.get_queryset = lambda *a, **k: ProxyUser.objects.all()
     test_user_serializer__qs.Meta.first_as_absolute_url = True
 
     result = test_user_serializer__qs.serialize()

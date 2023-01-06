@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from functools import reduce
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.exceptions import ImproperlyConfigured
@@ -38,8 +38,6 @@ class TableSerializerType(type):
                 table_serializer_class._meta.columns = base_meta.columns
             if not hasattr(meta, "title"):
                 table_serializer_class._meta.title = base_meta.title
-            if not hasattr(meta, "queryset"):
-                table_serializer_class._meta.queryset = base_meta.queryset
             if not hasattr(meta, "model"):
                 table_serializer_class._meta.model = base_meta.model
             if not hasattr(meta, "first_as_absolute_url"):
@@ -63,17 +61,14 @@ class TableSerializer(TableMixin, metaclass=TableSerializerType):
         columns: Dict[str, str]
         title: Optional[str] = None
         model: Optional[str] = None
-        queryset: Optional[str] = None
         first_as_absolute_url = False
         force_lower = True
 
     @classmethod
-    def serialize(cls, **kwargs) -> SerializedTable:
-        """
-        return paginated, filtered and ordered data in a format expected by table.
-        """
-        filters = kwargs.get("filters")
-        data = cls.get_data(**kwargs)
+    def serialize(cls, **serialize_kwargs) -> SerializedTable:
+        self = cls()
+        filters = serialize_kwargs.get("filters")
+        data = self.get_data(**serialize_kwargs)
 
         start = 0
         length = 5
@@ -86,21 +81,21 @@ class TableSerializer(TableMixin, metaclass=TableSerializerType):
             filters = {}
 
         # how many results do we have before filtering and paginating
-        initial_count = cls.count(data)
+        initial_count = self.count(data)
         # if length is -1 then this means no pagination e.g. show all
         if length < 0:
             length = initial_count
 
         # apply filtering, sorting and pagination
-        data = cls.filter(data, filters)
-        data = cls.sort(data, filters)
-        page_obj, filtered_count = cls.apply_paginator(data, start, length)
+        data = self.filter(data, filters)
+        data = self.sort(data, filters)
+        page_obj, filtered_count = self.apply_paginator(data, start, length)
 
         processed_data = []
 
         for obj in page_obj.object_list:
             values = {}
-            fields = list(cls.Meta.columns.keys())
+            fields = list(self.Meta.columns.keys())
             for field in fields:
                 if not isinstance(obj, dict):
                     # reduce is used to allow relations to be traversed.
@@ -123,13 +118,13 @@ class TableSerializer(TableMixin, metaclass=TableSerializerType):
 
                 if (
                     field == fields[0]
-                    and cls.Meta.first_as_absolute_url
+                    and self.Meta.first_as_absolute_url
                     and hasattr(obj, "get_absolute_url")
                 ):
                     value = f'<a href="{obj.get_absolute_url()}">{value}</a>'
 
-                if hasattr(cls, f"get_{field}_value"):
-                    value = getattr(cls, f"get_{field}_value")(obj)
+                if hasattr(self, f"get_{field}_value"):
+                    value = getattr(self, f"get_{field}_value")(obj)
 
                 values[field] = value
 
@@ -137,9 +132,9 @@ class TableSerializer(TableMixin, metaclass=TableSerializerType):
 
         return SerializedTable(
             data=processed_data,
-            columns=cls.Meta.columns,
+            columns=self.Meta.columns,
             columns_datatables=[
-                {"data": d, "title": t} for d, t in cls.Meta.columns.items()
+                {"data": d, "title": t} for d, t in self.Meta.columns.items()
             ],
             draw=draw,
             total=initial_count,
@@ -154,26 +149,17 @@ class TableSerializer(TableMixin, metaclass=TableSerializerType):
         page_number = (int(start) / int(length)) + 1
         return paginator.get_page(page_number), paginator.count
 
-    @classmethod
-    def get_data(cls, *args, **kwargs):
-        return cls.get_queryset(*args, **kwargs)
+    def get_data(self, *args, **kwargs):
+        return self.get_queryset(*args, **kwargs)
 
-    @classmethod
-    def get_queryset(cls, *args, **kwargs):
-        """
-        Return the list of items for this pipeline to run against.
-        """
-        if getattr(cls.Meta, "queryset", None) is not None:
-            queryset = cls.Meta.queryset
-            if isinstance(queryset, QuerySet):
-                queryset = queryset.all()
-        elif cls.Meta.model is not None:
-            queryset = cls.Meta.model._default_manager.all()
+    def get_queryset(self, *args, **kwargs):
+        if self._meta.model is not None:
+            queryset = self.Meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
-                "%(cls)s is missing a QuerySet. Define "
-                "%(cls)s.model, %(cls)s.queryset, or override "
-                "%(cls)s.get_queryset()." % {"cls": cls.__class__.__name__}
+                "%(self)s is missing a QuerySet. Define "
+                "%(self)s.model or override "
+                "%(self)s.get_queryset()." % {"self": self.__class__.__name__}
             )
 
         return queryset
