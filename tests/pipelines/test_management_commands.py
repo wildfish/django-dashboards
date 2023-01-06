@@ -16,7 +16,7 @@ from wildcoeus.pipelines.models import (
     TaskResult,
 )
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
-from wildcoeus.pipelines.storage import LogFileSystemStorage
+from wildcoeus.pipelines.storage import LogFileSystemStorage, get_log_path
 
 
 pytest_plugins = [
@@ -57,7 +57,7 @@ def test_clear_tasks_and_logs__deletes_files(freezer):
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
         LoggingReporter._write_log_to_file("Some example text", "123")
         fs = LogFileSystemStorage()
-        path = "logs/123.log"
+        path = get_log_path("123")
 
         assert fs.exists(path)
         call_command("clear_tasks_and_logs", days=10, stdout=out)
@@ -73,7 +73,7 @@ def test_clear_tasks_and_logs__does_not_delete_files_if_date_current():
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
         LoggingReporter._write_log_to_file("Some example text", "123")
         fs = LogFileSystemStorage()
-        path = "logs/123.log"
+        path = get_log_path("123")
 
         call_command("clear_tasks_and_logs", days=10, stdout=out)
         assert fs.exists(path)

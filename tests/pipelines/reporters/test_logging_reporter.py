@@ -7,6 +7,7 @@ import pytest
 
 from wildcoeus.pipelines import PipelineTaskStatus, config
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
+from wildcoeus.pipelines.storage import get_log_path
 
 
 def test_report_task_writes_the_message_to_info(caplog):
@@ -85,7 +86,7 @@ def test_report_task_writes_the_message_to_file():
         )
 
         fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
-        path = "logs/123.log"
+        path = get_log_path("123")
 
         assert fs.exists(path)
         with fs.open(path, "r") as f:

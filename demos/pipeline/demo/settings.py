@@ -265,7 +265,7 @@ class Common(Configuration):
 
     WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.celery.runner.Runner"
     # WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.eager.Runner"
-    WILDCOEUS_PIPELINE_REPORTER = "wildcoeus.pipelines.reporters.orm.ORMReporter"
+    # WILDCOEUS_PIPELINE_REPORTER = "wildcoeus.pipelines.reporters.orm.ORMReporter"
 
 
 class Dev(Common):
