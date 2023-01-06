@@ -3,7 +3,7 @@ from django.core.files.storage import FileSystemStorage
 
 def get_log_path(run_id: str):
     """path to store the pipeline logs"""
-    return f"logs/{run_id}.log"
+    return f"pipeline-logs/{run_id}.log"
 
 
 class LogFileSystemStorage(FileSystemStorage):
