@@ -26,7 +26,8 @@ def render_dashboard(context: RequestContext, dashboard: Dashboard):
     request = context["request"]
     return dashboard.render(
         # TODO: for some reason mypy complains about this one line
-        request=request, template_name=dashboard._meta.template_name  # type: ignore
+        request=request,
+        template_name=dashboard._meta.template_name,  # type: ignore
     )
 
 

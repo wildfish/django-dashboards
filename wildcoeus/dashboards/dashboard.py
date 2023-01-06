@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Optional, Type
 
-from django.apps import apps
 from django.db.models import Model
 from django.http import HttpRequest
 from django.template import Context
