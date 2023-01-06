@@ -69,31 +69,6 @@ class Pipeline(ClassWithMeta):
         for key, task in list(cls.tasks.items()):
             task.pipeline_task = key
 
-        #
-        # attrs["tasks"] = {}
-        # for key, value in list(attrs.items()):
-        #     if isinstance(value, Task):
-        #         task = attrs.pop(key)
-        #         task.pipeline_task = key
-        #         attrs["tasks"][key] = task
-        #
-        # pipeline_class = super().__new__(mcs, name, bases, attrs)
-        # tasks = {}
-        # for base in reversed(pipeline_class.__mro__):
-        #     # Collect tasks from base class.
-        #     if hasattr(base, "tasks"):
-        #         tasks.update(base.tasks)
-        #
-        #     # Field shadowing.
-        #     for attr, value in base.__dict__.items():
-        #         if value is None and attr in tasks:
-        #             tasks.pop(attr)
-        #
-        # # add tasks to class.
-        # pipeline_class.tasks = tasks
-        #
-        # return pipeline_class
-
     def __init__(self):
         self.id = self.get_id()
         self.cleaned_tasks: List[Optional[Task]] = []
