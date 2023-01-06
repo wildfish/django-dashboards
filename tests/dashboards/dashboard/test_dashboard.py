@@ -53,6 +53,9 @@ def test_dashboard__with_get_FOO_methods(dashboard, rf):
         component_value = Text()
         component_defer = Text()
 
+        class Meta:
+            app_label = "dashboardtest"
+
         def get_component_value_value(self):
             return "Foo"
 
@@ -112,3 +115,21 @@ def test_dashboard__str(dashboard, rf):
 
 
 # More tests to add here re layout
+
+
+def test_dashboard_has_no_verbose_name_or_name___verbose_name_is_class_name(
+    no_meta_dashboard,
+):
+    assert no_meta_dashboard._meta.verbose_name == "TestNoMetaDashboard"
+
+
+def test_dashboard_has_no_verbose_name_but_has_name___verbose_name_is_provided_name(
+    named_meta_dashboard,
+):
+    assert named_meta_dashboard._meta.verbose_name == "Meta Name"
+
+
+def test_dashboard_has_verbose_name_and_name___verbose_name_is_provided_verbose_name(
+    verbose_named_meta_dashboard,
+):
+    assert verbose_named_meta_dashboard._meta.verbose_name == "Meta Verbose Name"

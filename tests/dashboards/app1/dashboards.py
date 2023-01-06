@@ -15,7 +15,10 @@ from wildcoeus.dashboards.registry import registry
 class TestDashboard(Dashboard):
     component_1 = Text(value="value")
     component_2 = Text(defer=lambda **kwargs: "value")
-    component_3 = Text(value=lambda **kwargs: "value from callable")
+    component_3 = Text(
+        value=lambda **kwargs: "value from callable",
+        verbose_name="Callable value component",
+    )
 
     class Meta:
         name = "Test Dashboard"
@@ -116,6 +119,17 @@ class TestNoMetaDashboard(Dashboard):
     component_1 = Text(value="value")
 
 
+class TestDashboardWithMetaName(Dashboard):
+    class Meta:
+        name = "Meta Name"
+
+
+class TestDashboardWithMetaVerboseName(Dashboard):
+    class Meta:
+        name = "Meta Name"
+        verbose_name = "Meta Verbose Name"
+
+
 registry.register(TestDashboard)
 registry.register(TestFilterDashboard)
 registry.register(TestAdminDashboard)
@@ -123,3 +137,5 @@ registry.register(TestComplexDashboard)
 registry.register(TestDashboardWithLayout)
 registry.register(TestModelDashboard)
 registry.register(TestNoMetaDashboard)
+registry.register(TestDashboardWithMetaName)
+registry.register(TestDashboardWithMetaVerboseName)

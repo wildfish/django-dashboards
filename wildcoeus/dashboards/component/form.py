@@ -37,7 +37,7 @@ class Form(Component):
                 data = request.GET
 
         form = self.form(
-            app_label=self.dashboard.Meta.app_label if self.dashboard else "",
+            app_label=self.dashboard._meta.app_label if self.dashboard else "",
             dashboard_class=self.dashboard_class,
             key=self.key,
             data=data,

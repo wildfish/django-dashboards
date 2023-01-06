@@ -24,7 +24,11 @@ def render_component(context: RequestContext, component: Component, htmx: bool):
 @register.simple_tag(takes_context=True)
 def render_dashboard(context: RequestContext, dashboard: Dashboard):
     request = context["request"]
-    return dashboard.render(request=request, template_name=dashboard.Meta.template_name)
+    return dashboard.render(
+        # TODO: for some reason mypy complains about this one line
+        request=request,
+        template_name=dashboard._meta.template_name,  # type: ignore
+    )
 
 
 @register.simple_tag()

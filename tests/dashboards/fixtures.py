@@ -10,6 +10,8 @@ from tests.dashboards.app1.dashboards import (
     TestComplexDashboard,
     TestDashboard,
     TestDashboardWithLayout,
+    TestDashboardWithMetaName,
+    TestDashboardWithMetaVerboseName,
     TestFilterDashboard,
     TestModelDashboard,
     TestNoMetaDashboard,
@@ -64,6 +66,16 @@ def dashboard_with_layout(dashboard):
 @pytest.fixture
 def no_meta_dashboard(dashboard):
     return TestNoMetaDashboard
+
+
+@pytest.fixture
+def named_meta_dashboard(dashboard):
+    return TestDashboardWithMetaName
+
+
+@pytest.fixture
+def verbose_named_meta_dashboard(dashboard):
+    return TestDashboardWithMetaVerboseName
 
 
 @pytest.fixture

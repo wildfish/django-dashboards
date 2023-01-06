@@ -30,7 +30,7 @@ class Registry(object):
     def get_by_classname(self, app_label: str, classname: str):
         for dashboard in self.dashboards:
             if dashboard.class_name() == classname and (
-                app_label and dashboard.Meta.app_label == app_label
+                app_label and dashboard._meta.app_label == app_label
             ):
                 return dashboard
         raise IndexError
@@ -46,9 +46,9 @@ class Registry(object):
 
     def get_graphql_dashboards(self):
         return {
-            dashboard.Meta.name: dashboard
+            dashboard._meta.name: dashboard
             for dashboard in self.dashboards
-            if dashboard.Meta.include_in_graphql
+            if dashboard._meta.include_in_graphql
         }
 
     def get_urls(self):

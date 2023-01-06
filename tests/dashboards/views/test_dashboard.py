@@ -42,7 +42,7 @@ def test_get_dashboard__dashboard_class_not_defined__found(rf, dashboard):
     view = DashboardView()
     view.setup(
         request,
-        app_label=dashboard.Meta.app_label,
+        app_label=dashboard._meta.app_label,
         dashboard="testdashboard",
     )
 
@@ -54,7 +54,7 @@ def test_get_dashboard__dashboard_class_not_defined__not_found(rf, dashboard):
     view = DashboardView()
     view.setup(
         request,
-        app_label=dashboard.Meta.app_label,
+        app_label=dashboard._meta.app_label,
         dashboard="DashboardA",
     )
 
