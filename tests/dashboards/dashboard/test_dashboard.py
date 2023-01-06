@@ -53,6 +53,9 @@ def test_dashboard__with_get_FOO_methods(dashboard, rf):
         component_value = Text()
         component_defer = Text()
 
+        class Meta:
+            app_label = "dashboardtest"
+
         def get_component_value_value(self):
             return "Foo"
 

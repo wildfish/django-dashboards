@@ -28,7 +28,7 @@ class Registry(object):
     def get_by_classname(self, app_label: str, classname: str):
         for dashboard in self.dashboards:
             if dashboard.class_name() == classname and (
-                app_label and dashboard.Meta.app_label == app_label
+                app_label and dashboard._meta.app_label == app_label
             ):
                 return dashboard
         raise IndexError

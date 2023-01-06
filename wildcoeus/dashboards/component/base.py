@@ -138,7 +138,7 @@ class Component:
         """
         # <str:app_label>/<str:dashboard>/<str:component>/
         args = [
-            self.dashboard.Meta.app_label,
+            self.dashboard._meta.app_label,
             self.dashboard_class,
             self.key,
         ]

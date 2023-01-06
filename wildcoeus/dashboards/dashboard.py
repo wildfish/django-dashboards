@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional, Type
 
 from django.apps import apps
+from django.db.models import Model
 from django.http import HttpRequest
 from django.template import Context
 from django.template.loader import render_to_string
@@ -14,6 +15,7 @@ from wildcoeus.dashboards.component.layout import Card, ComponentLayout
 from wildcoeus.dashboards.config import Config
 from wildcoeus.dashboards.log import logger
 from wildcoeus.dashboards.permissions import BasePermission
+from wildcoeus.meta import ClassWithMeta
 
 
 class DashboardType(type):
@@ -99,9 +101,45 @@ class DashboardType(type):
         return dashboard_class
 
 
-class Dashboard(metaclass=DashboardType):
+class Dashboard(ClassWithMeta):
     _meta: Type["Dashboard.Meta"]
     components: Dict[str, Any]
+
+    class Meta(ClassWithMeta.Meta):
+        abstract = True
+        include_in_graphql: bool
+        include_in_menu: bool
+        permission_classes: Optional[List[BasePermission]] = None
+        template_name: Optional[str] = None
+        lookup_kwarg: str = "lookup"  # url parameter name
+        lookup_field: str = "pk"  # model field
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # add default includes based on the abstract status
+        if not hasattr(cls._meta, "include_in_graphql"):
+            cls._meta.include_in_graphql = not cls._meta.abstract
+
+        if not hasattr(cls._meta, "include_in_menu"):
+            cls._meta.include_in_menu = not cls._meta.abstract
+
+        # collect all the components from all the base classes
+        cls.components = {}
+        for base in reversed(cls.__bases__):
+            if not hasattr(base, "components") or not isinstance(base.components, dict):
+                continue
+
+            for k, v in (
+                (k, v) for k, v in base.components.items() if isinstance(v, Component)
+            ):
+                cls.components[k] = v
+
+        # add all components from the current class
+        for k, v in (
+            (k, v) for k, v in cls.__dict__.items() if isinstance(v, Component)
+        ):
+            cls.components[k] = v
 
     def __init__(self, *args, **kwargs):
         logger.debug(f"Calling init for {self.class_name()}")
@@ -122,18 +160,6 @@ class Dashboard(metaclass=DashboardType):
                 and component.defer_url is None
             ):
                 logger.warning(f"component {key} has no value or defer set.")
-
-    class Meta:
-        name: str
-        verbose_name: str = ""
-        include_in_graphql: bool = True
-        include_in_menu: bool = True
-        permission_classes: Optional[List[BasePermission]] = None
-        template_name: Optional[str] = None
-        model = None
-        app_label = "dashboards"
-        lookup_kwarg: str = "lookup"  # url parameter name
-        lookup_field: str = "pk"  # model field
 
     class Layout:
         components: Optional[ComponentLayout] = None
@@ -176,8 +202,8 @@ class Dashboard(metaclass=DashboardType):
         """
         Returns a list of permissions attached to a dashboard.
         """
-        if cls.Meta.permission_classes:
-            permission_classes = cls.Meta.permission_classes
+        if cls._meta.permission_classes:
+            permission_classes = cls._meta.permission_classes
         else:
             permission_classes = []
             for permission_class_path in Config().WILDCOEUS_DEFAULT_PERMISSION_CLASSES:
@@ -270,6 +296,12 @@ class Dashboard(metaclass=DashboardType):
 
 
 class ModelDashboard(Dashboard):
+    _meta: Type["ModelDashboard.Meta"]
+
+    class Meta(Dashboard.Meta):
+        model: Model
+        abstract = True
+
     def __init__(self, *args, **kwargs):
         super(ModelDashboard, self).__init__(*args, **kwargs)
         self.object = kwargs.get("object")
@@ -316,6 +348,3 @@ class ModelDashboard(Dashboard):
                 name=f"{cls.get_slug()}_detail",
             ),
         ]
-
-    class Meta:
-        include_in_graphql = False
