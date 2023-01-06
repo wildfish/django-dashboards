@@ -155,6 +155,8 @@ class Dashboard(metaclass=DashboardType):
                 component.dashboard = self.__class__
             if not component.key:
                 component.key = key
+            if not component.verbose_name:
+                component.verbose_name = key
             if not component.render_type:
                 component.render_type = component.__class__.__name__
             components_to_keys[key] = component

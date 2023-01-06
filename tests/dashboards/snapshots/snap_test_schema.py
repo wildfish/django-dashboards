@@ -15,20 +15,33 @@ snapshots["test_view__component__not_deferred 1"] = {
 }
 
 snapshots["test_view__dashboard 1"] = {
-    "Meta": {"layoutJson": None, "name": "Test Dashboard", "slug": "test-dashboard"},
+    "Meta": {
+        "layoutJson": None,
+        "name": "Test Dashboard",
+        "slug": "test-dashboard",
+        "verboseName": "Test Dashboard",
+    },
     "components": [
         {
             "isDeferred": False,
             "key": "component_1",
             "renderType": "Text",
             "value": "value",
+            "verboseName": "component_1",
         },
-        {"isDeferred": True, "key": "component_2", "renderType": "Text", "value": None},
+        {
+            "isDeferred": True,
+            "key": "component_2",
+            "renderType": "Text",
+            "value": None,
+            "verboseName": "component_2",
+        },
         {
             "isDeferred": False,
             "key": "component_3",
             "renderType": "Text",
             "value": "value from callable",
+            "verboseName": "Callable value component",
         },
     ],
 }
@@ -65,6 +78,7 @@ snapshots["test_view__dashboard__with_layout 1"] = {
         },
         "name": "Test Dashboard with Layout",
         "slug": "test-dashboard-with-layout",
+        "verboseName": "Test Dashboard with Layout",
     },
     "components": [
         {
@@ -72,43 +86,62 @@ snapshots["test_view__dashboard__with_layout 1"] = {
             "key": "component_1",
             "renderType": "Text",
             "value": "value",
+            "verboseName": "component_1",
         },
-        {"isDeferred": True, "key": "component_2", "renderType": "Text", "value": None},
+        {
+            "isDeferred": True,
+            "key": "component_2",
+            "renderType": "Text",
+            "value": None,
+            "verboseName": "component_2",
+        },
         {
             "isDeferred": False,
             "key": "component_3",
             "renderType": "Text",
             "value": "value from callable",
+            "verboseName": "Callable value component",
         },
     ],
 }
 
 snapshots["test_view__dashboards 1"] = [
     {
-        "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
+        "Meta": {
+            "name": "Test Dashboard",
+            "slug": "test-dashboard",
+            "verboseName": "Test Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": False,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": "value from callable",
+                "verboseName": "Callable value component",
             },
         ],
     },
     {
-        "Meta": {"name": "Test Filter Dashboard", "slug": "test-filter-dashboard"},
+        "Meta": {
+            "name": "Test Filter Dashboard",
+            "slug": "test-filter-dashboard",
+            "verboseName": "Test Filter Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
@@ -131,70 +164,88 @@ snapshots["test_view__dashboards 1"] = [
                     ],
                     "method": "get",
                 },
+                "verboseName": "filter_component",
             },
             {
                 "isDeferred": False,
                 "key": "dependent_component_1",
                 "renderType": "Text",
                 "value": "filter=None",
+                "verboseName": "dependent_component_1",
             },
             {
                 "isDeferred": False,
                 "key": "dependent_component_2",
                 "renderType": "Text",
                 "value": "filter=None",
+                "verboseName": "dependent_component_2",
             },
             {
                 "isDeferred": False,
                 "key": "non_dependent_component_3",
                 "renderType": "Text",
                 "value": "A value",
+                "verboseName": "non_dependent_component_3",
             },
         ],
     },
     {
-        "Meta": {"name": "Test Admin Dashboard", "slug": "test-admin-dashboard"},
+        "Meta": {
+            "name": "Test Admin Dashboard",
+            "slug": "test-admin-dashboard",
+            "verboseName": "Test Admin Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "admin value",
+                "verboseName": "component_1",
             }
         ],
     },
     {
-        "Meta": {"name": "Test Complex Dashboard", "slug": "test-complex-dashboard"},
+        "Meta": {
+            "name": "Test Complex Dashboard",
+            "slug": "test-complex-dashboard",
+            "verboseName": "Test Complex Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": True,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_3",
             },
             {
                 "isDeferred": True,
                 "key": "component_4",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_4",
             },
             {
                 "isDeferred": False,
                 "key": "component_5",
                 "renderType": "Text",
                 "value": "<div></div>",
+                "verboseName": "component_5",
             },
             {
                 "isDeferred": False,
@@ -211,12 +262,14 @@ snapshots["test_view__dashboards 1"] = [
                     "filtered": 1,
                     "total": 1,
                 },
+                "verboseName": "component_6",
             },
             {
                 "isDeferred": False,
                 "key": "component_7",
                 "renderType": "Chart",
                 "value": '{"data": [{"x": ["a"], "y": ["b"]}], "layout": {}}',
+                "verboseName": "component_7",
             },
         ],
     },
@@ -224,6 +277,7 @@ snapshots["test_view__dashboards 1"] = [
         "Meta": {
             "name": "Test Dashboard with Layout",
             "slug": "test-dashboard-with-layout",
+            "verboseName": "Test Dashboard with Layout",
         },
         "components": [
             {
@@ -231,29 +285,37 @@ snapshots["test_view__dashboards 1"] = [
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": False,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": "value from callable",
+                "verboseName": "Callable value component",
             },
         ],
     },
     {
-        "Meta": {"name": "TestNoMetaDashboard", "slug": "testnometadashboard"},
+        "Meta": {
+            "name": "TestNoMetaDashboard",
+            "slug": "testnometadashboard",
+            "verboseName": "TestNoMetaDashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             }
         ],
     },
@@ -261,30 +323,41 @@ snapshots["test_view__dashboards 1"] = [
 
 snapshots["test_view__dashboards__no_permission 1"] = [
     {
-        "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
+        "Meta": {
+            "name": "Test Dashboard",
+            "slug": "test-dashboard",
+            "verboseName": "Test Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": False,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": "value from callable",
+                "verboseName": "Callable value component",
             },
         ],
     },
     {
-        "Meta": {"name": "Test Filter Dashboard", "slug": "test-filter-dashboard"},
+        "Meta": {
+            "name": "Test Filter Dashboard",
+            "slug": "test-filter-dashboard",
+            "verboseName": "Test Filter Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
@@ -307,59 +380,72 @@ snapshots["test_view__dashboards__no_permission 1"] = [
                     ],
                     "method": "get",
                 },
+                "verboseName": "filter_component",
             },
             {
                 "isDeferred": False,
                 "key": "dependent_component_1",
                 "renderType": "Text",
                 "value": "filter=None",
+                "verboseName": "dependent_component_1",
             },
             {
                 "isDeferred": False,
                 "key": "dependent_component_2",
                 "renderType": "Text",
                 "value": "filter=None",
+                "verboseName": "dependent_component_2",
             },
             {
                 "isDeferred": False,
                 "key": "non_dependent_component_3",
                 "renderType": "Text",
                 "value": "A value",
+                "verboseName": "non_dependent_component_3",
             },
         ],
     },
     {
-        "Meta": {"name": "Test Complex Dashboard", "slug": "test-complex-dashboard"},
+        "Meta": {
+            "name": "Test Complex Dashboard",
+            "slug": "test-complex-dashboard",
+            "verboseName": "Test Complex Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": True,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_3",
             },
             {
                 "isDeferred": True,
                 "key": "component_4",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_4",
             },
             {
                 "isDeferred": False,
                 "key": "component_5",
                 "renderType": "Text",
                 "value": "<div></div>",
+                "verboseName": "component_5",
             },
             {
                 "isDeferred": False,
@@ -376,12 +462,14 @@ snapshots["test_view__dashboards__no_permission 1"] = [
                     "filtered": 1,
                     "total": 1,
                 },
+                "verboseName": "component_6",
             },
             {
                 "isDeferred": False,
                 "key": "component_7",
                 "renderType": "Chart",
                 "value": '{"data": [{"x": ["a"], "y": ["b"]}], "layout": {}}',
+                "verboseName": "component_7",
             },
         ],
     },
@@ -389,6 +477,7 @@ snapshots["test_view__dashboards__no_permission 1"] = [
         "Meta": {
             "name": "Test Dashboard with Layout",
             "slug": "test-dashboard-with-layout",
+            "verboseName": "Test Dashboard with Layout",
         },
         "components": [
             {
@@ -396,29 +485,37 @@ snapshots["test_view__dashboards__no_permission 1"] = [
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": False,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": "value from callable",
+                "verboseName": "Callable value component",
             },
         ],
     },
     {
-        "Meta": {"name": "TestNoMetaDashboard", "slug": "testnometadashboard"},
+        "Meta": {
+            "name": "TestNoMetaDashboard",
+            "slug": "testnometadashboard",
+            "verboseName": "TestNoMetaDashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             }
         ],
     },
@@ -426,30 +523,41 @@ snapshots["test_view__dashboards__no_permission 1"] = [
 
 snapshots["test_view__dashboards__permission 1"] = [
     {
-        "Meta": {"name": "Test Dashboard", "slug": "test-dashboard"},
+        "Meta": {
+            "name": "Test Dashboard",
+            "slug": "test-dashboard",
+            "verboseName": "Test Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": False,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": "value from callable",
+                "verboseName": "Callable value component",
             },
         ],
     },
     {
-        "Meta": {"name": "Test Filter Dashboard", "slug": "test-filter-dashboard"},
+        "Meta": {
+            "name": "Test Filter Dashboard",
+            "slug": "test-filter-dashboard",
+            "verboseName": "Test Filter Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
@@ -472,70 +580,88 @@ snapshots["test_view__dashboards__permission 1"] = [
                     ],
                     "method": "get",
                 },
+                "verboseName": "filter_component",
             },
             {
                 "isDeferred": False,
                 "key": "dependent_component_1",
                 "renderType": "Text",
                 "value": "filter=None",
+                "verboseName": "dependent_component_1",
             },
             {
                 "isDeferred": False,
                 "key": "dependent_component_2",
                 "renderType": "Text",
                 "value": "filter=None",
+                "verboseName": "dependent_component_2",
             },
             {
                 "isDeferred": False,
                 "key": "non_dependent_component_3",
                 "renderType": "Text",
                 "value": "A value",
+                "verboseName": "non_dependent_component_3",
             },
         ],
     },
     {
-        "Meta": {"name": "Test Admin Dashboard", "slug": "test-admin-dashboard"},
+        "Meta": {
+            "name": "Test Admin Dashboard",
+            "slug": "test-admin-dashboard",
+            "verboseName": "Test Admin Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "admin value",
+                "verboseName": "component_1",
             }
         ],
     },
     {
-        "Meta": {"name": "Test Complex Dashboard", "slug": "test-complex-dashboard"},
+        "Meta": {
+            "name": "Test Complex Dashboard",
+            "slug": "test-complex-dashboard",
+            "verboseName": "Test Complex Dashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": True,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_3",
             },
             {
                 "isDeferred": True,
                 "key": "component_4",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_4",
             },
             {
                 "isDeferred": False,
                 "key": "component_5",
                 "renderType": "Text",
                 "value": "<div></div>",
+                "verboseName": "component_5",
             },
             {
                 "isDeferred": False,
@@ -552,12 +678,14 @@ snapshots["test_view__dashboards__permission 1"] = [
                     "filtered": 1,
                     "total": 1,
                 },
+                "verboseName": "component_6",
             },
             {
                 "isDeferred": False,
                 "key": "component_7",
                 "renderType": "Chart",
                 "value": '{"data": [{"x": ["a"], "y": ["b"]}], "layout": {}}',
+                "verboseName": "component_7",
             },
         ],
     },
@@ -565,6 +693,7 @@ snapshots["test_view__dashboards__permission 1"] = [
         "Meta": {
             "name": "Test Dashboard with Layout",
             "slug": "test-dashboard-with-layout",
+            "verboseName": "Test Dashboard with Layout",
         },
         "components": [
             {
@@ -572,29 +701,37 @@ snapshots["test_view__dashboards__permission 1"] = [
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             },
             {
                 "isDeferred": True,
                 "key": "component_2",
                 "renderType": "Text",
                 "value": None,
+                "verboseName": "component_2",
             },
             {
                 "isDeferred": False,
                 "key": "component_3",
                 "renderType": "Text",
                 "value": "value from callable",
+                "verboseName": "Callable value component",
             },
         ],
     },
     {
-        "Meta": {"name": "TestNoMetaDashboard", "slug": "testnometadashboard"},
+        "Meta": {
+            "name": "TestNoMetaDashboard",
+            "slug": "testnometadashboard",
+            "verboseName": "TestNoMetaDashboard",
+        },
         "components": [
             {
                 "isDeferred": False,
                 "key": "component_1",
                 "renderType": "Text",
                 "value": "value",
+                "verboseName": "component_1",
             }
         ],
     },

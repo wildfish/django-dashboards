@@ -55,6 +55,7 @@ class Component:
 
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
+    verbose_name: Optional[str] = None
     dashboard: Optional[Any] = None
     object: Optional[Any] = None
     render_type: Optional[str] = None

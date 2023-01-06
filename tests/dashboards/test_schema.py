@@ -14,10 +14,12 @@ DASHBOARDS_GQL = """
       dashboards {
         Meta {
           name
+          verboseName
           slug
         }
         components {
           key
+          verboseName
           value
           isDeferred
           renderType
@@ -32,6 +34,7 @@ DASHBOARD_GQL = """
       dashboard(slug: $slug) {
         Meta {
           name
+          verboseName
           slug
           layoutJson
         }
@@ -40,6 +43,7 @@ DASHBOARD_GQL = """
           value
           isDeferred
           renderType
+          verboseName
         }
       }
     }

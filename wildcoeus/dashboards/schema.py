@@ -41,6 +41,7 @@ class LayoutJSONEncoder(json.JSONEncoder):
 class ComponentSchema:
     is_deferred: bool
     key: Optional[str]
+    verbose_name: Optional[str]
     render_type: Optional[str]
     grid_css_classes: Optional[str]
 

@@ -15,7 +15,10 @@ from wildcoeus.dashboards.registry import registry
 class TestDashboard(Dashboard):
     component_1 = Text(value="value")
     component_2 = Text(defer=lambda **kwargs: "value")
-    component_3 = Text(value=lambda **kwargs: "value from callable")
+    component_3 = Text(
+        value=lambda **kwargs: "value from callable",
+        verbose_name="Callable value component",
+    )
 
     class Meta:
         name = "Test Dashboard"
