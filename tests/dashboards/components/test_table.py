@@ -458,7 +458,7 @@ def test_serializer__first_as_absolute_url(test_user_serializer__qs):
             proxy = True
 
     test_user_serializer__qs.get_queryset = lambda *a, **k: ProxyUser.objects.all()
-    test_user_serializer__qs.Meta.first_as_absolute_url = True
+    test_user_serializer__qs._meta.first_as_absolute_url = True
 
     result = test_user_serializer__qs.serialize()
 

@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 from django.utils import timezone
 
-from wildcoeus.meta import ClassWithMeta
+from wildcoeus.meta import ClassWithAppConfigMeta
 
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -47,12 +47,18 @@ class PipelineType(type):
         return pipeline_class
 
 
-class Pipeline(ClassWithMeta):
+class Pipeline(ClassWithAppConfigMeta):
     tasks: Optional[dict[str, Task]] = {}
 
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
+    def __init__(self):
+        self.id = self.get_id()
+        self.cleaned_tasks: List[Optional[Task]] = []
 
+    def __str__(self):
+        return self._meta.verbose_name
+
+    @classmethod
+    def postprocess_meta(cls, current_class_meta, resolved_meta_class):
         # collect all the components from all the base classes
         cls.tasks = {}
         for base in reversed(cls.__bases__):
@@ -69,12 +75,7 @@ class Pipeline(ClassWithMeta):
         for key, task in list(cls.tasks.items()):
             task.pipeline_task = key
 
-    def __init__(self):
-        self.id = self.get_id()
-        self.cleaned_tasks: List[Optional[Task]] = []
-
-    def __str__(self):
-        return self._meta.verbose_name
+        return super().postprocess_meta(current_class_meta, resolved_meta_class)
 
     def clean_parents(
         self,
@@ -82,7 +83,7 @@ class Pipeline(ClassWithMeta):
         reporter: PipelineReporter,
         run_id: str,
     ):
-        # check against pipeline kets, as parent is relative to the Pipeline, not Task.id which will is
+        # check against pipeline keys, as parent is relative to the Pipeline, not Task.id which will is
         # full task id.
         other_tasks = self.tasks.values() if self.tasks else []
         other_pipeline_tasks = [

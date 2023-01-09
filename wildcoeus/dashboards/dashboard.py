@@ -14,14 +14,14 @@ from wildcoeus.dashboards.component.layout import Card, ComponentLayout
 from wildcoeus.dashboards.config import Config
 from wildcoeus.dashboards.log import logger
 from wildcoeus.dashboards.permissions import BasePermission
-from wildcoeus.meta import ClassWithMeta
+from wildcoeus.meta import ClassWithAppConfigMeta
 
 
-class Dashboard(ClassWithMeta):
+class Dashboard(ClassWithAppConfigMeta):
     _meta: Type["Dashboard.Meta"]
     components: Dict[str, Any]
 
-    class Meta(ClassWithMeta.Meta):
+    class Meta(ClassWithAppConfigMeta.Meta):
         abstract = True
         include_in_graphql: bool
         include_in_menu: bool
@@ -29,33 +29,6 @@ class Dashboard(ClassWithMeta):
         template_name: Optional[str] = None
         lookup_kwarg: str = "lookup"  # url parameter name
         lookup_field: str = "pk"  # model field
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-        # add default includes based on the abstract status
-        if not hasattr(cls._meta, "include_in_graphql"):
-            cls._meta.include_in_graphql = not cls._meta.abstract
-
-        if not hasattr(cls._meta, "include_in_menu"):
-            cls._meta.include_in_menu = not cls._meta.abstract
-
-        # collect all the components from all the base classes
-        cls.components = {}
-        for base in reversed(cls.__bases__):
-            if not hasattr(base, "components") or not isinstance(base.components, dict):
-                continue
-
-            for k, v in (
-                (k, v) for k, v in base.components.items() if isinstance(v, Component)
-            ):
-                cls.components[k] = v
-
-        # add all components from the current class
-        for k, v in (
-            (k, v) for k, v in cls.__dict__.items() if isinstance(v, Component)
-        ):
-            cls.components[k] = v
 
     def __init__(self, *args, **kwargs):
         logger.debug(f"Calling init for {self.class_name()}")
@@ -76,6 +49,34 @@ class Dashboard(ClassWithMeta):
                 and component.defer_url is None
             ):
                 logger.warning(f"component {key} has no value or defer set.")
+
+    @classmethod
+    def postprocess_meta(cls, class_meta, resolved_meta_class):
+        # add default includes based on the abstract status
+        if not hasattr(class_meta, "include_in_graphql"):
+            resolved_meta_class.include_in_graphql = not resolved_meta_class.abstract
+
+        if not hasattr(class_meta, "include_in_menu"):
+            resolved_meta_class.include_in_menu = not resolved_meta_class.abstract
+
+        # collect all the components from all the base classes
+        cls.components = {}
+        for base in reversed(cls.__bases__):
+            if not hasattr(base, "components") or not isinstance(base.components, dict):
+                continue
+
+            for k, v in (
+                (k, v) for k, v in base.components.items() if isinstance(v, Component)
+            ):
+                cls.components[k] = v
+
+        # add all components from the current class
+        for k, v in (
+            (k, v) for k, v in cls.__dict__.items() if isinstance(v, Component)
+        ):
+            cls.components[k] = v
+
+        return super().postprocess_meta(class_meta, resolved_meta_class)
 
     class Layout:
         components: Optional[ComponentLayout] = None
