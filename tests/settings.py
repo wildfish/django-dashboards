@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "wildcoeus.dashboards",
     "wildcoeus.pipelines",
     "tests.dashboards.app1",
+    "tests.pipelines.app",
 ]
 
 MIDDLEWARE = [

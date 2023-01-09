@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from functools import reduce
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.exceptions import ImproperlyConfigured
@@ -9,6 +9,7 @@ from django.core.paginator import Page, Paginator
 from django.db.models import QuerySet
 
 from wildcoeus.dashboards.log import logger
+from wildcoeus.meta import ClassWithMeta
 
 from .mixins import TableMixin
 
@@ -23,39 +24,14 @@ class SerializedTable:
     filtered: Optional[int] = 0
 
 
-class TableSerializerType(type):
-    def __new__(mcs, name, bases, attrs):
-        table_serializer_class = super().__new__(mcs, name, bases, attrs)
-        attr_meta = attrs.get("Meta", None)
-        meta = attr_meta or getattr(table_serializer_class, "Meta", None)
-        base_meta = getattr(table_serializer_class, "_meta", None)
-        table_serializer_class._meta = meta
-
-        if base_meta:
-            if not hasattr(meta, "columns"):
-                if not hasattr(base_meta, "columns"):
-                    raise ImproperlyConfigured("Table must have columns defined")
-                table_serializer_class._meta.columns = base_meta.columns
-            if not hasattr(meta, "title"):
-                table_serializer_class._meta.title = base_meta.title
-            if not hasattr(meta, "model"):
-                table_serializer_class._meta.model = base_meta.model
-            if not hasattr(meta, "first_as_absolute_url"):
-                table_serializer_class._meta.first_as_absolute_url = (
-                    base_meta.first_as_absolute_url
-                )
-            if not hasattr(meta, "force_lower"):
-                table_serializer_class._meta.force_lower = base_meta.force_lower
-
-        return table_serializer_class
-
-
-class TableSerializer(TableMixin, metaclass=TableSerializerType):
+class TableSerializer(TableMixin, ClassWithMeta):
     """
     Applies filtering, sorting and pagination to a dataset before returning.
 
     SerializedTable returns the in a format accepted by datatables.js
     """
+
+    _meta: Type["TableSerializer.Meta"]
 
     class Meta:
         columns: Dict[str, str]
@@ -63,6 +39,31 @@ class TableSerializer(TableMixin, metaclass=TableSerializerType):
         model: Optional[str] = None
         first_as_absolute_url = False
         force_lower = True
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        if not hasattr(cls._meta, "columns"):
+            raise ImproperlyConfigured("Table must have columns defined")
+
+    @classmethod
+    def preprocess_meta(cls, current_class_meta):
+        title = getattr(current_class_meta, "title", None)
+
+        if title and not hasattr(current_class_meta, "name"):
+            current_class_meta.name = title
+
+        if title and not hasattr(current_class_meta, "verbose_name"):
+            current_class_meta.verbose_name = title
+
+        return current_class_meta
+
+    @classmethod
+    def postprocess_meta(cls, current_class_meta, resolved_meta_class):
+        if not hasattr(resolved_meta_class, "title"):
+            resolved_meta_class.title = resolved_meta_class.verbose_name
+
+        return resolved_meta_class
 
     @classmethod
     def serialize(cls, **serialize_kwargs) -> SerializedTable:
@@ -118,7 +119,7 @@ class TableSerializer(TableMixin, metaclass=TableSerializerType):
 
                 if (
                     field == fields[0]
-                    and self.Meta.first_as_absolute_url
+                    and self._meta.first_as_absolute_url
                     and hasattr(obj, "get_absolute_url")
                 ):
                     value = f'<a href="{obj.get_absolute_url()}">{value}</a>'

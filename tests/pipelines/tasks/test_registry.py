@@ -2,7 +2,8 @@ from unittest.mock import Mock
 
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import PipelineTaskStatus, Task
+from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.tasks import Task
 from wildcoeus.pipelines.tasks.registry import task_registry
 
 

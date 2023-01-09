@@ -1,7 +1,7 @@
 import pytest
 
 from tests.dashboards.app1 import dashboards
-from tests.pipelines import pipelines
+from tests.pipelines.app import pipelines
 from wildcoeus.dashboards.registry import registry
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.tasks.registry import task_registry

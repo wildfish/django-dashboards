@@ -1,7 +1,10 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
 
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Model
 from django.utils import timezone
+
+from wildcoeus.meta import ClassWithAppConfigMeta
 
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -44,22 +47,35 @@ class PipelineType(type):
         return pipeline_class
 
 
-class Pipeline(metaclass=PipelineType):
+class Pipeline(ClassWithAppConfigMeta):
     tasks: Optional[dict[str, Task]] = {}
 
     def __init__(self):
         self.id = self.get_id()
         self.cleaned_tasks: List[Optional[Task]] = []
 
-    class Meta:
-        title: str
-
     def __str__(self):
-        return (
-            self.Meta.title
-            if hasattr(self.Meta, "title") and self.Meta.title
-            else self.get_id()
-        )
+        return self._meta.verbose_name
+
+    @classmethod
+    def postprocess_meta(cls, current_class_meta, resolved_meta_class):
+        # collect all the components from all the base classes
+        cls.tasks = {}
+        for base in reversed(cls.__bases__):
+            if not hasattr(base, "tasks") or not isinstance(base.tasks, dict):
+                continue
+
+            for k, v in ((k, v) for k, v in base.tasks.items() if isinstance(v, Task)):
+                cls.tasks[k] = v
+
+        # add all components from the current class
+        for k, v in ((k, v) for k, v in cls.__dict__.items() if isinstance(v, Task)):
+            cls.tasks[k] = v
+
+        for key, task in list(cls.tasks.items()):
+            task.pipeline_task = key
+
+        return super().postprocess_meta(current_class_meta, resolved_meta_class)
 
     def clean_parents(
         self,
@@ -67,7 +83,7 @@ class Pipeline(metaclass=PipelineType):
         reporter: PipelineReporter,
         run_id: str,
     ):
-        # check against pipeline kets, as parent is relative to the Pipeline, not Task.id which will is
+        # check against pipeline keys, as parent is relative to the Pipeline, not Task.id which will is
         # full task id.
         other_tasks = self.tasks.values() if self.tasks else []
         other_pipeline_tasks = [
@@ -269,14 +285,14 @@ class Pipeline(metaclass=PipelineType):
 
 
 class ModelPipeline(Pipeline):
+    _meta: Type["ModelPipeline.Meta"]
+
     class Meta:
-        title: str
-        model: Optional[str]
-        queryset = Optional[str]
+        model: Optional[Model] = None
 
     def get_queryset(self, *args, **kwargs):
-        if self.Meta.model is not None:
-            queryset = self.Meta.model._default_manager.all()
+        if self._meta.model is not None:
+            queryset = self._meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
                 "%(self)s is missing a QuerySet. Define "

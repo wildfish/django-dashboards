@@ -1,14 +1,13 @@
-from typing import Any
+from typing import Type, Union
 
 from django.apps import apps
 
 
 class ClassWithMeta:
-    _meta: Any
+    _meta: Type["ClassWithMeta.Meta"]
 
     class Meta:
         abstract = True
-        app_label: str
         name: str
         verbose_name: str
 
@@ -33,6 +32,9 @@ class ClassWithMeta:
         # if the current class has a Meta class
         # use it as the first base class
         class_meta = cls.__dict__.get("Meta")
+        class_meta = cls.preprocess_meta(
+            type("Meta", (class_meta,), {}) if class_meta else None
+        )
         if class_meta:
             base_meta_classes = (
                 class_meta,
@@ -40,23 +42,64 @@ class ClassWithMeta:
             )
 
         # build the new concrete _meta class
-        cls._meta = type(f"{cls.__name__}ConcreteMeta", base_meta_classes, {})
+        _meta = type(f"{cls.__name__}ConcreteMeta", base_meta_classes, {})
 
         # if the current classes Meta class doesn't have
         # the name set, replace the current name with
         # the class name so its not inherited
         if not hasattr(class_meta, "name"):
-            cls._meta.name = cls.__name__
+            _meta.name = cls.__name__
 
         # if the current classes Meta class doesn't have
         # the verbose name set, use the name
         if not hasattr(class_meta, "verbose_name"):
-            cls._meta.verbose_name = cls._meta.name
+            _meta.verbose_name = _meta.name
 
-        #
-        # ensure that the app config is updated for the new class
-        #
+        # run the postprocess meta hook
+        cls._meta = cls.postprocess_meta(class_meta, _meta)
 
+    def __str__(self):
+        return self._meta.verbose_name
+
+    @classmethod
+    def preprocess_meta(cls, current_class_meta: Union[None, type]):
+        """
+        Preprocesses the meta class attached to the class being created.
+
+        The current_class_meta class will be a copy of the class attached to
+        the class being initialised so can be safely modified.
+
+        current_class_meta: The meta class attached to the current class.
+            If no Meta class is set on the current class the value is None.
+        """
+        return current_class_meta
+
+    @classmethod
+    def postprocess_meta(cls, current_class_meta, resolved_meta_class):
+        """
+        Postprocesses the resolved meta class to be attached to the class
+        being created.
+
+        The current_class_meta class will be a copy of the class attached to
+        the class being initialised so can be safely modified.
+
+        current_class_meta: The meta class attached to the current class.
+            If no Meta class is set on the current class the value is None.
+        resolved_meta_class: The resolved meta class created from the current
+            class meta and all the meta classes attached to the classes bases
+        """
+        return resolved_meta_class
+
+
+class ClassWithAppConfigMeta(ClassWithMeta):
+    _meta: Type["ClassWithAppConfigMeta.Meta"]
+
+    class Meta(ClassWithMeta.Meta):
+        abstract = True
+        app_label: str
+
+    @classmethod
+    def postprocess_meta(cls, class_meta, resolved_meta_class):
         # Look for an application configuration to attach the model to.
         app_config = apps.get_containing_app_config(cls.__module__)
 
@@ -68,4 +111,8 @@ class ClassWithMeta:
                 "INSTALLED_APPS." % (cls.__module__, cls.__name__)
             )
         else:
-            cls._meta.app_label = app_config.label if app_config else meta_app_label
+            resolved_meta_class.app_label = (
+                app_config.label if app_config else meta_app_label
+            )
+
+        return super().postprocess_meta(class_meta, resolved_meta_class)

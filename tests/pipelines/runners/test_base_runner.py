@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from wildcoeus.pipelines import Pipeline
+from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.runners.base import PipelineRunner
 
 
@@ -21,7 +21,7 @@ def test_graph_order__no_parents(test_task):
         second = test_task(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     tasks = TestPipeline().clean_tasks(reporter, run_id="123")
     ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)
@@ -41,7 +41,7 @@ def test_graph_order__with_parents(test_task):
         forth = test_task(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     tasks = TestPipeline().clean_tasks(reporter, run_id="123")
     ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)

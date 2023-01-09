@@ -8,10 +8,12 @@ import pytest
 from model_bakery import baker
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task
+from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.models import PipelineExecution
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
+from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.tasks import Task
 
 
 pytest_plugins = [
@@ -208,7 +210,7 @@ def test_start__post__with_formdata(client, staff):
         first = TestTaskFirst(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     test_pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -238,7 +240,7 @@ def test_start__post__with_no_formdata(client, staff):
         first = TestTaskFirst(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     test_pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -265,7 +267,7 @@ def test_rerun_task__post(run_task, client, staff):
         first = TestTaskFirst(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)

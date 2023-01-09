@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict, Type
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from wildcoeus.pipelines import Task
+    from wildcoeus.pipelines.tasks import Task
 
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.reporters import PipelineReporter

@@ -2,9 +2,11 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from wildcoeus.pipelines import Pipeline, PipelineTaskStatus, Task
+from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.eager import Runner
+from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.tasks.base import Task
 
 
 pytestmark = pytest.mark.django_db()
@@ -26,7 +28,7 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
         second = TestTaskTwo(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -72,7 +74,7 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
         child = TestTaskTwo(config={"parents": ["parent"]})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)
@@ -120,7 +122,7 @@ def test_first_task_fails___other_tasks_are_cancelled():
         good = GoodTask(config={})
 
         class Meta:
-            title = "Test Pipeline"
+            app_label = "pipelinetest"
 
     pipeline = TestPipeline()
     pipeline_registry.register(TestPipeline)

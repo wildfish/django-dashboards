@@ -5,8 +5,9 @@ from django.test.utils import override_settings
 
 import pytest
 
-from wildcoeus.pipelines import PipelineTaskStatus, config
+from wildcoeus.pipelines import config
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
+from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.storage import get_log_path
 
 

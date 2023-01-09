@@ -9,7 +9,8 @@ from pydantic import BaseModel
 
 from tests.dashboards.fakes import fake_user
 from tests.pipelines.tasks.fakes import make_fake_task
-from wildcoeus.pipelines import PipelineTaskStatus, Task
+from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.tasks import Task
 
 
 pytestmark = pytest.mark.django_db

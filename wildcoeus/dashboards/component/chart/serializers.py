@@ -1,41 +1,19 @@
 import json
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
 
 import pandas as pd
 import plotly.graph_objs as go
 
-
-class ChartSerializerType(type):
-    def __new__(mcs, name, bases, attrs):
-        chart_serializer_class = super().__new__(mcs, name, bases, attrs)
-        attr_meta = attrs.get("Meta", None)
-        meta = attr_meta or getattr(chart_serializer_class, "Meta", None)
-        base_meta = getattr(chart_serializer_class, "_meta", None)
-        chart_serializer_class._meta = meta
-
-        if base_meta:
-            if not hasattr(meta, "fields"):
-                chart_serializer_class._meta.fields = base_meta.fields
-            if not hasattr(meta, "model"):
-                chart_serializer_class._meta.model = base_meta.model
-            if not hasattr(meta, "title"):
-                chart_serializer_class._meta.title = base_meta.title
-            if not hasattr(meta, "width"):
-                chart_serializer_class._meta.width = base_meta.width
-            if not hasattr(meta, "height"):
-                chart_serializer_class._meta.height = base_meta.height
-
-        return chart_serializer_class
+from wildcoeus.meta import ClassWithMeta
 
 
-class ChartSerializer(metaclass=ChartSerializerType):
+class ChartSerializer(ClassWithMeta):
+    _meta: Type["ChartSerializer.Meta"]
     meta_layout_attrs = ["title", "width", "height"]
     layout: Optional[Dict[str, Any]] = None
 
-    @dataclass
     class Meta:
         fields: Optional[List[str]] = None
         model: Optional[str] = None
@@ -43,6 +21,25 @@ class ChartSerializer(metaclass=ChartSerializerType):
         title: Optional[str] = None
         width: Optional[int] = None
         height: Optional[int] = None
+
+    @classmethod
+    def preprocess_meta(cls, current_class_meta):
+        title = getattr(current_class_meta, "title", None)
+
+        if title and not hasattr(current_class_meta, "name"):
+            current_class_meta.name = title
+
+        if title and not hasattr(current_class_meta, "verbose_name"):
+            current_class_meta.verbose_name = title
+
+        return current_class_meta
+
+    @classmethod
+    def postprocess_meta(cls, current_class_meta, resolved_meta_class):
+        if not hasattr(resolved_meta_class, "title"):
+            resolved_meta_class.title = resolved_meta_class.verbose_name
+
+        return resolved_meta_class
 
     def empty_chart(self):
         return json.dumps(
@@ -52,7 +49,7 @@ class ChartSerializer(metaclass=ChartSerializerType):
                     "yaxis": {"visible": False},
                     "annotations": [
                         {
-                            "text": f"{self.Meta.title} - No data",
+                            "text": f"{self._meta.verbose_name} - No data",
                             "xref": "paper",
                             "yref": "paper",
                             "showarrow": False,
@@ -76,13 +73,14 @@ class ChartSerializer(metaclass=ChartSerializerType):
         return fig.to_json()
 
     def get_fields(self) -> Optional[List[str]]:
-        return self.Meta.fields
+        # TODO: for some reason mypy complains about this one line
+        return self._meta.fields  # type: ignore
 
     def apply_layout(self, fig: go.Figure):
         layout = self.layout or {}
 
         for attr in self.meta_layout_attrs:
-            layout.setdefault(attr, getattr(self.Meta, attr))
+            layout.setdefault(attr, getattr(self._meta, attr))
 
         return fig.update_layout(**layout)
 
