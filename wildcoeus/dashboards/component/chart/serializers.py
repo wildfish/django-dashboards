@@ -100,8 +100,8 @@ class ChartSerializer(ClassWithMeta):
         return df
 
     def get_queryset(self, *args, **kwargs):
-        if self.Meta.model is not None:
-            queryset = self.Meta.model._default_manager.all()
+        if self._meta.model is not None:
+            queryset = self._meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
                 "%(self)s is missing a QuerySet. Define "

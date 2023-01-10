@@ -10,7 +10,7 @@ class DashboardData:
 
     @staticmethod
     def fetch_html(*args, **kwargs) -> str:
-        return FlatText.objects.all().first().text
+        return getattr(FlatText.objects.all().first(), "text", "")
 
     @staticmethod
     def fetch_gauge_chart_data(*args, **kwargs) -> str:
