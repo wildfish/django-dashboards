@@ -15,9 +15,10 @@ from wildcoeus.dashboards.config import Config
 from wildcoeus.dashboards.log import logger
 from wildcoeus.dashboards.permissions import BasePermission
 from wildcoeus.meta import ClassWithAppConfigMeta
+from wildcoeus.registry.registry import Registerable
 
 
-class Dashboard(ClassWithAppConfigMeta):
+class Dashboard(Registerable, ClassWithAppConfigMeta):
     _meta: Type["Dashboard.Meta"]
     components: Dict[str, Any]
 
@@ -88,6 +89,10 @@ class Dashboard(ClassWithAppConfigMeta):
     @classmethod
     def get_slug(cls):
         return f"{slugify(cls._meta.app_label)}_{slugify(cls.__name__)}"
+
+    @classmethod
+    def get_id(cls):
+        return cls.get_slug()
 
     def get_components(self) -> list[Component]:
         components_to_keys = {}

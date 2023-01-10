@@ -1,67 +1,18 @@
-from wildcoeus.pipelines.log import logger
+from typing import Sequence, Type
+
+from wildcoeus.dashboards.dashboard import Dashboard
+from wildcoeus.registry.registry import Registry
 
 
-class Registry(object):
-    def __init__(self):
-        # Register dashboard classes
-        self.dashboards = []
-
-    def __contains__(self, item):
-        item.get_slug() not in list(map(lambda d: d.get_slug(), self.dashboards))
-
-    def reset(self):
-        self.dashboards = []
-
-    def remove(self, cls):
-        if cls.get_slug() in list(map(lambda d: d.get_slug(), self.dashboards)):
-            self.dashboards.remove(cls)
-
-    def register(self, cls):
-        if cls.get_slug() not in list(map(lambda d: d.get_slug(), self.dashboards)):
-            self.dashboards.append(cls)
-        else:
-            logger.warn(f"{cls.get_slug()} already registered")
-
-        return cls
-
-    def get_all_dashboards(self):
-        return self.dashboards
-
-    def get_by_classname(self, app_label: str, classname: str):
-        for dashboard in self.dashboards:
-            if dashboard.class_name() == classname and (
-                app_label and dashboard._meta.app_label == app_label
-            ):
-                return dashboard
-        raise IndexError
-
-    def get_by_app_label(self, app_label: str):
-        return [d for d in self.dashboards if d._meta.app_label == app_label]
-
-    def get_by_slug(self, slug):
-        for dashboard in self.dashboards:
-            if dashboard.get_slug() == slug:
-                return dashboard
-        raise IndexError
+class DashboardRegistry(Registry):
+    items: Sequence[Type[Dashboard]]
 
     def get_graphql_dashboards(self):
         return {
-            dashboard._meta.name: dashboard
-            for dashboard in self.dashboards
-            if dashboard._meta.include_in_graphql
+            item._meta.name: item
+            for item in self.items
+            if item._meta.include_in_graphql
         }
 
-    def get_urls(self):
-        urlpatterns = []
 
-        for dashboard in self.get_all_dashboards():
-            urlpatterns += dashboard.urls()
-
-        return urlpatterns
-
-    @property
-    def urls(self):
-        return self.get_urls()
-
-
-registry = Registry()
+registry = DashboardRegistry()

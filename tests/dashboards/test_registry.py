@@ -9,24 +9,24 @@ pytest_plugins = [
 
 
 def test_initial_registry():
-    assert registry.dashboards
+    assert registry.items
 
 
 def test_reset(dashboard):
-    assert registry.dashboards
+    assert registry.items
     registry.reset()
-    assert registry.dashboards == []
+    assert registry.items == []
 
 
 def test_remove(dashboard):
-    assert registry.dashboards
+    assert registry.items
     registry.remove(dashboard)
-    assert dashboard not in registry.dashboards
+    assert dashboard not in registry.items
 
 
 def test_get_all_dashboards(dashboard):
-    assert registry.dashboards
-    assert registry.get_all_dashboards() == registry.dashboards
+    assert registry.items
+    assert registry.get_all_items() == registry.items
 
 
 def test_get_by_classname(dashboard):
@@ -88,4 +88,4 @@ def test_get_graphql_dashboards(dashboard, model_dashboard):
 
 def test_get_urls(dashboard):
     urls = registry.get_urls()
-    assert len(urls) == len(registry.dashboards)
+    assert len(urls) == len(registry.items)
