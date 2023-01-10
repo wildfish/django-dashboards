@@ -39,7 +39,7 @@ def dashboard_urls(app_label):
     return {
         d._meta.name: d.get_absolute_url()
         for d in registry.get_by_app_label(app_label)
-        if not d._meta.model and d._meta.include_in_menu
+        if not getattr(d._meta, "model", None) and d._meta.include_in_menu
     }
 
 
