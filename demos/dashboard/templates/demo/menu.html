@@ -6,7 +6,7 @@
 
     <nav role="navigation">
         <ul class="menu">
-            <li class="{% if  dashboard._meta.app_label == "kitchensink" %}active{% endif %}">
+            <li class="{% if  dashboard.get_meta.app_label == "kitchensink" %}active{% endif %}">
                 <a href="{{ kitchensink.0.1 }}">Kitchen Sink</a>
                 <ul class="dropdown">
                     {% for name, url in kitchensink.items %}
@@ -16,7 +16,7 @@
                     {% endfor %}
                 </ul>
             </li>
-            <li class="{% if  dashboard._meta.app_label == "vehicle" %}active{% endif %}">
+            <li class="{% if  dashboard.get_meta.app_label == "vehicle" %}active{% endif %}">
                 <a href="{{ vehicle.0.1 }}">Vehicle</a>
                 <ul class="dropdown">
                     {% for name, url in vehicle.items %}

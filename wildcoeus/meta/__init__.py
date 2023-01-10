@@ -90,6 +90,9 @@ class ClassWithMeta:
         """
         return resolved_meta_class
 
+    def get_meta(self):
+        return self._meta
+
 
 class ClassWithAppConfigMeta(ClassWithMeta):
     _meta: Type["ClassWithAppConfigMeta.Meta"]
