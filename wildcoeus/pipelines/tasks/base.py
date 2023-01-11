@@ -10,6 +10,7 @@ from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
+from wildcoeus.registry.registry import Registerable
 
 
 class TaskConfig(BaseModel):
@@ -23,7 +24,7 @@ class TaskConfig(BaseModel):
     celery_queue: Optional[str] = None
 
 
-class Task(ClassWithMeta):
+class Task(Registerable, ClassWithMeta):
     pipeline_task: str  # The attribute this tasks is named against - set via __new__ on Pipeline
     title: Optional[str] = ""
     ConfigType: Type[TaskConfig] = TaskConfig

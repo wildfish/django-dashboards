@@ -14,7 +14,7 @@ class Registerable:
 
     @classmethod
     def get_urls(cls):
-        raise NotImplementedError()
+        return []
 
 
 class Registry(object):
