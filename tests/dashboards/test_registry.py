@@ -55,12 +55,12 @@ def test_get_by_app_label(dashboard):
 
 
 def test_get_by_slug(dashboard):
-    assert registry.get_by_slug("app1_testdashboard") == dashboard
+    assert registry.get_by_id("app1_testdashboard") == dashboard
 
 
 def test_get_by_slug__not_found(dashboard):
     with pytest.raises(IndexError):
-        assert registry.get_by_slug("app1_testdashboard1")
+        assert registry.get_by_id("app1_testdashboard1")
 
 
 def test_get_graphql_dashboards(dashboard, model_dashboard):

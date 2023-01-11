@@ -1,22 +1,27 @@
-from typing import Sequence, Type
+from typing import Any, List, Type
 
-from wildcoeus.meta import ClassWithAppConfigMeta
+from django.utils.module_loading import autodiscover_modules
+
 from wildcoeus.pipelines.log import logger
 
 
 class Registerable:
-    _meta: Type[ClassWithAppConfigMeta.Meta]
+    _meta: Any
 
     @classmethod
     def get_id(cls):
         raise NotImplementedError()
 
+    @classmethod
+    def get_urls(cls):
+        raise NotImplementedError()
+
 
 class Registry(object):
-    items: Sequence[Type[Registerable]]
+    items: List[Type[Registerable]]
 
-    def __init__(self):
-        # Register item classes
+    def __init__(self, module_name=None):
+        self.module_name = module_name
         self.items = []
 
     def __contains__(self, item):
@@ -25,9 +30,9 @@ class Registry(object):
     def reset(self):
         self.items = []
 
-    def remove(self, cls):
-        if cls.get_id() in list(map(lambda d: d.get_id(), self.items)):
-            self.items.remove(cls)
+    def remove(self, item):
+        if item.get_id() in list(map(lambda d: d.get_id(), self.items)):
+            self.items.remove(item)
 
     def register(self, cls):
         if cls.get_id() not in list(map(lambda d: d.get_id(), self.items)):
@@ -51,9 +56,9 @@ class Registry(object):
     def get_by_app_label(self, app_label: str):
         return [d for d in self.items if d._meta.app_label == app_label]
 
-    def get_by_slug(self, slug):
+    def get_by_id(self, _id):
         for item in self.items:
-            if item.get_id() == slug:
+            if item.get_id() == _id:
                 return item
         raise IndexError
 
@@ -61,13 +66,17 @@ class Registry(object):
         urlpatterns = []
 
         for item in self.get_all_items():
-            urlpatterns += item.urls()
+            urlpatterns += item.get_urls()
 
         return urlpatterns
 
     @property
     def urls(self):
         return self.get_urls()
+
+    def autodiscover(self):
+        if self.module_name:
+            autodiscover_modules(self.module_name)
 
 
 registry = Registry()

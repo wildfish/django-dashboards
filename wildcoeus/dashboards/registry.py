@@ -1,11 +1,9 @@
-from typing import Sequence, Type
-
-from wildcoeus.dashboards.dashboard import Dashboard
 from wildcoeus.registry.registry import Registry
 
 
 class DashboardRegistry(Registry):
-    items: Sequence[Type[Dashboard]]
+    def __init__(self):
+        super().__init__("dashboards")
 
     def get_graphql_dashboards(self):
         return {

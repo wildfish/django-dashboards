@@ -8,4 +8,4 @@ class ReposConfig(AppConfig):
     def ready(self):
         from wildcoeus.pipelines.registry import pipeline_registry
 
-        pipeline_registry.autodiscover_pipelines()
+        pipeline_registry.autodiscover()
