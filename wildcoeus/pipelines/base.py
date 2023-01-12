@@ -170,7 +170,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
                         run_id=run_id,
                         serializable_pipeline_object=self.get_serializable_pipeline_object(
                             obj=pipeline_object
-                        )
+                        ),
                     )
         else:
             try:

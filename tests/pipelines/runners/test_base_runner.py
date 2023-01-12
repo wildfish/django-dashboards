@@ -4,6 +4,7 @@ import pytest
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.runners.base import PipelineRunner
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 pytestmark = pytest.mark.django_db
@@ -69,3 +70,90 @@ def test_start__start_runner_called(test_pipeline):
             reporter=reporter,
         )
         assert runner.call_count == 1
+
+
+def test_multiple_pipeline_objects___start_is_called_with_each():
+    class MultiObjectPipeline(Pipeline):
+        class Meta:
+            app_label = "testpipeline"
+
+        @classmethod
+        def get_iterator(cls):
+            return ["first", "second"]
+
+    reporter = Mock()
+
+    runner = Mock()
+
+    pipeline = MultiObjectPipeline()
+    pipeline.start_pipeline = Mock()
+    pipeline.start(
+        "1",
+        {},
+        runner,
+        reporter,
+    )
+
+    pipeline.start_pipeline.assert_any_call(
+        run_id="1",
+        input_data={},
+        runner=runner,
+        reporter=reporter,
+        pipeline_object="first",
+    )
+    pipeline.start_pipeline.assert_any_call(
+        run_id="1",
+        input_data={},
+        runner=runner,
+        reporter=reporter,
+        pipeline_object="second",
+    )
+    assert pipeline.start_pipeline.call_count == 2
+
+
+def test_multiple_pipeline_objects_with_first_erroring___start_is_called_with_each():
+    class MultiObjectPipeline(Pipeline):
+        class Meta:
+            app_label = "testpipeline"
+
+        @classmethod
+        def get_iterator(cls):
+            return ["first", "second"]
+
+    reporter = Mock()
+
+    runner = Mock()
+
+    pipeline = MultiObjectPipeline()
+    pipeline.start_pipeline = Mock(side_effect=[Exception("First has errored"), None])
+    pipeline.start(
+        "1",
+        {},
+        runner,
+        reporter,
+    )
+
+    pipeline.start_pipeline.assert_any_call(
+        run_id="1",
+        input_data={},
+        runner=runner,
+        reporter=reporter,
+        pipeline_object="first",
+    )
+    pipeline.start_pipeline.assert_any_call(
+        run_id="1",
+        input_data={},
+        runner=runner,
+        reporter=reporter,
+        pipeline_object="second",
+    )
+    reporter.report_pipeline.assert_called_once_with(
+        MultiObjectPipeline.get_id(),
+        PipelineTaskStatus.RUNTIME_ERROR.value,
+        f"Error starting pipeline: First has errored",
+        run_id="1",
+        serializable_pipeline_object=pipeline.get_serializable_pipeline_object(
+            obj="first"
+        ),
+    )
+    assert pipeline.start_pipeline.call_count == 2
