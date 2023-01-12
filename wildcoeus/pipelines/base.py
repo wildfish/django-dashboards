@@ -151,24 +151,44 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
     ):
         iterator = self.get_iterator()
 
+        res = True
         if iterator:
             for pipeline_object in iterator:
-                self.start_pipeline(
+                try:
+                    res = res and self.start_pipeline(
+                        run_id=run_id,
+                        input_data=input_data,
+                        runner=runner,
+                        reporter=reporter,
+                        pipeline_object=pipeline_object,
+                    )
+                except Exception as e:
+                    reporter.report_pipeline(
+                        self.id,
+                        PipelineTaskStatus.RUNTIME_ERROR.value,
+                        f"Error starting pipeline: {e}",
+                        run_id=run_id,
+                        serializable_pipeline_object=self.get_serializable_pipeline_object(
+                            obj=pipeline_object
+                        )
+                    )
+        else:
+            try:
+                res = self.start_pipeline(
                     run_id=run_id,
                     input_data=input_data,
                     runner=runner,
                     reporter=reporter,
-                    pipeline_object=pipeline_object,
                 )
-        else:
-            return self.start_pipeline(
-                run_id=run_id,
-                input_data=input_data,
-                runner=runner,
-                reporter=reporter,
-            )
+            except Exception as e:
+                reporter.report_pipeline(
+                    self.id,
+                    PipelineTaskStatus.RUNTIME_ERROR.value,
+                    f"Error starting pipeline: {e}",
+                    run_id=run_id,
+                )
 
-        return True
+        return res
 
     def start_pipeline(
         self,
@@ -247,7 +267,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         self,
         run_id: str,
         serializable_pipeline_object: Optional[Dict[str, Any]],
-        **defaults
+        **defaults,
     ):
 
         lookup = dict(
