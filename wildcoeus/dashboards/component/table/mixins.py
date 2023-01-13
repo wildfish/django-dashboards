@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Union
 
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import CharField, F, Q, QuerySet
 from django.db.models.functions import Lower
 
@@ -102,8 +103,15 @@ class TableSortMixin:
             order_index = filters.get(f"order[{o}][column]")
             if order_index is not None:
                 field = fields[int(order_index)]
-                if cls.Meta.force_lower and isinstance(
-                    qs.model._meta.get_field(field), CharField
+                try:
+                    django_field = qs.model._meta.get_field(field)
+                except FieldDoesNotExist:
+                    django_field = None
+
+                if (
+                    cls.Meta.force_lower
+                    and django_field
+                    and isinstance(django_field, CharField)
                 ):
                     field = Lower(field)
                 else:
