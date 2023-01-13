@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
--e file:///Users/james/code/wildfish/django-wildcoeus/django-wildcoeus
+#-e file://../../django-wildcoeus
     # via -r requirements.in
 anyio==3.6.2
     # via

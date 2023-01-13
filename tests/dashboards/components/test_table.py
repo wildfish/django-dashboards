@@ -271,7 +271,7 @@ def test_sort__table_queryset(
     data = User.objects.all()
     users = [one, two, three]
 
-    test_user_serializer__qs.Meta.force_lower = force_lower
+    test_user_serializer__qs._meta.force_lower = force_lower
 
     result = test_user_serializer__qs.sort(data, filters)
 
@@ -311,7 +311,7 @@ def test_sort__table_list(
     data = map(model_to_dict, User.objects.all())
     users = list(map(model_to_dict, [one, two, three]))
 
-    test_user_serializer__list.Meta.force_lower = force_lower
+    test_user_serializer__list._meta.force_lower = force_lower
 
     result = test_user_serializer__list.sort(data, filters)
 

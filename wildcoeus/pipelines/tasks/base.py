@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from pydantic import BaseModel, ValidationError
 
+from wildcoeus.meta import ClassWithMeta
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -22,7 +23,7 @@ class TaskConfig(BaseModel):
     celery_queue: Optional[str] = None
 
 
-class Task:
+class Task(ClassWithMeta):
     pipeline_task: str  # The attribute this tasks is named against - set via __new__ on Pipeline
     title: Optional[str] = ""
     ConfigType: Type[TaskConfig] = TaskConfig
@@ -293,7 +294,7 @@ class ModelTask(Task):
 
     def get_queryset(self, *args, **kwargs):
         if self._meta.model is not None:
-            queryset = self.Meta.model._default_manager.all()
+            queryset = self._meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
                 "%(self)s is missing a QuerySet. Define "
