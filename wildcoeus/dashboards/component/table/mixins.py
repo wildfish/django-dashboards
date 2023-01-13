@@ -6,7 +6,7 @@ from django.db.models.functions import Lower
 
 
 class TableFilterMixin:
-    Meta: Any
+    _meta: Any
 
     @classmethod
     def filter(
@@ -29,7 +29,7 @@ class TableFilterMixin:
         model_fields = [f.name for f in qs.model._meta.get_fields()]
 
         q_list = Q()
-        fields = list(cls.Meta.columns.keys())
+        fields = list(cls._meta.columns.keys())
         # Search all fields by adding a Q for each.
         for field in fields:
             if field in model_fields and global_search_value:
@@ -64,7 +64,7 @@ class TableFilterMixin:
             fields_to_search = {}
 
             # Search in individual fields by checking for a request value at index.
-            for o, field in enumerate(cls.Meta.columns.keys()):
+            for o, field in enumerate(cls._meta.columns.keys()):
                 field_search_value = filters.get(f"columns[{o}][search][value]")
                 if field_search_value:
                     fields_to_search[field] = field_search_value
@@ -80,7 +80,7 @@ class TableFilterMixin:
 
 
 class TableSortMixin:
-    Meta: Any
+    _meta: Any
 
     @classmethod
     def sort(
@@ -97,7 +97,7 @@ class TableSortMixin:
         Apply ordering to a queryset based on the order[{field}][column] column request params.
         """
         orders = []
-        fields = list(cls.Meta.columns.keys())
+        fields = list(cls._meta.columns.keys())
 
         for o in range(len(fields)):
             order_index = filters.get(f"order[{o}][column]")
@@ -109,7 +109,7 @@ class TableSortMixin:
                     django_field = None
 
                 if (
-                    cls.Meta.force_lower
+                    cls._meta.force_lower
                     and django_field
                     and isinstance(django_field, CharField)
                 ):
@@ -136,11 +136,11 @@ class TableSortMixin:
         """
 
         def conditionally_apply_lower(v):
-            if cls.Meta.force_lower and isinstance(v, str):
+            if cls._meta.force_lower and isinstance(v, str):
                 return v.lower()
             return v
 
-        fields = list(cls.Meta.columns.keys())
+        fields = list(cls._meta.columns.keys())
 
         for o in range(len(fields)):
             order_index = filters.get(f"order[{o}][column]")

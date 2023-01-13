@@ -22,7 +22,7 @@ def run_pipeline(
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     runner = Runner()
-    pipeline_cls = pipeline_registry.get_pipeline_class(pipeline_id)
+    pipeline_cls = pipeline_registry.get_by_id(pipeline_id)
 
     if not run_id:
         run_id = str(uuid.uuid4())
@@ -69,7 +69,7 @@ def run_task(
     Start a specific task via it's pipeline's runner.
     """
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-    pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
+    pipeline = pipeline_registry.get_by_id(pipeline_id)
     tasks = pipeline().clean_tasks(reporter, run_id=run_id)
     try:
         task = list(filter(lambda x: x.task_id == task_id, tasks))[0]

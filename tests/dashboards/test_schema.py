@@ -62,7 +62,7 @@ COMPONENT_GQL = """
 @pytest.fixture()
 def schema_with_dashboards(schema, dashboard, complex_dashboard, dashboard_with_layout):
     with patch(
-        "wildcoeus.dashboards.registry.Registry.get_graphql_dashboards",
+        "wildcoeus.dashboards.registry.DashboardRegistry.get_graphql_dashboards",
         return_value={
             "TestDashboard": dashboard,
             "TestComplexDashboard": complex_dashboard,

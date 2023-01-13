@@ -70,7 +70,7 @@ class Runner(PipelineRunner):
     ) -> bool:
         ordered_tasks = self._get_task_graph(tasks=tasks)
 
-        pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
+        pipeline = pipeline_registry.get_by_id(pipeline_id)
         serializable_pipeline_object = pipeline.get_serializable_pipeline_object(
             obj=pipeline_object
         )

@@ -25,9 +25,9 @@ class Command(BaseCommand):
         """
         self.stdout.write("Pipelines:\n")
         pipeline_selection_key = {}
-        for i, p in enumerate(pipeline_registry.get_all_registered_pipeline_ids(), 1):
+        for i, p in enumerate(pipeline_registry.items(), 1):
             self.stdout.write(f"{i}). {p}:")
-            pipeline_selection_key[i] = p
+            pipeline_selection_key[i] = p.get_id()
 
         selected_pipeline = self._handle_input(
             text="Which pipelines would you like to start", cast=int
@@ -38,7 +38,7 @@ class Command(BaseCommand):
             exit()
 
         pipeline_id = pipeline_selection_key[selected_pipeline]
-        pipeline_cls = pipeline_registry.get_pipeline_class(pipeline_id)
+        pipeline_cls = pipeline_registry.get_by_id(pipeline_id)
 
         self.stdout.write(f"{pipeline_id} will run the following tasks:\n")
         for i, (k, t) in enumerate(pipeline_cls.tasks.items(), 1):

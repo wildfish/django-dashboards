@@ -96,7 +96,7 @@ class TableSerializer(TableMixin, ClassWithMeta):
 
         for obj in page_obj.object_list:
             values = {}
-            fields = list(self.Meta.columns.keys())
+            fields = list(self._meta.columns.keys())
             for field in fields:
                 if not isinstance(obj, dict):
                     # reduce is used to allow relations to be traversed.
@@ -133,9 +133,9 @@ class TableSerializer(TableMixin, ClassWithMeta):
 
         return SerializedTable(
             data=processed_data,
-            columns=self.Meta.columns,
+            columns=self._meta.columns,
             columns_datatables=[
-                {"data": d, "title": t} for d, t in self.Meta.columns.items()
+                {"data": d, "title": t} for d, t in self._meta.columns.items()
             ],
             draw=draw,
             total=initial_count,
@@ -155,7 +155,7 @@ class TableSerializer(TableMixin, ClassWithMeta):
 
     def get_queryset(self, *args, **kwargs):
         if self._meta.model is not None:
-            queryset = self.Meta.model._default_manager.all()
+            queryset = self._meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
                 "%(self)s is missing a QuerySet. Define "

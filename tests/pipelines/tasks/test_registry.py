@@ -11,8 +11,7 @@ def test_task_class_created_without_name___it_is_added_to_the_registry_using_the
     class TestTask(Task):
         pass
 
-    assert ["test_registry.TestTask"] == list(task_registry.tasks.keys())
-    assert task_registry.tasks["test_registry.TestTask"] == TestTask
+    assert ["test_registry.TestTask"] == [t.get_id() for t in task_registry.items]
 
 
 def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
