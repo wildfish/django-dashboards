@@ -1,7 +1,7 @@
 import itertools
 from typing import Any, Dict, List, Optional
 
-from celery import chain
+from celery import chain, group, signature
 
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters import PipelineReporter
@@ -13,51 +13,79 @@ from .tasks import run_pipeline_report, run_task, run_task_report
 
 
 class Runner(PipelineRunner):
-    @staticmethod
-    def _task_to_celery_tasks(
+    @classmethod
+    def _build_celery_task(
+        cls,
         task: Task,
         pipeline_id: str,
         run_id: str,
         input_data: Dict[str, Any],
         serializable_pipeline_object: Optional[dict[str, Any]],
+        task_object,
     ):
+        celery_task = run_task.si(
+            task_id=task.task_id,
+            run_id=run_id,
+            pipeline_id=pipeline_id,
+            input_data=input_data,
+            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_task_object=task.get_serializable_task_object(task_object),
+        )
+        celery_task.link_error(
+            run_task_report.si(
+                task_id=task.task_id,
+                pipeline_task=task.pipeline_task,
+                run_id=run_id,
+                status=PipelineTaskStatus.RUNTIME_ERROR.value,
+                message="Task Error",
+                serializable_pipeline_object=serializable_pipeline_object,
+                serializable_task_object=task.get_serializable_task_object(task_object),
+            )
+        )
+
+        # set to queue if defined in config
+        celery_task.set(queue=getattr(task.cleaned_config, "celery_queue", None))
+
+        return celery_task
+
+    @classmethod
+    def _expand_celery_tasks(
+        cls,
+        task: Task,
+        pipeline_id: str,
+        run_id: str,
+        input_data: Dict[str, Any],
+        serializable_pipeline_object: Optional[dict[str, Any]],
+    ) -> signature:
         """
         Start a task async. Task reports will be inline however, we add a link error incase
         anything occurs above task.
         """
 
         iterator = task.get_iterator()
-        if not iterator:
-            iterator = [None]
-
-        tasks = []
-        for i in iterator:
-            celery_task = run_task.si(
-                task_id=task.task_id,
-                run_id=run_id,
-                pipeline_id=pipeline_id,
-                input_data=input_data,
-                serializable_pipeline_object=serializable_pipeline_object,
-                serializable_task_object=task.get_serializable_task_object(i),
-            )
-            celery_task.link_error(
-                run_task_report.si(
-                    task_id=task.task_id,
-                    pipeline_task=task.pipeline_task,
-                    run_id=run_id,
-                    status=PipelineTaskStatus.RUNTIME_ERROR.value,
-                    message="Task Error",
-                    serializable_pipeline_object=serializable_pipeline_object,
-                    serializable_task_object=task.get_serializable_task_object(i),
+        if iterator is not None:
+            return group(
+                *(
+                    cls._build_celery_task(
+                        task,
+                        pipeline_id,
+                        run_id,
+                        input_data,
+                        serializable_pipeline_object,
+                        i,
+                    )
+                    for i in iterator
                 )
             )
-
-            # set to queue if defined in config
-            celery_task.set(queue=getattr(task.cleaned_config, "celery_queue", None))
-
-            tasks.append(celery_task)
-
-        return tasks
+        else:
+            return cls._build_celery_task(
+                task,
+                pipeline_id,
+                run_id,
+                input_data,
+                serializable_pipeline_object,
+                None,
+            )
 
     def start_runner(
         self,
@@ -85,19 +113,15 @@ class Runner(PipelineRunner):
                 serializable_pipeline_object=serializable_pipeline_object,
             ),
             # Run tasks in graph order
-            *list(
-                itertools.chain(
-                    *map(
-                        lambda t: self._task_to_celery_tasks(
-                            task=t,
-                            pipeline_id=pipeline_id,
-                            run_id=run_id,
-                            input_data=input_data,
-                            serializable_pipeline_object=serializable_pipeline_object,
-                        ),
-                        ordered_tasks,
-                    )
-                )
+            *map(
+                lambda t: self._expand_celery_tasks(
+                    task=t,
+                    pipeline_id=pipeline_id,
+                    run_id=run_id,
+                    input_data=input_data,
+                    serializable_pipeline_object=serializable_pipeline_object,
+                ),
+                ordered_tasks,
             ),
             # Report Done
             run_pipeline_report.si(

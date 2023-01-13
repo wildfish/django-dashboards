@@ -59,22 +59,20 @@ class Runner(PipelineRunner):
 
         for task in self._get_next_task(tasks, ran_pipeline_tasks):
             iterator = task.get_iterator()
-            if not iterator:
+            if iterator is None:
                 iterator = [None]
 
-            for i in iterator:
-                res = task.start(
-                    pipeline_id=pipeline_id,
-                    run_id=run_id,
-                    input_data=input_data,
-                    reporter=reporter,
-                    serializable_pipeline_object=serializable_pipeline_object,
-                    serializable_task_object=task.get_serializable_task_object(i),
-                )
-
-            if res:
-                ran_pipeline_tasks.append(task.pipeline_task)
-            else:
+            try:
+                for i in iterator:
+                    task.start(
+                        pipeline_id=pipeline_id,
+                        run_id=run_id,
+                        input_data=input_data,
+                        reporter=reporter,
+                        serializable_pipeline_object=serializable_pipeline_object,
+                        serializable_task_object=task.get_serializable_task_object(i),
+                    )
+            except Exception:
                 # if a task fails record all others have been canceled
                 for t in (
                     _t
@@ -95,8 +93,9 @@ class Runner(PipelineRunner):
                     reporter=reporter,
                     serializable_pipeline_object=serializable_pipeline_object,
                 )
+                raise
 
-                return False
+            ran_pipeline_tasks.append(task.pipeline_task)
 
         self._report_pipeline_done(
             pipeline_id=pipeline_id,

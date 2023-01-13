@@ -315,7 +315,7 @@ def test__task_to_celery_tasks__queue_defined():
         class Meta:
             app_label = "pipelinetest"
 
-    with_queue_result = Runner()._task_to_celery_tasks(
+    with_queue_result = Runner()._expand_celery_tasks(
         task=TestPipeline().tasks["with_queue"],
         pipeline_id="test_celery_runner.TestPipeline",
         run_id="123",
@@ -323,9 +323,9 @@ def test__task_to_celery_tasks__queue_defined():
         serializable_pipeline_object=None,
     )
 
-    assert with_queue_result[0].options["queue"] == "else"
+    assert with_queue_result.options["queue"] == "else"
 
-    without_queue_result = Runner()._task_to_celery_tasks(
+    without_queue_result = Runner()._expand_celery_tasks(
         task=TestPipeline().tasks["without_queue"],
         pipeline_id="test_celery_runner.TestPipeline",
         run_id="123",
@@ -333,4 +333,4 @@ def test__task_to_celery_tasks__queue_defined():
         serializable_pipeline_object=None,
     )
 
-    assert not without_queue_result[0].options["queue"]
+    assert not without_queue_result.options["queue"]

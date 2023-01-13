@@ -191,8 +191,7 @@ class Task(Registerable, ClassWithMeta):
                 exception=e,
                 status=status,
             )
-
-        return False
+            raise
 
     def run(
         self,

@@ -11,6 +11,7 @@ from tests.dashboards.fakes import fake_user
 from tests.pipelines.tasks.fakes import make_fake_task
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
+from wildcoeus.pipelines.tasks.base import InputValidationError
 
 
 pytestmark = pytest.mark.django_db
@@ -28,12 +29,13 @@ def test_input_is_provided_when_not_expected___error_is_reported_run_is_not_call
 
     task = make_fake_task(input_type=None)()
 
-    task.start(
-        pipeline_id="pipeline",
-        run_id="123",
-        input_data={"value": 1},
-        reporter=reporter,
-    )
+    with pytest.raises(InputValidationError):
+        task.start(
+            pipeline_id="pipeline",
+            run_id="123",
+            input_data={"value": 1},
+            reporter=reporter,
+        )
 
     reporter.report_task.assert_called_once_with(
         pipeline_task="fake",
@@ -52,12 +54,13 @@ def test_input_data_does_not_match_the_input_type___error_is_reported_run_is_not
 
     task = make_fake_task(input_type=InputType)()
 
-    task.start(
-        pipeline_id="pipeline",
-        run_id="123",
-        input_data={"value": "foo"},
-        reporter=reporter,
-    )
+    with pytest.raises(InputValidationError):
+        task.start(
+            pipeline_id="pipeline",
+            run_id="123",
+            input_data={"value": "foo"},
+            reporter=reporter,
+        )
 
     reporter.report_task.assert_called_once_with(
         pipeline_task="fake",
@@ -150,12 +153,13 @@ def test_errors_at_runtime___task_is_recorded_as_error():
     task.pipeline_task = "erroring_task"
     run_id = str(uuid.uuid4())
 
-    task.start(
-        pipeline_id="pipeline",
-        run_id=run_id,
-        input_data={},
-        reporter=reporter,
-    )
+    with pytest.raises(Exception):
+        task.start(
+            pipeline_id="pipeline",
+            run_id=run_id,
+            input_data={},
+            reporter=reporter,
+        )
 
     reporter.report_task.assert_any_call(
         pipeline_task="erroring_task",

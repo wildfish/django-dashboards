@@ -2,7 +2,8 @@ import time
 
 from pydantic import BaseModel
 
-from wildcoeus.pipelines import Pipeline, Task, TaskConfig
+from wildcoeus.pipelines.base import Pipeline
+from wildcoeus.pipelines.tasks import Task, TaskConfig
 from wildcoeus.pipelines.models import ValueStore
 from wildcoeus.pipelines.registry import pipeline_registry
 

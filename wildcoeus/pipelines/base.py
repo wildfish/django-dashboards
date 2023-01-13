@@ -152,15 +152,18 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         iterator = self.get_iterator()
 
         res = True
-        if iterator:
+        if iterator is not None:
             for pipeline_object in iterator:
                 try:
-                    res = res and self.start_pipeline(
-                        run_id=run_id,
-                        input_data=input_data,
-                        runner=runner,
-                        reporter=reporter,
-                        pipeline_object=pipeline_object,
+                    res = (
+                        self.start_pipeline(
+                            run_id=run_id,
+                            input_data=input_data,
+                            runner=runner,
+                            reporter=reporter,
+                            pipeline_object=pipeline_object,
+                        )
+                        and res
                     )
                 except Exception as e:
                     reporter.report_pipeline(

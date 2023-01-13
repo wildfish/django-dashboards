@@ -1,12 +1,12 @@
 import os
 
-import configurations  # noqa: E402
 from celery import Celery
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.settings")
 os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
 
+import configurations  # noqa: E402
 configurations.setup()
 
 app = Celery("demo")
