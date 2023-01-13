@@ -10,6 +10,7 @@ from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
+from wildcoeus.registry.registry import Registerable
 
 
 class TaskConfig(BaseModel):
@@ -23,7 +24,7 @@ class TaskConfig(BaseModel):
     celery_queue: Optional[str] = None
 
 
-class Task(ClassWithMeta):
+class Task(Registerable, ClassWithMeta):
     pipeline_task: str  # The attribute this tasks is named against - set via __new__ on Pipeline
     title: Optional[str] = ""
     ConfigType: Type[TaskConfig] = TaskConfig
@@ -37,13 +38,11 @@ class Task(ClassWithMeta):
 
     def __init__(
         self,
-        config: Dict[str, Any] = {},
+        config: Dict[str, Any] = None,
     ):
-        self.task_id = task_registry.get_task_id(
-            self.__module__, self.__class__.__name__
-        )
-        self._config = config
-        self.cleaned_config = self.clean_config(config)
+        self.task_id = self.get_id()
+        self._config = config or {}
+        self.cleaned_config = self.clean_config(config or {})
         self.pipeline_object = None
         self.task_object = None
 
@@ -286,6 +285,10 @@ class Task(ClassWithMeta):
                 ).update(status=PipelineTaskStatus.DONE.value)
 
         return result
+
+    @classmethod
+    def get_id(cls):
+        return "{}.{}".format(cls.__module__, cls.__name__)
 
 
 class ModelTask(Task):

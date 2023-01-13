@@ -5,12 +5,13 @@ from django.db.models import Model
 from django.utils import timezone
 
 from wildcoeus.meta import ClassWithAppConfigMeta
+from wildcoeus.registry.registry import Registerable
 
 
 if TYPE_CHECKING:  # pragma: nocover
     from wildcoeus.pipelines.runners import PipelineRunner
 
-from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.models import PipelineExecution
 from wildcoeus.pipelines.reporters.base import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task
@@ -47,7 +48,7 @@ class PipelineType(type):
         return pipeline_class
 
 
-class Pipeline(ClassWithAppConfigMeta):
+class Pipeline(Registerable, ClassWithAppConfigMeta):
     tasks: Optional[dict[str, Task]] = {}
 
     def __init__(self):
@@ -123,7 +124,7 @@ class Pipeline(ClassWithAppConfigMeta):
         """
         generate id based on where the pipeline is created
         """
-        return pipeline_registry.get_slug(cls.__module__, cls.__name__)
+        return "{}.{}".format(cls.__module__, cls.__name__)
 
     @classmethod
     def get_iterator(cls):
@@ -248,9 +249,6 @@ class Pipeline(ClassWithAppConfigMeta):
         serializable_pipeline_object: Optional[Dict[str, Any]],
         **defaults
     ):
-        from .models import (  # needs to be here or raise AppRegistryNotReady("Apps aren't loaded yet.")
-            PipelineExecution,
-        )
 
         lookup = dict(
             pipeline_id=self.id,

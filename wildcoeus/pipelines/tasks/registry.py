@@ -1,43 +1,11 @@
-from typing import TYPE_CHECKING, Any, Dict, Type
+from typing import Any, Dict
 
-
-if TYPE_CHECKING:  # pragma: no cover
-    from wildcoeus.pipelines.tasks import Task
-
-from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.registry.registry import Registry
 
 
-class RegistryError(Exception):
-    pass
-
-
-class TaskRegistry(object):
-    def __init__(self):
-        self.tasks: Dict[str, Type[Task]] = {}
-
-    def register(self, cls):
-        task_id = self.get_task_id(cls.__module__, cls.__name__)
-
-        if task_id in self.tasks:
-            raise RegistryError(f"Multiple tasks named {task_id} have been registered.")
-
-        logger.debug(f"registering task {task_id}")
-
-        self.tasks[task_id] = cls
-
-    def get_task_id(self, module, class_name):
-        return "{}.{}".format(module, class_name)
-
-    def reset(self):
-        self.tasks = {}
-
-    def get_task_class(self, task_id: str):
-        if task_id in self.tasks.keys():
-            return self.tasks[task_id]
-        return None
-
+class TaskRegistry(Registry):
     def load_task_from_id(
         self,
         pipeline_task: str,
@@ -46,9 +14,14 @@ class TaskRegistry(object):
         config: Dict[str, Any],
         reporter: PipelineReporter,
     ):
-        cls = self.get_task_class(task_id)
+        try:
+            cls = self.get_by_id(task_id)
 
-        if not cls:
+            task = cls(config=config)
+            task.pipeline_task = pipeline_task
+
+            return task
+        except IndexError:
             reporter.report_task(
                 pipeline_task=pipeline_task,
                 task_id=task_id,
@@ -57,11 +30,6 @@ class TaskRegistry(object):
                 message=f"No task named {task_id} is registered",
             )
             return None
-
-        task = cls(config=config)
-        task.pipeline_task = pipeline_task
-
-        return task
 
 
 task_registry = TaskRegistry()

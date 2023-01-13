@@ -43,7 +43,7 @@ class Runner(PipelineRunner):
         pipeline_object: Optional[Any] = None,
     ) -> bool:
 
-        pipeline = pipeline_registry.get_pipeline_class(pipeline_id)
+        pipeline = pipeline_registry.get_by_id(pipeline_id)
         serializable_pipeline_object = pipeline.get_serializable_pipeline_object(
             obj=pipeline_object
         )

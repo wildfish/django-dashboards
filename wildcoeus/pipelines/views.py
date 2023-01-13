@@ -71,7 +71,7 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
             "failed": failed,
             "last_ran": last_ran,
             "average_runtime": average_runtime,
-            "pipelines": registry.get_all_registered_pipelines(),
+            "pipelines": registry.items,
         }
 
 
@@ -96,7 +96,7 @@ class PipelineStartView(IsStaffRequiredMixin, FormView):
     form_class = PipelineStartForm
 
     def get_context_data(self, **kwargs):
-        pipeline_cls = pipeline_registry.get_pipeline_class(self.kwargs["slug"])
+        pipeline_cls = pipeline_registry.get_by_id(self.kwargs["slug"])
         tasks = list(pipeline_cls.tasks.items())
         return {
             **super().get_context_data(**kwargs),
@@ -105,7 +105,7 @@ class PipelineStartView(IsStaffRequiredMixin, FormView):
         }
 
     def get_form_kwargs(self):
-        pipeline_cls = pipeline_registry.get_pipeline_class(self.kwargs["slug"])
+        pipeline_cls = pipeline_registry.get_by_id(self.kwargs["slug"])
 
         return {
             **super().get_form_kwargs(),
@@ -120,7 +120,7 @@ class PipelineStartView(IsStaffRequiredMixin, FormView):
         if isinstance(config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER, EagerRunner):
             logger.debug("running pipeline in eager")
             # trigger in eager
-            pipeline_cls = pipeline_registry.get_pipeline_class(self.kwargs["slug"])
+            pipeline_cls = pipeline_registry.get_by_id(self.kwargs["slug"])
             runner = EagerRunner()
             reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
 
