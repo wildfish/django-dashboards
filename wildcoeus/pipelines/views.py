@@ -12,7 +12,7 @@ from wildcoeus.pipelines import config
 from wildcoeus.pipelines.forms import PipelineStartForm
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
+    PipelineResult,
     PipelineLog,
     TaskLog,
     TaskResult,
@@ -39,7 +39,7 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         qs = (
-            PipelineExecution.objects.values("pipeline_id")
+            PipelineResult.objects.values("pipeline_id")
             .annotate(
                 total_success=Count(
                     "pipeline_id", filter=Q(status=PipelineTaskStatus.DONE.value)
@@ -80,7 +80,7 @@ class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return PipelineExecution.objects.with_task_count().filter(
+        return PipelineResult.objects.with_task_count().filter(
             pipeline_id=self.kwargs["slug"]
         )
 

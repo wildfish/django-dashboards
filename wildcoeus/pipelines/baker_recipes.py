@@ -4,7 +4,7 @@ from faker import Faker
 from model_bakery.recipe import Recipe, seq
 
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
+    PipelineResult,
     PipelineLog,
     TaskLog,
     TaskResult,
@@ -16,7 +16,7 @@ fake = Faker()
 
 
 fake_pipeline_execution = Recipe(
-    PipelineExecution,
+    PipelineResult,
     pipeline_id=seq("tests.pipelines.fixtures.TestPipeline"),
     run_id=fake.uuid4,
     status=PipelineTaskStatus.DONE.value,

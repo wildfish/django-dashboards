@@ -5,7 +5,7 @@ from django.utils.timezone import now
 
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
+    PipelineResult,
     PipelineLog,
     TaskLog,
     TaskResult,
@@ -29,13 +29,13 @@ class Command(BaseCommand):
         deletion_date = today - timedelta(days=days)
 
         run_ids = list(
-            PipelineExecution.objects.filter(started__lt=deletion_date).values_list(
+            PipelineResult.objects.filter(started__lt=deletion_date).values_list(
                 "run_id", flat=True
             )
         )
 
         if run_ids:
-            PipelineExecution.objects.filter(run_id__in=run_ids).delete()
+            PipelineResult.objects.filter(run_id__in=run_ids).delete()
             TaskResult.objects.filter(run_id__in=run_ids).delete()
             TaskLog.objects.filter(run_id__in=run_ids).delete()
             PipelineLog.objects.filter(run_id__in=run_ids).delete()

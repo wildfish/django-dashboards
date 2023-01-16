@@ -13,7 +13,9 @@ from django.db.models.query import QuerySet
 from django_extensions.db.models import TimeStampedModel
 
 from wildcoeus.pipelines import config
+from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
+from wildcoeus.pipelines.tasks import Task
 from wildcoeus.pipelines.tasks.registry import task_registry
 
 
@@ -65,7 +67,7 @@ class TaskResultQuerySet(QuerySet):
         return self.annotate(duration=duration)
 
 
-class PipelineExecutionQuerySet(QuerySet):
+class PipelineResultQuerySet(QuerySet):
     def with_task_count(self):
         tasks_qs = (
             TaskResult.objects.values_list("run_id")
@@ -79,17 +81,138 @@ class PipelineExecutionQuerySet(QuerySet):
             .annotate(duration=Sum(F("completed") - F("started")))
             .values("duration")
         )
-        return PipelineExecution.objects.annotate(
+        return PipelineResult.objects.annotate(
             task_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
         )
 
 
-class TaskResult(models.Model):
+class PipelineExecution(models.Model):
+    started = models.DateTimeField(blank=True, null=True)
     pipeline_id = models.CharField(max_length=255)
-    pipeline_task = models.CharField(max_length=255)
-    task_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255)
+
+    def report_status_change(self, reporter: PipelineReporter, status: PipelineTaskStatus, message=""):
+        if not PipelineTaskStatus[self.status].has_advanced(status):
+            return
+
+        self.status = status
+        self.save()
+
+        _msg = f"Pipeline execution {self.pipeline_id} changed to state"
+        if message:
+            _msg += f": {message}"
+
+        reporter.report(
+            status,
+            _msg,
+            run_id=self.run_id,
+            pipeline_id=self.pipeline_id,
+        )
+
+
+class PipelineResult(models.Model):
+    execution = models.ForeignKey(PipelineExecution, related_name="results", on_delete=models.CASCADE, null=True)
     serializable_pipeline_object = models.JSONField(blank=True, null=True)
+    status = models.CharField(
+        max_length=255,
+        choices=PipelineTaskStatus.choices(),
+        default=PipelineTaskStatus.PENDING.value,
+    )
+    input_data = models.JSONField(blank=True, null=True)
+    runner = models.CharField(max_length=255, blank=True, null=True)
+    reporter = models.CharField(max_length=255, blank=True, null=True)
+    started = models.DateTimeField(blank=True, null=True)
+
+    objects = PipelineResultQuerySet.as_manager()
+
+    class Meta:
+        ordering = ["-started"]
+
+    def __str__(self):
+        return f"{self.pipeline_id} started on {self.started}"
+
+    def get_task_results(self):
+        return TaskResult.objects.filter(run_id=self.run_id)
+
+    @property
+    def pipeline_id(self):
+        return self.execution.pipeline_id
+
+    @property
+    def run_id(self):
+        return self.execution.run_id
+
+    @property
+    def failed(self):
+        return self.status in FAILED_STATUES
+
+    def report_status_change(self, reporter: PipelineReporter, status: PipelineTaskStatus, propagate=True, message=""):
+        if not PipelineTaskStatus[self.status].has_advanced(status):
+            return
+
+        if propagate:
+            self.execution.report_status_change(reporter, status, message="")
+
+        self.status = status
+        self.save()
+
+        _msg = f"Pipeline result {self.pipeline_id} changed to state"
+        if message:
+            _msg += f": {message}"
+
+        if self.serializable_pipeline_object:
+            _msg += f" | {self.serializable_pipeline_object}"
+
+        reporter.report(
+            status,
+            _msg,
+            run_id=self.run_id,
+            pipeline_id=self.pipeline_id,
+        )
+
+
+class TaskExecution(models.Model):
+    pipeline = models.ForeignKey(PipelineResult, related_name="tasks", on_delete=models.CASCADE, null=True)
+    task_id = models.CharField(max_length=255)
+    config = models.JSONField()
+
+    def report_status_change(self, reporter: PipelineReporter | str, status: PipelineTaskStatus, propagate=True, message=""):
+        if not PipelineTaskStatus[self.status].has_advanced(status):
+            return
+
+        if propagate:
+            self.pipeline.report_status_change(reporter, status, message="")
+
+        self.status = status
+        self.save()
+
+        _msg = f"Task execution {self.pipeline_id}:{self.task_id} changed to state"
+        if message:
+            _msg += f": {message}"
+
+        if self.pipeline.serializable_pipeline_object:
+            _msg += f" | {self.pipeline.serializable_pipeline_object}"
+
+        reporter.report(
+            status,
+            _msg,
+            run_id=self.run_id,
+            pipeline_id=self.pipeline_id,
+        )
+
+    def get_task(self, reporter) -> Task:
+        task_registry.load_task_from_id(
+            self.pipeline.pipeline_id,
+            self.task_id,
+            self.pipeline.run_id,
+            self.config,
+            reporter,
+        )
+
+
+class TaskResult(models.Model):
+    execution = models.ForeignKey(TaskExecution, related_name="results", on_delete=models.CASCADE, null=True)
+    pipeline_task = models.CharField(max_length=255)
     serializable_task_object = models.JSONField(blank=True, null=True)
     status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices())
     config = models.JSONField(blank=True, null=True)
@@ -101,6 +224,22 @@ class TaskResult(models.Model):
 
     def __str__(self):
         return f"{self.task_id} ({self.run_id})"
+
+    @property
+    def run_id(self):
+        return self.execution.pipeline.run_id
+
+    @property
+    def task_id(self):
+        return self.execution.task_id
+
+    @property
+    def serializable_pipeline_object(self):
+        return self.execution.pipeline.serializable_pipeline_object
+
+    @property
+    def pipeline_id(self):
+        return self.execution.pipeline.pipeline_id
 
     @property
     def duration(self):
@@ -118,42 +257,38 @@ class TaskResult(models.Model):
 
         return task_registry.load_task_from_id(
             pipeline_task=self.pipeline_task,
-            task_id=self.task_id,
-            run_id=self.run_id,
+            task_id=self.execution.task_id,
+            run_id=self.execution.pipeline_execution.run_id,
             config=self.config,
             reporter=reporter,
         )
 
+    def report_status_change(self, reporter: PipelineReporter | str, status: PipelineTaskStatus, propagate=True, message=""):
+        if not PipelineTaskStatus[self.status].has_advanced(status):
+            return
 
-class PipelineExecution(models.Model):
-    pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255)
-    serializable_pipeline_object = models.JSONField(blank=True, null=True)
-    status = models.CharField(
-        max_length=255,
-        choices=PipelineTaskStatus.choices(),
-        default=PipelineTaskStatus.PENDING.value,
-    )
-    input_data = models.JSONField(blank=True, null=True)
-    runner = models.CharField(max_length=255, blank=True, null=True)
-    reporter = models.CharField(max_length=255, blank=True, null=True)
-    started = models.DateTimeField(blank=True, null=True)
+        if propagate:
+            self.execution.report_status_change(reporter, status, message="")
 
-    objects = PipelineExecutionQuerySet.as_manager()
+        self.status = status
+        self.save()
 
-    def __str__(self):
-        return f"{self.pipeline_id} started on {self.started}"
+        _msg = f"Task result {self.pipeline_id}:{self.task_id} changed to state"
+        if message:
+            _msg += f": {message}"
 
-    def get_task_results(self):
-        return TaskResult.objects.filter(run_id=self.run_id)
+        if self.serializable_pipeline_object:
+            _msg += f" | {self.serializable_pipeline_object}"
 
-    @property
-    def failed(self):
-        return self.status in FAILED_STATUES
+        if self.serializable_task_object:
+            _msg += f" | {self.serializable_task_object}"
 
-    class Meta:
-        ordering = ["-started"]
-        unique_together = ("run_id", "serializable_pipeline_object")
+        reporter.report(
+            str(status),
+            _msg,
+            run_id=self.run_id,
+            pipeline_id=self.pipeline_id,
+        )
 
 
 class ValueStore(TimeStampedModel):

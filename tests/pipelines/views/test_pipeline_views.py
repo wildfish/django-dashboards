@@ -9,7 +9,7 @@ from model_bakery import baker
 from pydantic import BaseModel
 
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import PipelineExecution
+from wildcoeus.pipelines.models import PipelineResult
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -193,7 +193,7 @@ def test_start__post(client, staff, test_pipeline):
         )
 
     assert response.status_code == 302
-    assert PipelineExecution.objects.count() == 1
+    assert PipelineResult.objects.count() == 1
 
 
 def test_start__post__with_formdata(client, staff):
@@ -223,7 +223,7 @@ def test_start__post__with_formdata(client, staff):
         )
 
     assert response.status_code == 302
-    assert PipelineExecution.objects.count() == 1
+    assert PipelineResult.objects.count() == 1
 
 
 def test_start__post__with_no_formdata(client, staff):

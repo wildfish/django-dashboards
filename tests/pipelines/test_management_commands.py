@@ -10,7 +10,7 @@ import pytest
 from model_bakery import baker
 
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
+    PipelineResult,
     PipelineLog,
     TaskLog,
     TaskResult,
@@ -41,7 +41,7 @@ def test_clear_tasks_and_logs__all_deleted(freezer):
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
-    assert PipelineExecution.objects.count() == 0
+    assert PipelineResult.objects.count() == 0
     assert TaskResult.objects.count() == 0
     assert PipelineLog.objects.count() == 0
     assert TaskLog.objects.count() == 0
@@ -94,7 +94,7 @@ def test_clear_tasks_and_logs__non_deleted():
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
-    assert PipelineExecution.objects.count() == 3
+    assert PipelineResult.objects.count() == 3
     assert TaskResult.objects.count() == 3
     assert PipelineLog.objects.count() == 3
     assert TaskLog.objects.count() == 3
@@ -125,7 +125,7 @@ def test_clear_tasks_and_logs__part_deleted(freezer):
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
-    assert PipelineExecution.objects.count() == 1
+    assert PipelineResult.objects.count() == 1
     assert TaskResult.objects.count() == 2
     assert PipelineLog.objects.count() == 2
     assert TaskLog.objects.count() == 2

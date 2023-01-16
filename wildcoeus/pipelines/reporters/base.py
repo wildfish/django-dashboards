@@ -1,24 +1,24 @@
 from typing import Any, Optional
 
+from wildcoeus.pipelines.status import PipelineTaskStatus
+
 
 class PipelineReporter:
     def report(
         self,
-        status: str,
+        status: PipelineTaskStatus | str,
         message: str,
         run_id: Optional[str] = None,
         pipeline_id: Optional[str] = None,
         task_id: Optional[str] = None,
         pipeline_task: Optional[str] = None,
-        serializable_pipeline_object: Optional[dict[str, Any]] = None,
-        serializable_task_object: Optional[dict[str, Any]] = None,
     ):  # pragma: nocover
         pass
 
     def report_pipeline(
         self,
         pipeline_id: str,
-        status: str,
+        status: PipelineTaskStatus | str,
         message: str,
         run_id: Optional[str] = "",
         serializable_pipeline_object: Optional[dict[str, Any]] = None,
@@ -37,7 +37,7 @@ class PipelineReporter:
         self,
         pipeline_task: str,
         task_id: str,
-        status: str,
+        status: PipelineTaskStatus | str,
         message: str,
         run_id: Optional[str] = "",
         serializable_pipeline_object: Optional[dict[str, Any]] = None,

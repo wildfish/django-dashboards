@@ -1,6 +1,7 @@
 from graphlib import TopologicalSorter
 from typing import Any, Dict, List, Optional
 
+from wildcoeus.pipelines.models import TaskExecution, PipelineResult
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
@@ -42,47 +43,41 @@ class PipelineRunner:
 
     @staticmethod
     def _report_pipeline_running(
-        pipeline_id: str,
-        run_id: str,
+        pipeline_result: PipelineResult,
         reporter: PipelineReporter,
-        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_pipeline(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
+            pipeline_id=pipeline_result.pipeline_id,
+            run_id=pipeline_result.run_id,
             status=PipelineTaskStatus.RUNNING.value,
             message="Running",
-            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_pipeline_object=pipeline_result.serializable_pipeline_object,
         )
 
     @staticmethod
     def _report_pipeline_done(
-        pipeline_id: str,
-        run_id: str,
+        pipeline_result: PipelineResult,
         reporter: PipelineReporter,
-        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_pipeline(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
+            pipeline_id=pipeline_result.pipeline_id,
+            run_id=pipeline_result.run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
-            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_pipeline_object=pipeline_result.serializable_pipeline_object,
         )
 
     @staticmethod
     def _report_pipeline_error(
-        pipeline_id: str,
-        run_id: str,
+        pipeline_result: PipelineResult,
         reporter: PipelineReporter,
-        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
     ):
         reporter.report_pipeline(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
+            pipeline_id=pipeline_result.pipeline_id,
+            run_id=pipeline_result.run_id,
             status=PipelineTaskStatus.RUNTIME_ERROR.value,
             message="Error",
-            serializable_pipeline_object=serializable_pipeline_object,
+            serializable_pipeline_object=pipeline_result.serializable_pipeline_object,
         )
 
     @staticmethod
@@ -100,30 +95,21 @@ class PipelineRunner:
 
     def start(
         self,
-        pipeline_id: str,
-        run_id: str,
-        tasks: List[Task],
-        input_data: Dict[str, Any],
+        pipeline_result: PipelineResult,
+        tasks: List[TaskExecution],
         reporter: PipelineReporter,
-        pipeline_object: Optional[Any] = None,
     ):
         return self.start_runner(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
+            pipeline_result,
             tasks=tasks,
-            input_data=input_data,
             reporter=reporter,
-            pipeline_object=pipeline_object,
         )
 
     def start_runner(
         self,
-        pipeline_id: str,
-        run_id: str,
-        tasks: List[Task],
-        input_data: Dict[str, Any],
+        pipeline_result: PipelineResult,
+        tasks: List[TaskExecution],
         reporter: PipelineReporter,
-        pipeline_object: Optional[Any] = None,
     ):  # pragma: no cover
         """
         Start runner, is called by start and applies any runner specific steps.

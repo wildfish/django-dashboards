@@ -17,8 +17,8 @@ class TaskResultAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(models.PipelineExecution)
-class PipelineExecutionAdmin(admin.ModelAdmin):
+@admin.register(models.PipelineResult)
+class PipelineResultAdmin(admin.ModelAdmin):
     list_display = (
         "pipeline_id",
         "run_id",

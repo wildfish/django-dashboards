@@ -1,5 +1,6 @@
 from typing import Any, Dict, Iterable, List, Optional
 
+from ..models import PipelineResult, TaskExecution, TaskResult
 from ..registry import pipeline_registry
 from ..reporters import PipelineReporter
 from ..tasks import Task
@@ -19,9 +20,9 @@ class Runner(PipelineRunner):
 
     def _get_next_task(
         self,
-        tasks: List[Task],
+        tasks: List[TaskExecution],
         ran_pipeline_tasks: List[str],
-    ) -> Iterable[Task]:
+    ) -> Iterable[TaskExecution]:
         while True:
             task = next(
                 (t for t in tasks if self._task_can_be_ran(t, ran_pipeline_tasks)),
@@ -35,41 +36,32 @@ class Runner(PipelineRunner):
 
     def start_runner(
         self,
-        pipeline_id: str,
-        run_id: str,
-        tasks: List[Task],
-        input_data: Dict[str, Any],
+        pipeline_result: PipelineResult,
+        tasks: List[TaskExecution],
         reporter: PipelineReporter,
-        pipeline_object: Optional[Any] = None,
     ) -> bool:
-
-        pipeline = pipeline_registry.get_by_id(pipeline_id)
-        serializable_pipeline_object = pipeline.get_serializable_pipeline_object(
-            obj=pipeline_object
-        )
-
-        self._report_pipeline_running(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            reporter=reporter,
-            serializable_pipeline_object=serializable_pipeline_object,
-        )
-
         ran_pipeline_tasks: List[str] = []
 
-        for task in self._get_next_task(tasks, ran_pipeline_tasks):
+        for task_execution in self._get_next_task(tasks, ran_pipeline_tasks):
+            task = task_execution.get_task(reporter)
             iterator = task.get_iterator()
             if iterator is None:
                 iterator = [None]
 
+            task_results = [
+                TaskResult(
+                    execution=task_execution,
+                    serializable_task_object=task.get_serializable_task_object(i),
+                    config=task.cleaned_config,
+                    input_data=task_execution.pipeline.input_data,
+                ) for i in iterator
+            ]
+
             try:
-                for i in iterator:
+                for res in task_results:
                     task.start(
-                        pipeline_id=pipeline_id,
-                        run_id=run_id,
-                        input_data=input_data,
+                        res,
                         reporter=reporter,
-                        serializable_pipeline_object=serializable_pipeline_object,
                         serializable_task_object=task.get_serializable_task_object(i),
                     )
             except Exception:
@@ -80,6 +72,7 @@ class Runner(PipelineRunner):
                     if _t.pipeline_task != task.pipeline_task
                     and _t.pipeline_task not in ran_pipeline_tasks
                 ):
+
                     self._report_task_cancelled(
                         task=t,
                         run_id=run_id,
