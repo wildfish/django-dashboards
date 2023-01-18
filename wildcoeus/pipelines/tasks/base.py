@@ -1,16 +1,12 @@
-import uuid
 from typing import Any, Dict, List, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
-from django.utils import timezone
-from django.utils.timezone import now
 
 from pydantic import BaseModel, ValidationError
 
 from wildcoeus.meta import ClassWithMeta
-from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.models import TaskExecution, TaskResult
 from wildcoeus.pipelines.reporters import PipelineReporter
+from wildcoeus.pipelines.results.base import BaseTaskResult
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
 from wildcoeus.registry.registry import Registerable
@@ -114,16 +110,10 @@ class Task(Registerable, ClassWithMeta):
 
     def start(
         self,
-        task_result: TaskResult,
+        task_result: BaseTaskResult,
         reporter: PipelineReporter,
-        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         try:
-            cleaned_data = self.clean_input_data(task_result.input_data)
-            logger.debug(cleaned_data)
-
-            task_result.started = now()
-            task_result.input_data = cleaned_data
             task_result.report_status_change(reporter, PipelineTaskStatus.RUNNING)
 
             self.pipeline_object = self.get_object(task_result.serializable_pipeline_object)
@@ -133,7 +123,7 @@ class Task(Registerable, ClassWithMeta):
             self.run(
                 pipeline_id=task_result.pipeline_id,
                 run_id=task_result.run_id,
-                cleaned_data=cleaned_data,
+                cleaned_data=task_result.get_task().clean_input_data(task_result.input_data),
             )
 
             # update the result as completed
@@ -142,11 +132,11 @@ class Task(Registerable, ClassWithMeta):
             return True
         except (InputValidationError, Exception) as e:
             status = (
-                PipelineTaskStatus.VALIDATION_ERROR.value
+                PipelineTaskStatus.VALIDATION_ERROR
                 if isinstance(e, InputValidationError)
-                else PipelineTaskStatus.RUNTIME_ERROR.value
+                else PipelineTaskStatus.RUNTIME_ERROR
             )
-            task_result.report_status_change(reporter, status, propagate=False)
+            task_result.report_status_change(reporter, status, propagate=True)
             raise
 
     def run(

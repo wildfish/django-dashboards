@@ -3,45 +3,9 @@
 from django.db import migrations
 
 
-def generate_pipeline_and_task_execution_objects(apps, schema_editor):
-    pipeline_execution_model = apps.get_model("pipelines", "PipelineExecution")
-    pipeline_result_model = apps.get_model("pipelines", "PipelineResult")
-    task_execution_model = apps.get_model("pipelines", "TaskExecution")
-    task_result_model = apps.get_model("pipelines", "TaskResult")
-
-    for (pipeline_id, run_id) in pipeline_result_model.objects.values_list("pipeline_id", "run_id").distinct():
-        # create the pipeline execution object to store results against
-        pipeline_execution = pipeline_execution_model.objects.create(
-            run_id=run_id,
-            pipeline_id=pipeline_id,
-            started=pipeline_result_model.objects.filter(
-                run_id=run_id,
-            ).order_by(
-                "started",
-            ).values_list(
-                "started",
-                flat=True,
-            ).first(),
-        )
-
-        pipeline_result_model.objects.filter(run_id=run_id).update(execution=pipeline_execution)
-
-        for task_id in task_result_model.objects.filter(run_id=run_id).values_list("task_id"):
-            # create the task execution object to store results against
-            task_execution = task_execution_model.objects.create(
-                pipeline_execution=pipeline_execution,
-                task_id=task_id,
-                started=task_result_model.objects.filter(
-                    run_id=run_id
-                ).order_by(
-                    "started",
-                ).values_list(
-                    "started",
-                    flat=True,
-                ).first(),
-            )
-
-            task_result_model.objects.filter(run_id=run_id, task_id=task_id, execution=task_execution)
+def clean_pipeline_and_task_results_objects(apps, schema_editor):
+    apps.get_model("pipelines", "PipelineResult").objects.all().delete()
+    apps.get_model("pipelines", "TaskResult").objects.all().delete()
 
 
 class Migration(migrations.Migration):
@@ -51,5 +15,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(generate_pipeline_and_task_execution_objects)
+        migrations.RunPython(clean_pipeline_and_task_results_objects)
     ]

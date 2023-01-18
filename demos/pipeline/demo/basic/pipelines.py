@@ -66,8 +66,8 @@ class TestTaskIterator(Task):
 
     @classmethod
     def get_iterator(cls):
-        return range(0, 20)
-        # return [0, 1]
+        # return range(0, 20)
+        return [0, 1]
 
 
 @pipeline_registry.register

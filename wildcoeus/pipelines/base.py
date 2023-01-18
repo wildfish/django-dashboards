@@ -2,16 +2,16 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
-from django.utils import timezone
 
 from wildcoeus.meta import ClassWithAppConfigMeta
+from wildcoeus.pipelines.results.base import BasePipelineResult, BasePipelineExecution
+from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.registry.registry import Registerable
 
 
 if TYPE_CHECKING:  # pragma: nocover
     from wildcoeus.pipelines.runners import PipelineRunner
 
-from wildcoeus.pipelines.models import PipelineResult, PipelineExecution, TaskExecution
 from wildcoeus.pipelines.reporters.base import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task
@@ -149,131 +149,82 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
     ):
-        iterator = self.get_iterator()
+        self.cleaned_tasks = self.clean_tasks(reporter, run_id)
 
         # create the execution object to store all pipeline results against
-        execution = PipelineExecution.objects.create(
-            run_id=run_id, pipeline_id=self.id
+        execution = build_pipeline_execution(
+            self,
+            run_id,
+            runner,
+            reporter,
+            input_data
         )
 
-        res = True
-        if iterator is not None:
-            for pipeline_object in iterator:
-                try:
-                    res = (
-                        self.start_pipeline(
-                            execution=execution,
-                            input_data=input_data,
-                            runner=runner,
-                            reporter=reporter,
-                            pipeline_object=pipeline_object,
-                        )
-                        and res
-                    )
-                except Exception as e:
-                    reporter.report_pipeline(
-                        self.id,
-                        PipelineTaskStatus.RUNTIME_ERROR.value,
-                        f"Error starting pipeline: {e}",
-                        run_id=run_id,
-                        serializable_pipeline_object=self.get_serializable_pipeline_object(
-                            obj=pipeline_object
-                        ),
-                    )
-        else:
-            try:
-                res = self.start_pipeline(
-                    execution=execution,
-                    input_data=input_data,
-                    runner=runner,
-                    reporter=reporter,
-                )
-            except Exception as e:
-                reporter.report_pipeline(
-                    self.id,
-                    PipelineTaskStatus.RUNTIME_ERROR.value,
-                    f"Error starting pipeline: {e}",
-                    run_id=run_id,
-                )
-
-        return res
+        return self.start_pipeline(
+            execution,
+            runner=runner,
+            reporter=reporter,
+        )
 
     def start_pipeline(
         self,
-        execution: PipelineExecution,
-        input_data: Dict[str, Any],
+        pipeline_execution: BasePipelineExecution,
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
-        pipeline_object: Optional[Any] = None,
     ) -> bool:
-        serializable_pipeline_object = self.get_serializable_pipeline_object(
-            obj=pipeline_object
-        )
-
-        execution.report_status_change(reporter, PipelineTaskStatus.PENDING)
-
-        # save that the pipeline has been triggered to run
-        result = self.save(
-            execution=execution,
-            serializable_pipeline_object=serializable_pipeline_object,
-            status=PipelineTaskStatus.PENDING.value,
-            input_data=input_data,
-            runner=runner.__class__.__name__,
-            reporter=reporter.__class__.__name__,
-        )
-
-        self.cleaned_tasks = self.clean_tasks(reporter, execution.run_id)
+        self.cleaned_tasks = self.clean_tasks(reporter, pipeline_execution.run_id)
 
         if any(t is None for t in self.cleaned_tasks):
             # if any of the tasks have an invalid config cancel all others
-            self.handle_error(result, reporter=reporter)
+            self.handle_error(pipeline_execution, reporter=reporter)
             return False
 
         # trigger runner to start
         started = runner.start(
-            result,
-            tasks=TaskExecution.objects.bulk_create(
-                (TaskExecution(task_id=t.task_id, pipeline=result, config=t.cleaned_config) for t in self.cleaned_tasks)
-            ),
+            pipeline_execution,
             reporter=reporter,
         )
 
         return started
 
-    def save(
-        self,
-        execution: PipelineExecution = None,
-        result: Optional[PipelineResult] = None,
-        **defaults,
-    ):
-        if result:
-            for k, v in defaults.items():
-                setattr(result, k, v)
-            result.save()
-        else:
-            result = PipelineResult(execution=execution, **defaults)
-
-        return result
-
     def handle_error(
         self,
-        result,
+        execution: BasePipelineExecution,
         reporter,
     ):
-        # if any of the tasks have an invalid config cancel all others
-        for task in (t for t in self.cleaned_tasks if t is not None):
-            reporter.report_task(
-                pipeline_task=task.pipeline_task,
-                task_id=task.task_id,
-                run_id=result.run_id,
-                status=PipelineTaskStatus.CANCELLED.value,
-                message="Tasks cancelled due to an error in the pipeline config",
-            )
         # update that pipeline has been cancelled
-        self.save(
-            result=result,
-            status=PipelineTaskStatus.CANCELLED.value,
+        execution.report_status_change(
+            reporter,
+            PipelineTaskStatus.CANCELLED,
+            message="Pipeline cancelled due to an error in the pipeline config",
         )
+
+        # cancel all pipeline results
+        for pipeline_result in execution.get_pipeline_results():
+            pipeline_result.report_status_change(
+                reporter,
+                PipelineTaskStatus.CANCELLED,
+                message="Pipeline cancelled due to an error in the pipeline config",
+                propagate=False,
+            )
+
+            # report all task executions have been cancelled
+            for task_execution in pipeline_result.get_task_executions():
+                task_execution.report_status_change(
+                    reporter,
+                    PipelineTaskStatus.CANCELLED,
+                    message="Tasks cancelled due to an error in the pipeline config",
+                    propagate=False,
+                )
+
+                # report all task results have been cancelled
+                for task_result in task_execution.get_task_results():
+                    task_result.report_status_change(
+                        reporter,
+                        PipelineTaskStatus.CANCELLED,
+                        message="Tasks cancelled due to an error in the pipeline config",
+                        propagate=False,
+                    )
 
 
 class ModelPipeline(Pipeline):

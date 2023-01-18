@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('started', models.DateTimeField(blank=True, null=True)),
                 ('task_id', models.CharField(max_length=255)),
                 ('pipeline', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='pipelines.pipelineresult')),
-                ('config', models.JSONField(blank=True, null=True)),
+                ('config', models.JSONField()),
             ],
         ),
         migrations.AddField(

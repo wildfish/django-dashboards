@@ -5,6 +5,9 @@ from celery import shared_task
 
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.results.helpers import get_pipeline_result, get_task_result, get_pipeline_execution, \
+    get_task_execution
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class TaskError(Exception):
@@ -36,76 +39,106 @@ def run_pipeline(
 
 
 @shared_task
-def run_pipeline_report(
-    pipeline_id: str,
-    run_id: str,
-    status: str,
-    message: str,
-    serializable_pipeline_object: Optional[dict[str, Any]],
+def run_pipeline_execution_report(
+    *args,
+    pipeline_execution_id=None,
+    status: str = None,
+    message: str = None,
+    **kwargs,
 ):
     """
     Record a pipeline report update async.
     """
+    pipeline_execution = get_pipeline_execution(pipeline_execution_id)
+
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-    reporter.report_pipeline(
-        pipeline_id=pipeline_id,
-        run_id=run_id,
-        status=status,
+    pipeline_execution.report_status_change(
+        reporter,
+        PipelineTaskStatus[status],
         message=message,
-        serializable_pipeline_object=serializable_pipeline_object,
     )
 
 
 @shared_task
-def run_task(
-    task_id: str,
-    run_id: str,
-    pipeline_id: str,
-    input_data: Dict[str, Any],
-    serializable_pipeline_object: Optional[dict[str, Any]],
-    serializable_task_object: Optional[dict[str, Any]],
+def run_pipeline_result_report(
+    *args,
+    pipeline_result_id=None,
+    status: str = None,
+    message: str = None,
+    propagate: bool = True,
+    **kwargs,
 ):
     """
-    Start a specific task via it's pipeline's runner.
+    Record a pipeline report update async.
     """
-    reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-    pipeline = pipeline_registry.get_by_id(pipeline_id)
-    tasks = pipeline().clean_tasks(reporter, run_id=run_id)
-    try:
-        task = list(filter(lambda x: x.task_id == task_id, tasks))[0]
-    except IndexError:
-        raise TaskError(f"cannot find task in pipeline {pipeline_id} with id {task_id}")
+    pipeline_result = get_pipeline_result(pipeline_result_id)
 
-    task.start(
-        pipeline_id=pipeline_id,
-        run_id=run_id,
-        input_data=input_data,
-        reporter=reporter,
-        serializable_pipeline_object=serializable_pipeline_object,
-        serializable_task_object=serializable_task_object,
+    reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
+    pipeline_result.report_status_change(
+        reporter,
+        PipelineTaskStatus[status],
+        message=message,
+        propagate=propagate,
     )
 
 
 @shared_task
-def run_task_report(
-    task_id: str,
-    pipeline_task: str,
-    run_id: str,
-    status: str,
-    message: str,
-    serializable_pipeline_object: Optional[dict[str, Any]],
-    serializable_task_object: Optional[dict[str, Any]],
+def run_task_execution_report(
+    *args,
+    task_execution_id=None,
+    status: str = None,
+    message: str = None,
+    propagate: bool = True,
+    **kwargs,
 ):
     """
     Record a task report update async.
     """
+    task_execution = get_task_execution(task_execution_id)
+
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-    reporter.report_task(
-        pipeline_task=pipeline_task,
-        task_id=task_id,
-        run_id=run_id,
-        status=status,
+    task_execution.report_status_change(
+        reporter,
+        PipelineTaskStatus[status],
         message=message,
-        serializable_pipeline_object=serializable_pipeline_object,
-        serializable_task_object=serializable_task_object,
+        propagate=propagate,
+    )
+
+
+@shared_task
+def run_task_result_report(
+    *args,
+    task_result_id=None,
+    status: str = None,
+    message: str = None,
+    propagate: bool = True,
+    **kwargs,
+):
+    """
+    Record a task report update async.
+    """
+    task_result = get_task_result(task_result_id)
+
+    reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
+    task_result.report_status_change(
+        reporter,
+        PipelineTaskStatus[status],
+        message=message,
+        propagate=propagate,
+    )
+
+
+@shared_task
+def run_task(task_result_id: str):
+    """
+    Start a specific task via it's pipeline's runner.
+    """
+    task_result = get_task_result(task_result_id)
+    task = task_result.get_task()
+
+    reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
+
+    task.start(
+        task_result,
+        reporter
     )

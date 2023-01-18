@@ -1,114 +1,43 @@
 from graphlib import TopologicalSorter
 from typing import Any, Dict, List, Optional
 
-from wildcoeus.pipelines.models import TaskExecution, PipelineResult
 from wildcoeus.pipelines.reporters import PipelineReporter
+from wildcoeus.pipelines.results.base import BaseTaskResult, BasePipelineResult, BasePipelineExecution, \
+    BaseTaskExecution
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 
 
 class PipelineRunner:
     @staticmethod
-    def _report_task_cancelled(
-        task: Task,
-        run_id: str,
-        reporter: PipelineReporter,
-        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
-        serializable_task_object: Optional[Dict[str, Any]] = None,
-    ):
-        reporter.report_task(
-            pipeline_task=task.pipeline_task,
-            task_id=task.task_id,
-            run_id=run_id,
-            status=PipelineTaskStatus.CANCELLED.value,
-            message="There was an error running a different task",
-            serializable_pipeline_object=serializable_pipeline_object,
-            serializable_task_object=serializable_task_object,
-        )
-
-    @staticmethod
-    def _report_pipeline_pending(
-        pipeline_id: str,
-        run_id: str,
-        reporter: PipelineReporter,
-        serializable_pipeline_object: Optional[Dict[str, Any]] = None,
-    ):
-        reporter.report_pipeline(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            status=PipelineTaskStatus.PENDING.value,
-            message="Pipeline is waiting to start",
-            serializable_pipeline_object=serializable_pipeline_object,
-        )
-
-    @staticmethod
-    def _report_pipeline_running(
-        pipeline_result: PipelineResult,
-        reporter: PipelineReporter,
-    ):
-        reporter.report_pipeline(
-            pipeline_id=pipeline_result.pipeline_id,
-            run_id=pipeline_result.run_id,
-            status=PipelineTaskStatus.RUNNING.value,
-            message="Running",
-            serializable_pipeline_object=pipeline_result.serializable_pipeline_object,
-        )
-
-    @staticmethod
-    def _report_pipeline_done(
-        pipeline_result: PipelineResult,
-        reporter: PipelineReporter,
-    ):
-        reporter.report_pipeline(
-            pipeline_id=pipeline_result.pipeline_id,
-            run_id=pipeline_result.run_id,
-            status=PipelineTaskStatus.DONE.value,
-            message="Done",
-            serializable_pipeline_object=pipeline_result.serializable_pipeline_object,
-        )
-
-    @staticmethod
-    def _report_pipeline_error(
-        pipeline_result: PipelineResult,
-        reporter: PipelineReporter,
-    ):
-        reporter.report_pipeline(
-            pipeline_id=pipeline_result.pipeline_id,
-            run_id=pipeline_result.run_id,
-            status=PipelineTaskStatus.RUNTIME_ERROR.value,
-            message="Error",
-            serializable_pipeline_object=pipeline_result.serializable_pipeline_object,
-        )
-
-    @staticmethod
-    def _get_task_graph(tasks: List[Task]) -> List[Task]:
+    def _get_task_graph(pipeline_result: BasePipelineResult) -> List[BaseTaskExecution]:
         task_graph = {}
 
-        for task in tasks:
+        for task in pipeline_result.get_pipeline().tasks.values():
             task_graph[task.pipeline_task] = set(
                 getattr(task.cleaned_config, "parents", [])
             )
 
         task_order = tuple(TopologicalSorter(task_graph).static_order())
-        tasks_ordered = sorted(tasks, key=lambda t: task_order.index(t.pipeline_task))
+        tasks_ordered = sorted(
+            pipeline_result.get_task_executions(),
+            key=lambda t: task_order.index(t.pipeline_task),
+        )
         return tasks_ordered
 
     def start(
         self,
-        pipeline_result: PipelineResult,
-        tasks: List[TaskExecution],
+        pipeline_execution: BasePipelineExecution,
         reporter: PipelineReporter,
     ):
         return self.start_runner(
-            pipeline_result,
-            tasks=tasks,
+            pipeline_execution,
             reporter=reporter,
         )
 
     def start_runner(
         self,
-        pipeline_result: PipelineResult,
-        tasks: List[TaskExecution],
+        pipeline_execution: BasePipelineExecution,
         reporter: PipelineReporter,
     ):  # pragma: no cover
         """
