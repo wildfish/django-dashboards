@@ -146,9 +146,11 @@ class Dashboard(Registerable, ClassWithAppConfigMeta):
         Raises exception if the request is not permitted.
         """
         for permission in cls.get_dashboard_permissions():
-            if not permission.has_permission(request):
+            if not permission.has_permission(request=request, dashboard=cls):
                 if handle:
-                    return permission.handle_no_permission(request)
+                    return permission.handle_no_permission(
+                        request=request, dashboard=cls
+                    )
                 else:
                     return False
         return True
