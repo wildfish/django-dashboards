@@ -11,12 +11,7 @@ from django.views.generic.detail import SingleObjectMixin
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.forms import PipelineStartForm
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.models import (
-    PipelineResult,
-    PipelineLog,
-    TaskLog,
-    TaskResult,
-)
+from wildcoeus.pipelines.models import PipelineLog, PipelineResult, TaskResult
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
@@ -182,17 +177,11 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
         )
 
     def _get_orm_logs(self, run_id):
-        logs = [
-            (log.created, log.log_message)
-            for log in PipelineLog.objects.filter(run_id=run_id)
-        ]
-        logs.extend(
-            [
-                (log.created, log.log_message)
-                for log in TaskLog.objects.filter(run_id=run_id)
-            ]
+        logs = (
+            PipelineLog.objects.filter(run_id=run_id)
+            .order_by("created")
+            .values_list("created", "message")
         )
-        logs.sort(key=lambda x: x[0])
 
         return "\n".join(
             [f"[{log[0].strftime('%d/%b/%Y %H:%M:%S')}]: {log[1]}" for log in logs]

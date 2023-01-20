@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pipelines', '0005_merge_20230103_1354'),
+        ("pipelines", "0005_merge_20230103_1354"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='PipelineExecution',
-            new_name='PipelineResult',
+            old_name="PipelineExecution",
+            new_name="PipelineResult",
         ),
         migrations.AlterUniqueTogether(
-            name='pipelineresult',
+            name="pipelineresult",
             unique_together=set(),
         ),
     ]

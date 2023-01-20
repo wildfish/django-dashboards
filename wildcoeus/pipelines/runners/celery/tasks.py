@@ -5,8 +5,12 @@ from celery import shared_task
 
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.results.helpers import get_pipeline_result, get_task_result, get_pipeline_execution, \
-    get_task_execution
+from wildcoeus.pipelines.results.helpers import (
+    get_pipeline_execution,
+    get_pipeline_result,
+    get_task_execution,
+    get_task_result,
+)
 from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
@@ -138,7 +142,4 @@ def run_task(task_result_id: str):
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
 
-    task.start(
-        task_result,
-        reporter
-    )
+    task.start(task_result, reporter)

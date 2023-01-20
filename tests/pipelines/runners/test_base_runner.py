@@ -3,6 +3,9 @@ from unittest.mock import Mock, patch
 import pytest
 
 from wildcoeus.pipelines.base import Pipeline
+from wildcoeus.pipelines.models import PipelineExecution
+from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.pipelines.runners.base import PipelineRunner
 from wildcoeus.pipelines.status import PipelineTaskStatus
 
@@ -15,8 +18,7 @@ pytest_plugins = [
 
 
 def test_graph_order__no_parents(test_task):
-    reporter = Mock()
-
+    @pipeline_registry.register
     class TestPipeline(Pipeline):
         first = test_task(config={})
         second = test_task(config={})
@@ -24,8 +26,16 @@ def test_graph_order__no_parents(test_task):
         class Meta:
             app_label = "pipelinetest"
 
-    tasks = TestPipeline().clean_tasks(reporter, run_id="123")
-    ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)
+    pipeline_execution = build_pipeline_execution(
+        TestPipeline(),
+        "run_id",
+        Mock(),
+        Mock(),
+        {},
+    )
+    ordered_tasks = PipelineRunner()._get_task_graph(
+        pipeline_execution.get_pipeline_results()[0]
+    )
 
     assert len(ordered_tasks) == 2
     assert ordered_tasks[0].pipeline_task == "first"
@@ -33,8 +43,7 @@ def test_graph_order__no_parents(test_task):
 
 
 def test_graph_order__with_parents(test_task):
-    reporter = Mock()
-
+    @pipeline_registry.register
     class TestPipeline(Pipeline):
         first = test_task(config={})
         second = test_task(config={"parents": ["first"]})
@@ -44,8 +53,16 @@ def test_graph_order__with_parents(test_task):
         class Meta:
             app_label = "pipelinetest"
 
-    tasks = TestPipeline().clean_tasks(reporter, run_id="123")
-    ordered_tasks = PipelineRunner()._get_task_graph(tasks=tasks)
+    pipeline_execution = build_pipeline_execution(
+        TestPipeline(),
+        "run_id",
+        Mock(),
+        Mock(),
+        {},
+    )
+    ordered_tasks = PipelineRunner()._get_task_graph(
+        pipeline_execution.get_pipeline_results()[0]
+    )
 
     assert len(ordered_tasks) == 4
     assert ordered_tasks[0].pipeline_task == "first"
@@ -57,103 +74,19 @@ def test_graph_order__with_parents(test_task):
 def test_start__start_runner_called(test_pipeline):
     reporter = Mock()
 
-    tasks = test_pipeline().clean_tasks(reporter, run_id="123")
+    pipeline_execution = build_pipeline_execution(
+        test_pipeline(),
+        "run_id",
+        Mock(),
+        reporter,
+        {},
+    )
 
     with patch(
         "wildcoeus.pipelines.runners.base.PipelineRunner.start_runner"
     ) as runner:
         PipelineRunner().start(
-            pipeline_id=test_pipeline.get_id(),
-            run_id="1",
-            tasks=tasks,
-            input_data={},
+            pipeline_execution,
             reporter=reporter,
         )
         assert runner.call_count == 1
-
-
-def test_multiple_pipeline_objects___start_is_called_with_each():
-    class MultiObjectPipeline(Pipeline):
-        class Meta:
-            app_label = "testpipeline"
-
-        @classmethod
-        def get_iterator(cls):
-            return ["first", "second"]
-
-    reporter = Mock()
-
-    runner = Mock()
-
-    pipeline = MultiObjectPipeline()
-    pipeline.start_pipeline = Mock()
-    pipeline.start(
-        "1",
-        {},
-        runner,
-        reporter,
-    )
-
-    pipeline.start_pipeline.assert_any_call(
-        run_id="1",
-        input_data={},
-        runner=runner,
-        reporter=reporter,
-        pipeline_object="first",
-    )
-    pipeline.start_pipeline.assert_any_call(
-        run_id="1",
-        input_data={},
-        runner=runner,
-        reporter=reporter,
-        pipeline_object="second",
-    )
-    assert pipeline.start_pipeline.call_count == 2
-
-
-def test_multiple_pipeline_objects_with_first_erroring___start_is_called_with_each():
-    class MultiObjectPipeline(Pipeline):
-        class Meta:
-            app_label = "testpipeline"
-
-        @classmethod
-        def get_iterator(cls):
-            return ["first", "second"]
-
-    reporter = Mock()
-
-    runner = Mock()
-
-    pipeline = MultiObjectPipeline()
-    pipeline.start_pipeline = Mock(side_effect=[Exception("First has errored"), None])
-    pipeline.start(
-        "1",
-        {},
-        runner,
-        reporter,
-    )
-
-    pipeline.start_pipeline.assert_any_call(
-        run_id="1",
-        input_data={},
-        runner=runner,
-        reporter=reporter,
-        pipeline_object="first",
-    )
-    pipeline.start_pipeline.assert_any_call(
-        run_id="1",
-        input_data={},
-        runner=runner,
-        reporter=reporter,
-        pipeline_object="second",
-    )
-    reporter.report_pipeline.assert_called_once_with(
-        MultiObjectPipeline.get_id(),
-        PipelineTaskStatus.RUNTIME_ERROR.value,
-        f"Error starting pipeline: First has errored",
-        run_id="1",
-        serializable_pipeline_object=pipeline.get_serializable_pipeline_object(
-            obj="first"
-        ),
-    )
-    assert pipeline.start_pipeline.call_count == 2

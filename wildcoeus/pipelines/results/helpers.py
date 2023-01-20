@@ -1,17 +1,24 @@
-from typing import Dict, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict
+
 
 if TYPE_CHECKING:
     from wildcoeus.pipelines.base import Pipeline
 
 from wildcoeus.pipelines.reporters import PipelineReporter
-from wildcoeus.pipelines.results.base import BasePipelineResultsStorage, BasePipelineExecution, BasePipelineResult, \
-    BaseTaskResult, BaseTaskExecution
+from wildcoeus.pipelines.results.base import (
+    BasePipelineExecution,
+    BasePipelineResult,
+    BasePipelineResultsStorage,
+    BaseTaskExecution,
+    BaseTaskResult,
+)
 from wildcoeus.pipelines.runners import PipelineRunner
 
 
 def get_pipeline_results_storage() -> BasePipelineResultsStorage:
     # currently we only support orm storage but this could be extended for redis etc
     from .orm import OrmPipelineResultsStorage
+
     return OrmPipelineResultsStorage()
 
 

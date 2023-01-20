@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pipelines', '0011_alter_taskresult_status'),
+        ("pipelines", "0011_alter_taskresult_status"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='taskresult',
-            name='pipeline_task',
+            model_name="taskresult",
+            name="pipeline_task",
         ),
         migrations.AddField(
-            model_name='taskexecution',
-            name='pipeline_task',
-            field=models.CharField(default='', max_length=255),
+            model_name="taskexecution",
+            name="pipeline_task",
+            field=models.CharField(default="", max_length=255),
             preserve_default=False,
         ),
     ]

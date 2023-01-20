@@ -7,9 +7,14 @@ from wildcoeus.pipelines import config
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.storage import get_log_path
 
-from . import PipelineReporter
-from ..results.base import BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
+from ..results.base import (
+    BasePipelineExecution,
+    BasePipelineResult,
+    BaseTaskExecution,
+    BaseTaskResult,
+)
 from ..status import PipelineTaskStatus
+from . import PipelineReporter
 
 
 class LoggingReporter(PipelineReporter):
@@ -17,7 +22,9 @@ class LoggingReporter(PipelineReporter):
         self,
         status: PipelineTaskStatus,
         message: str,
-        context_object: Union[BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult] = None,
+        context_object: Union[
+            BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
+        ],
     ):
         logger.info(message)
         if context_object:

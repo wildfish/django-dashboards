@@ -50,7 +50,7 @@ def test_pipeline_list(client, staff):
 
 
 def test_pipeline_execution_list(client, staff):
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_result")
 
     client.force_login(staff)
     response = client.get(
@@ -68,7 +68,7 @@ def test_pipeline_execution_list_queries_pinned(
 ):
     client.force_login(staff)
     baker.make_recipe(
-        "pipelines.fake_pipeline_execution", pipeline_id="12345", _quantity=50
+        "pipelines.fake_pipeline_result", pipeline_id="12345", _quantity=50
     )
 
     with django_assert_num_queries(4):
@@ -78,7 +78,7 @@ def test_pipeline_execution_list_queries_pinned(
 
 
 def test_results_list__tasks_completed(client, staff):
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_result")
     te = baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
 
     client.force_login(staff)
@@ -91,7 +91,7 @@ def test_results_list__tasks_completed(client, staff):
 
 
 def test_results_list__tasks_not_completed(client, staff):
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_result")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id)
     baker.make_recipe(
         "pipelines.fake_task_result",
@@ -107,7 +107,7 @@ def test_results_list__tasks_not_completed(client, staff):
 
 def test_results_list_queries_pinned(client, staff, django_assert_num_queries):
     client.force_login(staff)
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_result")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
 
     with django_assert_num_queries(4):
@@ -116,7 +116,7 @@ def test_results_list_queries_pinned(client, staff, django_assert_num_queries):
 
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
 def test_log_list__tasks_completed(client, staff, snapshot):
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_result")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
     baker.make_recipe("pipelines.fake_pipeline_log", run_id=pe.run_id, _quantity=3)
     baker.make_recipe("pipelines.fake_task_log", run_id=pe.run_id, _quantity=3)
@@ -132,7 +132,7 @@ def test_log_list__tasks_completed(client, staff, snapshot):
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
 def test_log_list__with_file__tasks_completed(client, staff, snapshot):
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+        pe = baker.make_recipe("pipelines.fake_pipeline_result")
         expected_content = "Some example text"
         LoggingReporter._write_log_to_file(expected_content, pe.run_id)
 
@@ -149,7 +149,7 @@ def test_log_list__with_file__tasks_completed(client, staff, snapshot):
 
 
 def test_log_list__tasks_not_completed(client, staff):
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_result")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id)
     baker.make_recipe(
         "pipelines.fake_task_result",
@@ -167,7 +167,7 @@ def test_log_list__tasks_not_completed(client, staff):
 
 def test_log_list_queries_pinned(client, staff, django_assert_num_queries):
     client.force_login(staff)
-    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    pe = baker.make_recipe("pipelines.fake_pipeline_result")
     baker.make_recipe("pipelines.fake_task_result", run_id=pe.run_id, _quantity=3)
     baker.make_recipe("pipelines.fake_pipeline_log", run_id=pe.run_id)
     baker.make_recipe("pipelines.fake_task_log", run_id=pe.run_id)

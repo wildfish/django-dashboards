@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+import pytest
 from pydantic import BaseModel
 
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -9,60 +10,23 @@ from wildcoeus.pipelines.tasks.registry import task_registry
 
 def test_task_class_created_without_name___it_is_added_to_the_registry_using_the_classname():
     class TestTask(Task):
-        pass
+        class Meta:
+            app_label = "pipelinetest"
 
-    assert ["test_registry.TestTask"] == [t.get_id() for t in task_registry.items]
+    assert "pipelinetest.TestTask" in [t.get_id() for t in task_registry.items]
 
 
 def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
     class TestTask(Task):
-        pass
+        class Meta:
+            app_label = "pipelinetest"
 
-    reporter = Mock()
-
-    task = task_registry.load_task_from_id(
-        pipeline_task="fake",
-        task_id="missing_task_id",
-        run_id="123543455435",
-        config={},
-        reporter=reporter,
-    )
-
-    assert task is None
-    reporter.report_task.assert_called_once_with(
-        pipeline_task="fake",
-        task_id="missing_task_id",
-        run_id="123543455435",
-        status=PipelineTaskStatus.CONFIG_ERROR.value,
-        message="No task named missing_task_id is registered",
-    )
-
-
-def test_request_to_load_a_task_that_exists_with_a_bad_config___error_is_reported():
-    class TestTaskConfigType(BaseModel):
-        value: int
-
-    class TestTask(Task):
-        ConfigType = TestTaskConfigType
-
-    reporter = Mock()
-
-    task = task_registry.load_task_from_id(
-        pipeline_task="fake",
-        task_id="missing_task_id",
-        run_id="123543455435",
-        config={"value": "foo"},
-        reporter=reporter,
-    )
-
-    assert task is None
-    reporter.report_task.assert_called_once_with(
-        pipeline_task="fake",
-        task_id="missing_task_id",
-        run_id="123543455435",
-        status=PipelineTaskStatus.CONFIG_ERROR.value,
-        message="No task named missing_task_id is registered",
-    )
+    with pytest.raises(IndexError):
+        task_registry.load_task_from_id(
+            pipeline_task="fake",
+            task_id="missing_task_id",
+            config={},
+        )
 
 
 def test_request_to_load_a_task_that_exists_with_a_valid_config___task_is_loaded():
@@ -70,15 +34,15 @@ def test_request_to_load_a_task_that_exists_with_a_valid_config___task_is_loaded
         value: int
 
     class TestTask(Task):
+        class Meta:
+            app_label = "pipelinetest"
+
         ConfigType = TestTaskConfigType
 
-    reporter = Mock()
     task = task_registry.load_task_from_id(
         pipeline_task="fake",
-        task_id="test_registry.TestTask",
-        run_id="123543455435",
+        task_id="pipelinetest.TestTask",
         config={"value": 1},
-        reporter=reporter,
     )
 
     assert isinstance(task, TestTask)

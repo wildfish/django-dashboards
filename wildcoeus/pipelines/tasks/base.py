@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from pydantic import BaseModel, ValidationError
 
-from wildcoeus.meta import ClassWithMeta
+from wildcoeus.meta import ClassWithAppConfigMeta, ClassWithMeta
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import BaseTaskResult
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -23,7 +23,7 @@ class TaskConfig(BaseModel):
     celery_queue: Optional[str] = None
 
 
-class Task(Registerable, ClassWithMeta):
+class Task(Registerable, ClassWithAppConfigMeta):
     pipeline_task: str  # The attribute this tasks is named against - set via __new__ on Pipeline
     title: Optional[str] = ""
     ConfigType: Type[TaskConfig] = TaskConfig
@@ -116,18 +116,24 @@ class Task(Registerable, ClassWithMeta):
         try:
             task_result.report_status_change(reporter, PipelineTaskStatus.RUNNING)
 
-            self.pipeline_object = self.get_object(task_result.serializable_pipeline_object)
+            self.pipeline_object = self.get_object(
+                task_result.serializable_pipeline_object
+            )
             self.task_object = self.get_object(task_result.serializable_task_object)
 
             # run the task
             self.run(
                 pipeline_id=task_result.pipeline_id,
                 run_id=task_result.run_id,
-                cleaned_data=task_result.get_task().clean_input_data(task_result.input_data),
+                cleaned_data=task_result.get_task().clean_input_data(
+                    task_result.input_data
+                ),
             )
 
             # update the result as completed
-            task_result.report_status_change(reporter, PipelineTaskStatus.DONE, propagate=False)
+            task_result.report_status_change(
+                reporter, PipelineTaskStatus.DONE, propagate=False
+            )
 
             return True
         except (InputValidationError, Exception) as e:
@@ -136,7 +142,7 @@ class Task(Registerable, ClassWithMeta):
                 if isinstance(e, InputValidationError)
                 else PipelineTaskStatus.RUNTIME_ERROR
             )
-            task_result.report_status_change(reporter, status, propagate=True)
+            task_result.report_status_change(reporter, status, message=str(e))
             raise
 
     def run(
@@ -193,7 +199,7 @@ class Task(Registerable, ClassWithMeta):
 
     @classmethod
     def get_id(cls):
-        return "{}.{}".format(cls.__module__, cls.__name__)
+        return "{}.{}".format(cls._meta.app_label, cls.__name__)
 
 
 class ModelTask(Task):

@@ -1,9 +1,14 @@
 from typing import Any, Optional, Union
 
-from ..models import PipelineLog, TaskLog
-from . import PipelineReporter
-from ..results.base import BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
+from ..models import PipelineLog
+from ..results.base import (
+    BasePipelineExecution,
+    BasePipelineResult,
+    BaseTaskExecution,
+    BaseTaskResult,
+)
 from ..status import PipelineTaskStatus
+from . import PipelineReporter
 
 
 class ORMReporter(PipelineReporter):
@@ -11,18 +16,15 @@ class ORMReporter(PipelineReporter):
         self,
         status: PipelineTaskStatus,
         message: str,
-        context_object: Union[BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult] = None,
+        context_object: Union[
+            BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
+        ],
     ):
-        if isinstance(context_object, (BasePipelineExecution, BasePipelineResult)):
-            PipelineLog.objects.create(
-                pipeline_id=context_object.pipeline_id, run_id=context_object.run_id, status=status, message=message
-            )
-
-        elif isinstance(context_object, (BaseTaskExecution, BaseTaskResult)):
-            TaskLog.objects.create(
-                pipeline_task=context_object.pipeline_task,
-                task_id=context_object.task_id,
-                run_id=context_object.run_id,
-                status=status,
-                message=message,
-            )
+        PipelineLog.objects.create(
+            context_type=type(context_object).__name__,
+            context_id=context_object.id,
+            pipeline_id=context_object.pipeline_id,
+            run_id=context_object.run_id,
+            status=status.value,
+            message=message,
+        )

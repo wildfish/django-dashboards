@@ -1,17 +1,22 @@
 import logging
-import tempfile
-
-from django.contrib.auth.models import User
-from django.test.utils import override_settings
+from unittest.mock import Mock
 
 import pytest
+from celery import chain, chord
 
-from tests.dashboards.fakes import fake_user
-from wildcoeus.pipelines.base import ModelPipeline, Pipeline
+from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.pipelines.runners.celery.runner import Runner
-from wildcoeus.pipelines.runners.celery.tasks import run_pipeline
-from wildcoeus.pipelines.tasks.base import ModelTask, Task
+from wildcoeus.pipelines.runners.celery.tasks import (
+    run_pipeline_execution_report,
+    run_pipeline_result_report,
+    run_task,
+    run_task_execution_report,
+    run_task_result_report,
+)
+from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.tasks.base import Task
 
 
 pytestmark = pytest.mark.django_db
@@ -32,305 +37,266 @@ def logger(caplog):
     return caplog
 
 
-def test_task_have_no_parents___tasks_are_added_to_chain_in_configured_order(
-    celery_worker, logger
+def get_pipeline_execution(
+    first_task_kwargs=None,
+    second_task_kwargs=None,
+    first_task_iterator=None,
+    second_task_iterator=None,
+    pipeline_iterator=None,
 ):
-    class TaskFirst(Task):
-        def run(self, *args, **kwargs):
-            return True
-
-    class TaskSecond(Task):
-        def run(self, *args, **kwargs):
-            return True
-
-    class TestPipeline(Pipeline):
-        first = TaskFirst(config={})
-        second = TaskSecond(config={})
-
+    class First(Task):
         class Meta:
             app_label = "pipelinetest"
 
-    pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
-
-    assert [
-        "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
-        "Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running",
-        "Task first (test_celery_runner.TaskFirst) changed to state DONE: Done",
-        "Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running",
-        "Task second (test_celery_runner.TaskSecond) changed to state DONE: Done",
-        "Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
-    ] == [rec.message for rec in logger.records]
-
-
-def test_task_with_parents___tasks_are_added_to_chain_in_configured_order(
-    celery_worker, logger
-):
-    class TaskFirst(Task):
         def run(self, *args, **kwargs):
             return True
 
-    class TaskSecond(Task):
-        def run(self, *args, **kwargs):
-            return True
+        @classmethod
+        def get_iterator(cls):
+            return first_task_iterator
 
-    class TestPipeline(Pipeline):
-        first = TaskFirst(
-            config={"parents": ["second"]}
-        )  # Force first to run after second
-        second = TaskSecond(config={})
-
+    class Second(Task):
         class Meta:
             app_label = "pipelinetest"
 
-    pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
-
-    assert [
-        "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
-        "Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running",
-        "Task second (test_celery_runner.TaskSecond) changed to state DONE: Done",
-        "Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running",
-        "Task first (test_celery_runner.TaskFirst) changed to state DONE: Done",
-        "Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
-    ] == [rec.message for rec in logger.records]
-
-
-def test_model_pipeline(celery_worker, logger):
-    users = [fake_user(username="a"), fake_user(username="b")]
-
-    class TaskFirst(Task):
         def run(self, *args, **kwargs):
             return True
 
-    class TaskSecond(Task):
-        def run(self, *args, **kwargs):
-            return True
+        @classmethod
+        def get_iterator(cls):
+            return second_task_iterator
 
-    class TestPipeline(ModelPipeline):
-        first = TaskFirst(config={})
-        second = TaskSecond(config={})
-
-        class Meta:
-            app_label = "pipelinetest"
-
-        def get_queryset(self, *args, **kwargs):
-            return User.objects.all()
-
-    pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
-
-    user_one_for = f"| pipeline object: {{'pk': {users[0].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
-    user_two_for = f"| pipeline object: {{'pk': {users[1].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
-
-    assert [
-        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {user_one_for}",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {user_one_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running {user_one_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state DONE: Done {user_one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {user_one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {user_one_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done {user_one_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {user_two_for}",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {user_two_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running {user_two_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state DONE: Done {user_two_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {user_two_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {user_two_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done {user_two_for}",
-    ] == [rec.message for rec in logger.records]
-
-
-def test_iterator_pipeline(celery_worker, logger):
-    class TaskFirst(Task):
-        def run(self, *args, **kwargs):
-            return True
-
-    class TaskSecond(Task):
-        def run(self, *args, **kwargs):
-            return True
-
+    @pipeline_registry.register
     class TestPipeline(Pipeline):
-        first = TaskFirst(config={})
-        second = TaskSecond(config={})
+        first = First(**(first_task_kwargs or {}))
+        second = Second(**(second_task_kwargs or {}))
 
         class Meta:
             app_label = "pipelinetest"
 
         @classmethod
         def get_iterator(cls):
-            return [1, 2]
+            return pipeline_iterator
 
-    pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
-
-    one_for = "| pipeline object: {'obj': 1}"
-    two_for = "| pipeline object: {'obj': 2}"
-
-    assert [
-        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {one_for}",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {one_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running {one_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state DONE: Done {one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {one_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done {one_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start {two_for}",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        f"Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running {two_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running {two_for}",
-        f"Task first (test_celery_runner.TaskFirst) changed to state DONE: Done {two_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {two_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {two_for}",
-        f"Pipeline test_celery_runner.TestPipeline changed to state DONE: Done {two_for}",
-    ] == [rec.message for rec in logger.records]
+    return build_pipeline_execution(TestPipeline(), "run_id", Mock(), Mock(), {})
 
 
-def test_iterator__iterate_task(celery_worker, logger):
-    class TaskFirst(Task):
-        def run(self, *args, **kwargs):
-            return True
+def test_build_celery_canvas___single_pipeline___canvas_is_chain():
+    pipeline_execution = get_pipeline_execution()
 
-    class TaskSecond(Task):
-        def run(self, *args, **kwargs):
-            return True
-
-        def get_iterator(cls):
-            return [1, 2]
-
-    class TestPipeline(Pipeline):
-        first = TaskFirst(config={})
-        second = TaskSecond(config={})
-
-        class Meta:
-            app_label = "pipelinetest"
-
-    pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
-
-    one_for = "| task object: {'obj': 1}"
-    two_for = "| task object: {'obj': 2}"
-
-    assert [
-        "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
-        "Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running",
-        "Task first (test_celery_runner.TaskFirst) changed to state DONE: Done",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {two_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {two_for}",
-        "Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
-    ] == [rec.message for rec in logger.records]
+    assert chain(
+        Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
+        run_pipeline_execution_report.si(
+            pipeline_execution_id=pipeline_execution.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+        ),
+    ) == Runner().build_celery_canvas(pipeline_execution)
 
 
-def test_model__iterate_task(celery_worker, logger):
-    users = [fake_user(username="a"), fake_user(username="b")]
+def test_build_celery_canvas___multiple_pipeline___canvas_is_chord():
+    pipeline_execution = get_pipeline_execution(pipeline_iterator=[1, 2])
 
-    class TaskFirst(Task):
-        def run(self, *args, **kwargs):
-            return True
-
-    class TaskSecond(ModelTask):
-        def run(self, *args, **kwargs):
-            return True
-
-        def get_queryset(self, *args, **kwargs):
-            return User.objects.all()
-
-    class TestPipeline(Pipeline):
-        first = TaskFirst(config={})
-        second = TaskSecond(config={})
-
-        class Meta:
-            app_label = "pipelinetest"
-
-    pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        run_pipeline(pipeline_id=pipeline.id, input_data={}, run_id="123")
-
-    user_one_for = f"| task object: {{'pk': {users[0].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
-    user_two_for = f"| task object: {{'pk': {users[1].pk}, 'app_label': 'auth', 'model_name': 'user'}}"
-
-    assert [
-        "Pipeline test_celery_runner.TestPipeline changed to state PENDING: Pipeline is waiting to start",
-        "Task first (test_celery_runner.TaskFirst) changed to state PENDING: Task is waiting to start",
-        "Task second (test_celery_runner.TaskSecond) changed to state PENDING: Task is waiting to start",
-        "Pipeline test_celery_runner.TestPipeline changed to state RUNNING: Running",
-        "Task first (test_celery_runner.TaskFirst) changed to state RUNNING: Task is running",
-        "Task first (test_celery_runner.TaskFirst) changed to state DONE: Done",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {user_one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {user_one_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state RUNNING: Task is running {user_two_for}",
-        f"Task second (test_celery_runner.TaskSecond) changed to state DONE: Done {user_two_for}",
-        "Pipeline test_celery_runner.TestPipeline changed to state DONE: Done",
-    ] == [rec.message for rec in logger.records]
+    assert pipeline_execution.get_pipeline_results()[
+        0
+    ].serializable_pipeline_object == {"obj": 1}
+    assert pipeline_execution.get_pipeline_results()[
+        1
+    ].serializable_pipeline_object == {"obj": 2}
+    assert chord(
+        [
+            Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
+            Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[1]),
+        ],
+        run_pipeline_execution_report.si(
+            pipeline_execution_id=pipeline_execution.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+        ),
+    ) == Runner().build_celery_canvas(pipeline_execution)
 
 
-def test__task_to_celery_tasks__queue_defined():
-    class TaskWithQueue(Task):
-        def run(self, *args, **kwargs):
-            return True
+def test_build_pipeline_chain___no_parents_set___tasks_are_added_in_defined_order():
+    runner = Runner()
+    pipeline_execution = get_pipeline_execution()
+    pipeline_result = pipeline_execution.get_pipeline_results()[0]
 
-    class TaskWithoutQueue(Task):
-        def run(self, *args, **kwargs):
-            return True
-
-    class TestPipeline(Pipeline):
-        with_queue = TaskWithQueue(config={"celery_queue": "else"})
-        without_queue = TaskWithoutQueue(config={})
-
-        class Meta:
-            app_label = "pipelinetest"
-
-    with_queue_result = Runner()._expand_celery_tasks(
-        task=TestPipeline().tasks["with_queue"],
-        pipeline_id="test_celery_runner.TestPipeline",
-        run_id="123",
-        input_data={},
-        serializable_pipeline_object=None,
+    first_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "first"
+    )
+    second_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "second"
     )
 
-    assert with_queue_result.options["queue"] == "else"
-
-    without_queue_result = Runner()._expand_celery_tasks(
-        task=TestPipeline().tasks["without_queue"],
-        pipeline_id="test_celery_runner.TestPipeline",
-        run_id="123",
-        input_data={},
-        serializable_pipeline_object=None,
+    expected = chain(
+        run_pipeline_result_report.si(
+            pipeline_result_id=pipeline_result.id,
+            status=PipelineTaskStatus.RUNNING.value,
+            message="Running",
+            propagate=True,
+        ),
+        runner.expand_celery_tasks(first_task_execution),
+        runner.expand_celery_tasks(second_task_execution),
+        run_pipeline_result_report.si(
+            pipeline_result_id=pipeline_result.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+            propagate=False,
+        ),
+    )
+    expected.link_error(
+        # Report pipeline error
+        run_pipeline_result_report.si(
+            pipeline_result_id=pipeline_result.id,
+            status=PipelineTaskStatus.CANCELLED.value,
+            message="Pipeline Error - remaining tasks cancelled",
+            propagate=True,
+        )
     )
 
-    assert not without_queue_result.options["queue"]
+    assert expected == Runner().build_pipeline_chain(pipeline_result)
+
+
+def test_build_pipeline_chain___parents_swaps_order___tasks_are_added_respecting_parents():
+    runner = Runner()
+
+    pipeline_execution = get_pipeline_execution(
+        first_task_kwargs={"config": {"parents": ["second"]}}
+    )
+    pipeline_result = pipeline_execution.get_pipeline_results()[0]
+
+    first_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "first"
+    )
+    second_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "second"
+    )
+
+    expected = chain(
+        run_pipeline_result_report.si(
+            pipeline_result_id=pipeline_result.id,
+            status=PipelineTaskStatus.RUNNING.value,
+            message="Running",
+            propagate=True,
+        ),
+        runner.expand_celery_tasks(second_task_execution),
+        runner.expand_celery_tasks(first_task_execution),
+        run_pipeline_result_report.si(
+            pipeline_result_id=pipeline_result.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+            propagate=False,
+        ),
+    )
+    expected.link_error(
+        # Report pipeline error
+        run_pipeline_result_report.si(
+            pipeline_result_id=pipeline_result.id,
+            status=PipelineTaskStatus.CANCELLED.value,
+            message="Pipeline Error - remaining tasks cancelled",
+            propagate=True,
+        )
+    )
+
+    assert expected == Runner().build_pipeline_chain(pipeline_result)
+
+
+def test_expand_celery_task___single_task___result_is_chain():
+    runner = Runner()
+
+    pipeline_execution = get_pipeline_execution()
+    pipeline_result = pipeline_execution.get_pipeline_results()[0]
+
+    first_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "first"
+    )
+
+    assert chain(
+        runner.build_celery_task(first_task_execution.get_task_results()[0]),
+        run_task_execution_report.si(
+            task_execution_id=first_task_execution.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+            propagate=False,
+        ),
+    ) == runner.expand_celery_tasks(first_task_execution)
+
+
+def test_expand_celery_task___multiple_task___result_is_chord():
+    runner = Runner()
+
+    pipeline_execution = get_pipeline_execution(first_task_iterator=[1, 2])
+    pipeline_result = pipeline_execution.get_pipeline_results()[0]
+
+    first_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "first"
+    )
+
+    assert first_task_execution.get_task_results()[0].serializable_task_object == {
+        "obj": 1
+    }
+    assert first_task_execution.get_task_results()[1].serializable_task_object == {
+        "obj": 2
+    }
+    assert chord(
+        [
+            runner.build_celery_task(first_task_execution.get_task_results()[0]),
+            runner.build_celery_task(first_task_execution.get_task_results()[1]),
+        ],
+        run_task_execution_report.si(
+            task_execution_id=first_task_execution.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+            propagate=False,
+        ),
+    ) == runner.expand_celery_tasks(first_task_execution)
+
+
+def test_build_celery_task___no_queue_set___task_is_built_catching_errors_without_setting_a_queue():
+    runner = Runner()
+
+    pipeline_execution = get_pipeline_execution()
+    pipeline_result = pipeline_execution.get_pipeline_results()[0]
+
+    first_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "first"
+    )
+    first_task_result = first_task_execution.get_task_results()[0]
+
+    expected = run_task.si(first_task_result.id)
+    expected.link_error(
+        run_task_result_report.si(
+            task_result_id=first_task_result.id,
+            status=PipelineTaskStatus.RUNTIME_ERROR.value,
+            message="Task Error",
+        )
+    )
+    expected.set(queue=None)
+
+    assert expected == runner.build_celery_task(first_task_result)
+
+
+def test_build_celery_task___queue_set___task_is_built_catching_errors_with_setting_a_queue():
+    runner = Runner()
+
+    pipeline_execution = get_pipeline_execution(
+        first_task_kwargs={"config": {"celery_queue": "other"}}
+    )
+    pipeline_result = pipeline_execution.get_pipeline_results()[0]
+
+    first_task_execution = next(
+        e for e in pipeline_result.get_task_executions() if e.pipeline_task == "first"
+    )
+    first_task_result = first_task_execution.get_task_results()[0]
+
+    expected = run_task.si(first_task_result.id)
+    expected.link_error(
+        run_task_result_report.si(
+            task_result_id=first_task_result.id,
+            status=PipelineTaskStatus.RUNTIME_ERROR.value,
+            message="Task Error",
+        )
+    )
+    expected.set(queue="other")
+
+    assert expected == runner.build_celery_task(first_task_result)

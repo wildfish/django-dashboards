@@ -7,37 +7,71 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pipelines', '0006_rename_pipelineexecution_pipelineresult_and_more'),
+        ("pipelines", "0006_rename_pipelineexecution_pipelineresult_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PipelineExecution',
+            name="PipelineExecution",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('started', models.DateTimeField(blank=True, null=True)),
-                ('pipeline_id', models.CharField(max_length=255)),
-                ('run_id', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("started", models.DateTimeField(blank=True, null=True)),
+                ("pipeline_id", models.CharField(max_length=255)),
+                ("run_id", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='TaskExecution',
+            name="TaskExecution",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('started', models.DateTimeField(blank=True, null=True)),
-                ('task_id', models.CharField(max_length=255)),
-                ('pipeline', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='pipelines.pipelineresult')),
-                ('config', models.JSONField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("started", models.DateTimeField(blank=True, null=True)),
+                ("task_id", models.CharField(max_length=255)),
+                (
+                    "pipeline",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tasks",
+                        to="pipelines.pipelineresult",
+                    ),
+                ),
+                ("config", models.JSONField()),
             ],
         ),
         migrations.AddField(
-            model_name='pipelineresult',
-            name='execution',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='results', to='pipelines.pipelineexecution'),
+            model_name="pipelineresult",
+            name="execution",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="results",
+                to="pipelines.pipelineexecution",
+            ),
         ),
         migrations.AddField(
-            model_name='taskresult',
-            name='execution',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='results', to='pipelines.taskexecution'),
+            model_name="taskresult",
+            name="execution",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="results",
+                to="pipelines.taskexecution",
+            ),
         ),
     ]

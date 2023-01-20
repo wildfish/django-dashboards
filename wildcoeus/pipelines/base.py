@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
 
+from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 
 from wildcoeus.meta import ClassWithAppConfigMeta
-from wildcoeus.pipelines.results.base import BasePipelineResult, BasePipelineExecution
+from wildcoeus.pipelines.results.base import BasePipelineExecution, BasePipelineResult
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.registry.registry import Registerable
 
@@ -124,7 +125,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         """
         generate id based on where the pipeline is created
         """
-        return "{}.{}".format(cls.__module__, cls.__name__)
+        return "{}.{}".format(cls._meta.app_label, cls.__name__)
 
     @classmethod
     def get_iterator(cls):
@@ -152,13 +153,12 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         self.cleaned_tasks = self.clean_tasks(reporter, run_id)
 
         # create the execution object to store all pipeline results against
-        execution = build_pipeline_execution(
-            self,
-            run_id,
-            runner,
-            reporter,
-            input_data
-        )
+        execution = build_pipeline_execution(self, run_id, runner, reporter, input_data)
+
+        if any(t is None for t in self.cleaned_tasks):
+            # if any of the tasks have an invalid config cancel all others
+            self.handle_error(execution, reporter)
+            return False
 
         return self.start_pipeline(
             execution,

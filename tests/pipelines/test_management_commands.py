@@ -10,9 +10,10 @@ import pytest
 from model_bakery import baker
 
 from wildcoeus.pipelines.models import (
-    PipelineResult,
+    PipelineExecution,
     PipelineLog,
-    TaskLog,
+    PipelineResult,
+    TaskExecution,
     TaskResult,
 )
 from wildcoeus.pipelines.reporters.logging import LoggingReporter
@@ -29,28 +30,49 @@ pytestmark = pytest.mark.django_db
 def test_clear_tasks_and_logs__all_deleted(freezer):
     today = now().today()
 
-    baker.make_recipe("pipelines.fake_pipeline_execution", run_id="123", started=today)
+    pipeline_execution = baker.make_recipe(
+        "pipelines.fake_pipeline_execution", run_id="123", started=today
+    )
+    pipeline_result = baker.make_recipe(
+        "pipelines.fake_pipeline_result", execution=pipeline_execution
+    )
+    task_execution = baker.make_recipe(
+        "pipelines.fake_task_execution", pipeline_result=pipeline_result
+    )
     baker.make_recipe(
-        "pipelines.fake_task_result", run_id="123", started=today, _quantity=3
+        "pipelines.fake_task_result", execution=task_execution, _quantity=3
     )
     baker.make_recipe("pipelines.fake_pipeline_log", run_id="123", _quantity=3)
-    baker.make_recipe("pipelines.fake_task_log", run_id="123", _quantity=3)
 
     freezer.move_to(today + timedelta(days=11))
 
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
+    assert PipelineExecution.objects.count() == 0
     assert PipelineResult.objects.count() == 0
+    assert TaskExecution.objects.count() == 0
     assert TaskResult.objects.count() == 0
     assert PipelineLog.objects.count() == 0
-    assert TaskLog.objects.count() == 0
 
 
 def test_clear_tasks_and_logs__deletes_files(freezer):
     today = now().today()
 
-    baker.make_recipe("pipelines.fake_pipeline_execution", run_id="123", started=today)
+    pipeline_execution = baker.make_recipe(
+        "pipelines.fake_pipeline_execution", run_id="123", started=today
+    )
+    pipeline_result = baker.make_recipe(
+        "pipelines.fake_pipeline_result", execution=pipeline_execution
+    )
+    task_execution = baker.make_recipe(
+        "pipelines.fake_task_execution", pipeline_result=pipeline_result
+    )
+    baker.make_recipe(
+        "pipelines.fake_task_result", execution=task_execution, _quantity=3
+    )
+    baker.make_recipe("pipelines.fake_pipeline_log", run_id="123", _quantity=3)
+
     freezer.move_to(today + timedelta(days=11))
     out = StringIO()
 
@@ -67,7 +89,20 @@ def test_clear_tasks_and_logs__deletes_files(freezer):
 def test_clear_tasks_and_logs__does_not_delete_files_if_date_current():
     today = now().today()
 
-    baker.make_recipe("pipelines.fake_pipeline_execution", run_id="123", started=today)
+    pipeline_execution = baker.make_recipe(
+        "pipelines.fake_pipeline_execution", run_id="123", started=today
+    )
+    pipeline_result = baker.make_recipe(
+        "pipelines.fake_pipeline_result", execution=pipeline_execution
+    )
+    task_execution = baker.make_recipe(
+        "pipelines.fake_task_execution", pipeline_result=pipeline_result
+    )
+    baker.make_recipe(
+        "pipelines.fake_task_result", execution=task_execution, _quantity=3
+    )
+    baker.make_recipe("pipelines.fake_pipeline_log", run_id="123", _quantity=3)
+
     out = StringIO()
 
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
@@ -82,22 +117,28 @@ def test_clear_tasks_and_logs__does_not_delete_files_if_date_current():
 def test_clear_tasks_and_logs__non_deleted():
     today = now().today()
 
-    baker.make_recipe(
-        "pipelines.fake_pipeline_execution", run_id="123", started=today, _quantity=3
+    pipeline_execution = baker.make_recipe(
+        "pipelines.fake_pipeline_execution", run_id="123", started=today
+    )
+    pipeline_result = baker.make_recipe(
+        "pipelines.fake_pipeline_result", execution=pipeline_execution
+    )
+    task_execution = baker.make_recipe(
+        "pipelines.fake_task_execution", pipeline_result=pipeline_result
     )
     baker.make_recipe(
-        "pipelines.fake_task_result", run_id="123", started=today, _quantity=3
+        "pipelines.fake_task_result", execution=task_execution, _quantity=3
     )
     baker.make_recipe("pipelines.fake_pipeline_log", run_id="123", _quantity=3)
-    baker.make_recipe("pipelines.fake_task_log", run_id="123", _quantity=3)
 
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
-    assert PipelineResult.objects.count() == 3
+    assert PipelineExecution.objects.count() == 1
+    assert PipelineResult.objects.count() == 1
+    assert TaskExecution.objects.count() == 1
     assert TaskResult.objects.count() == 3
     assert PipelineLog.objects.count() == 3
-    assert TaskLog.objects.count() == 3
 
 
 def test_clear_tasks_and_logs__part_deleted(freezer):
@@ -105,20 +146,22 @@ def test_clear_tasks_and_logs__part_deleted(freezer):
 
     for d in [9, 11]:
         freezer.move_to(today - timedelta(days=d))
-        pe = baker.make_recipe(
-            "pipelines.fake_pipeline_execution",
-            started=now().today(),
+
+        pipeline_execution = baker.make_recipe(
+            "pipelines.fake_pipeline_execution", started=now().today()
+        )
+        pipeline_result = baker.make_recipe(
+            "pipelines.fake_pipeline_result", execution=pipeline_execution
+        )
+        task_execution = baker.make_recipe(
+            "pipelines.fake_task_execution", pipeline_result=pipeline_result
         )
         baker.make_recipe(
-            "pipelines.fake_task_result",
-            run_id=str(pe.run_id),
-            started=now().today(),
-            _quantity=2,
+            "pipelines.fake_task_result", execution=task_execution, _quantity=2
         )
         baker.make_recipe(
-            "pipelines.fake_pipeline_log", run_id=str(pe.run_id), _quantity=2
+            "pipelines.fake_pipeline_log", run_id=pipeline_execution.run_id, _quantity=2
         )
-        baker.make_recipe("pipelines.fake_task_log", run_id=str(pe.run_id), _quantity=2)
 
     freezer.move_to(today)
 
@@ -128,4 +171,3 @@ def test_clear_tasks_and_logs__part_deleted(freezer):
     assert PipelineResult.objects.count() == 1
     assert TaskResult.objects.count() == 2
     assert PipelineLog.objects.count() == 2
-    assert TaskLog.objects.count() == 2

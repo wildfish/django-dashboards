@@ -1,8 +1,10 @@
+from unittest import mock
 from unittest.mock import Mock, call
 
 import pytest
 
 from wildcoeus.pipelines.base import Pipeline
+from wildcoeus.pipelines.models import PipelineExecution, TaskResult
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.eager import Runner
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -16,10 +18,16 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
     reporter = Mock()
 
     class TestTask(Task):
+        class Meta:
+            app_label = "pipelinetest"
+
         def run(self, *args, **kwargs):
             return True
 
     class TestTaskTwo(Task):
+        class Meta:
+            app_label = "pipelinetest"
+
         def run(self, *args, **kwargs):
             return True
 
@@ -35,25 +43,24 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    assert reporter.report_task.call_args_list.index(
+    first_task_result = TaskResult.objects.filter(
+        execution__pipeline_task="first"
+    ).first()
+    second_task_result = TaskResult.objects.filter(
+        execution__pipeline_task="second"
+    ).first()
+
+    assert reporter.report_task_result.call_args_list.index(
         call(
-            pipeline_task="first",
-            task_id="test_eager_runner.TestTask",
-            run_id="123",
-            status=PipelineTaskStatus.RUNNING.value,
-            message="Task is running",
-            serializable_pipeline_object=None,
-            serializable_task_object=None,
+            first_task_result,
+            PipelineTaskStatus.DONE,
+            mock.ANY,
         )
-    ) < reporter.report_task.call_args_list.index(
+    ) < reporter.report_task_result.call_args_list.index(
         call(
-            pipeline_task="second",
-            task_id="test_eager_runner.TestTaskTwo",
-            run_id="123",
-            status=PipelineTaskStatus.RUNNING.value,
-            message="Task is running",
-            serializable_pipeline_object=None,
-            serializable_task_object=None,
+            second_task_result,
+            PipelineTaskStatus.RUNNING,
+            mock.ANY,
         )
     )
 
@@ -62,16 +69,22 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
     reporter = Mock()
 
     class TestTask(Task):
+        class Meta:
+            app_label = "pipelinetest"
+
         def run(self, *args, **kwargs):
             return True
 
     class TestTaskTwo(Task):
+        class Meta:
+            app_label = "pipelinetest"
+
         def run(self, *args, **kwargs):
             return True
 
     class TestPipeline(Pipeline):
-        parent = TestTask(config={})
         child = TestTaskTwo(config={"parents": ["parent"]})
+        parent = TestTask(config={})
 
         class Meta:
             app_label = "pipelinetest"
@@ -81,25 +94,20 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    assert reporter.report_task.call_args_list.index(
+    parent = TaskResult.objects.filter(execution__pipeline_task="parent").first()
+    child = TaskResult.objects.filter(execution__pipeline_task="child").first()
+
+    assert reporter.report_task_result.call_args_list.index(
         call(
-            pipeline_task="parent",
-            task_id="test_eager_runner.TestTask",
-            run_id="123",
-            status=PipelineTaskStatus.RUNNING.value,
-            message="Task is running",
-            serializable_pipeline_object=None,
-            serializable_task_object=None,
+            parent,
+            PipelineTaskStatus.DONE,
+            mock.ANY,
         )
-    ) < reporter.report_task.call_args_list.index(
+    ) < reporter.report_task_result.call_args_list.index(
         call(
-            pipeline_task="child",
-            task_id="test_eager_runner.TestTaskTwo",
-            run_id="123",
-            status=PipelineTaskStatus.RUNNING.value,
-            message="Task is running",
-            serializable_pipeline_object=None,
-            serializable_task_object=None,
+            child,
+            PipelineTaskStatus.RUNNING,
+            mock.ANY,
         )
     )
 
@@ -108,12 +116,18 @@ def test_first_task_fails___other_tasks_are_cancelled():
     reporter = Mock()
 
     class BadTask(Task):
+        class Meta:
+            app_label = "pipelinetest"
+
         def run(self, *args, **kwargs):
             raise Exception("Test error")
 
     good_task_start = Mock()
 
     class GoodTask(Task):
+        class Meta:
+            app_label = "pipelinetest"
+
         def start(self, *args, **kwargs):
             good_task_start(*args, **kwargs)
 
@@ -129,24 +143,21 @@ def test_first_task_fails___other_tasks_are_cancelled():
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    reporter.report_task.assert_any_call(
-        pipeline_task="bad",
-        task_id="test_eager_runner.BadTask",
-        run_id="123",
-        status=PipelineTaskStatus.RUNTIME_ERROR.value,
-        message="Test error",
-        serializable_pipeline_object=None,
-        serializable_task_object=None,
-    )
+    bad = TaskResult.objects.filter(execution__pipeline_task="bad").first()
+    good = TaskResult.objects.filter(execution__pipeline_task="good").first()
 
-    reporter.report_task.assert_any_call(
-        pipeline_task="good",
-        task_id="test_eager_runner.GoodTask",
-        run_id="123",
-        status=PipelineTaskStatus.CANCELLED.value,
-        message="There was an error running a different task",
-        serializable_pipeline_object=None,
-        serializable_task_object=None,
+    assert reporter.report_task_result.call_args_list.index(
+        call(
+            bad,
+            PipelineTaskStatus.RUNTIME_ERROR,
+            mock.ANY,
+        )
+    ) < reporter.report_task_result.call_args_list.index(
+        call(
+            good,
+            PipelineTaskStatus.CANCELLED,
+            mock.ANY,
+        )
     )
 
     good_task_start.assert_not_called()

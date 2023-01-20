@@ -1,11 +1,12 @@
 from graphlib import TopologicalSorter
-from typing import Any, Dict, List, Optional
+from typing import List
 
 from wildcoeus.pipelines.reporters import PipelineReporter
-from wildcoeus.pipelines.results.base import BaseTaskResult, BasePipelineResult, BasePipelineExecution, \
-    BaseTaskExecution
-from wildcoeus.pipelines.status import PipelineTaskStatus
-from wildcoeus.pipelines.tasks import Task
+from wildcoeus.pipelines.results.base import (
+    BasePipelineExecution,
+    BasePipelineResult,
+    BaseTaskExecution,
+)
 
 
 class PipelineRunner:
@@ -13,7 +14,7 @@ class PipelineRunner:
     def _get_task_graph(pipeline_result: BasePipelineResult) -> List[BaseTaskExecution]:
         task_graph = {}
 
-        for task in pipeline_result.get_pipeline().tasks.values():
+        for task in (pipeline_result.get_pipeline().tasks or {}).values():
             task_graph[task.pipeline_task] = set(
                 getattr(task.cleaned_config, "parents", [])
             )

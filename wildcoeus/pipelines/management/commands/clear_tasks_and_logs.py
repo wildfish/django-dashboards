@@ -4,17 +4,12 @@ from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.models import (
-    PipelineResult,
-    PipelineLog,
-    TaskLog,
-    TaskResult,
-)
+from wildcoeus.pipelines.models import PipelineExecution, PipelineLog
 from wildcoeus.pipelines.storage import get_log_path
 
 
 class Command(BaseCommand):
-    help = "Delete PipelineExecution, TaskResult, TaskLog and PipelineLog based on a deletion cutoff."
+    help = "Delete PipelineExecution, TaskResult and PipelineLog based on a deletion cutoff."
 
     def add_arguments(self, parser):
         parser.add_argument("--days", type=int, required=False)
@@ -29,15 +24,13 @@ class Command(BaseCommand):
         deletion_date = today - timedelta(days=days)
 
         run_ids = list(
-            PipelineResult.objects.filter(started__lt=deletion_date).values_list(
+            PipelineExecution.objects.filter(started__lt=deletion_date).values_list(
                 "run_id", flat=True
             )
         )
 
         if run_ids:
-            PipelineResult.objects.filter(run_id__in=run_ids).delete()
-            TaskResult.objects.filter(run_id__in=run_ids).delete()
-            TaskLog.objects.filter(run_id__in=run_ids).delete()
+            PipelineExecution.objects.filter(run_id__in=run_ids).delete()
             PipelineLog.objects.filter(run_id__in=run_ids).delete()
 
             for run_id in run_ids:

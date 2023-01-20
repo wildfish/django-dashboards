@@ -10,26 +10,14 @@ class TaskRegistry(Registry):
         self,
         pipeline_task: str,
         task_id: str,
-        run_id: str,
         config: Dict[str, Any],
-        reporter: PipelineReporter,
     ):
-        try:
-            cls = self.get_by_id(task_id)
+        cls = self.get_by_id(task_id)
 
-            task = cls(config=config)
-            task.pipeline_task = pipeline_task
+        task = cls(config=config)
+        task.pipeline_task = pipeline_task
 
-            return task
-        except IndexError:
-            reporter.report_task(
-                pipeline_task=pipeline_task,
-                task_id=task_id,
-                run_id=run_id,
-                status=PipelineTaskStatus.CONFIG_ERROR.value,
-                message=f"No task named {task_id} is registered",
-            )
-            return None
+        return task
 
 
 task_registry = TaskRegistry()

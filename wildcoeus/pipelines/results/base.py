@@ -1,7 +1,8 @@
-import datetime
-from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING
+from datetime import datetime
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from wildcoeus.pipelines import config
+
 
 if TYPE_CHECKING:
     from wildcoeus.pipelines.base import Pipeline
@@ -17,14 +18,17 @@ class BasePipelineExecution:
     pipeline_id: str
     run_id: str
     status: str
+    input_data: Dict[str, Any]
 
-    def report_status_change(self, reporter: "PipelineReporter", status: "PipelineTaskStatus", message=""):
+    def report_status_change(
+        self, reporter: "PipelineReporter", status: "PipelineTaskStatus", message=""
+    ):
         raise NotImplementedError()
 
     def get_pipeline(self) -> "Pipeline":
         raise NotImplementedError()
 
-    def get_pipeline_results(self) -> Iterable["BasePipelineResult"]:
+    def get_pipeline_results(self) -> List["BasePipelineResult"]:
         raise NotImplementedError()
 
 
@@ -45,10 +49,16 @@ class BasePipelineResult:
     def get_pipeline_execution(self) -> BasePipelineExecution:
         raise NotImplementedError()
 
-    def get_task_executions(self) -> Iterable["BaseTaskExecution"]:
+    def get_task_executions(self) -> List["BaseTaskExecution"]:
         raise NotImplementedError()
 
-    def report_status_change(self, reporter: "PipelineReporter", status: "PipelineTaskStatus", propagate=True, message=""):
+    def report_status_change(
+        self,
+        reporter: "PipelineReporter",
+        status: "PipelineTaskStatus",
+        propagate=True,
+        message="",
+    ):
         raise NotImplementedError()
 
 
@@ -64,13 +74,19 @@ class BaseTaskExecution:
     status: str
     serializable_pipeline_object: Dict[str, Any]
 
-    def report_status_change(self, reporter: "PipelineReporter", status: "PipelineTaskStatus", propagate=True, message=""):
+    def report_status_change(
+        self,
+        reporter: "PipelineReporter",
+        status: "PipelineTaskStatus",
+        propagate=True,
+        message="",
+    ):
         raise NotImplementedError()
 
-    def get_task(self, reporter) -> "Task":
+    def get_task(self) -> "Task":
         raise NotImplementedError()
 
-    def get_task_results(self) -> Iterable["BaseTaskResult"]:
+    def get_task_results(self) -> List["BaseTaskResult"]:
         raise NotImplementedError()
 
 
@@ -91,20 +107,22 @@ class BaseTaskResult:
     def get_task_execution(self) -> BaseTaskExecution:
         raise NotImplementedError()
 
-    def report_status_change(self, reporter: "PipelineReporter", status: "PipelineTaskStatus", propagate=True, message=""):
+    def report_status_change(
+        self,
+        reporter: "PipelineReporter",
+        status: "PipelineTaskStatus",
+        propagate=True,
+        message="",
+    ):
         raise NotImplementedError()
 
     def get_task(self) -> "Task":
         from wildcoeus.pipelines.tasks import task_registry
 
-        reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
-
         return task_registry.load_task_from_id(
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,
-            run_id=self.run_id,
             config=self.config,
-            reporter=reporter,
         )
 
     @property
