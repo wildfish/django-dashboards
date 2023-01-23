@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Union
 
 from ..models import PipelineLog
 from ..results.base import (
@@ -14,11 +14,11 @@ from . import PipelineReporter
 class ORMReporter(PipelineReporter):
     def report(
         self,
-        status: PipelineTaskStatus,
-        message: str,
         context_object: Union[
             BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
         ],
+        status: PipelineTaskStatus,
+        message: str,
     ):
         PipelineLog.objects.create(
             context_type=type(context_object).__name__,

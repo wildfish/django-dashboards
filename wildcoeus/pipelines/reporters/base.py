@@ -12,11 +12,11 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 class PipelineReporter:
     def report(
         self,
-        status: PipelineTaskStatus,
-        message: str,
         context_object: Union[
             BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
         ],
+        status: PipelineTaskStatus,
+        message: str,
     ):  # pragma: nocover
         pass
 
@@ -27,13 +27,13 @@ class PipelineReporter:
         message: str,
     ):
         self.report(
+            pipeline_execution,
             status,
             self._build_log_message(
                 f"Pipeline {pipeline_execution.pipeline_id} changed to state {status.value}",
                 status,
                 message,
             ),
-            context_object=pipeline_execution,
         )
 
     def report_pipeline_result(
@@ -42,23 +42,15 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
-        pipeline_object_msg = None
-        if pipeline_result.serializable_pipeline_object:
-            pipeline_object_msg = (
-                f"pipeline object: {pipeline_result.serializable_pipeline_object}"
-            )
-
-        message_parts = [message, pipeline_object_msg]
-        message = " | ".join([m for m in message_parts if m])
-
         self.report(
+            pipeline_result,
             status,
             self._build_log_message(
                 f"Pipeline result {pipeline_result.pipeline_id} changed to state {status.value}",
                 status,
                 message,
+                pipeline_object=pipeline_result.serializable_pipeline_object,
             ),
-            context_object=pipeline_result,
         )
 
     def report_task_execution(
@@ -67,23 +59,15 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
-        pipeline_object_msg = None
-        if task_execution.serializable_pipeline_object:
-            pipeline_object_msg = (
-                f"pipeline object: {task_execution.serializable_pipeline_object}"
-            )
-
-        message_parts = [message, pipeline_object_msg]
-        message = " | ".join([m for m in message_parts if m])
-
         self.report(
+            task_execution,
             status,
             self._build_log_message(
                 f"Task {task_execution.pipeline_task} ({task_execution.task_id}) changed to state {status.value}",
                 status,
                 message,
+                pipeline_object=task_execution.serializable_pipeline_object,
             ),
-            context_object=task_execution,
         )
 
     def report_task_result(
@@ -92,29 +76,34 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
-        pipeline_object_msg = None
-        if task_result.serializable_pipeline_object:
-            pipeline_object_msg = (
-                f"pipeline object: {task_result.serializable_pipeline_object}"
-            )
-
-        task_object_msg = None
-        if task_result.serializable_task_object:
-            task_object_msg = f"task object: {task_result.serializable_task_object}"
-
-        message_parts = [message, pipeline_object_msg, task_object_msg]
-        message = " | ".join([m for m in message_parts if m])
-
         self.report(
+            task_result,
             status,
             self._build_log_message(
                 f"Task result {task_result.pipeline_task} ({task_result.task_id}) changed to state {status.value}",
                 status,
                 message,
+                pipeline_object=task_result.serializable_pipeline_object,
+                task_object=task_result.serializable_task_object,
             ),
-            context_object=task_result,
         )
 
-    def _build_log_message(self, root: str, status: PipelineTaskStatus, message: str):
-        message = message or status.value.capitalize()
+    def _build_log_message(
+        self,
+        root: str,
+        status: PipelineTaskStatus,
+        message: str,
+        pipeline_object=None,
+        task_object=None,
+    ):
+        message_parts = [message or status.value.capitalize()]
+
+        if pipeline_object:
+            message_parts.append(f"pipeline object: {pipeline_object}")
+
+        if task_object:
+            message_parts.append(f"task object: {task_object}")
+
+        message = " | ".join(message_parts)
+
         return f"{root}: {message}"

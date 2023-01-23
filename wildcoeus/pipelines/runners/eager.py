@@ -1,8 +1,7 @@
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Iterable, List
 
-from ..registry import pipeline_registry
 from ..reporters import PipelineReporter
-from ..results.base import BasePipelineExecution, BasePipelineResult, BaseTaskExecution
+from ..results.base import BasePipelineExecution, BaseTaskExecution
 from ..status import PipelineTaskStatus
 from .base import PipelineRunner
 

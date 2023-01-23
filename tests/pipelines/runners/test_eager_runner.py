@@ -4,7 +4,7 @@ from unittest.mock import Mock, call
 import pytest
 
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import PipelineExecution, TaskResult
+from wildcoeus.pipelines.models import TaskResult
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.eager import Runner
 from wildcoeus.pipelines.status import PipelineTaskStatus

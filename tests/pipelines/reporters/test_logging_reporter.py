@@ -20,9 +20,9 @@ def test_report_writes_the_message_to_info(caplog):
     caplog.set_level(logging.INFO)
 
     LoggingReporter().report(
+        Mock(),
         PipelineTaskStatus.DONE.value,
         "The Message",
-        Mock(),
     )
 
     assert "The Message" in caplog.text
@@ -32,9 +32,9 @@ def test_report_writes_the_message_to_info(caplog):
 def test_report_task_writes_the_message_to_file():
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
         LoggingReporter().report(
+            baker.make_recipe("pipelines.fake_pipeline_execution", run_id="123"),
             PipelineTaskStatus.DONE.value,
             "The Message",
-            baker.make_recipe("pipelines.fake_pipeline_execution", run_id="123"),
         )
 
         fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE

@@ -11,7 +11,13 @@ from django.views.generic.detail import SingleObjectMixin
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.forms import PipelineStartForm
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.models import PipelineLog, PipelineResult, TaskResult
+from wildcoeus.pipelines.models import (
+    PipelineExecution,
+    PipelineLog,
+    PipelineResult,
+    TaskExecution,
+    TaskResult,
+)
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.registry import pipeline_registry as registry
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
@@ -34,16 +40,17 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         qs = (
-            PipelineResult.objects.values("pipeline_id")
+            PipelineResult.objects.values("execution__pipeline_id")
             .annotate(
                 total_success=Count(
-                    "pipeline_id", filter=Q(status=PipelineTaskStatus.DONE.value)
+                    "id", filter=Q(status=PipelineTaskStatus.DONE.value)
                 ),
                 total_failed=Count(
-                    "pipeline_id",
+                    "id",
                     filter=Q(status__in=FAILED_STATUES),
                 ),
                 last_ran=Max("started"),
+                pipeline_id=F("execution__pipeline_id"),
             )
             .order_by("pipeline_id")
         )
@@ -53,8 +60,13 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
 
         # todo: Wrong as it needs to be grouped on run_id when doing the average
         t_qs = (
-            TaskResult.objects.values("pipeline_id")
-            .annotate(average_runtime=Avg(F("completed") - F("started")))
+            TaskResult.objects.values(
+                "execution__pipeline_result__execution__pipeline_id"
+            )
+            .annotate(
+                average_runtime=Avg(F("completed") - F("started")),
+                pipeline_id=F("execution__pipeline_result__execution__pipeline_id"),
+            )
             .order_by("pipeline_id")
         )
 
@@ -75,7 +87,7 @@ class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return PipelineResult.objects.with_task_count().filter(
+        return PipelineExecution.objects.with_task_count().filter(
             pipeline_id=self.kwargs["slug"]
         )
 
@@ -148,11 +160,11 @@ class TaskResultListView(IsStaffRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/_results_list.html"
 
     def get_queryset(self):
-        return TaskResult.objects.for_run_id(run_id=self.kwargs["run_id"])
+        return TaskExecution.objects.for_run_id(run_id=self.kwargs["run_id"])
 
     def all_tasks_completed(self):
         return (
-            TaskResult.objects.not_completed()
+            TaskExecution.objects.not_completed()
             .for_run_id(run_id=self.kwargs["run_id"])
             .count()
             == 0

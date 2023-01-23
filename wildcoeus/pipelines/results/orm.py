@@ -1,4 +1,3 @@
-import uuid
 from itertools import product
 from typing import Any, Dict
 
@@ -23,6 +22,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         runner: PipelineRunner,
         reporter: PipelineReporter,
         input_data: Dict[str, Any],
+        build_all=True,
     ):
         execution = PipelineExecution.objects.create(
             pipeline_id=pipeline.id,
@@ -32,6 +32,9 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         reporter.report_pipeline_execution(
             execution, PipelineTaskStatus.PENDING, "Pipeline is waiting to start"
         )
+
+        if not build_all:
+            return execution
 
         # build the pipeline results objects
         pipeline_iterator = pipeline.get_iterator()
@@ -69,7 +72,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
                 config=task.cleaned_config.dict(),
             )
             for (pipeline_result, task) in product(
-                pipeline_results, pipeline.tasks.values()
+                pipeline_results, (pipeline.tasks or {}).values()
             )
         ]
 

@@ -3,11 +3,9 @@ from unittest.mock import Mock, patch
 import pytest
 
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import PipelineExecution
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.pipelines.runners.base import PipelineRunner
-from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 pytestmark = pytest.mark.django_db

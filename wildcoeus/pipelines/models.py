@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Sequence
 
 from django.db import models
 from django.db.models import (
@@ -15,7 +15,6 @@ from django.utils.timezone import now
 
 from django_extensions.db.models import TimeStampedModel
 
-from wildcoeus.pipelines import config
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters import PipelineReporter
@@ -47,9 +46,9 @@ class PipelineLog(TimeStampedModel):
         return self.log_message
 
 
-class TaskResultQuerySet(QuerySet):
+class TaskExecutionQuerySet(QuerySet):
     def for_run_id(self, run_id):
-        return self.filter(run_id=run_id)
+        return self.filter(pipeline_result__execution__run_id=run_id)
 
     def not_completed(self):
         statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
@@ -62,21 +61,41 @@ class TaskResultQuerySet(QuerySet):
         return self.annotate(duration=duration)
 
 
-class PipelineResultQuerySet(QuerySet):
+class TaskResultQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(execution__pipeline_result__execution__run_id=run_id)
+
+    def not_completed(self):
+        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
+        return self.filter(status__in=statues)
+
+    def with_duration(self):
+        duration = ExpressionWrapper(
+            F("completed") - F("started"), output_field=fields.DurationField()
+        )
+        return self.annotate(duration=duration)
+
+
+class PipelineExecutionQuerySet(QuerySet):
     def with_task_count(self):
         tasks_qs = (
-            TaskResult.objects.values_list("run_id")
-            .filter(run_id=OuterRef("run_id"))
-            .annotate(total=Count("task_id"))
+            TaskResult.objects.values_list(
+                "execution__pipeline_result__execution__run_id"
+            )
+            .filter(execution__pipeline_result__execution__run_id=OuterRef("run_id"))
+            .annotate(total=Count("id"))
             .values("total")
         )
         duration_qs = (
-            TaskResult.objects.values("run_id")
-            .filter(run_id=OuterRef("run_id"), status=PipelineTaskStatus.DONE.value)
+            TaskResult.objects.values("execution__pipeline_result__execution__run_id")
+            .filter(
+                execution__pipeline_result__execution__run_id=OuterRef("run_id"),
+                status=PipelineTaskStatus.DONE.value,
+            )
             .annotate(duration=Sum(F("completed") - F("started")))
             .values("duration")
         )
-        return PipelineResult.objects.annotate(
+        return self.annotate(
             task_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
         )
 
@@ -93,7 +112,9 @@ class PipelineExecution(BasePipelineExecution, models.Model):
     started = models.DateTimeField(blank=True, null=True, default=None)
     completed = models.DateTimeField(blank=True, null=True, default=None)
 
-    def get_pipeline_results(self) -> Iterable["BasePipelineResult"]:
+    objects = PipelineExecutionQuerySet.as_manager()
+
+    def get_pipeline_results(self) -> Sequence["BasePipelineResult"]:
         return self.results.all()
 
     def get_pipeline(self) -> Pipeline:
@@ -131,8 +152,6 @@ class PipelineResult(BasePipelineResult, models.Model):
     started = models.DateTimeField(blank=True, null=True, default=None)
     completed = models.DateTimeField(blank=True, null=True, default=None)
 
-    objects = PipelineResultQuerySet.as_manager()
-
     class Meta:
         ordering = ["-started"]
 
@@ -156,7 +175,7 @@ class PipelineResult(BasePipelineResult, models.Model):
     def get_pipeline_execution(self) -> BasePipelineExecution:
         return self.execution
 
-    def get_task_executions(self) -> Iterable["BaseTaskExecution"]:
+    def get_task_executions(self) -> Sequence["BaseTaskExecution"]:
         return self.task_executions.all()
 
     @property
@@ -209,6 +228,8 @@ class TaskExecution(BaseTaskExecution, models.Model):
     started = models.DateTimeField(blank=True, null=True, default=None)
     completed = models.DateTimeField(blank=True, null=True, default=None)
 
+    objects = TaskExecutionQuerySet.as_manager()
+
     @property
     def input_data(self):
         return self.pipeline_result.input_data
@@ -225,7 +246,7 @@ class TaskExecution(BaseTaskExecution, models.Model):
     def serializable_pipeline_object(self):
         return self.pipeline_result.serializable_pipeline_object
 
-    def get_task_results(self) -> Iterable["BaseTaskResult"]:
+    def get_task_results(self) -> Sequence["BaseTaskResult"]:
         return self.results.all()
 
     def report_status_change(

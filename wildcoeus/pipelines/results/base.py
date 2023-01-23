@@ -1,7 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
-
-from wildcoeus.pipelines import config
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 
 
 if TYPE_CHECKING:
@@ -28,7 +26,7 @@ class BasePipelineExecution:
     def get_pipeline(self) -> "Pipeline":
         raise NotImplementedError()
 
-    def get_pipeline_results(self) -> List["BasePipelineResult"]:
+    def get_pipeline_results(self) -> Sequence["BasePipelineResult"]:
         raise NotImplementedError()
 
 
@@ -49,7 +47,7 @@ class BasePipelineResult:
     def get_pipeline_execution(self) -> BasePipelineExecution:
         raise NotImplementedError()
 
-    def get_task_executions(self) -> List["BaseTaskExecution"]:
+    def get_task_executions(self) -> Sequence["BaseTaskExecution"]:
         raise NotImplementedError()
 
     def report_status_change(
@@ -86,7 +84,7 @@ class BaseTaskExecution:
     def get_task(self) -> "Task":
         raise NotImplementedError()
 
-    def get_task_results(self) -> List["BaseTaskResult"]:
+    def get_task_results(self) -> Sequence["BaseTaskResult"]:
         raise NotImplementedError()
 
 
@@ -145,6 +143,7 @@ class BasePipelineResultsStorage:
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
         input_data: Dict[str, Any],
+        build_all=True,
     ):
         raise NotImplementedError()
 

@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 from django.core.files.base import ContentFile
 from django.utils.timezone import now
@@ -20,11 +20,11 @@ from . import PipelineReporter
 class LoggingReporter(PipelineReporter):
     def report(
         self,
-        status: PipelineTaskStatus,
-        message: str,
         context_object: Union[
             BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
         ],
+        status: PipelineTaskStatus,
+        message: str,
     ):
         logger.info(message)
         if context_object:

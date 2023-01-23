@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from pydantic import BaseModel, ValidationError
 
-from wildcoeus.meta import ClassWithAppConfigMeta, ClassWithMeta
+from wildcoeus.meta import ClassWithAppConfigMeta
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import BaseTaskResult
 from wildcoeus.pipelines.status import PipelineTaskStatus

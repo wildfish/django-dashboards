@@ -1,19 +1,18 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
 
-from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 
 from wildcoeus.meta import ClassWithAppConfigMeta
-from wildcoeus.pipelines.results.base import BasePipelineExecution, BasePipelineResult
+from wildcoeus.pipelines.results.base import BasePipelineExecution
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.registry.registry import Registerable
 
 
 if TYPE_CHECKING:  # pragma: nocover
     from wildcoeus.pipelines.runners import PipelineRunner
+    from wildcoeus.pipelines.reporters.base import PipelineReporter
 
-from wildcoeus.pipelines.reporters.base import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task
 
@@ -82,7 +81,8 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
     def clean_parents(
         self,
         task: Task,
-        reporter: PipelineReporter,
+        reporter: "PipelineReporter",
+        runner: "PipelineRunner",
         run_id: str,
     ):
         # check against pipeline keys, as parent is relative to the Pipeline, not Task.id which will is
@@ -96,26 +96,33 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         parent_keys = getattr(task.cleaned_config, "parents", []) or []
 
         if not all(p in other_pipeline_tasks for p in parent_keys):
-            reporter.report_task(
-                pipeline_task=task.pipeline_task,
-                task_id=task.task_id,
-                run_id=run_id,
-                status=PipelineTaskStatus.CONFIG_ERROR.value,
-                message="One or more of the parent ids are not in the pipeline",
+            pipeline_execution = build_pipeline_execution(
+                self,
+                run_id,
+                runner,
+                reporter,
+                {},
+                build_all=None,
             )
-            return None
+            reporter.report_pipeline_execution(
+                pipeline_execution,
+                PipelineTaskStatus.CONFIG_ERROR,
+                "One or more of the parent ids are not in the pipeline",
+            )
+            # TODO: make this a propper exception and make the message relate to the bad task
+            raise Exception("One or more of the parent ids are not in the pipeline")
 
         return task
 
     def clean_tasks(
-        self, reporter: "PipelineReporter", run_id: str
+        self, reporter: "PipelineReporter", runner: "PipelineRunner", run_id: str
     ) -> List[Optional["Task"]]:
         """
         check that all configs with parents have a task with the parent label present
         """
         return list(
             map(
-                lambda t: self.clean_parents(t, reporter, run_id) if t else t,
+                lambda t: self.clean_parents(t, reporter, runner, run_id) if t else t,
                 self.tasks.values() if self.tasks else {},
             )
         )
@@ -150,7 +157,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
     ):
-        self.cleaned_tasks = self.clean_tasks(reporter, run_id)
+        self.cleaned_tasks = self.clean_tasks(reporter, runner, run_id)
 
         # create the execution object to store all pipeline results against
         execution = build_pipeline_execution(self, run_id, runner, reporter, input_data)
@@ -172,13 +179,6 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
     ) -> bool:
-        self.cleaned_tasks = self.clean_tasks(reporter, pipeline_execution.run_id)
-
-        if any(t is None for t in self.cleaned_tasks):
-            # if any of the tasks have an invalid config cancel all others
-            self.handle_error(pipeline_execution, reporter=reporter)
-            return False
-
         # trigger runner to start
         started = runner.start(
             pipeline_execution,

@@ -1,5 +1,5 @@
 import uuid
-from unittest.mock import Mock, call
+from unittest.mock import Mock
 
 import pytest
 from pydantic import BaseModel
@@ -177,51 +177,17 @@ def test_tasks_has_a_missing_parent___error_is_raised():
     pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
 
-    assert (
+    with pytest.raises(Exception):
         pipeline.start(run_id=run_id, input_data={}, runner=runner, reporter=reporter)
-        is False
-    )
 
     runner.start.assert_not_called()
 
     pipeline_execution = PipelineExecution.objects.first()
-    [pipeline_result] = pipeline_execution.get_pipeline_results()
-    [
-        bad_config_execution,
-        good_config_execution,
-    ] = pipeline_result.get_task_executions()
-    [bad_config_result] = bad_config_execution.get_task_results()
-    [good_config_result] = good_config_execution.get_task_results()
 
     reporter.report_pipeline_execution(
         pipeline_execution,
         PipelineTaskStatus.PENDING,
-        "Pipeline cancelled due to an error in the pipeline config",
-    )
-    reporter.report_pipeline_result(
-        pipeline_result,
-        PipelineTaskStatus.PENDING,
-        "Pipeline cancelled due to an error in the pipeline config",
-    )
-    reporter.report_task_execution(
-        bad_config_execution,
-        PipelineTaskStatus.PENDING,
-        "Task cancelled due to an error in the pipeline config",
-    )
-    reporter.report_task_result(
-        bad_config_result,
-        PipelineTaskStatus.PENDING,
-        "Task cancelled due to an error in the pipeline config",
-    )
-    reporter.report_task_execution(
-        good_config_execution,
-        PipelineTaskStatus.PENDING,
-        "Task cancelled due to an error in the pipeline config",
-    )
-    reporter.report_task_result(
-        good_config_result,
-        PipelineTaskStatus.PENDING,
-        "Task cancelled due to an error in the pipeline config",
+        "One or more of the parent ids are not in the pipeline",
     )
 
 

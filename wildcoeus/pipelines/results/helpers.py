@@ -28,6 +28,7 @@ def build_pipeline_execution(
     runner: PipelineRunner,
     reporter: PipelineReporter,
     input_data: Dict[str, Any],
+    build_all=True,
 ) -> BasePipelineExecution:
     storage = get_pipeline_results_storage()
     return storage.build_pipeline_execution(
@@ -36,6 +37,7 @@ def build_pipeline_execution(
         runner,
         reporter,
         input_data,
+        build_all=build_all,
     )
 
 
