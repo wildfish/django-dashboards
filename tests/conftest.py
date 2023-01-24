@@ -1,3 +1,5 @@
+from itertools import chain
+
 import pytest
 
 from tests.dashboards.app1 import dashboards
@@ -29,5 +31,12 @@ def auto_pipeline_registry():
 
 
 @pytest.fixture(autouse=True)
-def reset_registry():
+def auto_task_registry():
     task_registry.reset()
+    for task in chain(
+        pipelines.TestPipeline.tasks.values(),
+        pipelines.TestModelPipeline.tasks.values(),
+        pipelines.TestIteratorPipeline.tasks.values(),
+        pipelines.TestModelPipelineQS.tasks.values(),
+    ):
+        task_registry.register(type(task))

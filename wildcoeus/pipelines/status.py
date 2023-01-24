@@ -14,6 +14,25 @@ class PipelineTaskStatus(Enum):
     def choices(cls):
         return tuple((i.name, i.value) for i in cls)
 
+    @classmethod
+    def final_statuses(cls):
+        return [
+            cls.RUNTIME_ERROR,
+            cls.CONFIG_ERROR,
+            cls.VALIDATION_ERROR,
+            cls.CANCELLED,
+            cls.DONE,
+        ]
+
+    def has_advanced(self, new_state: "PipelineTaskStatus"):
+        if self in self.final_statuses():
+            return False
+        elif new_state in self.final_statuses():
+            return True
+
+        ordering = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
+        return ordering.index(self.value) < ordering.index(new_state.value)
+
 
 FAILED_STATUES = [
     PipelineTaskStatus.CONFIG_ERROR.name,

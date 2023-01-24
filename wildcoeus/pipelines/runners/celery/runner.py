@@ -1,122 +1,141 @@
-import itertools
-from typing import Any, Dict, List, Optional
+from celery import chain, chord, signature
 
-from celery import chain
-
-from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.runners import PipelineRunner
 from wildcoeus.pipelines.status import PipelineTaskStatus
-from wildcoeus.pipelines.tasks import Task
 
-from .tasks import run_pipeline_report, run_task, run_task_report
+from ...results.base import (
+    BasePipelineExecution,
+    BasePipelineResult,
+    BaseTaskExecution,
+    BaseTaskResult,
+)
+from .tasks import (
+    run_pipeline_execution_report,
+    run_pipeline_result_report,
+    run_task,
+    run_task_execution_report,
+    run_task_result_report,
+)
 
 
 class Runner(PipelineRunner):
-    @staticmethod
-    def _task_to_celery_tasks(
-        task: Task,
-        pipeline_id: str,
-        run_id: str,
-        input_data: Dict[str, Any],
-        serializable_pipeline_object: Optional[dict[str, Any]],
-    ):
+    @classmethod
+    def build_celery_task(cls, task: BaseTaskResult):
+        celery_task = run_task.si(task.id)
+        celery_task.link_error(
+            run_task_result_report.si(
+                task_result_id=task.id,
+                status=PipelineTaskStatus.RUNTIME_ERROR.value,
+                message="Task Error",
+            )
+        )
+
+        # set to queue if defined in config
+        celery_task.set(
+            queue=getattr(task.get_task().cleaned_config, "celery_queue", None)
+        )
+
+        return celery_task
+
+    @classmethod
+    def expand_celery_tasks(
+        cls,
+        task: BaseTaskExecution,
+    ) -> signature:
         """
         Start a task async. Task reports will be inline however, we add a link error incase
         anything occurs above task.
         """
-
-        iterator = task.get_iterator()
-        if not iterator:
-            iterator = [None]
-
-        tasks = []
-        for i in iterator:
-            celery_task = run_task.si(
-                task_id=task.task_id,
-                run_id=run_id,
-                pipeline_id=pipeline_id,
-                input_data=input_data,
-                serializable_pipeline_object=serializable_pipeline_object,
-                serializable_task_object=task.get_serializable_task_object(i),
-            )
-            celery_task.link_error(
-                run_task_report.si(
-                    task_id=task.task_id,
-                    pipeline_task=task.pipeline_task,
-                    run_id=run_id,
-                    status=PipelineTaskStatus.RUNTIME_ERROR.value,
-                    message="Task Error",
-                    serializable_pipeline_object=serializable_pipeline_object,
-                    serializable_task_object=task.get_serializable_task_object(i),
-                )
-            )
-
-            # set to queue if defined in config
-            celery_task.set(queue=getattr(task.cleaned_config, "celery_queue", None))
-
-            tasks.append(celery_task)
-
-        return tasks
-
-    def start_runner(
-        self,
-        pipeline_id: str,
-        run_id: str,
-        tasks: List[Task],
-        input_data: Dict[str, Any],
-        reporter: PipelineReporter,
-        pipeline_object: Optional[Any] = None,
-    ) -> bool:
-        ordered_tasks = self._get_task_graph(tasks=tasks)
-
-        pipeline = pipeline_registry.get_by_id(pipeline_id)
-        serializable_pipeline_object = pipeline.get_serializable_pipeline_object(
-            obj=pipeline_object
+        on_complete = run_task_execution_report.si(
+            task_execution_id=task.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+            propagate=False,
         )
+
+        if len(task.get_task_results()) == 1:
+            # build a chord that runs teh only task result
+            # and processes the final state of the task result
+            return chain(
+                cls.build_celery_task(task.get_task_results()[0]),
+                on_complete,
+            )
+        else:
+            # build a chord that runs each task result
+            # and processes the final state of the task result
+            return chord(
+                [cls.build_celery_task(result) for result in task.get_task_results()],
+                on_complete,
+            )
+
+    def build_pipeline_chain(self, pipeline_result: BasePipelineResult):
+        ordered_tasks = self._get_task_graph(pipeline_result)
 
         c = chain(
             # Report starting
-            run_pipeline_report.si(
-                pipeline_id=pipeline_id,
-                run_id=run_id,
+            run_pipeline_result_report.si(
+                pipeline_result_id=pipeline_result.id,
                 status=PipelineTaskStatus.RUNNING.value,
                 message="Running",
-                serializable_pipeline_object=serializable_pipeline_object,
+                propagate=True,
             ),
             # Run tasks in graph order
-            *list(
-                itertools.chain(
-                    *map(
-                        lambda t: self._task_to_celery_tasks(
-                            task=t,
-                            pipeline_id=pipeline_id,
-                            run_id=run_id,
-                            input_data=input_data,
-                            serializable_pipeline_object=serializable_pipeline_object,
-                        ),
-                        ordered_tasks,
-                    )
-                )
+            *map(
+                lambda t: self.expand_celery_tasks(t),
+                ordered_tasks,
             ),
             # Report Done
-            run_pipeline_report.si(
-                pipeline_id=pipeline_id,
-                run_id=run_id,
+            run_pipeline_result_report.si(
+                pipeline_result_id=pipeline_result.id,
                 status=PipelineTaskStatus.DONE.value,
                 message="Done",
-                serializable_pipeline_object=serializable_pipeline_object,
+                propagate=False,
             ),
         )
         c.link_error(
             # Report pipeline error
-            run_pipeline_report.si(
-                pipeline_id=pipeline_id,
-                run_id=run_id,
-                status=PipelineTaskStatus.RUNTIME_ERROR.value,
+            run_pipeline_result_report.si(
+                pipeline_result_id=pipeline_result.id,
+                status=PipelineTaskStatus.CANCELLED.value,
                 message="Pipeline Error - remaining tasks cancelled",
-                serializable_pipeline_object=serializable_pipeline_object,
+                propagate=True,
             )
         )
 
-        return c()
+        return c
+
+    def build_celery_canvas(
+        self,
+        pipeline_execution: BasePipelineExecution,
+    ):
+        on_complete = run_pipeline_execution_report.si(
+            pipeline_execution_id=pipeline_execution.id,
+            status=PipelineTaskStatus.DONE.value,
+            message="Done",
+        )
+
+        if len(pipeline_execution.get_pipeline_results()) == 1:
+            # build a chord that runs teh only pipeline result
+            # and processes the final state of the pipeline
+            return chain(
+                self.build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
+                on_complete,
+            )
+        else:
+            # build a chord that runs each pipeline result
+            # and processes the final state of the pipeline
+            return chord(
+                [
+                    self.build_pipeline_chain(pipeline_result)
+                    for pipeline_result in pipeline_execution.get_pipeline_results()
+                ],
+                on_complete,
+            )
+
+    def start_runner(
+        self,
+        pipeline_execution: BasePipelineExecution,
+        reporter: PipelineReporter,
+    ) -> bool:
+        return self.build_celery_canvas(pipeline_execution)()

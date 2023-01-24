@@ -1,7 +1,13 @@
 from unittest.mock import Mock
 
+import pytest
+from model_bakery import baker
+
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
+
+
+pytestmark = pytest.mark.django_db
 
 
 class Reporter(PipelineReporter):
@@ -12,45 +18,191 @@ class Reporter(PipelineReporter):
         self.report_body(*args, **kwargs)
 
 
-def test_report_task_calls_report_with_task_id_set():
-    reporter = Reporter()
+def pipeline_execution_factory():
+    def fn():
+        return "pipeline_execution", baker.make_recipe(
+            "pipelines.fake_pipeline_execution",
+            run_id="run_id",
+            pipeline_id="pipeline_id",
+        )
 
-    reporter.report_task(
-        pipeline_task="fake",
-        task_id="task-id",
-        status=PipelineTaskStatus.PENDING.value,
-        message="report message",
-        serializable_pipeline_object=None,
-        serializable_task_object=None,
+    return fn
+
+
+def pipeline_result_factory(pipeline_object=None):
+    def fn():
+        pe = baker.make_recipe(
+            "pipelines.fake_pipeline_execution",
+            run_id="run_id",
+            pipeline_id="pipeline_id",
+        )
+        return "pipeline_result", baker.make_recipe(
+            "pipelines.fake_pipeline_result",
+            execution=pe,
+            serializable_pipeline_object=pipeline_object,
+        )
+
+    return fn
+
+
+def task_execution_factory(pipeline_object=None):
+    def fn():
+        pe = baker.make_recipe(
+            "pipelines.fake_pipeline_execution",
+            run_id="run_id",
+            pipeline_id="pipeline_id",
+        )
+        pr = baker.make_recipe(
+            "pipelines.fake_pipeline_result",
+            execution=pe,
+            serializable_pipeline_object=pipeline_object,
+        )
+        return "task_execution", baker.make_recipe(
+            "pipelines.fake_task_execution",
+            task_id="task_id",
+            pipeline_result=pr,
+            pipeline_task="some_task",
+        )
+
+    return fn
+
+
+def task_result_factory(pipeline_object=None, task_object=None):
+    def fn():
+        pe = baker.make_recipe(
+            "pipelines.fake_pipeline_execution",
+            run_id="run_id",
+            pipeline_id="pipeline_id",
+        )
+        pr = baker.make_recipe(
+            "pipelines.fake_pipeline_result",
+            execution=pe,
+            serializable_pipeline_object=pipeline_object,
+        )
+        te = baker.make_recipe(
+            "pipelines.fake_task_execution",
+            task_id="task_id",
+            pipeline_task="some_task",
+            pipeline_result=pr,
+        )
+        return "task_result", baker.make_recipe(
+            "pipelines.fake_task_result",
+            execution=te,
+            serializable_task_object=task_object,
+        )
+
+    return fn
+
+
+@pytest.mark.parametrize(
+    ["factory", "message", "expected_message"],
+    (
+        (
+            pipeline_execution_factory(),
+            "",
+            "Pipeline pipeline_id changed to state PENDING: Pending",
+        ),
+        (
+            pipeline_execution_factory(),
+            "message",
+            "Pipeline pipeline_id changed to state PENDING: message",
+        ),
+        (
+            pipeline_result_factory(),
+            "",
+            "Pipeline result pipeline_id changed to state PENDING: Pending",
+        ),
+        (
+            pipeline_result_factory(),
+            "message",
+            "Pipeline result pipeline_id changed to state PENDING: message",
+        ),
+        (
+            pipeline_result_factory(pipeline_object={"foo": "bar"}),
+            "",
+            "Pipeline result pipeline_id changed to state PENDING: Pending | pipeline object: {'foo': 'bar'}",
+        ),
+        (
+            pipeline_result_factory(pipeline_object={"foo": "bar"}),
+            "message",
+            "Pipeline result pipeline_id changed to state PENDING: message | pipeline object: {'foo': 'bar'}",
+        ),
+        (
+            task_execution_factory(),
+            "",
+            "Task some_task (task_id) changed to state PENDING: Pending",
+        ),
+        (
+            task_execution_factory(),
+            "message",
+            "Task some_task (task_id) changed to state PENDING: message",
+        ),
+        (
+            task_execution_factory(pipeline_object={"foo": "bar"}),
+            "",
+            "Task some_task (task_id) changed to state PENDING: Pending | pipeline object: {'foo': 'bar'}",
+        ),
+        (
+            task_execution_factory(pipeline_object={"foo": "bar"}),
+            "message",
+            "Task some_task (task_id) changed to state PENDING: message | pipeline object: {'foo': 'bar'}",
+        ),
+        (
+            task_result_factory(),
+            "",
+            "Task result some_task (task_id) changed to state PENDING: Pending",
+        ),
+        (
+            task_result_factory(),
+            "message",
+            "Task result some_task (task_id) changed to state PENDING: message",
+        ),
+        (
+            task_result_factory(task_object={"foo": "bar"}),
+            "",
+            "Task result some_task (task_id) changed to state PENDING: Pending | task object: {'foo': 'bar'}",
+        ),
+        (
+            task_result_factory(task_object={"foo": "bar"}),
+            "message",
+            "Task result some_task (task_id) changed to state PENDING: message | task object: {'foo': 'bar'}",
+        ),
+        (
+            task_result_factory(pipeline_object={"foo": "bar"}),
+            "",
+            "Task result some_task (task_id) changed to state PENDING: Pending | pipeline object: {'foo': 'bar'}",
+        ),
+        (
+            task_result_factory(pipeline_object={"foo": "bar"}),
+            "message",
+            "Task result some_task (task_id) changed to state PENDING: message | pipeline object: {'foo': 'bar'}",
+        ),
+        (
+            task_result_factory(
+                pipeline_object={"foo": "bar"}, task_object={"boo": "far"}
+            ),
+            "",
+            "Task result some_task (task_id) changed to state PENDING: Pending | pipeline object: {'foo': 'bar'} | task object: {'boo': 'far'}",
+        ),
+        (
+            task_result_factory(
+                pipeline_object={"foo": "bar"}, task_object={"boo": "far"}
+            ),
+            "message",
+            "Task result some_task (task_id) changed to state PENDING: message | pipeline object: {'foo': 'bar'} | task object: {'boo': 'far'}",
+        ),
+    ),
+)
+def test_report(factory, message, expected_message):
+    context_object_type, context_object = factory()
+
+    reporter = Reporter()
+    getattr(reporter, f"report_{context_object_type}")(
+        context_object, PipelineTaskStatus.PENDING, message
     )
 
     reporter.report_body.assert_called_once_with(
-        pipeline_task="fake",
-        task_id="task-id",
-        run_id="",
-        status="PENDING",
-        message="report message",
-        serializable_pipeline_object=None,
-        serializable_task_object=None,
-    )
-
-
-def test_report_pipeline_calls_report_with_task_id_set():
-    reporter = Reporter()
-
-    reporter.report_pipeline(
-        pipeline_id="pipeline-id",
-        status=PipelineTaskStatus.PENDING.value,
-        message="report message",
-        serializable_pipeline_object=None,
-        serializable_task_object=None,
-    )
-
-    reporter.report_body.assert_called_once_with(
-        pipeline_id="pipeline-id",
-        run_id="",
-        status="PENDING",
-        message="report message",
-        serializable_pipeline_object=None,
-        serializable_task_object=None,
+        context_object,
+        PipelineTaskStatus.PENDING,
+        expected_message,
     )

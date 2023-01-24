@@ -17,8 +17,8 @@ class TaskResultAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(models.PipelineExecution)
-class PipelineExecutionAdmin(admin.ModelAdmin):
+@admin.register(models.PipelineResult)
+class PipelineResultAdmin(admin.ModelAdmin):
     list_display = (
         "pipeline_id",
         "run_id",
@@ -28,16 +28,10 @@ class PipelineExecutionAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(models.TaskLog)
-class TaskLogAdmin(admin.ModelAdmin):
-    list_display = ("log_message", "created")
-    list_filter = ("run_id",)
-
-
 @admin.register(models.PipelineLog)
 class PipelineLogAdmin(admin.ModelAdmin):
     list_display = ("log_message", "created")
-    list_filter = ("run_id",)
+    list_filter = ("run_id", "context_type", "context_id")
 
 
 admin.site.register(models.ValueStore)

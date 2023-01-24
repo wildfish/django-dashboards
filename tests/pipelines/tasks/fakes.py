@@ -11,6 +11,9 @@ def make_fake_task(input_type=None, config_type=None):
         ConfigType = config_type or Task.ConfigType
         InputType = input_type
 
+        class Meta:
+            app_label = "pielinetest"
+
         def __init__(
             self,
             config: Dict[str, Any] = None,

@@ -1,13 +1,18 @@
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Iterable, List
 
-from ..registry import pipeline_registry
 from ..reporters import PipelineReporter
-from ..tasks import Task
+from ..results.base import BasePipelineExecution, BaseTaskExecution
+from ..status import PipelineTaskStatus
 from .base import PipelineRunner
 
 
 class Runner(PipelineRunner):
-    def _task_can_be_ran(self, task: Task, ran_pipeline_tasks: List[str]):
+    def _task_can_be_ran(
+        self,
+        task_execution: BaseTaskExecution,
+        ran_pipeline_tasks: List[str],
+    ):
+        task = task_execution.get_task()
         not_all_parents_ran = any(
             map(
                 lambda parent: parent not in ran_pipeline_tasks,
@@ -19,9 +24,9 @@ class Runner(PipelineRunner):
 
     def _get_next_task(
         self,
-        tasks: List[Task],
+        tasks: Iterable[BaseTaskExecution],
         ran_pipeline_tasks: List[str],
-    ) -> Iterable[Task]:
+    ) -> Iterable[BaseTaskExecution]:
         while True:
             task = next(
                 (t for t in tasks if self._task_can_be_ran(t, ran_pipeline_tasks)),
@@ -35,74 +40,42 @@ class Runner(PipelineRunner):
 
     def start_runner(
         self,
-        pipeline_id: str,
-        run_id: str,
-        tasks: List[Task],
-        input_data: Dict[str, Any],
+        pipeline_execution: BasePipelineExecution,
         reporter: PipelineReporter,
-        pipeline_object: Optional[Any] = None,
     ) -> bool:
+        for pipeline_result in pipeline_execution.get_pipeline_results():
+            ran_pipeline_tasks: List[str] = []
 
-        pipeline = pipeline_registry.get_by_id(pipeline_id)
-        serializable_pipeline_object = pipeline.get_serializable_pipeline_object(
-            obj=pipeline_object
-        )
+            failed = False
+            for task_execution in self._get_next_task(
+                pipeline_result.get_task_executions(), ran_pipeline_tasks
+            ):
+                task = task_execution.get_task()
+                task_results = task_execution.get_task_results()
 
-        self._report_pipeline_running(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            reporter=reporter,
-            serializable_pipeline_object=serializable_pipeline_object,
-        )
+                for task_result in task_results:
+                    try:
+                        if not failed:
+                            task.start(
+                                task_result,
+                                reporter=reporter,
+                            )
+                        else:
+                            task_result.report_status_change(
+                                reporter,
+                                PipelineTaskStatus.CANCELLED,
+                                message="There was an error running a different task",
+                            )
+                    except Exception:
+                        # if a task fails record all others have been canceled
+                        failed = True
 
-        ran_pipeline_tasks: List[str] = []
-
-        for task in self._get_next_task(tasks, ran_pipeline_tasks):
-            iterator = task.get_iterator()
-            if not iterator:
-                iterator = [None]
-
-            for i in iterator:
-                res = task.start(
-                    pipeline_id=pipeline_id,
-                    run_id=run_id,
-                    input_data=input_data,
-                    reporter=reporter,
-                    serializable_pipeline_object=serializable_pipeline_object,
-                    serializable_task_object=task.get_serializable_task_object(i),
-                )
-
-            if res:
                 ran_pipeline_tasks.append(task.pipeline_task)
-            else:
-                # if a task fails record all others have been canceled
-                for t in (
-                    _t
-                    for _t in tasks
-                    if _t.pipeline_task != task.pipeline_task
-                    and _t.pipeline_task not in ran_pipeline_tasks
-                ):
-                    self._report_task_cancelled(
-                        task=t,
-                        run_id=run_id,
-                        reporter=reporter,
-                        serializable_pipeline_object=serializable_pipeline_object,
-                    )
 
-                self._report_pipeline_error(
-                    pipeline_id=pipeline_id,
-                    run_id=run_id,
-                    reporter=reporter,
-                    serializable_pipeline_object=serializable_pipeline_object,
-                )
+            pipeline_result.report_status_change(
+                reporter, PipelineTaskStatus.DONE, propagate=False
+            )
 
-                return False
-
-        self._report_pipeline_done(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            reporter=reporter,
-            serializable_pipeline_object=serializable_pipeline_object,
-        )
+        pipeline_execution.report_status_change(reporter, PipelineTaskStatus.DONE)
 
         return True

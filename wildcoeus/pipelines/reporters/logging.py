@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional, Union
 
 from django.core.files.base import ContentFile
 from django.utils.timezone import now
@@ -7,47 +7,30 @@ from wildcoeus.pipelines import config
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.storage import get_log_path
 
+from ..results.base import (
+    BasePipelineExecution,
+    BasePipelineResult,
+    BaseTaskExecution,
+    BaseTaskResult,
+)
+from ..status import PipelineTaskStatus
 from . import PipelineReporter
 
 
 class LoggingReporter(PipelineReporter):
     def report(
         self,
-        status: str,
+        context_object: Union[
+            BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
+        ],
+        status: PipelineTaskStatus,
         message: str,
-        run_id: Optional[str] = None,
-        pipeline_id: Optional[str] = None,
-        task_id: Optional[str] = None,
-        pipeline_task: Optional[str] = None,
-        serializable_pipeline_object: Optional[dict[str, Any]] = None,
-        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
-        pipeline_object_msg = None
-        if serializable_pipeline_object:
-            pipeline_object_msg = f"pipeline object: {serializable_pipeline_object}"
-
-        task_object_msg = None
-        if serializable_task_object:
-            task_object_msg = f"task object: {serializable_task_object}"
-
-        messages = [message, pipeline_object_msg]
-
-        if pipeline_id:
-            message = " | ".join([m for m in messages if m])
-            logger.info(f"Pipeline {pipeline_id} changed to state {status}: {message}")
+        logger.info(message)
+        if context_object:
             self._write_log_to_file(
-                f"Pipeline {pipeline_id} changed to state {status}: {message}\n",
-                run_id,
-            )
-        else:
-            messages.append(task_object_msg)
-            message = " | ".join([m for m in messages if m])
-            logger.info(
-                f"Task {pipeline_task} ({task_id}) changed to state {status}: {message}"
-            )
-            self._write_log_to_file(
-                f"Task {pipeline_task} ({task_id}) changed to state {status}: {message}\n",
-                run_id,
+                message + "\n",
+                context_object.run_id,
             )
 
     @classmethod

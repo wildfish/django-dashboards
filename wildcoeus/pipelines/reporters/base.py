@@ -1,54 +1,109 @@
-from typing import Any, Optional
+from typing import Union
+
+from wildcoeus.pipelines.results.base import (
+    BasePipelineExecution,
+    BasePipelineResult,
+    BaseTaskExecution,
+    BaseTaskResult,
+)
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class PipelineReporter:
     def report(
         self,
-        status: str,
+        context_object: Union[
+            BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
+        ],
+        status: PipelineTaskStatus,
         message: str,
-        run_id: Optional[str] = None,
-        pipeline_id: Optional[str] = None,
-        task_id: Optional[str] = None,
-        pipeline_task: Optional[str] = None,
-        serializable_pipeline_object: Optional[dict[str, Any]] = None,
-        serializable_task_object: Optional[dict[str, Any]] = None,
     ):  # pragma: nocover
         pass
 
-    def report_pipeline(
+    def report_pipeline_execution(
         self,
-        pipeline_id: str,
-        status: str,
+        pipeline_execution: BasePipelineExecution,
+        status: PipelineTaskStatus,
         message: str,
-        run_id: Optional[str] = "",
-        serializable_pipeline_object: Optional[dict[str, Any]] = None,
-        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         self.report(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            status=status,
-            message=message,
-            serializable_pipeline_object=serializable_pipeline_object,
-            serializable_task_object=serializable_task_object,
+            pipeline_execution,
+            status,
+            self._build_log_message(
+                f"Pipeline {pipeline_execution.pipeline_id} changed to state {status.value}",
+                status,
+                message,
+            ),
         )
 
-    def report_task(
+    def report_pipeline_result(
         self,
-        pipeline_task: str,
-        task_id: str,
-        status: str,
+        pipeline_result: BasePipelineResult,
+        status: PipelineTaskStatus,
         message: str,
-        run_id: Optional[str] = "",
-        serializable_pipeline_object: Optional[dict[str, Any]] = None,
-        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         self.report(
-            pipeline_task=pipeline_task,
-            task_id=task_id,
-            run_id=run_id,
-            status=status,
-            message=message,
-            serializable_pipeline_object=serializable_pipeline_object,
-            serializable_task_object=serializable_task_object,
+            pipeline_result,
+            status,
+            self._build_log_message(
+                f"Pipeline result {pipeline_result.pipeline_id} changed to state {status.value}",
+                status,
+                message,
+                pipeline_object=pipeline_result.serializable_pipeline_object,
+            ),
         )
+
+    def report_task_execution(
+        self,
+        task_execution: BaseTaskExecution,
+        status: PipelineTaskStatus,
+        message: str,
+    ):
+        self.report(
+            task_execution,
+            status,
+            self._build_log_message(
+                f"Task {task_execution.pipeline_task} ({task_execution.task_id}) changed to state {status.value}",
+                status,
+                message,
+                pipeline_object=task_execution.serializable_pipeline_object,
+            ),
+        )
+
+    def report_task_result(
+        self,
+        task_result: BaseTaskResult,
+        status: PipelineTaskStatus,
+        message: str,
+    ):
+        self.report(
+            task_result,
+            status,
+            self._build_log_message(
+                f"Task result {task_result.pipeline_task} ({task_result.task_id}) changed to state {status.value}",
+                status,
+                message,
+                pipeline_object=task_result.serializable_pipeline_object,
+                task_object=task_result.serializable_task_object,
+            ),
+        )
+
+    def _build_log_message(
+        self,
+        root: str,
+        status: PipelineTaskStatus,
+        message: str,
+        pipeline_object=None,
+        task_object=None,
+    ):
+        message_parts = [message or status.value.capitalize()]
+
+        if pipeline_object:
+            message_parts.append(f"pipeline object: {pipeline_object}")
+
+        if task_object:
+            message_parts.append(f"task object: {task_object}")
+
+        message = " | ".join(message_parts)
+
+        return f"{root}: {message}"

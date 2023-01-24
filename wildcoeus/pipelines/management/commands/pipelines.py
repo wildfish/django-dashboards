@@ -25,7 +25,7 @@ class Command(BaseCommand):
         """
         self.stdout.write("Pipelines:\n")
         pipeline_selection_key = {}
-        for i, p in enumerate(pipeline_registry.items(), 1):
+        for i, p in enumerate(pipeline_registry.items, 1):
             self.stdout.write(f"{i}). {p}:")
             pipeline_selection_key[i] = p.get_id()
 

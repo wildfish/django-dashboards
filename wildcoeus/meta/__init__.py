@@ -107,7 +107,7 @@ class ClassWithAppConfigMeta(ClassWithMeta):
         app_config = apps.get_containing_app_config(cls.__module__)
 
         meta_app_label = getattr(class_meta, "app_label", None)
-        if app_config is None and meta_app_label is None:
+        if app_config is None and meta_app_label is None and not class_meta.abstract:
             raise RuntimeError(
                 "%s.%s doesn't declare an explicit "
                 "app_label and isn't in an application in "

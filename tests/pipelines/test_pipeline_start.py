@@ -1,11 +1,12 @@
 import uuid
-from unittest.mock import Mock, call
+from unittest.mock import Mock
 
 import pytest
 from pydantic import BaseModel
 
 from tests.dashboards.fakes import fake_user
 from wildcoeus.pipelines.base import Pipeline
+from wildcoeus.pipelines.models import PipelineExecution
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import ConfigValidationError, Task, TaskConfig
 
@@ -22,9 +23,15 @@ def test_one_task_has_a_bad_config___error_is_reported_runner_is_not_started_tas
         class ConfigType(TaskConfig):
             value: int
 
+        class Meta:
+            app_label = "pipelinetest"
+
     class GoodConfig(Task):
         class ConfigType(TaskConfig):
             value: int
+
+        class Meta:
+            app_label = "pipelinetest"
 
     with pytest.raises(ConfigValidationError) as e:
 
@@ -50,9 +57,15 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
         class ConfigType(TaskConfig):
             value: int
 
+        class Meta:
+            app_label = "pipelinetest"
+
     class GoodConfigB(Task):
         class ConfigType(TaskConfig):
             value: int
+
+        class Meta:
+            app_label = "pipelinetest"
 
     class TestPipeline(Pipeline):
         good = GoodConfigA(config={"value": "0"})
@@ -68,28 +81,29 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
         is True
     )
 
-    reporter.report_task.assert_any_call(
-        pipeline_task="good",
-        task_id="test_pipeline_start.GoodConfigA",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
-    )
-    reporter.report_task.assert_any_call(
-        pipeline_task="also_good",
-        task_id="test_pipeline_start.GoodConfigB",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
-    )
+    pipeline_execution = PipelineExecution.objects.first()
+    [pipeline_result] = pipeline_execution.get_pipeline_results()
+    [task_a_execution, task_b_execution] = pipeline_result.get_task_executions()
+    [task_a_result] = task_a_execution.get_task_results()
+    [task_b_result] = task_b_execution.get_task_results()
 
-    runner.start.assert_called_once_with(
-        pipeline_id="test_pipeline_start.TestPipeline",
-        run_id=run_id,
-        pipeline_object=None,
-        tasks=pipeline.cleaned_tasks,
-        input_data={},
-        reporter=reporter,
+    reporter.report_pipeline_execution(
+        pipeline_execution, PipelineTaskStatus.PENDING, "Pipeline is waiting to start"
+    )
+    reporter.report_pipeline_result(
+        pipeline_result, PipelineTaskStatus.PENDING, "Pipeline is waiting to start"
+    )
+    reporter.report_task_execution(
+        task_a_execution, PipelineTaskStatus.PENDING, "Task is waiting to start"
+    )
+    reporter.report_task_result(
+        task_a_result, PipelineTaskStatus.PENDING, "Task is waiting to start"
+    )
+    reporter.report_task_execution(
+        task_b_execution, PipelineTaskStatus.PENDING, "Task is waiting to start"
+    )
+    reporter.report_task_result(
+        task_b_result, PipelineTaskStatus.PENDING, "Task is waiting to start"
     )
 
 
@@ -105,9 +119,15 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
         class InputType(BaseModel):
             message: str
 
+        class Meta:
+            app_label = "pipelinetest"
+
     class GoodConfigB(Task):
         class ConfigType(TaskConfig):
             value: int
+
+        class Meta:
+            app_label = "pipelinetest"
 
     class TestPipeline(Pipeline):
         good = GoodConfigA(config={"value": "0"})
@@ -128,30 +148,7 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
         is True
     )
 
-    reporter.report_task.assert_any_call(
-        pipeline_task="good",
-        task_id="test_pipeline_start.GoodConfigA",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
-    )
-
-    reporter.report_task.assert_any_call(
-        pipeline_task="also_good",
-        task_id="test_pipeline_start.GoodConfigB",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
-    )
-
-    runner.start.assert_called_once_with(
-        pipeline_id="test_pipeline_start.TestPipeline",
-        run_id=run_id,
-        pipeline_object=None,
-        tasks=pipeline.cleaned_tasks,
-        input_data={"message": "something"},
-        reporter=reporter,
-    )
+    assert PipelineExecution.objects.first().input_data == {"message": "something"}
 
 
 def test_tasks_has_a_missing_parent___error_is_raised():
@@ -159,10 +156,12 @@ def test_tasks_has_a_missing_parent___error_is_raised():
     runner = Mock()
 
     class BadConfig(Task):
-        pass
+        class Meta:
+            app_label = "pipelinetest"
 
     class GoodConfig(Task):
-        pass
+        class Meta:
+            app_label = "pipelinetest"
 
     class TestPipeline(Pipeline):
         bad = BadConfig(
@@ -178,19 +177,18 @@ def test_tasks_has_a_missing_parent___error_is_raised():
     pipeline = TestPipeline()
     run_id = str(uuid.uuid4())
 
-    assert (
+    with pytest.raises(Exception):
         pipeline.start(run_id=run_id, input_data={}, runner=runner, reporter=reporter)
-        is False
-    )
-    reporter.report_task.assert_any_call(
-        pipeline_task="bad",
-        task_id="test_pipeline_start.BadConfig",
-        run_id=run_id,
-        status=PipelineTaskStatus.CONFIG_ERROR.value,
-        message="One or more of the parent ids are not in the pipeline",
-    )
 
     runner.start.assert_not_called()
+
+    pipeline_execution = PipelineExecution.objects.first()
+
+    reporter.report_pipeline_execution(
+        pipeline_execution,
+        PipelineTaskStatus.PENDING,
+        "One or more of the parent ids are not in the pipeline",
+    )
 
 
 def test_pipeline__iterator__all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pending():
@@ -202,9 +200,15 @@ def test_pipeline__iterator__all_tasks_have_a_good_config___runner_is_started_ta
         class ConfigType(TaskConfig):
             value: int
 
+        class Meta:
+            app_label = "pipelinetest"
+
     class GoodConfigB(Task):
         class ConfigType(TaskConfig):
             value: int
+
+        class Meta:
+            app_label = "pipelinetest"
 
     class TestPipeline(Pipeline):
         good = GoodConfigA(config={"value": "0"})
@@ -224,40 +228,30 @@ def test_pipeline__iterator__all_tasks_have_a_good_config___runner_is_started_ta
         is True
     )
 
-    reporter.report_task.assert_any_call(
-        pipeline_task="good",
-        task_id="test_pipeline_start.GoodConfigA",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
-    )
-    reporter.report_task.assert_any_call(
-        pipeline_task="also_good",
-        task_id="test_pipeline_start.GoodConfigB",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
-    )
+    pipeline_execution = PipelineExecution.objects.first()
+    [pipeline_result_a, pipeline_result_b] = pipeline_execution.get_pipeline_results()
+    [a_a_execution, a_b_execution] = pipeline_result_a.get_task_executions()
+    [a_a_result] = a_a_execution.get_task_results()
+    [a_b_result] = a_b_execution.get_task_results()
+    [b_a_execution, b_b_execution] = pipeline_result_b.get_task_executions()
+    [b_a_result] = b_a_execution.get_task_results()
+    [b_b_result] = b_b_execution.get_task_results()
 
-    c1 = call(
-        pipeline_id="test_pipeline_start.TestPipeline",
-        run_id=run_id,
-        pipeline_object=0,
-        tasks=pipeline.cleaned_tasks,
-        input_data={},
-        reporter=reporter,
-    )
-    c2 = call(
-        pipeline_id="test_pipeline_start.TestPipeline",
-        run_id=run_id,
-        pipeline_object=1,
-        tasks=pipeline.cleaned_tasks,
-        input_data={},
-        reporter=reporter,
-    )
-    calls = [c1, c2]
+    assert pipeline_execution.status == PipelineTaskStatus.PENDING.value
 
-    runner.start.assert_has_calls(calls)
+    assert pipeline_result_a.status == PipelineTaskStatus.PENDING.value
+    assert a_a_execution.status == PipelineTaskStatus.PENDING.value
+    assert a_a_result.status == PipelineTaskStatus.PENDING.value
+    assert a_b_execution.status == PipelineTaskStatus.PENDING.value
+    assert a_b_result.status == PipelineTaskStatus.PENDING.value
+
+    assert pipeline_result_a.status == PipelineTaskStatus.PENDING.value
+    assert b_a_execution.status == PipelineTaskStatus.PENDING.value
+    assert b_a_result.status == PipelineTaskStatus.PENDING.value
+    assert b_b_execution.status == PipelineTaskStatus.PENDING.value
+    assert b_b_result.status == PipelineTaskStatus.PENDING.value
+
+    runner.start.assert_called_once_with(pipeline_execution, reporter=reporter)
 
 
 def test_pipeline___model__all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pending(
@@ -276,33 +270,32 @@ def test_pipeline___model__all_tasks_have_a_good_config___runner_is_started_task
         is True
     )
 
-    reporter.report_task.assert_any_call(
-        pipeline_task="first",
-        task_id="tests.pipelines.app.pipelines.TestTask",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
+    pipeline_execution = PipelineExecution.objects.first()
+    [pipeline_result_a, pipeline_result_b] = pipeline_execution.get_pipeline_results()
+    [task_execution_a] = pipeline_result_a.get_task_executions()
+    [task_result_a] = task_execution_a.get_task_results()
+    [task_execution_b] = pipeline_result_b.get_task_executions()
+    [task_result_b] = task_execution_b.get_task_results()
+
+    assert pipeline_execution.status == PipelineTaskStatus.PENDING.value
+
+    assert pipeline_result_a.status == PipelineTaskStatus.PENDING.value
+    assert task_execution_a.status == PipelineTaskStatus.PENDING.value
+    assert task_result_a.status == PipelineTaskStatus.PENDING.value
+    assert (
+        task_result_a.get_task().get_object(task_result_a.serializable_pipeline_object)
+        == users[0]
     )
 
-    c1 = call(
-        pipeline_id=pipeline.get_id(),
-        run_id=run_id,
-        pipeline_object=users[0],
-        tasks=pipeline.cleaned_tasks,
-        input_data={},
-        reporter=reporter,
+    assert pipeline_result_b.status == PipelineTaskStatus.PENDING.value
+    assert task_execution_b.status == PipelineTaskStatus.PENDING.value
+    assert task_result_b.status == PipelineTaskStatus.PENDING.value
+    assert (
+        task_result_b.get_task().get_object(task_result_a.serializable_pipeline_object)
+        == users[0]
     )
-    c2 = call(
-        pipeline_id=pipeline.get_id(),
-        run_id=run_id,
-        pipeline_object=users[1],
-        tasks=pipeline.cleaned_tasks,
-        input_data={},
-        reporter=reporter,
-    )
-    calls = [c1, c2]
 
-    runner.start.assert_has_calls(calls)
+    runner.start.assert_called_once_with(pipeline_execution, reporter=reporter)
 
 
 def test_pipeline___model_qs__all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pending(
@@ -321,30 +314,29 @@ def test_pipeline___model_qs__all_tasks_have_a_good_config___runner_is_started_t
         is True
     )
 
-    reporter.report_task.assert_any_call(
-        pipeline_task="first",
-        task_id="tests.pipelines.app.pipelines.TestTask",
-        run_id=run_id,
-        status=PipelineTaskStatus.PENDING.value,
-        message="Task is waiting to start",
+    pipeline_execution = PipelineExecution.objects.first()
+    [pipeline_result_a, pipeline_result_b] = pipeline_execution.get_pipeline_results()
+    [task_execution_a] = pipeline_result_a.get_task_executions()
+    [task_result_a] = task_execution_a.get_task_results()
+    [task_execution_b] = pipeline_result_b.get_task_executions()
+    [task_result_b] = task_execution_b.get_task_results()
+
+    assert pipeline_execution.status == PipelineTaskStatus.PENDING.value
+
+    assert pipeline_result_a.status == PipelineTaskStatus.PENDING.value
+    assert task_execution_a.status == PipelineTaskStatus.PENDING.value
+    assert task_result_a.status == PipelineTaskStatus.PENDING.value
+    assert (
+        task_result_a.get_task().get_object(task_result_a.serializable_pipeline_object)
+        == users[0]
     )
 
-    c1 = call(
-        pipeline_id=pipeline.get_id(),
-        run_id=run_id,
-        pipeline_object=users[0],
-        tasks=pipeline.cleaned_tasks,
-        input_data={},
-        reporter=reporter,
+    assert pipeline_result_b.status == PipelineTaskStatus.PENDING.value
+    assert task_execution_b.status == PipelineTaskStatus.PENDING.value
+    assert task_result_b.status == PipelineTaskStatus.PENDING.value
+    assert (
+        task_result_b.get_task().get_object(task_result_a.serializable_pipeline_object)
+        == users[0]
     )
-    c2 = call(
-        pipeline_id=pipeline.get_id(),
-        run_id=run_id,
-        pipeline_object=users[1],
-        tasks=pipeline.cleaned_tasks,
-        input_data={},
-        reporter=reporter,
-    )
-    calls = [c1, c2]
 
-    runner.start.assert_has_calls(calls)
+    runner.start.assert_called_once_with(pipeline_execution, reporter=reporter)

@@ -1,13 +1,12 @@
 from typing import Any, Dict, List, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
-from django.utils import timezone
 
 from pydantic import BaseModel, ValidationError
 
-from wildcoeus.meta import ClassWithMeta
-from wildcoeus.pipelines.log import logger
+from wildcoeus.meta import ClassWithAppConfigMeta
 from wildcoeus.pipelines.reporters import PipelineReporter
+from wildcoeus.pipelines.results.base import BaseTaskResult
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
 from wildcoeus.registry.registry import Registerable
@@ -24,7 +23,7 @@ class TaskConfig(BaseModel):
     celery_queue: Optional[str] = None
 
 
-class Task(Registerable, ClassWithMeta):
+class Task(Registerable, ClassWithAppConfigMeta):
     pipeline_task: str  # The attribute this tasks is named against - set via __new__ on Pipeline
     title: Optional[str] = ""
     ConfigType: Type[TaskConfig] = TaskConfig
@@ -53,7 +52,8 @@ class Task(Registerable, ClassWithMeta):
         """
         return None
 
-    def get_serializable_task_object(self, obj):
+    @staticmethod
+    def get_serializable_task_object(obj):
         if obj is None:
             return None
 
@@ -110,89 +110,40 @@ class Task(Registerable, ClassWithMeta):
 
     def start(
         self,
-        pipeline_id: str,
-        run_id: str,
-        input_data: Dict[str, Any],
+        task_result: BaseTaskResult,
         reporter: PipelineReporter,
-        serializable_pipeline_object: Optional[dict[str, Any]] = None,
-        serializable_task_object: Optional[dict[str, Any]] = None,
     ):
         try:
-            cleaned_data = self.clean_input_data(input_data)
-            logger.debug(cleaned_data)
+            task_result.report_status_change(reporter, PipelineTaskStatus.RUNNING)
 
-            reporter.report_task(
-                pipeline_task=self.pipeline_task,
-                task_id=self.task_id,
-                run_id=run_id,
-                status=PipelineTaskStatus.RUNNING.value,
-                message="Task is running",
-                serializable_pipeline_object=serializable_pipeline_object,
-                serializable_task_object=serializable_task_object,
+            self.pipeline_object = self.get_object(
+                task_result.serializable_pipeline_object
             )
-
-            # record the task is running
-            self.save(
-                pipeline_id=pipeline_id,
-                run_id=run_id,
-                serializable_pipeline_object=serializable_pipeline_object,
-                serializable_task_object=serializable_task_object,
-                status=PipelineTaskStatus.RUNNING.value,
-                started=timezone.now(),
-                input_data=cleaned_data.dict() if cleaned_data else None,
-            )
-
-            if serializable_pipeline_object:
-                self.pipeline_object = self.get_object(serializable_pipeline_object)
-
-            if serializable_task_object:
-                self.task_object = self.get_object(serializable_task_object)
+            self.task_object = self.get_object(task_result.serializable_task_object)
 
             # run the task
             self.run(
-                pipeline_id=pipeline_id,
-                run_id=run_id,
-                cleaned_data=cleaned_data,
+                pipeline_id=task_result.pipeline_id,
+                run_id=task_result.run_id,
+                cleaned_data=task_result.get_task().clean_input_data(
+                    task_result.input_data
+                ),
             )
 
             # update the result as completed
-            self.save(
-                pipeline_id=pipeline_id,
-                run_id=run_id,
-                serializable_pipeline_object=serializable_pipeline_object,
-                serializable_task_object=serializable_task_object,
-                status=PipelineTaskStatus.DONE.value,
-                completed=timezone.now(),
-            )
-
-            reporter.report_task(
-                pipeline_task=self.pipeline_task,
-                task_id=self.task_id,
-                run_id=run_id,
-                status=PipelineTaskStatus.DONE.value,
-                message="Done",
-                serializable_pipeline_object=serializable_pipeline_object,
-                serializable_task_object=serializable_task_object,
+            task_result.report_status_change(
+                reporter, PipelineTaskStatus.DONE, propagate=False
             )
 
             return True
         except (InputValidationError, Exception) as e:
             status = (
-                PipelineTaskStatus.VALIDATION_ERROR.value
+                PipelineTaskStatus.VALIDATION_ERROR
                 if isinstance(e, InputValidationError)
-                else PipelineTaskStatus.RUNTIME_ERROR.value
+                else PipelineTaskStatus.RUNTIME_ERROR
             )
-            self.handle_exception(
-                reporter=reporter,
-                pipeline_id=pipeline_id,
-                run_id=run_id,
-                serializable_pipeline_object=serializable_pipeline_object,
-                serializable_task_object=serializable_task_object,
-                exception=e,
-                status=status,
-            )
-
-        return False
+            task_result.report_status_change(reporter, status, message=str(e))
+            raise
 
     def run(
         self,
@@ -201,46 +152,6 @@ class Task(Registerable, ClassWithMeta):
         cleaned_data: Optional[BaseModel],
     ):  # pragma: no cover
         raise NotImplementedError("run not implemented")
-
-    def handle_exception(
-        self,
-        reporter,
-        pipeline_id,
-        run_id,
-        serializable_pipeline_object,
-        serializable_task_object,
-        exception,
-        status,
-    ):
-        from ..models import PipelineExecution
-
-        # If there is an error running the task record the error
-        reporter.report_task(
-            pipeline_task=self.pipeline_task,
-            task_id=self.task_id,
-            run_id=run_id,
-            status=status,
-            message=str(exception),
-            serializable_pipeline_object=serializable_pipeline_object,
-            serializable_task_object=serializable_task_object,
-        )
-
-        # update the task result as failed
-        self.save(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            serializable_pipeline_object=serializable_pipeline_object,
-            serializable_task_object=serializable_task_object,
-            status=status,
-        )
-
-        # update PipelineExecution (if present) as failed
-        PipelineExecution.objects.filter(pipeline_id=pipeline_id, run_id=run_id).update(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            serializable_pipeline_object=serializable_pipeline_object,  # todo: should we do them all?
-            status=status,
-        )
 
     def save(
         self,
@@ -251,7 +162,7 @@ class Task(Registerable, ClassWithMeta):
         status,
         **defaults
     ):
-        from ..models import PipelineExecution, TaskResult
+        from ..models import PipelineResult, TaskResult
 
         # add to the defaults
         defaults["status"] = status
@@ -280,7 +191,7 @@ class Task(Registerable, ClassWithMeta):
                 TaskResult.objects.not_completed().for_run_id(run_id=run_id).count()
                 == 0
             ):
-                PipelineExecution.objects.filter(
+                PipelineResult.objects.filter(
                     pipeline_id=pipeline_id, run_id=run_id
                 ).update(status=PipelineTaskStatus.DONE.value)
 
@@ -288,7 +199,7 @@ class Task(Registerable, ClassWithMeta):
 
     @classmethod
     def get_id(cls):
-        return "{}.{}".format(cls.__module__, cls.__name__)
+        return "{}.{}".format(cls._meta.app_label, cls.__name__)
 
 
 class ModelTask(Task):
