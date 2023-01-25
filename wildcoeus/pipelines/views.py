@@ -2,8 +2,8 @@ import uuid
 
 from django.contrib.auth.mixins import AccessMixin
 from django.db.models import Avg, Count, F, Max, Q
-from django.http import Http404
-from django.urls import reverse_lazy
+from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
@@ -87,7 +87,7 @@ class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return PipelineExecution.objects.with_task_count().filter(
+        return PipelineExecution.objects.with_extra_stats().filter(
             pipeline_id=self.kwargs["slug"]
         )
 
@@ -96,6 +96,59 @@ class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
             **super().get_context_data(**kwargs),
             "slug": self.kwargs["slug"],
         }
+
+
+class PipelineResultsListView(IsStaffRequiredMixin, ListView):
+    template_name = "wildcoeus/pipelines/pipeline_results_list.html"
+    paginate_by = 30
+
+    def get_queryset(self):
+        return PipelineResult.objects.with_extra_stats().filter(
+            execution__pipeline_id=self.kwargs["slug"],
+            execution_id=self.kwargs["pipeline_execution_id"],
+        )
+
+    def get_context_data(self, **kwargs):
+        return {
+            **super().get_context_data(**kwargs),
+            "slug": self.kwargs["slug"],
+        }
+
+    def get(self, *args, **kwargs):
+        if self.get_queryset().count() == 1:
+            return HttpResponseRedirect(
+                reverse("wildcoeus.pipelines:task-execution-list", kwargs={
+                    **kwargs,
+                    "pipeline_result_id": self.get_queryset().first().id,
+                })
+            )
+
+        return super().get(*args, **kwargs)
+
+
+class TaskExecutionsListView(IsStaffRequiredMixin, ListView):
+    template_name = "wildcoeus/pipelines/pipeline_execution_list.html"
+    paginate_by = 30
+
+    def get_queryset(self):
+        return PipelineExecution.objects.with_extra_stats().filter(
+            pipeline_id=self.kwargs["slug"],
+            execution_id=self.kwargs["pipeline_execution_id"],
+        )
+
+    def get_context_data(self, **kwargs):
+        return {
+            **super().get_context_data(**kwargs),
+            "slug": self.kwargs["slug"],
+        }
+
+    def get(self, *args, **kwargs):
+        if self.get_queryset().count() < 2:
+            return HttpResponseRedirect(
+                reverse("wildcoeus.pipelines:task-execution-list")
+            )
+
+        return super().get(*args, **kwargs)
 
 
 class PipelineStartView(IsStaffRequiredMixin, FormView):
@@ -160,7 +213,7 @@ class TaskResultListView(IsStaffRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/_results_list.html"
 
     def get_queryset(self):
-        return TaskExecution.objects.for_run_id(run_id=self.kwargs["run_id"])
+        return PipelineResult.objects.for_run_id(run_id=self.kwargs["run_id"])
 
     def all_tasks_completed(self):
         return (

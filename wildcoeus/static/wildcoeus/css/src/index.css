@@ -6,11 +6,11 @@
 }
 
 * {
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: auto;
   font-kerning: auto;
 }
 
@@ -28,7 +28,6 @@ body {
 }
 
 a{
-  -webkit-text-decoration: none;
   text-decoration: none;
 }
 
@@ -41,13 +40,11 @@ h1, h2, h3, h4, h5, h6 {
 .dashboard-container, .tab-content {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-gap: 10px;
   gap: 10px;
   text-align: center;
 }
 
 .dashboard-component{
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
   box-shadow: 0 0 35px 0 var(--shadow);
 }
 
@@ -56,11 +53,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dashboard-component-cta {
-  background-color: rgba(154, 161, 171, 0.15);
   background-color: var(--shadow);
-  color: #1e1e1e;
   color: var(--off-black);
-  -webkit-text-decoration: none;
   text-decoration: none;
   font-size: 1.3rem;
 }
@@ -121,7 +115,6 @@ h1, h2, h3, h4, h5, h6 {
 a{
   color: #000000;
   font-size: 1.1rem;
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
   box-shadow: 0 0 35px 0 var(--shadow);
 }
 
@@ -139,15 +132,12 @@ a.active {
 }
 
 .menu li {
-  color: #1e1e1e;
   color: var(--off-black);
-  background: #ececec;
   background: var(--grey);
   display: block;
   float: left;
   padding: 0.5rem 2rem;
   position: relative;
-  -webkit-text-decoration: none;
   text-decoration: none;
   transition-duration: 0.5s;
 }
@@ -210,41 +200,31 @@ a.active {
     font-size: 0.8rem;
 }
 .table thead th {
-    background-color: #ececec;
     background-color: var(--grey);
-    border: solid 1px rgba(154, 161, 171, 0.15);
     border: solid 1px var(--shadow);
-    color: #1e1e1e;
     color: var(--off-black);
     padding: 1rem;
     text-align: left;
     text-shadow: 1px 1px 1px #fff;
 }
 .table tbody td {
-    border: solid 1px rgba(154, 161, 171, 0.15);
     border: solid 1px var(--shadow);
-    color: #1e1e1e;
     color: var(--off-black);
     padding: 10px;
 }
 
 /* pipeline styles */
 .pipeline-logs {
-  background-color: #1e1e1e;
   background-color: var(--off-black);
   padding: 5px;
-  color: #ececec;
   color: var(--grey);
   height: 50vh;
   overflow: auto;
 }
 
 .breadcrumbs{
-    background-color: #ececec;
     background-color: var(--grey);
-    border: solid 1px rgba(154, 161, 171, 0.15);
     border: solid 1px var(--shadow);
-    color: #1e1e1e;
     color: var(--off-black);
     padding: 1rem;
     margin-bottom: 15px;
@@ -275,8 +255,8 @@ a.active {
 
 .result-pending {
     --table-color: #000;
-    --table-bg: rgba(231,223,209,1);
-    --table-border-color: rgba(231,223,209,1);
+    --table-bg: #E7DFD1FF;
+    --table-border-color: #E7DFD1FF;
 }
 
 .result-danger {
@@ -317,7 +297,6 @@ a.active {
   color: black;
   float: left;
   padding: 8px 16px;
-  -webkit-text-decoration: none;
   text-decoration: none;
   transition: background-color .3s;
   border: 1px solid #ddd;

@@ -11,6 +11,7 @@ from django.db.models import (
     fields,
 )
 from django.db.models.query import QuerySet
+from django.utils.functional import cached_property
 from django.utils.timezone import now
 
 from django_extensions.db.models import TimeStampedModel
@@ -27,6 +28,7 @@ from wildcoeus.pipelines.results.base import (
 from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 from wildcoeus.pipelines.tasks.registry import task_registry
+from wildcoeus.pipelines.utils import get_object
 
 
 class PipelineLog(TimeStampedModel):
@@ -77,26 +79,32 @@ class TaskResultQuerySet(QuerySet):
 
 
 class PipelineExecutionQuerySet(QuerySet):
-    def with_task_count(self):
+    def with_extra_stats(self):
+        results_qs = (
+            PipelineResult.objects.values_list("execution__id")
+            .filter(execution_id=OuterRef("id"))
+            .annotate(total=Count("id"))
+            .values("total")
+        )
         tasks_qs = (
             TaskResult.objects.values_list(
-                "execution__pipeline_result__execution__run_id"
+                "execution__pipeline_result__execution_id"
             )
-            .filter(execution__pipeline_result__execution__run_id=OuterRef("run_id"))
+            .filter(execution__pipeline_result__execution_id=OuterRef("id"))
             .annotate(total=Count("id"))
             .values("total")
         )
         duration_qs = (
-            TaskResult.objects.values("execution__pipeline_result__execution__run_id")
+            TaskResult.objects.values("execution__pipeline_result__execution_id")
             .filter(
-                execution__pipeline_result__execution__run_id=OuterRef("run_id"),
+                execution__pipeline_result__execution__id=OuterRef("id"),
                 status=PipelineTaskStatus.DONE.value,
             )
             .annotate(duration=Sum(F("completed") - F("started")))
             .values("duration")
         )
         return self.annotate(
-            task_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
+            pipeline_result_count=Subquery(results_qs), task_result_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
         )
 
 
@@ -137,6 +145,31 @@ class PipelineExecution(BasePipelineExecution, models.Model):
         reporter.report_pipeline_execution(self, status, message)
 
 
+class PipelineResultQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(execution__run_id=run_id)
+
+    def with_extra_stats(self):
+        tasks_qs = (
+            TaskResult.objects.values_list("id")
+            .filter(execution__pipeline_result__execution_id=OuterRef("id"))
+            .annotate(total=Count("id"))
+            .values("total")
+        )
+        duration_qs = (
+            TaskResult.objects.values("id")
+            .filter(
+                execution__pipeline_result__execution__id=OuterRef("id"),
+                status=PipelineTaskStatus.DONE.value,
+            )
+            .annotate(duration=Sum(F("completed") - F("started")))
+            .values("duration")
+        )
+        return self.annotate(
+            task_result_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
+        )
+
+
 class PipelineResult(BasePipelineResult, models.Model):
     execution = models.ForeignKey(
         PipelineExecution, related_name="results", on_delete=models.CASCADE, null=True
@@ -151,6 +184,8 @@ class PipelineResult(BasePipelineResult, models.Model):
     reporter = models.CharField(max_length=255, blank=True, null=True)
     started = models.DateTimeField(blank=True, null=True, default=None)
     completed = models.DateTimeField(blank=True, null=True, default=None)
+
+    objects = PipelineResultQuerySet.as_manager()
 
     class Meta:
         ordering = ["-started"]
@@ -208,6 +243,10 @@ class PipelineResult(BasePipelineResult, models.Model):
         self.status = status.value
         self.save()
         reporter.report_pipeline_result(self, status, message)
+
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
 
 
 class TaskExecution(BaseTaskExecution, models.Model):
@@ -278,6 +317,10 @@ class TaskExecution(BaseTaskExecution, models.Model):
             self.task_id,
             self.config,
         )
+
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
 
 
 class TaskResult(BaseTaskResult, models.Model):
@@ -369,6 +412,14 @@ class TaskResult(BaseTaskResult, models.Model):
         self.status = status.value
         self.save()
         reporter.report_task_result(self, status, message)
+
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
+
+    @cached_property
+    def task_object(self):
+        return get_object(self.serializable_task_object)
 
 
 class ValueStore(TimeStampedModel):
