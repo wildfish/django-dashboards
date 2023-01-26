@@ -60,14 +60,11 @@ class TestTaskIterator(Task):
 
     def run(self, *args, **kwargs):
         time.sleep(self.cleaned_config.wait)
-        if self.pipeline_object == {"obj": 0}:
-            raise Exception("Foo")
         return True
 
     @classmethod
     def get_iterator(cls):
-        # return range(0, 20)
-        return [0, 1]
+        return range(0, 3)
 
 
 @pipeline_registry.register
@@ -77,7 +74,6 @@ class TestIteratorPipeline(Pipeline):
     @classmethod
     def get_iterator(cls):
         return range(0, 2)
-        # return [0]
 
     class Meta:
         title = "Pipeline with Iterator"
