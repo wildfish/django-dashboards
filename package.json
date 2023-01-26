@@ -1,0 +1,16 @@
+{
+  "name": "django-wildcoeus",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:wildfish/django-wildcoeus.git",
+  "author": "Wildfish <developers@wildfish.com>",
+  "license": "MIT",
+  "scripts": {
+    "build-css": "postcss wildcoeus/static/wildcoeus/css/src/index.css -o wildcoeus/static/wildcoeus/css/wildcoeus.css"
+  },
+  "devDependencies": {
+    "postcss": "^8.4.21",
+    "postcss-cli": "^10.1.0",
+    "postcss-preset-env": "^8.0.0"
+  }
+}
