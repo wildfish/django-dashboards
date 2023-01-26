@@ -1,4 +1,7 @@
+import logging
 from typing import Union
+
+from django.utils.module_loading import import_string
 
 from wildcoeus.pipelines.results.base import (
     BasePipelineExecution,
@@ -30,7 +33,7 @@ class PipelineReporter:
             pipeline_execution,
             status,
             self._build_log_message(
-                f"Pipeline {pipeline_execution.pipeline_id} changed to state {status.value}",
+                f"Pipeline execution ({pipeline_execution.id}) {pipeline_execution.pipeline_id}",
                 status,
                 message,
             ),
@@ -46,7 +49,7 @@ class PipelineReporter:
             pipeline_result,
             status,
             self._build_log_message(
-                f"Pipeline result {pipeline_result.pipeline_id} changed to state {status.value}",
+                f"Pipeline result ({pipeline_result.id}) {pipeline_result.pipeline_id}",
                 status,
                 message,
                 pipeline_object=pipeline_result.serializable_pipeline_object,
@@ -63,7 +66,7 @@ class PipelineReporter:
             task_execution,
             status,
             self._build_log_message(
-                f"Task {task_execution.pipeline_task} ({task_execution.task_id}) changed to state {status.value}",
+                f"Task execution ({task_execution.id}) {task_execution.pipeline_task} ({task_execution.task_id})",
                 status,
                 message,
                 pipeline_object=task_execution.serializable_pipeline_object,
@@ -80,7 +83,7 @@ class PipelineReporter:
             task_result,
             status,
             self._build_log_message(
-                f"Task result {task_result.pipeline_task} ({task_result.task_id}) changed to state {status.value}",
+                f"Task result ({task_result.id}) {task_result.pipeline_task} ({task_result.task_id})",
                 status,
                 message,
                 pipeline_object=task_result.serializable_pipeline_object,
@@ -107,3 +110,23 @@ class PipelineReporter:
         message = " | ".join(message_parts)
 
         return f"{root}: {message}"
+
+
+class MultiPipelineReporter(PipelineReporter):
+    def __init__(self, reporters):
+        logging.info(reporters)
+        self.reporters = [
+            reporter_from_config(reporter) for reporter in reporters
+        ]
+
+    def report(self, *args, **kwargs):
+        for reporter in self.reporters:
+            reporter.report(*args, **kwargs)
+
+
+def reporter_from_config(reporter):
+    if isinstance(reporter, str):
+        return import_string(reporter)()
+
+    module_path, params = reporter
+    return import_string(module_path)(**params)

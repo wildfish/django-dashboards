@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.files.storage import get_storage_class
 from django.utils.module_loading import import_string
 
+from wildcoeus.pipelines.reporters.base import reporter_from_config
+
 
 class Config:
     @property
@@ -18,9 +20,16 @@ class Config:
         reporter = getattr(
             settings,
             "WILDCOEUS_PIPELINE_REPORTER",
-            "wildcoeus.pipelines.reporters.logging.LoggingReporter",
+            (
+                "wildcoeus.pipelines.reporters.base.MultiPipelineReporter", {
+                    "reporters": [
+                        "wildcoeus.pipelines.reporters.logging.LoggingReporter",
+                        "wildcoeus.pipelines.reporters.orm.ORMReporter",
+                    ]
+                }
+            )
         )
-        return import_string(reporter)()
+        return reporter_from_config(reporter)
 
     @property
     def WILDCOEUS_CLEAR_LOG_DAYS(cls):

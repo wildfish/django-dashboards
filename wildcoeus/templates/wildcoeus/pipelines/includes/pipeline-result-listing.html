@@ -5,7 +5,13 @@
   {% else %}
     {% for obj in object_list %}
     <li class="result {% status_class obj.status %}">
-      <input class="pipeline-results-hide-toggle" type="radio" name="view_result_entry" id="id-toggle-open-pipeline-result-{{ obj.id }}"/>
+      <input class="pipeline-results-hide-toggle"
+             type="radio"
+             name="filter"
+             value="PipelineResult-{{ obj.id }}"
+             id="id-toggle-open-pipeline-result-{{ obj.id }}"
+             hx-get="{% url "wildcoeus.pipelines:logs-filter" obj.run_id %}"
+      />
       <label for="id-toggle-open-pipeline-result-{{ obj.id }}">
         <strong>{{ obj.pipeline_id }}</strong>
         {% if obj.pipeline_object is not None %}<em>for {{ obj.pipeline_object }}</em>{% endif %}

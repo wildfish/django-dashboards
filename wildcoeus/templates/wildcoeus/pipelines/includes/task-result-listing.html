@@ -1,7 +1,13 @@
 {% load pipelines %}
 {% for obj in object_list %}
 <li class="result {% status_class obj.status %}">
-  <input class="pipeline-results-hide-toggle" type="radio" name="view_result_entry" id="id-toggle-open-task-result-{{ obj.id }}"/>
+  <input class="pipeline-results-hide-toggle"
+         type="radio"
+         name="filter"
+         value="TaskResult-{{ obj.id }}"
+         id="id-toggle-open-task-result-{{ obj.id }}"
+         hx-get="{% url "wildcoeus.pipelines:logs-filter" obj.run_id %}"
+  />
   <label for="id-toggle-open-task-result-{{ obj.id }}">
     <strong>{{ obj.pipeline_task }} ({{ obj.task_id }})</strong>
     {% if obj.pipeline_object is not None and obj.task_object is not None %}

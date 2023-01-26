@@ -142,7 +142,7 @@ class PipelineExecution(BasePipelineExecution, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_pipeline_execution(self, status, message)
+        reporter.report_pipeline_execution(self, status, f"Changed state to {status.value}{'' if not message else ' - ' + message}")
 
 
 class PipelineResultQuerySet(QuerySet):
@@ -242,7 +242,7 @@ class PipelineResult(BasePipelineResult, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_pipeline_result(self, status, message)
+        reporter.report_pipeline_result(self, status, f"Changed state to {status.value}{'' if not message else ' - ' + message}")
 
     @cached_property
     def pipeline_object(self):
@@ -309,7 +309,7 @@ class TaskExecution(BaseTaskExecution, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_task_execution(self, status, message)
+        reporter.report_task_execution(self, status,  f"Changed state to {status.value}{'' if not message else ' - ' + message}")
 
     def get_task(self) -> Task:
         return task_registry.load_task_from_id(
@@ -411,7 +411,7 @@ class TaskResult(BaseTaskResult, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_task_result(self, status, message)
+        reporter.report_task_result(self, status,  f"Changed state to {status.value}{'' if not message else ' - ' + message}")
 
     @cached_property
     def pipeline_object(self):
