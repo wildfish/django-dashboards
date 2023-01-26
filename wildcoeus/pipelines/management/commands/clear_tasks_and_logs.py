@@ -5,7 +5,6 @@ from django.utils.timezone import now
 
 from wildcoeus.pipelines import config
 from wildcoeus.pipelines.models import PipelineExecution, PipelineLog
-from wildcoeus.pipelines.storage import get_log_path
 
 
 class Command(BaseCommand):
@@ -32,8 +31,3 @@ class Command(BaseCommand):
         if run_ids:
             PipelineExecution.objects.filter(run_id__in=run_ids).delete()
             PipelineLog.objects.filter(run_id__in=run_ids).delete()
-
-            for run_id in run_ids:
-                path = get_log_path(run_id)
-                fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
-                fs.delete(path)

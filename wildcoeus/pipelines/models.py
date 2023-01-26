@@ -87,9 +87,7 @@ class PipelineExecutionQuerySet(QuerySet):
             .values("total")
         )
         tasks_qs = (
-            TaskResult.objects.values_list(
-                "execution__pipeline_result__execution_id"
-            )
+            TaskResult.objects.values_list("execution__pipeline_result__execution_id")
             .filter(execution__pipeline_result__execution_id=OuterRef("id"))
             .annotate(total=Count("id"))
             .values("total")
@@ -104,7 +102,9 @@ class PipelineExecutionQuerySet(QuerySet):
             .values("duration")
         )
         return self.annotate(
-            pipeline_result_count=Subquery(results_qs), task_result_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
+            pipeline_result_count=Subquery(results_qs),
+            task_result_count=Subquery(tasks_qs),
+            duration=Subquery(duration_qs),
         )
 
 
@@ -142,7 +142,11 @@ class PipelineExecution(BasePipelineExecution, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_pipeline_execution(self, status, f"Changed state to {status.value}{'' if not message else ' - ' + message}")
+        reporter.report_pipeline_execution(
+            self,
+            status,
+            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
+        )
 
 
 class PipelineResultQuerySet(QuerySet):
@@ -242,7 +246,11 @@ class PipelineResult(BasePipelineResult, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_pipeline_result(self, status, f"Changed state to {status.value}{'' if not message else ' - ' + message}")
+        reporter.report_pipeline_result(
+            self,
+            status,
+            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
+        )
 
     @cached_property
     def pipeline_object(self):
@@ -309,7 +317,11 @@ class TaskExecution(BaseTaskExecution, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_task_execution(self, status,  f"Changed state to {status.value}{'' if not message else ' - ' + message}")
+        reporter.report_task_execution(
+            self,
+            status,
+            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
+        )
 
     def get_task(self) -> Task:
         return task_registry.load_task_from_id(
@@ -411,7 +423,11 @@ class TaskResult(BaseTaskResult, models.Model):
 
         self.status = status.value
         self.save()
-        reporter.report_task_result(self, status,  f"Changed state to {status.value}{'' if not message else ' - ' + message}")
+        reporter.report_task_result(
+            self,
+            status,
+            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
+        )
 
     @cached_property
     def pipeline_object(self):

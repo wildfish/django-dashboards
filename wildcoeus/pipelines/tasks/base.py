@@ -67,6 +67,7 @@ class Task(Registerable, ClassWithAppConfigMeta):
         serializable_object: Dict[str, Any],
     ):
         from wildcoeus.pipelines.utils import get_object
+
         return get_object(serializable_object)
 
     def clean_config(self, config: Dict[str, Any]):

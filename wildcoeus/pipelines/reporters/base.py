@@ -115,9 +115,7 @@ class PipelineReporter:
 class MultiPipelineReporter(PipelineReporter):
     def __init__(self, reporters):
         logging.info(reporters)
-        self.reporters = [
-            reporter_from_config(reporter) for reporter in reporters
-        ]
+        self.reporters = [reporter_from_config(reporter) for reporter in reporters]
 
     def report(self, *args, **kwargs):
         for reporter in self.reporters:

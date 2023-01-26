@@ -1,11 +1,6 @@
-from typing import Optional, Union
+from typing import Union
 
-from django.core.files.base import ContentFile
-from django.utils.timezone import now
-
-from wildcoeus.pipelines import config
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.storage import get_log_path
 
 from ..results.base import (
     BasePipelineExecution,

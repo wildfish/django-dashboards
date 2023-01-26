@@ -8,8 +8,7 @@ def get_object(serializable_object: Dict[str, Any]):
         return None
 
     if all(
-        key in serializable_object.keys()
-        for key in ["pk", "app_label", "model_name"]
+        key in serializable_object.keys() for key in ["pk", "app_label", "model_name"]
     ):
         return get_django_object(serializable_object)
     else:

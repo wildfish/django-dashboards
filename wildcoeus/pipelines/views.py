@@ -3,19 +3,17 @@ import uuid
 
 from django.contrib.auth.mixins import AccessMixin
 from django.db.models import Avg, Count, F, Max, Q
-from django import forms
 from django.http import Http404, HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.forms import PipelineStartForm, LogFilterForm
+from wildcoeus.pipelines.forms import LogFilterForm, PipelineStartForm
 from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.models import (
     PipelineExecution,
-    PipelineLog,
     PipelineResult,
     TaskExecution,
     TaskResult,
@@ -118,10 +116,13 @@ class PipelineResultsListView(IsStaffRequiredMixin, ListView):
     def get(self, *args, **kwargs):
         if self.get_queryset().count() == 1:
             return HttpResponseRedirect(
-                reverse("wildcoeus.pipelines:task-execution-list", kwargs={
-                    **kwargs,
-                    "pipeline_result_id": self.get_queryset().first().id,
-                })
+                reverse(
+                    "wildcoeus.pipelines:task-execution-list",
+                    kwargs={
+                        **kwargs,
+                        "pipeline_result_id": self.get_queryset().first().id,
+                    },
+                )
             )
 
         return super().get(*args, **kwargs)
@@ -288,10 +289,12 @@ class LogFilterView(IsStaffRequiredMixin, TemplateView):
             filter_name = filter_qs_match.group(1)
             filter_value = filter_qs_match.group(2)
 
-            return reverse("wildcoeus.pipelines:logs-list", kwargs=self.kwargs) + f"?type={filter_name}&id={filter_value}"
+            return (
+                reverse("wildcoeus.pipelines:logs-list", kwargs=self.kwargs)
+                + f"?type={filter_name}&id={filter_value}"
+            )
         else:
             return reverse("wildcoeus.pipelines:logs-list", kwargs=self.kwargs)
-
 
 
 class TaskResultReRunView(IsStaffRequiredMixin, SingleObjectMixin, RedirectView):

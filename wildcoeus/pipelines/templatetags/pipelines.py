@@ -1,10 +1,10 @@
 from datetime import datetime
 
 from django import template
-from django.utils.timesince import timesince
 from django.utils.timezone import now
 
 from wildcoeus.pipelines.status import PipelineTaskStatus
+
 
 register = template.Library()
 
@@ -74,7 +74,7 @@ def duration_display(start: datetime | None, end: datetime | None):
         parts = [
             (int(diff.total_seconds() / 3600), "h"),
             (int(diff.total_seconds() / 60), "m"),
-            (diff.seconds, "s")
+            (diff.seconds, "s"),
         ]
 
         return " ".join(f"{p[0]}{p[1]}" for p in parts if p[0])

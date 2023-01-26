@@ -21,13 +21,14 @@ class Config:
             settings,
             "WILDCOEUS_PIPELINE_REPORTER",
             (
-                "wildcoeus.pipelines.reporters.base.MultiPipelineReporter", {
+                "wildcoeus.pipelines.reporters.base.MultiPipelineReporter",
+                {
                     "reporters": [
                         "wildcoeus.pipelines.reporters.logging.LoggingReporter",
                         "wildcoeus.pipelines.reporters.orm.ORMReporter",
                     ]
-                }
-            )
+                },
+            ),
         )
         return reporter_from_config(reporter)
 

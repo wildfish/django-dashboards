@@ -100,96 +100,106 @@ def task_result_factory(pipeline_object=None, task_object=None):
         (
             pipeline_execution_factory(),
             "",
-            "Pipeline pipeline_id changed to state PENDING: Pending",
+            lambda o: f"Pipeline execution ({o.id}) pipeline_id: Pending",
         ),
         (
             pipeline_execution_factory(),
             "message",
-            "Pipeline pipeline_id changed to state PENDING: message",
+            lambda o: f"Pipeline execution ({o.id}) pipeline_id: message",
         ),
         (
             pipeline_result_factory(),
             "",
-            "Pipeline result pipeline_id changed to state PENDING: Pending",
+            lambda o: f"Pipeline result ({o.id}) pipeline_id: Pending",
         ),
         (
             pipeline_result_factory(),
             "message",
-            "Pipeline result pipeline_id changed to state PENDING: message",
+            lambda o: f"Pipeline result ({o.id}) pipeline_id: message",
         ),
         (
             pipeline_result_factory(pipeline_object={"foo": "bar"}),
             "",
-            "Pipeline result pipeline_id changed to state PENDING: Pending | pipeline object: {'foo': 'bar'}",
+            lambda o: f"Pipeline result ({o.id}) pipeline_id: Pending | pipeline object:"
+            + " {'foo': 'bar'}",
         ),
         (
             pipeline_result_factory(pipeline_object={"foo": "bar"}),
             "message",
-            "Pipeline result pipeline_id changed to state PENDING: message | pipeline object: {'foo': 'bar'}",
+            lambda o: f"Pipeline result ({o.id}) pipeline_id: message | pipeline object:"
+            + " {'foo': 'bar'}",
         ),
         (
             task_execution_factory(),
             "",
-            "Task some_task (task_id) changed to state PENDING: Pending",
+            lambda o: f"Task execution ({o.id}) some_task (task_id): Pending",
         ),
         (
             task_execution_factory(),
             "message",
-            "Task some_task (task_id) changed to state PENDING: message",
+            lambda o: f"Task execution ({o.id}) some_task (task_id): message",
         ),
         (
             task_execution_factory(pipeline_object={"foo": "bar"}),
             "",
-            "Task some_task (task_id) changed to state PENDING: Pending | pipeline object: {'foo': 'bar'}",
+            lambda o: f"Task execution ({o.id}) some_task (task_id): Pending | pipeline object:"
+            + " {'foo': 'bar'}",
         ),
         (
             task_execution_factory(pipeline_object={"foo": "bar"}),
             "message",
-            "Task some_task (task_id) changed to state PENDING: message | pipeline object: {'foo': 'bar'}",
+            lambda o: f"Task execution ({o.id}) some_task (task_id): message | pipeline object:"
+            + " {'foo': 'bar'}",
         ),
         (
             task_result_factory(),
             "",
-            "Task result some_task (task_id) changed to state PENDING: Pending",
+            lambda o: f"Task result ({o.id}) some_task (task_id): Pending",
         ),
         (
             task_result_factory(),
             "message",
-            "Task result some_task (task_id) changed to state PENDING: message",
+            lambda o: f"Task result ({o.id}) some_task (task_id): message",
         ),
         (
             task_result_factory(task_object={"foo": "bar"}),
             "",
-            "Task result some_task (task_id) changed to state PENDING: Pending | task object: {'foo': 'bar'}",
+            lambda o: f"Task result ({o.id}) some_task (task_id): Pending | task object:"
+            + " {'foo': 'bar'}",
         ),
         (
             task_result_factory(task_object={"foo": "bar"}),
             "message",
-            "Task result some_task (task_id) changed to state PENDING: message | task object: {'foo': 'bar'}",
+            lambda o: f"Task result ({o.id}) some_task (task_id): message | task object:"
+            + " {'foo': 'bar'}",
         ),
         (
             task_result_factory(pipeline_object={"foo": "bar"}),
             "",
-            "Task result some_task (task_id) changed to state PENDING: Pending | pipeline object: {'foo': 'bar'}",
+            lambda o: f"Task result ({o.id}) some_task (task_id): Pending | pipeline object:"
+            + " {'foo': 'bar'}",
         ),
         (
             task_result_factory(pipeline_object={"foo": "bar"}),
             "message",
-            "Task result some_task (task_id) changed to state PENDING: message | pipeline object: {'foo': 'bar'}",
+            lambda o: f"Task result ({o.id}) some_task (task_id): message | pipeline object:"
+            + " {'foo': 'bar'}",
         ),
         (
             task_result_factory(
                 pipeline_object={"foo": "bar"}, task_object={"boo": "far"}
             ),
             "",
-            "Task result some_task (task_id) changed to state PENDING: Pending | pipeline object: {'foo': 'bar'} | task object: {'boo': 'far'}",
+            lambda o: f"Task result ({o.id}) some_task (task_id): Pending | pipeline object:"
+            + " {'foo': 'bar'} | task object: {'boo': 'far'}",
         ),
         (
             task_result_factory(
                 pipeline_object={"foo": "bar"}, task_object={"boo": "far"}
             ),
             "message",
-            "Task result some_task (task_id) changed to state PENDING: message | pipeline object: {'foo': 'bar'} | task object: {'boo': 'far'}",
+            lambda o: f"Task result ({o.id}) some_task (task_id): message | pipeline object:"
+            + " {'foo': 'bar'} | task object: {'boo': 'far'}",
         ),
     ),
 )
@@ -204,5 +214,5 @@ def test_report(factory, message, expected_message):
     reporter.report_body.assert_called_once_with(
         context_object,
         PipelineTaskStatus.PENDING,
-        expected_message,
+        expected_message(context_object),
     )
