@@ -66,7 +66,6 @@ class TestTaskIterator(Task):
         return range(0, 3)
 
 
-@pipeline_registry.register
 class TestIteratorPipeline(Pipeline):
     first = TestTaskIterator(config={"wait": 2})
 

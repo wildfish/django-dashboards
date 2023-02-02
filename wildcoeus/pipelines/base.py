@@ -4,6 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 
 from wildcoeus.meta import ClassWithAppConfigMeta
+from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.results.base import BasePipelineExecution
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.registry.registry import Registerable
@@ -28,6 +29,11 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
     def __str__(self):
         return self._meta.verbose_name
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if not cls._meta.abstract:
+            pipeline_registry.register(cls)
+
     @classmethod
     def postprocess_meta(cls, current_class_meta, resolved_meta_class):
         # collect all the components from all the base classes
@@ -39,7 +45,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
             for k, v in ((k, v) for k, v in base.tasks.items() if isinstance(v, Task)):
                 cls.tasks[k] = v
 
-        # add all components from the current class
+        # add all tasks from the current class
         for k, v in ((k, v) for k, v in cls.__dict__.items() if isinstance(v, Task)):
             cls.tasks[k] = v
 

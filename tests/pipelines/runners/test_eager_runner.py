@@ -39,7 +39,6 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
@@ -90,7 +89,6 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
@@ -139,7 +137,6 @@ def test_first_task_fails___other_tasks_are_cancelled():
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 

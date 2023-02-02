@@ -87,9 +87,7 @@ def test_pipeline_execution_list_queries_pinned(
 def test_results_list__tasks_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     pr = baker.make_recipe("pipelines.fake_pipeline_result", execution=pe)
-    baker.make_recipe(
-        "pipelines.fake_task_execution", pipeline_result=pr, _quantity=3
-    )
+    baker.make_recipe("pipelines.fake_task_execution", pipeline_result=pr, _quantity=3)
 
     client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
@@ -400,7 +398,6 @@ def test_start__post__with_formdata(client, staff):
             app_label = "pipelinetest"
 
     test_pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     client.force_login(staff)
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
@@ -433,7 +430,6 @@ def test_start__post__with_no_formdata(client, staff):
             app_label = "pipelinetest"
 
     test_pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     client.force_login(staff)
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
@@ -463,7 +459,6 @@ def test_rerun_task__post(run_task, client, staff):
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pe = baker.make_recipe(
         "pipelines.fake_pipeline_execution", pipeline_id=pipeline.get_id()

@@ -1,7 +1,6 @@
 import logging
 from unittest.mock import Mock
 
-
 import pytest
 
 from wildcoeus.pipelines.reporters.logging import LoggingReporter

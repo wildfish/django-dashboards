@@ -16,7 +16,6 @@ pytest_plugins = [
 
 
 def test_graph_order__no_parents(test_task):
-    @pipeline_registry.register
     class TestPipeline(Pipeline):
         first = test_task(config={})
         second = test_task(config={})

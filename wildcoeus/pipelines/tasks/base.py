@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, Extra, ValidationError
 
 from wildcoeus.meta import ClassWithAppConfigMeta
 from wildcoeus.pipelines.reporters import PipelineReporter
@@ -19,8 +19,8 @@ class TaskConfig(BaseModel):
         []
     )  # task ids that are required to have finished before this task can be started
 
-    # celery specific
-    celery_queue: Optional[str] = None
+    class Config:
+        extra = Extra.allow
 
 
 class Task(Registerable, ClassWithAppConfigMeta):
@@ -33,7 +33,9 @@ class Task(Registerable, ClassWithAppConfigMeta):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        task_registry.register(cls)
+
+        if not cls._meta.abstract:
+            task_registry.register(cls)
 
     def __init__(
         self,

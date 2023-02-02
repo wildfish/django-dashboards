@@ -140,7 +140,6 @@ class FetchLatestRepoStats(Task):
         )
 
 
-@pipeline_registry.register
 class UpdateRepoStats(Pipeline):
     fetch_latest = FetchLatestRepoStats()
     calc_changes = CalcRepoStatsChanges()
