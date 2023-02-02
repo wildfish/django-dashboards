@@ -6,6 +6,12 @@
 Welcome to Wildcoeus's documentation!
 ===================================
 
+Wildcoeus is a set of django applications to help you make data driven solutions.
+Currently, included are:
+
+* `wildcoeus.dashboards <dashboards/index.html>`_: For creating visual representations of your data to the end user.
+* `wildcoeus.pipelines <pipelines/index.html>`_: For running data driven tasks.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

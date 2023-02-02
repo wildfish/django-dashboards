@@ -6,9 +6,17 @@
 Pipelines
 =========
 
+Pipelines offer a way to build data pipelines in a familiar django API.
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
 
    howto/quickstart.rst
+   howto/pipelines.rst
+   howto/tasks.rst
+   howto/runners.rst
+   howto/results.rst
+   howto/management-commands.rst
+   howto/api.rst
 
