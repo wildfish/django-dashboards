@@ -17,39 +17,9 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task
 
 
-class PipelineType(type):
-    def __new__(mcs, name, bases, attrs):
-        """
-        Collect tasks from attributes.
-        """
-
-        attrs["tasks"] = {}
-        for key, value in list(attrs.items()):
-            if isinstance(value, Task):
-                task = attrs.pop(key)
-                task.pipeline_task = key
-                attrs["tasks"][key] = task
-
-        pipeline_class = super().__new__(mcs, name, bases, attrs)
-        tasks = {}
-        for base in reversed(pipeline_class.__mro__):
-            # Collect tasks from base class.
-            if hasattr(base, "tasks"):
-                tasks.update(base.tasks)
-
-            # Field shadowing.
-            for attr, value in base.__dict__.items():
-                if value is None and attr in tasks:
-                    tasks.pop(attr)
-
-        # add tasks to class.
-        pipeline_class.tasks = tasks
-
-        return pipeline_class
-
-
 class Pipeline(Registerable, ClassWithAppConfigMeta):
     tasks: Optional[dict[str, Task]] = {}
+    ordering: Optional[dict[str, List[str]]] = None
 
     def __init__(self):
         self.id = self.get_id()

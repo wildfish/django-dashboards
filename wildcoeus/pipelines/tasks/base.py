@@ -137,50 +137,6 @@ class Task(Registerable, ClassWithAppConfigMeta):
     ):  # pragma: no cover
         raise NotImplementedError("run not implemented")
 
-    def save(
-        self,
-        pipeline_id,
-        run_id,
-        serializable_pipeline_object,
-        serializable_task_object,
-        status,
-        **defaults
-    ):
-        from ..models import PipelineResult, TaskResult
-
-        # add to the defaults
-        defaults["status"] = status
-        defaults["pipeline_task"] = self.pipeline_task
-        defaults["config"] = self.cleaned_config.dict() if self.cleaned_config else None
-
-        lookup = dict(
-            pipeline_id=pipeline_id,
-            task_id=self.task_id,
-            run_id=run_id,
-        )
-        if serializable_task_object:
-            lookup["serializable_task_object"] = serializable_task_object
-
-        if serializable_pipeline_object:
-            lookup["serializable_pipeline_object"] = serializable_pipeline_object
-
-        result, _ = TaskResult.objects.update_or_create(
-            **lookup,
-            defaults=defaults,
-        )
-
-        # if all tasks have ran then flag the PipelineExecution as complete
-        if status == PipelineTaskStatus.DONE.value:
-            if (
-                TaskResult.objects.not_completed().for_run_id(run_id=run_id).count()
-                == 0
-            ):
-                PipelineResult.objects.filter(
-                    pipeline_id=pipeline_id, run_id=run_id
-                ).update(status=PipelineTaskStatus.DONE.value)
-
-        return result
-
     @classmethod
     def get_id(cls):
         return "{}.{}".format(cls._meta.app_label, cls.__name__)
