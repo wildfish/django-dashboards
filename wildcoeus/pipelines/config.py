@@ -41,11 +41,3 @@ class Config:
         )
         return days
 
-    @property
-    def WILDCOEUS_LOG_FILE_STORAGE(cls):
-        storage = getattr(
-            settings,
-            "WILDCOEUS_LOG_FILE_STORAGE",
-            "wildcoeus.pipelines.storage.LogFileSystemStorage",
-        )
-        return get_storage_class(storage)()

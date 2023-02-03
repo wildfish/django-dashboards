@@ -10,8 +10,8 @@ from wildcoeus.pipelines.results.base import (
 
 
 class PipelineRunner:
-    @staticmethod
-    def _get_task_graph(pipeline_result: BasePipelineResult) -> List[BaseTaskExecution]:
+    @classmethod
+    def get_task_graph(cls, pipeline_result: BasePipelineResult) -> TopologicalSorter:
         task_graph: Dict[str, List[str]] = {}
 
         pipeline = pipeline_result.get_pipeline()
@@ -26,7 +26,25 @@ class PipelineRunner:
             for task in (pipeline.tasks or {}).keys():
                 task_graph.setdefault(task, [])
 
-        task_order = tuple(TopologicalSorter(task_graph).static_order())
+        return TopologicalSorter(task_graph)
+
+    @classmethod
+    def get_flat_task_list(cls, pipeline_result: BasePipelineResult) -> List[BaseTaskExecution]:
+        task_graph: Dict[str, List[str]] = {}
+
+        pipeline = pipeline_result.get_pipeline()
+
+        if pipeline.ordering is None:
+            prev = ""
+            for task in (pipeline.tasks or {}).keys():
+                task_graph[task] = [prev] if prev else []
+                prev = task
+        else:
+            task_graph = {**pipeline.ordering}
+            for task in (pipeline.tasks or {}).keys():
+                task_graph.setdefault(task, [])
+
+        task_order = tuple(cls.get_task_graph(pipeline_result).static_order())
         tasks_ordered = sorted(
             pipeline_result.get_task_executions(),
             key=lambda t: task_order.index(t.pipeline_task),

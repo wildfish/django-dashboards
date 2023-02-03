@@ -30,7 +30,7 @@ def test_graph_order__no_parents(test_task):
         Mock(),
         {},
     )
-    ordered_tasks = PipelineRunner()._get_task_graph(
+    ordered_tasks = PipelineRunner().get_flat_task_list(
         pipeline_execution.get_pipeline_results()[0]
     )
 
@@ -61,7 +61,7 @@ def test_graph_order__with_parents(test_task):
         Mock(),
         {},
     )
-    ordered_tasks = PipelineRunner()._get_task_graph(
+    ordered_tasks = PipelineRunner().get_flat_task_list(
         pipeline_execution.get_pipeline_results()[0]
     )
 

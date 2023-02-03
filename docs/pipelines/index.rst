@@ -16,7 +16,9 @@ Pipelines offer a way to build data pipelines in a familiar django API.
    howto/pipelines.rst
    howto/tasks.rst
    howto/runners.rst
+   howto/reporters.rst
    howto/results.rst
    howto/management-commands.rst
+   howto/settings.rst
    howto/api.rst
 

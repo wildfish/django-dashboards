@@ -70,7 +70,7 @@ class Runner(PipelineRunner):
             )
 
     def build_pipeline_chain(self, pipeline_result: BasePipelineResult):
-        ordered_tasks = self._get_task_graph(pipeline_result)
+        ordered_tasks = self.get_flat_task_list(pipeline_result)
 
         c = chain(
             # Report starting
