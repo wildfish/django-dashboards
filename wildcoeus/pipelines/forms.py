@@ -1,11 +1,18 @@
 from django import forms
 from django.db.models import Q
 
-from wildcoeus.pipelines.models import (
-    PipelineLog,
-    PipelineResult,
-    TaskExecution,
-    TaskResult,
+from wildcoeus.pipelines.models import PipelineLog
+from wildcoeus.pipelines.results.base import (
+    BasePipelineResult,
+    BaseTaskExecution,
+    BaseTaskResult,
+)
+from wildcoeus.pipelines.results.helpers import (
+    get_pipeline_result,
+    get_task_execution,
+    get_task_executions,
+    get_task_result,
+    get_task_results,
 )
 
 
@@ -33,39 +40,35 @@ class LogFilterForm(forms.Form):
             return PipelineLog.objects.all()
 
         if self.cleaned_data["type"] == "PipelineResult":
-            pipeline_results = PipelineResult.objects.filter(id=self.cleaned_data["id"])
-            task_executions = TaskExecution.objects.filter(
-                pipeline_result_id=self.cleaned_data["id"]
-            )
-            task_results = TaskResult.objects.filter(
-                execution__pipeline_result_id=self.cleaned_data["id"]
-            )
+            pipeline_results = [get_pipeline_result(self.cleaned_data["id"])]
+            run_id = pipeline_results[0].get_run_id()
+
+            task_executions = get_task_executions(run_id=run_id)
+            task_results = get_task_results(run_id=run_id)
         elif self.cleaned_data["type"] == "TaskExecution":
-            pipeline_results = PipelineResult.objects.none()
-            task_executions = TaskExecution.objects.filter(id=self.cleaned_data["id"])
-            task_results = TaskResult.objects.filter(
-                execution_id=self.cleaned_data["id"]
-            )
+            pipeline_results = []
+            task_executions = [get_task_execution(self.cleaned_data["id"])]
+            task_results = get_task_results(run_id=task_executions[0].get_run_id())
         elif self.cleaned_data["type"] == "TaskResult":
-            pipeline_results = PipelineResult.objects.none()
-            task_executions = TaskExecution.objects.none()
-            task_results = TaskResult.objects.filter(id=self.cleaned_data["id"])
+            pipeline_results = []
+            task_executions = []
+            task_results = [get_task_result(self.cleaned_data["id"])]
         else:
-            pipeline_results = PipelineResult.objects.none()
-            task_executions = TaskExecution.objects.none()
-            task_results = TaskResult.objects.none()
+            pipeline_results = []
+            task_executions = []
+            task_results = []
 
         return PipelineLog.objects.filter(
             Q(
-                context_type="PipelineResult",
-                context_id__in=list(pipeline_results.values_list("id", flat=True)),
+                context_type=BasePipelineResult.content_type_name,
+                context_id__in=[pr.get_id() for pr in pipeline_results],
             )
             | Q(
-                context_type="TaskExecution",
-                context_id__in=list(task_executions.values_list("id", flat=True)),
+                context_type=BaseTaskExecution.content_type_name,
+                context_id__in=[te.get_id() for te in task_executions],
             )
             | Q(
-                context_type="TaskResult",
-                context_id__in=list(task_results.values_list("id", flat=True)),
+                context_type=BaseTaskResult.content_type_name,
+                context_id__in=[tr.get_id() for tr in task_results],
             )
         )

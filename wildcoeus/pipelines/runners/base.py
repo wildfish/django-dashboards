@@ -29,7 +29,9 @@ class PipelineRunner:
         return TopologicalSorter(task_graph)
 
     @classmethod
-    def get_flat_task_list(cls, pipeline_result: BasePipelineResult) -> List[BaseTaskExecution]:
+    def get_flat_task_list(
+        cls, pipeline_result: BasePipelineResult
+    ) -> List[BaseTaskExecution]:
         task_graph: Dict[str, List[str]] = {}
 
         pipeline = pipeline_result.get_pipeline()

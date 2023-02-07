@@ -3,11 +3,12 @@ from django.core.files.storage import get_storage_class
 from django.utils.module_loading import import_string
 
 from wildcoeus.pipelines.reporters.base import reporter_from_config
+from wildcoeus.pipelines.runners import PipelineRunner
 
 
 class Config:
     @property
-    def WILDCOEUS_DEFAULT_PIPELINE_RUNNER(cls):
+    def WILDCOEUS_DEFAULT_PIPELINE_RUNNER(cls) -> PipelineRunner:
         runner = getattr(
             settings,
             "WILDCOEUS_PIPELINE_RUNNER",
@@ -40,4 +41,3 @@ class Config:
             30,
         )
         return days
-

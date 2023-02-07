@@ -103,16 +103,18 @@ class Task(Registerable, ClassWithAppConfigMeta):
             task_result.report_status_change(reporter, PipelineTaskStatus.RUNNING)
 
             self.pipeline_object = self.get_object(
-                task_result.serializable_pipeline_object
+                task_result.get_serializable_pipeline_object()
             )
-            self.task_object = self.get_object(task_result.serializable_task_object)
+            self.task_object = self.get_object(
+                task_result.get_serializable_task_object()
+            )
 
             # run the task
             self.run(
-                pipeline_id=task_result.pipeline_id,
-                run_id=task_result.run_id,
+                pipeline_id=task_result.get_pipeline_id(),
+                run_id=task_result.get_run_id(),
                 cleaned_data=task_result.get_task().clean_input_data(
-                    task_result.input_data
+                    task_result.get_input_data()
                 ),
             )
 

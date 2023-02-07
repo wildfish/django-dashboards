@@ -1,5 +1,8 @@
+from datetime import datetime
 from itertools import product
-from typing import Any, Dict
+from typing import Any, Dict, Sequence
+
+from django.db.models import Avg, Count, F, Max, Q
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.models import (
@@ -9,12 +12,31 @@ from wildcoeus.pipelines.models import (
     TaskResult,
 )
 from wildcoeus.pipelines.reporters import PipelineReporter
-from wildcoeus.pipelines.results.base import BasePipelineResultsStorage
+from wildcoeus.pipelines.results.base import (
+    BasePipelineResult,
+    BasePipelineResultsStorage,
+    BaseTaskExecution,
+    BaseTaskResult,
+    PipelineDigest,
+    PipelineDigestItem,
+)
 from wildcoeus.pipelines.runners import PipelineRunner
-from wildcoeus.pipelines.status import PipelineTaskStatus
+from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 
 
 class OrmPipelineResultsStorage(BasePipelineResultsStorage):
+    def _get_pipeline_execution_qs(self):
+        return PipelineExecution.objects.with_extra_stats()
+
+    def _get_pipeline_result_qs(self):
+        return PipelineResult.objects.with_extra_stats()
+
+    def _get_task_execution_qs(self):
+        return TaskExecution.objects.all()
+
+    def _get_task_result_qs(self):
+        return TaskResult.objects.all()
+
     def build_pipeline_execution(
         self,
         pipeline: Pipeline,
@@ -99,14 +121,82 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
 
         return execution
 
+    def get_pipeline_digest(self) -> PipelineDigest:
+        qs = (
+            PipelineResult.objects.values("execution__pipeline_id")
+            .annotate(
+                total_success=Count(
+                    "id", filter=Q(status=PipelineTaskStatus.DONE.value)
+                ),
+                total_failed=Count("id", filter=Q(status__in=FAILED_STATUES)),
+                last_ran=Max("started"),
+                average_runtime=Avg(F("completed") - F("started")),
+                pipeline_id=F("execution__pipeline_id"),
+            )
+            .order_by("pipeline_id")
+        )
+
+        return {
+            k: PipelineDigestItem(
+                **v, total_runs=v["total_success"] + v["total_failure"]
+            )
+            for k, v in qs
+        }
+
+    def get_pipeline_executions(self, pipeline_id: str = None):
+        qs = self._get_pipeline_execution_qs()
+
+        if pipeline_id:
+            qs = qs.filter(pipeline_id=pipeline_id)
+
+        return qs
+
     def get_pipeline_execution(self, _id):
-        return PipelineExecution.objects.get(id=_id)
+        return self._get_pipeline_execution_qs().get(id=_id)
+
+    def get_pipeline_results(self, run_id: str = None) -> Sequence[BasePipelineResult]:
+        qs = self._get_pipeline_result_qs()
+
+        if run_id:
+            qs = qs.filter(execution__run_id=run_id).distinct()
+
+        return qs
 
     def get_pipeline_result(self, _id):
-        return PipelineResult.objects.get(id=_id)
+        return self._get_pipeline_result_qs().get(id=_id)
+
+    def get_task_executions(self, run_id: str = None) -> Sequence[BaseTaskExecution]:
+        qs = self._get_task_execution_qs()
+
+        if run_id:
+            qs = qs.filter(pipeline_result__execution__run_id=run_id).distinct()
+
+        return qs
 
     def get_task_execution(self, _id):
-        return TaskExecution.objects.get(id=_id)
+        return self._get_task_execution_qs().get(id=_id)
+
+    def get_task_results(self, run_id: str = None) -> Sequence[BaseTaskResult]:
+        qs = self._get_task_result_qs()
+
+        if run_id:
+            qs = qs.filter(
+                execution__pipeline_result__execution__run_id=run_id
+            ).distinct()
+
+        return qs
 
     def get_task_result(self, _id):
-        return TaskResult.objects.get(id=_id)
+        return self._get_task_result_qs().get(id=_id)
+
+    def cleanup(self, before: datetime = None):
+        run_ids = list(
+            PipelineExecution.objects.filter(started__lt=before).values_list(
+                "run_id", flat=True
+            )
+        )
+
+        if run_ids:
+            PipelineExecution.objects.filter(run_id__in=run_ids).delete()
+
+        return run_ids

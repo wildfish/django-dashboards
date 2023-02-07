@@ -128,6 +128,9 @@ class PipelineExecution(BasePipelineExecution, models.Model):
     def get_pipeline(self) -> Pipeline:
         return pipeline_registry.get_by_id(self.pipeline_id)
 
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
+
     def report_status_change(
         self, reporter: PipelineReporter, status: PipelineTaskStatus, message=""
     ):
@@ -199,6 +202,9 @@ class PipelineResult(BasePipelineResult, models.Model):
 
     def get_task_results(self):
         return TaskResult.objects.filter(run_id=self.run_id)
+
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
 
     @property
     def pipeline_id(self):
@@ -277,6 +283,9 @@ class TaskExecution(BaseTaskExecution, models.Model):
 
     objects = TaskExecutionQuerySet.as_manager()
 
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
+
     @property
     def input_data(self):
         return self.pipeline_result.input_data
@@ -352,6 +361,9 @@ class TaskResult(BaseTaskResult, models.Model):
 
     def __str__(self):
         return f"{self.task_id} ({self.run_id})"
+
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
 
     @property
     def run_id(self):

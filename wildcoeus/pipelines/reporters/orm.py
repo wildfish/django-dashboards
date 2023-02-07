@@ -22,9 +22,9 @@ class ORMReporter(PipelineReporter):
     ):
         PipelineLog.objects.create(
             context_type=type(context_object).__name__,
-            context_id=context_object.id,
-            pipeline_id=context_object.pipeline_id,
-            run_id=context_object.run_id,
+            context_id=context_object.get_id(),
+            pipeline_id=context_object.get_pipeline_id(),
+            run_id=context_object.get_run_id(),
             status=status.value,
             message=message,
         )

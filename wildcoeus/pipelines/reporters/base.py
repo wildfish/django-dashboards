@@ -49,7 +49,7 @@ class PipelineReporter:
             pipeline_result,
             status,
             self._build_log_message(
-                f"Pipeline result ({pipeline_result.id}) {pipeline_result.pipeline_id}",
+                f"Pipeline result ({pipeline_result.get_id()}) {pipeline_result.get_pipeline_id()}",
                 status,
                 message,
                 pipeline_object=pipeline_result.serializable_pipeline_object,
@@ -66,7 +66,7 @@ class PipelineReporter:
             task_execution,
             status,
             self._build_log_message(
-                f"Task execution ({task_execution.id}) {task_execution.pipeline_task} ({task_execution.task_id})",
+                f"Task execution ({task_execution.get_id()}) {task_execution.get_pipeline_task()} ({task_execution.get_task_id()})",
                 status,
                 message,
                 pipeline_object=task_execution.serializable_pipeline_object,
@@ -83,11 +83,11 @@ class PipelineReporter:
             task_result,
             status,
             self._build_log_message(
-                f"Task result ({task_result.id}) {task_result.pipeline_task} ({task_result.task_id})",
+                f"Task result ({task_result.get_id()}) {task_result.get_pipeline_task()} ({task_result.get_task_id()})",
                 status,
                 message,
-                pipeline_object=task_result.serializable_pipeline_object,
-                task_object=task_result.serializable_task_object,
+                pipeline_object=task_result.get_serializable_pipeline_object(),
+                task_object=task_result.get_serializable_task_object(),
             ),
         )
 
