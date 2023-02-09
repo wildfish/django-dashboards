@@ -24,6 +24,13 @@ class PipelineTaskStatus(Enum):
             cls.DONE,
         ]
 
+    @classmethod
+    def non_final_statuses(cls):
+        return [
+            cls.PENDING,
+            cls.RUNNING,
+        ]
+
     def has_advanced(self, new_state: "PipelineTaskStatus"):
         if self in self.final_statuses():
             return False

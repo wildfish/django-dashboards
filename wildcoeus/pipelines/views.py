@@ -4,6 +4,7 @@ import uuid
 from django.contrib.auth.mixins import AccessMixin
 from django.http import Http404
 from django.urls import reverse, reverse_lazy
+from django.utils.functional import cached_property
 from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
 
@@ -13,10 +14,9 @@ from wildcoeus.pipelines.log import logger
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.results.helpers import (
     get_pipeline_digest,
+    get_pipeline_execution,
     get_pipeline_executions,
-    get_pipeline_results,
     get_task_result,
-    get_task_results,
 )
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
@@ -123,13 +123,20 @@ class TaskResultView(IsStaffRequiredMixin, TemplateView):
 class TaskResultListView(IsStaffRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/_results_list.html"
 
+    @cached_property
+    def pipeline_execution(self):
+        pe = get_pipeline_execution(self.kwargs["run_id"])
+        if not pe:
+            raise Http404()
+
+        return pe
+
     def get_queryset(self):
-        return get_pipeline_results(run_id=self.kwargs["run_id"])
+        return self.pipeline_execution.get_pipeline_results()
 
     def all_tasks_completed(self):
-        return not any(
-            tr.get_status() not in PipelineTaskStatus.final_statuses()
-            for tr in get_task_results(run_id=self.kwargs["run_id"])
+        return (
+            self.pipeline_execution.get_status() in PipelineTaskStatus.final_statuses()
         )
 
     def get(self, request, *args, **kwargs):
@@ -142,10 +149,17 @@ class TaskResultListView(IsStaffRequiredMixin, ListView):
 class LogListView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/_log_list.html"
 
+    @cached_property
+    def pipeline_execution(self):
+        pe = get_pipeline_execution(self.kwargs["run_id"])
+        if not pe:
+            raise Http404()
+
+        return pe
+
     def all_tasks_completed(self):
-        return not any(
-            tr.get_status() not in PipelineTaskStatus.final_statuses()
-            for tr in get_task_results(run_id=self.kwargs["run_id"])
+        return (
+            self.pipeline_execution.get_status() in PipelineTaskStatus.final_statuses()
         )
 
     def _get_orm_logs(self, run_id):
@@ -182,9 +196,6 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
 class LogFilterView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/_log_filter.html"
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs, log_url=self.log_url)
-
     @property
     def log_url(self):
         filter_qs = self.request.GET.get("filter", "")
@@ -204,7 +215,11 @@ class LogFilterView(IsStaffRequiredMixin, TemplateView):
 
 class TaskResultReRunView(IsStaffRequiredMixin, RedirectView):
     def get_object(self, queryset=None):
-        return get_task_result(self.kwargs["pk"])
+        tr = get_task_result(self.kwargs["pk"])
+        if not tr:
+            raise Http404()
+
+        return tr
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()

@@ -72,7 +72,7 @@ def get_pipeline_executions(pipeline_id: str = None) -> Sequence[BasePipelineExe
     return storage.get_pipeline_executions(pipeline_id=pipeline_id)
 
 
-def get_pipeline_execution(_id) -> BasePipelineExecution:
+def get_pipeline_execution(_id) -> BasePipelineExecution | None:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_execution(_id)
 
@@ -82,27 +82,37 @@ def get_pipeline_results(run_id: str = None) -> Sequence[BasePipelineResult]:
     return storage.get_pipeline_results(run_id=run_id)
 
 
-def get_pipeline_result(_id) -> BasePipelineResult:
+def get_pipeline_result(_id) -> BasePipelineResult | None:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_result(_id)
 
 
-def get_task_executions(run_id: str = None) -> Sequence[BaseTaskExecution]:
+def get_task_executions(
+    run_id: str = None, pipeline_result_id: str = None
+) -> Sequence[BaseTaskExecution]:
     storage = get_pipeline_results_storage()
-    return storage.get_task_executions(run_id=run_id)
+    return storage.get_task_executions(
+        run_id=run_id, pipeline_result_id=pipeline_result_id
+    )
 
 
-def get_task_execution(_id) -> BaseTaskExecution:
+def get_task_execution(_id) -> BaseTaskExecution | None:
     storage = get_pipeline_results_storage()
     return storage.get_task_execution(_id)
 
 
-def get_task_results(run_id: str = None) -> Sequence[BaseTaskResult]:
+def get_task_results(
+    run_id: str = None, pipeline_result_id: str = None, task_execution_id: str = None
+) -> Sequence[BaseTaskResult]:
     storage = get_pipeline_results_storage()
-    return storage.get_task_results(run_id=run_id)
+    return storage.get_task_results(
+        run_id=run_id,
+        pipeline_result_id=pipeline_result_id,
+        task_execution_id=task_execution_id,
+    )
 
 
-def get_task_result(_id) -> BaseTaskResult:
+def get_task_result(_id) -> BaseTaskResult | None:
     storage = get_pipeline_results_storage()
     return storage.get_task_result(_id)
 

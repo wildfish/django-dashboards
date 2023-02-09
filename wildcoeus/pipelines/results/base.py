@@ -14,11 +14,11 @@ if TYPE_CHECKING:
 
 @dataclasses.dataclass
 class PipelineDigestItem:
-    total_runs: int = None
-    total_success: int = None
-    total_failure: int = None
-    last_ran: datetime = None
-    average_runtime: float = None
+    total_runs: int | None = None
+    total_success: int | None = None
+    total_failure: int | None = None
+    last_ran: datetime | None = None
+    average_runtime: float | None = None
 
 
 PipelineDigest = Dict[str, PipelineDigestItem]
@@ -209,25 +209,32 @@ class BasePipelineResultsStorage:
     ) -> Sequence[BasePipelineExecution]:
         raise NotImplementedError()
 
-    def get_pipeline_execution(self, _id) -> BasePipelineExecution:
+    def get_pipeline_execution(self, run_id) -> BasePipelineExecution | None:
         raise NotImplementedError()
 
     def get_pipeline_results(self, run_id: str = None) -> Sequence[BasePipelineResult]:
         raise NotImplementedError()
 
-    def get_pipeline_result(self, _id) -> BasePipelineResult:
+    def get_pipeline_result(self, _id) -> BasePipelineResult | None:
         raise NotImplementedError()
 
-    def get_task_executions(self, run_id: str = None) -> Sequence[BaseTaskExecution]:
+    def get_task_executions(
+        self, run_id: str = None, pipeline_result_id: str = None
+    ) -> Sequence[BaseTaskExecution]:
         raise NotImplementedError()
 
-    def get_task_execution(self, _id) -> BaseTaskExecution:
+    def get_task_execution(self, _id) -> BaseTaskExecution | None:
         raise NotImplementedError()
 
-    def get_task_results(self, run_id: str = None) -> Sequence[BaseTaskResult]:
+    def get_task_results(
+        self,
+        run_id: str = None,
+        pipeline_result_id: str = None,
+        task_execution_id: str = None,
+    ) -> Sequence[BaseTaskResult]:
         raise NotImplementedError()
 
-    def get_task_result(self, _id) -> BaseTaskResult:
+    def get_task_result(self, _id) -> BaseTaskResult | None:
         raise NotImplementedError()
 
     def cleanup(self, before: datetime = None) -> Sequence[str]:

@@ -1,3 +1,4 @@
+import uuid
 from typing import Sequence
 
 from django.db import models
@@ -110,7 +111,7 @@ class PipelineExecutionQuerySet(QuerySet):
 
 class PipelineExecution(BasePipelineExecution, models.Model):
     pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255)
+    run_id = models.CharField(max_length=255, default=uuid.uuid4, unique=True)
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),

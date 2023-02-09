@@ -54,6 +54,8 @@ def run_pipeline_execution_report(
     Record a pipeline report update async.
     """
     pipeline_execution = get_pipeline_execution(pipeline_execution_id)
+    if not pipeline_execution:
+        return
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     pipeline_execution.report_status_change(
@@ -76,6 +78,8 @@ def run_pipeline_result_report(
     Record a pipeline report update async.
     """
     pipeline_result = get_pipeline_result(pipeline_result_id)
+    if not pipeline_result:
+        return
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     pipeline_result.report_status_change(
@@ -99,6 +103,8 @@ def run_task_execution_report(
     Record a task report update async.
     """
     task_execution = get_task_execution(task_execution_id)
+    if not task_execution:
+        return
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     task_execution.report_status_change(
@@ -122,6 +128,8 @@ def run_task_result_report(
     Record a task report update async.
     """
     task_result = get_task_result(task_result_id)
+    if not task_result:
+        return
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER
     task_result.report_status_change(
@@ -138,6 +146,9 @@ def run_task(task_result_id: str):
     Start a specific task via it's pipeline's runner.
     """
     task_result = get_task_result(task_result_id)
+    if not task_result:
+        return
+
     task = task_result.get_task()
 
     reporter = config.Config().WILDCOEUS_DEFAULT_PIPELINE_REPORTER

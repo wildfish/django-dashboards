@@ -151,8 +151,8 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
 
         return qs
 
-    def get_pipeline_execution(self, _id):
-        return self._get_pipeline_execution_qs().get(id=_id)
+    def get_pipeline_execution(self, run_id):
+        return self._get_pipeline_execution_qs().filter(run_id=run_id).first()
 
     def get_pipeline_results(self, run_id: str = None) -> Sequence[BasePipelineResult]:
         qs = self._get_pipeline_result_qs()
@@ -163,20 +163,32 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         return qs
 
     def get_pipeline_result(self, _id):
-        return self._get_pipeline_result_qs().get(id=_id)
+        return self._get_pipeline_result_qs().filter(id=_id).first()
 
-    def get_task_executions(self, run_id: str = None) -> Sequence[BaseTaskExecution]:
+    def get_task_executions(
+        self,
+        run_id: str = None,
+        pipeline_result_id: str = None,
+    ) -> Sequence[BaseTaskExecution]:
         qs = self._get_task_execution_qs()
 
         if run_id:
             qs = qs.filter(pipeline_result__execution__run_id=run_id).distinct()
 
+        if pipeline_result_id:
+            qs = qs.filter(pipeline_result__id=pipeline_result_id).distinct()
+
         return qs
 
     def get_task_execution(self, _id):
-        return self._get_task_execution_qs().get(id=_id)
+        return self._get_task_execution_qs().filter(id=_id).first()
 
-    def get_task_results(self, run_id: str = None) -> Sequence[BaseTaskResult]:
+    def get_task_results(
+        self,
+        run_id: str = None,
+        pipeline_result_id: str = None,
+        task_execution_id: str = None,
+    ) -> Sequence[BaseTaskResult]:
         qs = self._get_task_result_qs()
 
         if run_id:
@@ -184,10 +196,16 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
                 execution__pipeline_result__execution__run_id=run_id
             ).distinct()
 
+        if pipeline_result_id:
+            qs = qs.filter(execution__pipeline_result__id=pipeline_result_id).distinct()
+
+        if task_execution_id:
+            qs = qs.filter(execution__id=task_execution_id).distinct()
+
         return qs
 
     def get_task_result(self, _id):
-        return self._get_task_result_qs().get(id=_id)
+        return self._get_task_result_qs().filter(id=_id).first()
 
     def cleanup(self, before: datetime = None):
         run_ids = list(

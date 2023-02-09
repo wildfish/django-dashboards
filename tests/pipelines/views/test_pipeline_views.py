@@ -100,7 +100,7 @@ def test_results_list__tasks_completed(client, staff):
 
 def test_results_list__tasks_not_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
-    baker.make_recipe("pipelines.fake_pipeline_execution", run_id=pe.run_id)
+    baker.make_recipe("pipelines.fake_pipeline_execution")
 
     pr = baker.make_recipe("pipelines.fake_pipeline_result", execution=pe)
     te = baker.make_recipe("pipelines.fake_task_execution", pipeline_result=pr)
@@ -119,9 +119,7 @@ def test_results_list__tasks_not_completed(client, staff):
 def test_results_list_queries_pinned(client, staff, django_assert_num_queries):
     client.force_login(staff)
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
-    baker.make_recipe(
-        "pipelines.fake_pipeline_execution", run_id=pe.run_id, _quantity=3
-    )
+    baker.make_recipe("pipelines.fake_pipeline_execution", _quantity=3)
 
     with django_assert_num_queries(4):
         client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
@@ -181,13 +179,17 @@ def build_expected_message(context_object):
 
 
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
-def test_log_list__all_tasks_completed__status_is_286(client, staff, setup_logs):
-    TaskResult.objects.update(status=PipelineTaskStatus.DONE.value)
+@pytest.mark.parametrize("status", PipelineTaskStatus.final_statuses())
+def test_log_list__pipeline_is_in_final_state__status_is_286(
+    client, staff, setup_logs, status
+):
+    pe = baker.make_recipe("pipelines.fake_pipeline_execution", status=status.value)
+
     client.force_login(staff)
     response = client.get(
         reverse(
             "wildcoeus.pipelines:logs-list",
-            args=[PipelineExecution.objects.first().run_id],
+            args=[pe.run_id],
         )
     )
 
@@ -195,20 +197,17 @@ def test_log_list__all_tasks_completed__status_is_286(client, staff, setup_logs)
 
 
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
-@pytest.mark.parametrize(
-    "status", [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
-)
-def test_log_list__not_all_tasks_completed__status_is_286(
+@pytest.mark.parametrize("status", PipelineTaskStatus.non_final_statuses())
+def test_log_list__pipeline_not_in_final_state__status_is_286(
     client, staff, setup_logs, status
 ):
-    TaskResult.objects.update(status=PipelineTaskStatus.DONE.value)
-    TaskResult.objects.update(status=status)
+    pe = baker.make_recipe("pipelines.fake_pipeline_execution", status=status.value)
 
     client.force_login(staff)
     response = client.get(
         reverse(
             "wildcoeus.pipelines:logs-list",
-            args=[PipelineExecution.objects.first().run_id],
+            args=[pe.run_id],
         )
     )
 

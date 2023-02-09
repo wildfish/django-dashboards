@@ -39,17 +39,19 @@ class LogFilterForm(forms.Form):
         if not self.is_valid():
             return PipelineLog.objects.all()
 
-        if self.cleaned_data["type"] == "PipelineResult":
+        if self.cleaned_data["type"] == BasePipelineResult.content_type_name:
             pipeline_results = [get_pipeline_result(self.cleaned_data["id"])]
-            run_id = pipeline_results[0].get_run_id()
+            pipeline_result_id = pipeline_results[0].get_id()
 
-            task_executions = get_task_executions(run_id=run_id)
-            task_results = get_task_results(run_id=run_id)
-        elif self.cleaned_data["type"] == "TaskExecution":
+            task_executions = get_task_executions(pipeline_result_id=pipeline_result_id)
+            task_results = get_task_results(pipeline_result_id=pipeline_result_id)
+        elif self.cleaned_data["type"] == BaseTaskExecution.content_type_name:
             pipeline_results = []
             task_executions = [get_task_execution(self.cleaned_data["id"])]
-            task_results = get_task_results(run_id=task_executions[0].get_run_id())
-        elif self.cleaned_data["type"] == "TaskResult":
+            task_results = get_task_results(
+                task_execution_id=task_executions[0].get_id()
+            )
+        elif self.cleaned_data["type"] == BaseTaskResult.content_type_name:
             pipeline_results = []
             task_executions = []
             task_results = [get_task_result(self.cleaned_data["id"])]
