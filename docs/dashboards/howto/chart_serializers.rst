@@ -5,6 +5,7 @@ Chart Serializers
 A ``ChartSerializer`` object can be passed to any ``Chart`` component as a argument for ``value`` or ``defer``:
 
 ::
+    # dashboards.py
 
     ...
     class DemoDashboard(Dashboard):
@@ -12,12 +13,12 @@ A ``ChartSerializer`` object can be passed to any ``Chart`` component as a argum
         chart_example_defer = Chart(defer=ExampleChartSerializer)
     ...
 
-Serializers automatically fetch and convert data into a format which can be rendered by the chart component.
+Serializers automatically fetch and convert data into a format which can be rendered by the Chart component.
 
 Creating a Chart Serializer
 ++++++++++++++++++++++++++++
 
-To create a Chart Serializer all you need to do is: inherit from ``ChartSerializer``, define your data
+To create a Chart Serializer all you need to do is: subclass ``ChartSerializer``, define your data
 and implement a ``to_fig`` method.
 
 Data
