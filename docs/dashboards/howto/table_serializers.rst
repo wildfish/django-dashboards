@@ -96,13 +96,15 @@ Both these examples assume you have a Django model with a ``key`` and ``value`` 
         value = models.IntegerField(default=0)
         ...
 
-When overriding ``get_queryset()`` you also have access to the request via the kwargs::
+When overriding ``get_queryset()`` you also have access to any GET or POST data as well as the request via the kwargs::
 
     def get_queryset(self, *args, **kwargs):
+        filters = kwargs["filters"]  # any GET / POST data
         request = kwargs["request"]  # django request object
 
         qs = ExampleModel.objects.all()
         qs = qs.filter(created_by=request.user)
+        qs = qs.filter(key=filters.get("key"))
         qs = qs.order_by("key")
 
         return qs
@@ -130,7 +132,7 @@ To do this just override the ``get_data`` static method on the serializer e.g.::
 
 ``get_data`` expects that you return a Python List.
 
-Just like ``get_queryset()`` ``get_data()`` also has access to the request in kwargs.
+Just like ``get_queryset()`` ``get_data()`` also has access to any GET or POST data as well as the request in kwargs.
 
 Filtering, Sorting and Pagination
 **********************************
