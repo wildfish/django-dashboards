@@ -18,7 +18,7 @@ class BasePermission:
     raise_exception: bool = False
     redirect_field_name: str = "next"
 
-    def has_permission(self, request) -> bool:
+    def has_permission(self, request: HttpRequest, dashboard) -> bool:
         return False
 
     def get_login_url(self):
@@ -47,7 +47,7 @@ class BasePermission:
         return self.redirect_field_name
 
     def handle_no_permission(
-        self, request: HttpRequest
+        self, request: HttpRequest, dashboard
     ) -> Union[PermissionDenied, HttpResponseRedirect]:
         if self.raise_exception or request.user.is_authenticated:
             raise PermissionDenied(self.get_permission_denied_message())
@@ -83,7 +83,7 @@ class AllowAny(BasePermission):
     Allows access to anyone.
     """
 
-    def has_permission(self, request) -> bool:
+    def has_permission(self, request, dashboard) -> bool:
         return True
 
 
@@ -92,7 +92,7 @@ class IsAuthenticated(BasePermission):
     Allows access to authenticated users.
     """
 
-    def has_permission(self, request) -> bool:
+    def has_permission(self, request, dashboard) -> bool:
         return bool(request.user and request.user.is_authenticated)
 
 
@@ -101,5 +101,5 @@ class IsAdminUser(BasePermission):
     Allows access to staff users.
     """
 
-    def has_permission(self, request) -> bool:
+    def has_permission(self, request, dashboard) -> bool:
         return bool(request.user and request.user.is_staff)

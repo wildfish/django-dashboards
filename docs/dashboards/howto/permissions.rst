@@ -51,10 +51,10 @@ For more granular permission control, subclass one of the built in permissions o
 ::
 
     class UserHasPerm(BasePermission):
-        def has_permission(self, request) -> bool:
+        def has_permission(self, request: HttpRequest, dashboard: Dashboard) -> bool:
             return request.user.has_perm('app_name.can_view_dashboards')
 
-        def handle_no_permission(self, request: HttpRequest) -> Union[PermissionDenied, HttpResponseRedirect]:
+        def handle_no_permission(self, request: HttpRequest, dashboard: Dashboard) -> Union[PermissionDenied, HttpResponseRedirect]:
             # or change how an invalid permission is handled.
             return HttpResponseRedirect(reverse("permission_denied"))
 
