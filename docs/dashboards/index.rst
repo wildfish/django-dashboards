@@ -18,7 +18,6 @@ Dashboards
    howto/templates.rst
    howto/views.rst
    howto/dynamic.rst
-   howto/graphql.rst
    howto/async.rst
    howto/sse.rst
    howto/settings.rst

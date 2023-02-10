@@ -17,8 +17,7 @@ A value or callable to fetch on initial render.
 
 ``defer``
 
-A value or callable which will be fetched after initial load either via an HTMX trigger or a subseuqent API call if
-using graphql.
+A value or callable which will be fetched after initial load either via an HTMX trigger.
 
 For example:
 
