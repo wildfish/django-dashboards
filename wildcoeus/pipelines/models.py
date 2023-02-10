@@ -132,26 +132,6 @@ class PipelineExecution(BasePipelineExecution, models.Model):
     def get_status(self):
         return PipelineTaskStatus[self.status]
 
-    def report_status_change(
-        self, reporter: PipelineReporter, status: PipelineTaskStatus, message=""
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_pipeline_execution(
-            self,
-            status,
-            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
-        )
-
 
 class PipelineResultQuerySet(QuerySet):
     def for_run_id(self, run_id):
@@ -232,33 +212,6 @@ class PipelineResult(BasePipelineResult, models.Model):
     def failed(self):
         return self.status in FAILED_STATUES
 
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if propagate:
-            self.execution.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_pipeline_result(
-            self,
-            status,
-            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
-        )
-
     @cached_property
     def pipeline_object(self):
         return get_object(self.serializable_pipeline_object)
@@ -305,33 +258,6 @@ class TaskExecution(BaseTaskExecution, models.Model):
 
     def get_task_results(self) -> Sequence["BaseTaskResult"]:
         return self.results.all()
-
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if propagate:
-            self.pipeline_result.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_task_execution(
-            self,
-            status,
-            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
-        )
 
     def get_task(self) -> Task:
         return task_registry.load_task_from_id(
@@ -413,33 +339,6 @@ class TaskResult(BaseTaskResult, models.Model):
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,
             config=self.config,
-        )
-
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if propagate:
-            self.execution.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_task_result(
-            self,
-            status,
-            f"Changed state to {status.value}{'' if not message else ' - ' + message}",
         )
 
     @cached_property

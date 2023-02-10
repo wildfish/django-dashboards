@@ -16,7 +16,7 @@ def make_fake_task(input_type=None, config_type=None):
 
         def __init__(
             self,
-            config: Dict[str, Any] = None,
+            config: Optional[Dict[str, Any]] = None,
         ):
             super().__init__()
             self.input_data = None

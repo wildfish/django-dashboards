@@ -49,13 +49,13 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
         execution__pipeline_task="second"
     ).first()
 
-    assert reporter.report_task_result.call_args_list.index(
+    assert reporter.report_context_object.call_args_list.index(
         call(
             first_task_result,
             PipelineTaskStatus.DONE,
             mock.ANY,
         )
-    ) < reporter.report_task_result.call_args_list.index(
+    ) < reporter.report_context_object.call_args_list.index(
         call(
             second_task_result,
             PipelineTaskStatus.RUNNING,
@@ -95,13 +95,13 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
     parent = TaskResult.objects.filter(execution__pipeline_task="parent").first()
     child = TaskResult.objects.filter(execution__pipeline_task="child").first()
 
-    assert reporter.report_task_result.call_args_list.index(
+    assert reporter.report_context_object.call_args_list.index(
         call(
             parent,
             PipelineTaskStatus.DONE,
             mock.ANY,
         )
-    ) < reporter.report_task_result.call_args_list.index(
+    ) < reporter.report_context_object.call_args_list.index(
         call(
             child,
             PipelineTaskStatus.RUNNING,
@@ -143,13 +143,13 @@ def test_first_task_fails___other_tasks_are_cancelled():
     bad = TaskResult.objects.filter(execution__pipeline_task="bad").first()
     good = TaskResult.objects.filter(execution__pipeline_task="good").first()
 
-    assert reporter.report_task_result.call_args_list.index(
+    assert reporter.report_context_object.call_args_list.index(
         call(
             bad,
             PipelineTaskStatus.RUNTIME_ERROR,
             mock.ANY,
         )
-    ) < reporter.report_task_result.call_args_list.index(
+    ) < reporter.report_context_object.call_args_list.index(
         call(
             good,
             PipelineTaskStatus.CANCELLED,

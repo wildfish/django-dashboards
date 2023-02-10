@@ -1,11 +1,12 @@
 import logging
-from typing import Union
+from typing import Callable, Union
 
 from django.utils.module_loading import import_string
 
 from wildcoeus.pipelines.results.base import (
     BasePipelineExecution,
     BasePipelineResult,
+    BasePipelineStorageObject,
     BaseTaskExecution,
     BaseTaskResult,
 )
@@ -15,9 +16,7 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 class PipelineReporter:
     def report(
         self,
-        context_object: Union[
-            BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
-        ],
+        context_object: BasePipelineStorageObject,
         status: PipelineTaskStatus,
         message: str,
     ):  # pragma: nocover
@@ -29,15 +28,7 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
-        self.report(
-            pipeline_execution,
-            status,
-            self._build_log_message(
-                f"Pipeline execution ({pipeline_execution.id}) {pipeline_execution.pipeline_id}",
-                status,
-                message,
-            ),
-        )
+        self.report_context_object(pipeline_execution, status, message)
 
     def report_pipeline_result(
         self,
@@ -45,16 +36,7 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
-        self.report(
-            pipeline_result,
-            status,
-            self._build_log_message(
-                f"Pipeline result ({pipeline_result.get_id()}) {pipeline_result.get_pipeline_id()}",
-                status,
-                message,
-                pipeline_object=pipeline_result.serializable_pipeline_object,
-            ),
-        )
+        self.report_context_object(pipeline_result, status, message)
 
     def report_task_execution(
         self,
@@ -62,16 +44,7 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
-        self.report(
-            task_execution,
-            status,
-            self._build_log_message(
-                f"Task execution ({task_execution.get_id()}) {task_execution.get_pipeline_task()} ({task_execution.get_task_id()})",
-                status,
-                message,
-                pipeline_object=task_execution.serializable_pipeline_object,
-            ),
-        )
+        self.report_context_object(task_execution, status, message)
 
     def report_task_result(
         self,
@@ -79,16 +52,78 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
+        self.report_context_object(task_result, status, message)
+
+    def report_context_object(
+        self,
+        context_object: BasePipelineStorageObject,
+        status: PipelineTaskStatus,
+        message: str,
+    ):
+        message_builder: Callable[
+            [BasePipelineStorageObject, PipelineTaskStatus, str], str
+        ] = {
+            BasePipelineExecution.content_type_name: self._build_pipeline_execution_message,
+            BasePipelineResult.content_type_name: self._build_pipeline_result_message,
+            BaseTaskExecution.content_type_name: self._build_task_execution_message,
+            BaseTaskResult.content_type_name: self._build_task_result_message,
+        }[
+            context_object.content_type_name
+        ]  # type: ignore
+
         self.report(
-            task_result,
+            context_object,
             status,
-            self._build_log_message(
-                f"Task result ({task_result.get_id()}) {task_result.get_pipeline_task()} ({task_result.get_task_id()})",
-                status,
-                message,
-                pipeline_object=task_result.get_serializable_pipeline_object(),
-                task_object=task_result.get_serializable_task_object(),
-            ),
+            message_builder(context_object, status, message),
+        )
+
+    def _build_pipeline_execution_message(
+        self,
+        pipeline_execution: BasePipelineExecution,
+        status: PipelineTaskStatus,
+        message: str,
+    ):
+        return self._build_log_message(
+            f"Pipeline execution ({pipeline_execution.get_run_id()}) {pipeline_execution.get_pipeline_id()}",
+            status,
+            message,
+        )
+
+    def _build_pipeline_result_message(
+        self,
+        pipeline_result: BasePipelineResult,
+        status: PipelineTaskStatus,
+        message: str,
+    ):
+        return self._build_log_message(
+            f"Pipeline result ({pipeline_result.get_id()}) {pipeline_result.get_pipeline_id()}",
+            status,
+            message,
+            pipeline_object=pipeline_result.serializable_pipeline_object,
+        )
+
+    def _build_task_execution_message(
+        self,
+        task_execution: BaseTaskExecution,
+        status: PipelineTaskStatus,
+        message: str,
+    ):
+        return self._build_log_message(
+            f"Task execution ({task_execution.get_id()}) {task_execution.get_pipeline_task()} ({task_execution.get_task_id()})",
+            status,
+            message,
+            pipeline_object=task_execution.serializable_pipeline_object,
+        )
+
+    def _build_task_result_message(
+        self, task_result: BaseTaskResult, status: PipelineTaskStatus, message: str
+    ):
+        return self._build_log_message(
+            f"Task result ({task_result.get_id()}) {task_result.get_pipeline_task()} ({task_result.get_task_id()})",
+            status,
+            message,
+            pipeline_object=task_result.get_serializable_pipeline_object(),
+            task_object=task_result.get_serializable_task_object(),
         )
 
     def _build_log_message(

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, Sequence
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 
 
 if TYPE_CHECKING:
@@ -67,7 +67,9 @@ def get_pipeline_digest() -> PipelineDigest:
     return storage.get_pipeline_digest()
 
 
-def get_pipeline_executions(pipeline_id: str = None) -> Sequence[BasePipelineExecution]:
+def get_pipeline_executions(
+    pipeline_id: Optional[str] = None,
+) -> Sequence[BasePipelineExecution]:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_executions(pipeline_id=pipeline_id)
 
@@ -77,7 +79,7 @@ def get_pipeline_execution(_id) -> BasePipelineExecution | None:
     return storage.get_pipeline_execution(_id)
 
 
-def get_pipeline_results(run_id: str = None) -> Sequence[BasePipelineResult]:
+def get_pipeline_results(run_id: Optional[str] = None) -> Sequence[BasePipelineResult]:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_results(run_id=run_id)
 
@@ -88,7 +90,7 @@ def get_pipeline_result(_id) -> BasePipelineResult | None:
 
 
 def get_task_executions(
-    run_id: str = None, pipeline_result_id: str = None
+    run_id: Optional[str] = None, pipeline_result_id: Optional[str] = None
 ) -> Sequence[BaseTaskExecution]:
     storage = get_pipeline_results_storage()
     return storage.get_task_executions(
@@ -102,7 +104,9 @@ def get_task_execution(_id) -> BaseTaskExecution | None:
 
 
 def get_task_results(
-    run_id: str = None, pipeline_result_id: str = None, task_execution_id: str = None
+    run_id: Optional[str] = None,
+    pipeline_result_id: Optional[str] = None,
+    task_execution_id: Optional[str] = None,
 ) -> Sequence[BaseTaskResult]:
     storage = get_pipeline_results_storage()
     return storage.get_task_results(
@@ -117,6 +121,6 @@ def get_task_result(_id) -> BaseTaskResult | None:
     return storage.get_task_result(_id)
 
 
-def cleanup_task_results(before: datetime = None) -> Sequence[str]:
+def cleanup_task_results(before: Optional[datetime] = None) -> Sequence[str]:
     storage = get_pipeline_results_storage()
     return storage.cleanup(before=before)

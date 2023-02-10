@@ -47,7 +47,7 @@ def run_pipeline_execution_report(
     *args,
     pipeline_execution_id=None,
     status: str = "",
-    message: str = None,
+    message: Optional[str] = None,
     **kwargs,
 ):
     """
@@ -70,7 +70,7 @@ def run_pipeline_result_report(
     *args,
     pipeline_result_id=None,
     status: str = "",
-    message: str = None,
+    message: Optional[str] = None,
     propagate: bool = True,
     **kwargs,
 ):
@@ -95,7 +95,7 @@ def run_task_execution_report(
     *args,
     task_execution_id=None,
     status: str = "",
-    message: str = None,
+    message: Optional[str] = None,
     propagate: bool = True,
     **kwargs,
 ):
@@ -120,7 +120,7 @@ def run_task_result_report(
     *args,
     task_result_id=None,
     status: str = "",
-    message: str = None,
+    message: Optional[str] = None,
     propagate: bool = True,
     **kwargs,
 ):

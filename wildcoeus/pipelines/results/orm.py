@@ -1,6 +1,6 @@
 from datetime import datetime
 from itertools import product
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 from django.db.models import Avg, Count, F, Max, Q
 
@@ -143,7 +143,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
             for k, v in qs
         }
 
-    def get_pipeline_executions(self, pipeline_id: str = None):
+    def get_pipeline_executions(self, pipeline_id: Optional[str] = None):
         qs = self._get_pipeline_execution_qs()
 
         if pipeline_id:
@@ -154,7 +154,9 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
     def get_pipeline_execution(self, run_id):
         return self._get_pipeline_execution_qs().filter(run_id=run_id).first()
 
-    def get_pipeline_results(self, run_id: str = None) -> Sequence[BasePipelineResult]:
+    def get_pipeline_results(
+        self, run_id: Optional[str] = None
+    ) -> Sequence[BasePipelineResult]:
         qs = self._get_pipeline_result_qs()
 
         if run_id:
@@ -167,8 +169,8 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
 
     def get_task_executions(
         self,
-        run_id: str = None,
-        pipeline_result_id: str = None,
+        run_id: Optional[str] = None,
+        pipeline_result_id: Optional[str] = None,
     ) -> Sequence[BaseTaskExecution]:
         qs = self._get_task_execution_qs()
 
@@ -185,9 +187,9 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
 
     def get_task_results(
         self,
-        run_id: str = None,
-        pipeline_result_id: str = None,
-        task_execution_id: str = None,
+        run_id: Optional[str] = None,
+        pipeline_result_id: Optional[str] = None,
+        task_execution_id: Optional[str] = None,
     ) -> Sequence[BaseTaskResult]:
         qs = self._get_task_result_qs()
 
@@ -207,7 +209,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
     def get_task_result(self, _id):
         return self._get_task_result_qs().filter(id=_id).first()
 
-    def cleanup(self, before: datetime = None):
+    def cleanup(self, before: Optional[datetime] = None):
         run_ids = list(
             PipelineExecution.objects.filter(started__lt=before).values_list(
                 "run_id", flat=True

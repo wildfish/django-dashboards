@@ -100,12 +100,12 @@ def task_result_factory(pipeline_object=None, task_object=None):
         (
             pipeline_execution_factory(),
             "",
-            lambda o: f"Pipeline execution ({o.id}) pipeline_id: Pending",
+            lambda o: f"Pipeline execution ({o.run_id}) pipeline_id: Pending",
         ),
         (
             pipeline_execution_factory(),
             "message",
-            lambda o: f"Pipeline execution ({o.id}) pipeline_id: message",
+            lambda o: f"Pipeline execution ({o.run_id}) pipeline_id: message",
         ),
         (
             pipeline_result_factory(),

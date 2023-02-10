@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, ClassVar
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
@@ -207,7 +207,7 @@ class ModelPipeline(Pipeline):
     _meta: Type["ModelPipeline.Meta"]
 
     class Meta:
-        model: Optional[Model] = None
+        model: ClassVar[Model]
 
     def get_queryset(self, *args, **kwargs):
         if self._meta.model is not None:

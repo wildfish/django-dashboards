@@ -39,7 +39,7 @@ class Task(Registerable, ClassWithAppConfigMeta):
 
     def __init__(
         self,
-        config: Dict[str, Any] = None,
+        config: Optional[Dict[str, Any]] = None,
     ):
         self.task_id = self.get_id()
         self._config = config or {}

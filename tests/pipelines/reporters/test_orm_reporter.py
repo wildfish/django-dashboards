@@ -23,7 +23,7 @@ def test_report_pipeline_execution_saves_message_to_db():
     assert log.context_id == str(pipeline_execution.id)
     assert (
         log.log_message
-        == f"Pipeline execution ({pipeline_execution.id}) {pipeline_execution.pipeline_id}: Done"
+        == f"Pipeline execution ({pipeline_execution.run_id}) {pipeline_execution.pipeline_id}: Done"
     )
     assert log.pipeline_id == pipeline_execution.pipeline_id
     assert log.run_id == pipeline_execution.run_id

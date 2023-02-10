@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type, ClassVar
 
 from django.db.models import Model
 from django.http import HttpRequest
@@ -24,8 +24,8 @@ class Dashboard(Registerable, ClassWithAppConfigMeta):
 
     class Meta(ClassWithAppConfigMeta.Meta):
         abstract = True
-        include_in_graphql: bool
-        include_in_menu: bool
+        include_in_graphql: ClassVar[bool]
+        include_in_menu: ClassVar[bool]
         permission_classes: Optional[List[BasePermission]] = None
         template_name: Optional[str] = None
         lookup_kwarg: str = "lookup"  # url parameter name
@@ -221,7 +221,7 @@ class ModelDashboard(Dashboard):
     _meta: Type["ModelDashboard.Meta"]
 
     class Meta(Dashboard.Meta):
-        model: Model
+        model: ClassVar[Model]
         abstract = True
 
     def __init__(self, *args, **kwargs):

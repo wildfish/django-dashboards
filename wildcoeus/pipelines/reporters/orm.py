@@ -1,12 +1,7 @@
 from typing import Union
 
 from ..models import PipelineLog
-from ..results.base import (
-    BasePipelineExecution,
-    BasePipelineResult,
-    BaseTaskExecution,
-    BaseTaskResult,
-)
+from ..results.base import BasePipelineStorageObject
 from ..status import PipelineTaskStatus
 from . import PipelineReporter
 
@@ -14,9 +9,7 @@ from . import PipelineReporter
 class ORMReporter(PipelineReporter):
     def report(
         self,
-        context_object: Union[
-            BasePipelineExecution, BasePipelineResult, BaseTaskExecution, BaseTaskResult
-        ],
+        context_object: BasePipelineStorageObject,
         status: PipelineTaskStatus,
         message: str,
     ):

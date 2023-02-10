@@ -84,7 +84,7 @@ class ChartSerializer(ClassWithMeta):
 
         return fig.update_layout(**layout)
 
-    def convert_to_df(self, data: Any, columns: List = None) -> pd.DataFrame:
+    def convert_to_df(self, data: Any, columns: Optional[List] = None) -> pd.DataFrame:
         return pd.DataFrame(data, columns=columns)
 
     def get_data(self, *args, **kwargs) -> pd.DataFrame:
