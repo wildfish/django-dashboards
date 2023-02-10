@@ -137,7 +137,14 @@ Just like ``get_queryset()`` ``get_data()`` also has access to any GET or POST d
 Filtering, Sorting and Pagination
 **********************************
 
-Filtering, Sorting and Pagination is built into the TableSerializer without you needing to do anything.
-It simply recognises the parameters passed in from the Table component and how to handle them.  The Table
-component uses DataTables under the hood so if you decide to swap this out for something else you will
-need to implement your own versions of ``filter()`` and ``sort()`` methods.
+Under the hood the Table component uses the Javascript library Datatables.
+This gives you the ability to filter, sort and paginate your data out the box.
+The TableSerializer has been built to accommodate this, knowing how to process and
+apply this to your dataset without you needing to do anything extra.
+
+If you decide to swap out the Table compoent for something other than Datatables
+you may need to implement your own ``filter()`` and ``sort()`` methods on the TableSerializer
+class.
+
+If you use the BasicTable component you do not have to worry about this as these features
+are not included.

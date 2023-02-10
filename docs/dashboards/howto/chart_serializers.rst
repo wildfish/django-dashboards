@@ -5,9 +5,11 @@ Chart Serializers
 A ``ChartSerializer`` object can be passed to any ``Chart`` component as a argument for ``value`` or ``defer``:
 
 ::
+
     # dashboards.py
 
     ...
+
     class DemoDashboard(Dashboard):
         chart_example_value = Chart(value=ExampleChartSerializer)
         chart_example_defer = Chart(defer=ExampleChartSerializer)
@@ -27,8 +29,11 @@ Data
 If your data is stored in a Django model, the defining your
 data step becomes really easy.  Either set the Model you're interested in (in the
 serializers Meta class), or if you need more control over the queryset you can override the `get_queryset()` method.
-You should also define ``fields`` on ``Meta``.  This is a list of fields on your model you are interested in and is
-used under the hood to convert the queryset into a Pandas Dataframe.::
+
+When working with querysets and models you should also define ``fields`` in the ``Meta`` class.
+This is a list of fields on your model which you are interested in.  Under the hood
+the serializer also converts your queryset into a Pandas Dataframe so is
+required for this.::
 
     from wildcoeus.dashboards.component.chart import ChartSerializer
 
@@ -81,9 +86,7 @@ To do this just override the ``get_data`` method on the serializer e.g.::
 
 This example returns data from the in-built Pandas function medals_long().
 
-``get_data`` expects that you return a Pandas Dataframe.
-
-Just like ``get_queryset()`` ``get_data()`` also has access to any GET or POST data as well as the request in kwargs.::
+Just like ``get_queryset()``, ``get_data()`` also has access to any GET or POST data as well as the request in kwargs.::
 
     def get_data(self, *args, **kwargs):
         df = px.data.medals_long()
@@ -92,13 +95,18 @@ Just like ``get_queryset()`` ``get_data()`` also has access to any GET or POST d
 
         return df
 
+``get_data`` expects that you return a Pandas Dataframe.
+
 to_fig
 ******
 
 ``to_fig()`` defines how to convert your raw data into something which the chart can display.
 It accepts 1 argument, a Pandas Dataframe (which is what your queryset gets converted to).
 
-This example displays a bar chart with ``key`` values along the x-asis and ``value`` values in the y-axis.::
+Under the hood the Chart component uses Plotly to display charts so it expects
+you to return a plotly ``Figure`` object, hence the name ``to_fig``.
+
+::
 
     class ExampleChartSerializer(ChartSerializer):
         class Meta:
@@ -117,15 +125,15 @@ This example displays a bar chart with ``key`` values along the x-asis and ``val
 
             return fig
 
+This example displays a bar chart with ``key`` values along the x-asis and ``value`` values in the y-axis.::
+
 .. image:: _images/serializers_chart.png
    :alt: Metal Bar Chart
 
-Under the hood the Chart component uses Plotly to display charts so it expects
-you to return a plotly ``Figure`` object, hence the name ``to_fig``.
+We deliberately left ``to_fig`` unimplemented so you can have final say over
+which charts you require.
 
-We have deliberately left ``to_fig`` unimplemented so you can have final say over what charts you require.
-
-We understand that defining `to_fig` on every Serializer can become tedious, especially if they are
+However we understand that defining `to_fig` on every Serializer can become tedious, especially if they are
 all the same, so we recommend creating some Base serializer classes for each chart type you require. e.g.::
 
     import plotly.express as px
