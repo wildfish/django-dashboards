@@ -1,7 +1,8 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional, Type, Literal
 
 from django.http import HttpRequest
+from django.urls import reverse
 
 from ..forms import DashboardForm
 from ..types import ValueData
@@ -19,8 +20,43 @@ class FormData:
 @dataclass
 class Form(Component):
     template_name: str = "wildcoeus/dashboards/components/form/form.html"
+    css_classes: Optional[Dict[str, str]] = None
     form: Optional[Type[DashboardForm]] = None
-    method: str = "get"
+    method: Literal["get", "post"] = "get"
+    trigger: Literal["change", "submit"] = "change"
+    submit_url: Optional[str] = None
+
+    def __post_init__(self):
+        default_css_classes = {
+            "form": "form",
+            "table": "table form-table",
+            "button": "btn",
+        }
+        # update defaults with any css classes which have been passed in
+        if isinstance(self.css_classes, dict):
+            default_css_classes.update(self.css_classes)
+
+        self.css_classes = default_css_classes
+
+    def get_submit_url(self):
+        """url the form sends data to on Submit"""
+        # if it has been passed in use that, otherwise generate based on component
+        if self.submit_url:
+            return self.submit_url
+
+        # <str:app_label>/<str:dashboard>/<str:component>/
+        args = [
+            self.dashboard._meta.app_label,
+            self.dashboard_class,
+            self.key,
+        ]
+
+        # if this is for an object then add lookup param to args
+        if self.object:
+            # <str:app_label>/<str:dashboard>/<str:lookup>/<str:component>/
+            args.insert(2, getattr(self.object, self.dashboard._meta.lookup_field))
+
+        return reverse("wildcoeus.dashboards:form_component", args=args)
 
     def get_form(self, request: HttpRequest = None) -> DashboardForm:
         if not self.form:
@@ -36,12 +72,7 @@ class Form(Component):
             elif request.GET:
                 data = request.GET
 
-        form = self.form(
-            app_label=self.dashboard._meta.app_label if self.dashboard else "",
-            dashboard_class=self.dashboard_class,
-            key=self.key,
-            data=data,
-        )
+        form = self.form(data=data)
         return form
 
     def get_value(
@@ -54,7 +85,7 @@ class Form(Component):
         form_data = FormData(
             method=self.method,
             form=form,
-            action=form.get_submit_url(),
+            action=self.get_submit_url(),
             dependents=self.dependents,
         )
         value = asdict(form_data, dict_factory=value_render_encoder)

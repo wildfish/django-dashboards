@@ -68,68 +68,67 @@ class TableSerializer(TableMixin, ClassWithMeta):
     @classmethod
     def serialize(cls, **serialize_kwargs) -> SerializedTable:
         self = cls()
-        filters = serialize_kwargs.get("filters")
+        filters = serialize_kwargs.get("filters", {})
         data = self.get_data(**serialize_kwargs)
 
+        # how many results do we have before table filtering and paginating
+        initial_count = self.count(data)
+
         start = 0
-        length = 5
         draw = 1
+        length = initial_count
+
         if filters:
             start = int(filters.get("start", start))
             length = int(filters.get("length", length))
             draw = int(filters.get("draw", draw))
-        else:
-            filters = {}
 
-        # how many results do we have before filtering and paginating
-        initial_count = self.count(data)
-        # if length is -1 then this means no pagination e.g. show all
-        if length < 0:
-            length = initial_count
-
-        # apply filtering, sorting and pagination
+        # apply filtering, sorting and pagination (datatables)
         data = self.filter(data, filters)
         data = self.sort(data, filters)
-        page_obj, filtered_count = self.apply_paginator(data, start, length)
-
         processed_data = []
+        filtered_count = 0
 
-        for obj in page_obj.object_list:
-            values = {}
-            fields = list(self._meta.columns.keys())
-            for field in fields:
-                if not isinstance(obj, dict):
-                    # reduce is used to allow relations to be traversed.
-                    try:
-                        value = reduce(getattr, field.split("__"), obj)
-                    except AttributeError:
-                        logger.warn(f"{field} is not a attribute for this object.")
-                        value = None
-                else:
-                    value = obj.get(field)
+        # do we still have data after filtering, if so paginate and format
+        if self.count(data) > 0:
+            page_obj, filtered_count = self.apply_paginator(data, start, length)
 
-                if value and isinstance(value, datetime):
-                    value = naturaltime(value)
+            for obj in page_obj.object_list:
+                values = {}
+                fields = list(self._meta.columns.keys())
+                for field in fields:
+                    if not isinstance(obj, dict):
+                        # reduce is used to allow relations to be traversed.
+                        try:
+                            value = reduce(getattr, field.split("__"), obj)
+                        except AttributeError:
+                            logger.warn(f"{field} is not a attribute for this object.")
+                            value = None
+                    else:
+                        value = obj.get(field)
 
-                elif isinstance(value, bool):
-                    value = "Yes" if value else "No"
+                    if value and isinstance(value, datetime):
+                        value = naturaltime(value)
 
-                elif value is None:
-                    value = "-"
+                    elif isinstance(value, bool):
+                        value = "Yes" if value else "No"
 
-                if (
-                    field == fields[0]
-                    and self._meta.first_as_absolute_url
-                    and hasattr(obj, "get_absolute_url")
-                ):
-                    value = f'<a href="{obj.get_absolute_url()}">{value}</a>'
+                    elif value is None:
+                        value = "-"
 
-                if hasattr(self, f"get_{field}_value"):
-                    value = getattr(self, f"get_{field}_value")(obj)
+                    if (
+                        field == fields[0]
+                        and self._meta.first_as_absolute_url
+                        and hasattr(obj, "get_absolute_url")
+                    ):
+                        value = f'<a href="{obj.get_absolute_url()}">{value}</a>'
 
-                values[field] = value
+                    if hasattr(self, f"get_{field}_value"):
+                        value = getattr(self, f"get_{field}_value")(obj)
 
-            processed_data.append(values)
+                    values[field] = value
+
+                processed_data.append(values)
 
         return SerializedTable(
             data=processed_data,

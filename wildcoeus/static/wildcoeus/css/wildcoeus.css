@@ -213,6 +213,10 @@ a.active {
     padding: 10px;
 }
 
+.form-table tbody td {
+    text-align: left;
+}
+
 /* pipeline styles */
 .pipeline-logs {
   background-color: var(--off-black);

@@ -1,30 +1,9 @@
 from typing import Any, Dict, List
 
 from django import forms
-from django.urls import reverse
 
 
-class DashboardFormMixin:
-    def __init__(self, app_label, dashboard_class, key, *args, **kwargs):
-        self.app_label = app_label
-        self.dashboard_class = dashboard_class
-        self.component_key = key
-        super().__init__(*args, **kwargs)
-
-    def get_submit_url(self):
-        return reverse(
-            "wildcoeus.dashboards:form_component",
-            args=[self.app_label, self.dashboard_class, self.component_key],
-        )
-
-    def save(self, **kwargs):
-        raise NotImplementedError
-
-
-class DashboardForm(DashboardFormMixin, forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+class DashboardForm(forms.Form):
     def asdict(self) -> List[Dict[str, Any]]:
         fields = []
         for field in self:
