@@ -7,7 +7,6 @@ celery
 django-cors-headers
 django-extensions
 pydantic
-strawberry-graphql[debug-server]
 
 # Charts
 pandas

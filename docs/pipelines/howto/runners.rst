@@ -50,7 +50,7 @@ iterator defined.
 It is left to the reader to design and implement their own celery deployment.
 `Here <https://docs.celeryq.dev/en/stable/getting-started/introduction.html>`_
 is the celery documentation with some useful information for implementing with
-django `here <https://docs.celeryq.dev/en/stable/django/index.html?highlight=django>`_.
+`django <https://docs.celeryq.dev/en/stable/django/index.html?highlight=django>`_.
 
 Custom Runners
 --------------
@@ -62,7 +62,7 @@ parameters:
 * :code:`reporter` (a :code:`PipelineReporter` object)
 
 This should build a schedule that will run each task and catch any errors and record
-them in the :doc:`results storage <./results.rst>`. To help with this the base
+them in the :doc:`results storage <./results>`. To help with this the base
 :code:`PipelineRunner` class provides 2 methods:
 
 * :code:`get_task_graph`: Which creates a :code:`TopologicalSorter` object from

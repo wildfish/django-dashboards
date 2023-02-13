@@ -24,7 +24,6 @@ class Dashboard(Registerable, ClassWithAppConfigMeta):
 
     class Meta(ClassWithAppConfigMeta.Meta):
         abstract = True
-        include_in_graphql: ClassVar[bool]
         include_in_menu: ClassVar[bool]
         permission_classes: Optional[List[BasePermission]] = None
         template_name: Optional[str] = None
@@ -54,9 +53,6 @@ class Dashboard(Registerable, ClassWithAppConfigMeta):
     @classmethod
     def postprocess_meta(cls, class_meta, resolved_meta_class):
         # add default includes based on the abstract status
-        if not hasattr(class_meta, "include_in_graphql"):
-            resolved_meta_class.include_in_graphql = not resolved_meta_class.abstract
-
         if not hasattr(class_meta, "include_in_menu"):
             resolved_meta_class.include_in_menu = not resolved_meta_class.abstract
 
@@ -146,9 +142,11 @@ class Dashboard(Registerable, ClassWithAppConfigMeta):
         Raises exception if the request is not permitted.
         """
         for permission in cls.get_dashboard_permissions():
-            if not permission.has_permission(request):
+            if not permission.has_permission(request=request, dashboard=cls):
                 if handle:
-                    return permission.handle_no_permission(request)
+                    return permission.handle_no_permission(
+                        request=request, dashboard=cls
+                    )
                 else:
                     return False
         return True

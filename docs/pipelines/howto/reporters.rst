@@ -42,4 +42,4 @@ with :code:`MultiPipelineReporter` from :code:`wildcoeus.pielines.reporters.base
 This loads all the reporters provided in the :code:`reporters` keyword argument
 and will forward any report calls onto each.
 
-See :doc:`here <./settings.rst>` for more information on configuring reporters.
+See :doc:`here <./settings>` for more information on configuring reporters.
