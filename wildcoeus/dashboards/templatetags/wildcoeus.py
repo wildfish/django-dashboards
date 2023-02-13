@@ -1,10 +1,13 @@
 import random
+from typing import Dict, List, Union
 
 from django import template
 from django.template import RequestContext
 
 from wildcoeus.dashboards.component import Component
 from wildcoeus.dashboards.dashboard import Dashboard
+from wildcoeus.dashboards.menus.menu import DashboardMenuItem, MenuItem
+from wildcoeus.dashboards.menus.registry import menu_registry
 from wildcoeus.dashboards.registry import registry
 
 
@@ -51,3 +54,40 @@ def lookup(value, arg):
 @register.filter
 def cta_href(cta, obj):
     return cta.get_href(obj=obj)
+
+
+@register.tag(name="dashboard_menus")
+def do_dashboard_menus(parser, token):
+    return DashboardMenuNode()
+
+
+class DashboardMenuNode(template.Node):
+    def __init__(self):
+        pass
+
+    def render(self, context):
+        request = context.get("request")
+        sections: Dict[str, List[Union["MenuItem", "DashboardMenuItem"]]] = {}
+        active_section = None  # section which has the current page in it
+
+        if request:
+            dashboard = context.get("dashboard")
+            context_object = None
+
+            if dashboard:
+                context_object = getattr(dashboard, "object")
+
+            # find and load menus from registry
+            menu_registry.autodiscover()
+
+            for menu in menu_registry.items:
+                sections.setdefault(menu.name, [])
+                for menu_item in menu.render(request, context_object):
+                    sections[menu.name].append(menu_item)
+                    # only do the first one found
+                    if active_section is None and menu_item.selected or menu_item.open:
+                        active_section = menu.name
+
+        context["sections"] = sections
+        context["active_section"] = active_section
+        return ""

@@ -63,29 +63,6 @@ def test_get_by_slug__not_found(dashboard):
         assert registry.get_by_id("app1_testdashboard1")
 
 
-def test_get_graphql_dashboards(dashboard, model_dashboard):
-    model_dashboard.include_in_graphql = True
-
-    class GQLDashboard(dashboard):  # type: ignore
-        class Meta:
-            app_label = "new"
-            include_in_graphql = True
-
-    class NotGQLDashboard(dashboard):  # type: ignore
-        class Meta:
-            app_label = "new"
-            include_in_graphql = False
-
-    registry.register(GQLDashboard)
-    registry.register(NotGQLDashboard)
-
-    result = registry.get_graphql_dashboards()
-
-    assert GQLDashboard in result.values()
-    assert NotGQLDashboard not in result.values()
-    assert result["GQLDashboard"] == GQLDashboard
-
-
 def test_get_urls(dashboard):
     urls = registry.get_urls()
     assert len(urls) == len(registry.items)

@@ -127,7 +127,6 @@ class Common(Configuration):
         "wildcoeus",
         "wildcoeus.dashboards",
         "corsheaders",
-        "strawberry.django",
         "django_eventstream",
         # Project
         "demo.kitchensink.apps.KitchenSinkConfig",

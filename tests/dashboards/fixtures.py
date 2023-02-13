@@ -3,7 +3,6 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 
 import pytest
-import strawberry
 
 from tests.dashboards.app1.dashboards import (
     TestAdminDashboard,
@@ -16,7 +15,6 @@ from tests.dashboards.app1.dashboards import (
     TestModelDashboard,
     TestNoMetaDashboard,
 )
-from wildcoeus.dashboards.schema import DashboardQuery
 
 
 @pytest.fixture(autouse=True)
@@ -26,11 +24,6 @@ def mock_random_ms_delay():
     ) as random_ms_delay:
         random_ms_delay.return_value = 1
         yield random_ms_delay
-
-
-@pytest.fixture
-def schema():
-    return strawberry.Schema(query=DashboardQuery)
 
 
 @pytest.fixture
