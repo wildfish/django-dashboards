@@ -11,7 +11,8 @@ You can find a couple of examples of this in our demos (TODO add links).
 Using SSE in your project
 +++++++++++++++++++++++++
 
-To use SSE you need django_eventstream and an event service such as pushpin.
+To use SSE you need `django_eventstream <https://github.com/fanout/django-eventstream>`_ and an
+event service such as `pushpin <https://pushpin.org/>`_.
 
 Install django_eventstream
 ++++++++++++++++++++++++++
@@ -77,14 +78,15 @@ where pushpin.conf/ is a folder containing a routes file with the following:
 
 Additional notes:
 
-* You will also need to deploy a pushpin instance or use Fanout Cloud (see below).
+* For production - you will also need to deploy a pushpin instance or use Fanout Cloud (see below).
 
 
 Add your SSE components
 +++++++++++++++++++++++
 
-Once eventstream and pushpin are setup iou can create a component that accepts SSE quite easily.
-In our demo we the following which uses a new template and a pushpin_url for the Stat and Chart components:
+Once eventstream and pushpin are setup you can create a component that accepts SSE.
+In our demo we use the following to make a couple of existing components SSE ready. Largely this
+is a new template which will leverage HTMX and a property to get the pushpin URL into the template.
 
 ::
 
@@ -125,7 +127,7 @@ In our demo we the following which uses a new template and a pushpin_url for the
         ...
 
 
-At a template level, taking SSEStat as an example, we can then leverage HTMX to connect to pushpin
+At a template level, taking SSEStat as an example, we can the built in SSE features in HTMX to connect to pushpin
 
 ::
 
@@ -135,8 +137,8 @@ At a template level, taking SSEStat as an example, we can then leverage HTMX to 
     </div>
 
 
-In order for events to be send you could either have a cron job, management command, celery task or one even
-of our pipelines. For example in our demo, we render the stat and resend the stat as follows:
+In order for events to be sent you could either have a cron job, management command, celery task or one even
+of our pipelines. For example in our demo, we render the Stat fully into an event:
 
 ::
 
