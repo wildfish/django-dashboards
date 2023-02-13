@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -10,7 +10,6 @@ from wildcoeus.meta import ClassWithMeta
 
 
 class ChartSerializer(ClassWithMeta):
-    _meta: Type["ChartSerializer.Meta"]
     meta_layout_attrs = ["title", "width", "height"]
     layout: Optional[Dict[str, Any]] = None
 

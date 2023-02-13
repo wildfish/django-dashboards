@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Type
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
@@ -19,7 +19,7 @@ from wildcoeus.pipelines.tasks.base import Task
 
 
 class Pipeline(Registerable, ClassWithAppConfigMeta):
-    tasks: Optional[dict[str, Task]] = {}
+    tasks: dict[str, Task] = {}
     ordering: Optional[dict[str, List[str]]] = None
 
     def __init__(self):
@@ -204,8 +204,6 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
 
 class ModelPipeline(Pipeline):
-    _meta: Type["ModelPipeline.Meta"]
-
     class Meta:
         model: ClassVar[Model]
 

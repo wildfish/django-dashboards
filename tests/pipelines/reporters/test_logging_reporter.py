@@ -15,7 +15,7 @@ def test_report_writes_the_message_to_info(caplog):
 
     LoggingReporter().report(
         Mock(),
-        PipelineTaskStatus.DONE.value,
+        PipelineTaskStatus.DONE,
         "The Message",
     )
 

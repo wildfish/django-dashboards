@@ -1,6 +1,7 @@
 import tempfile
 from functools import reduce
 from itertools import chain
+from typing import List
 from unittest.mock import patch
 
 from django.test.utils import override_settings
@@ -17,7 +18,6 @@ from wildcoeus.pipelines.models import (
     OrmTaskExecution,
     OrmTaskResult,
 )
-from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 
@@ -149,7 +149,7 @@ def setup_logs():
         baker.make_recipe("pipelines.fake_task_execution", pipeline_result=pr)
         for pr in prs
     ]
-    trs = list(
+    trs: List[OrmTaskResult] = list(
         reduce(
             lambda a, b: [*a, *b],
             [

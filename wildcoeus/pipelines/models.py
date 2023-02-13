@@ -13,13 +13,11 @@ from django.db.models import (
 )
 from django.db.models.query import QuerySet
 from django.utils.functional import cached_property
-from django.utils.timezone import now
 
 from django_extensions.db.models import TimeStampedModel
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import (
     PipelineExecution,
     PipelineResult,

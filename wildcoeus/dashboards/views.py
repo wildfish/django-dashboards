@@ -1,9 +1,10 @@
 import json
-from typing import Any, Callable, Dict, Optional, Protocol, Type
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Protocol, Type, TypeAlias
 
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpRequest, HttpResponse
+from django.views import View
 from django.views.generic import TemplateView
 
 from wildcoeus.dashboards.dashboard import Dashboard
@@ -17,7 +18,13 @@ class HasValueProtocol(Protocol):
     get_dashboard_context: Callable
 
 
-class DashboardObjectMixin:
+if TYPE_CHECKING:
+    mixin_class: TypeAlias = View
+else:
+    mixin_class: TypeAlias = object
+
+
+class DashboardObjectMixin(mixin_class):
     dashboard_class: Optional[Dashboard] = None
 
     def dispatch(self: TemplateView, request, *args, **kwargs):
@@ -41,6 +48,9 @@ class DashboardObjectMixin:
 
     def get_dashboard_context(self, **context):
         """kwargs passed to dashboard class"""
+        if not self.dashboard_class:
+            raise Exception("Dashboard class not set on view")
+
         # extract lookup value from kwargs and assign to key set on meta
         if (
             self.dashboard_class._meta.lookup_kwarg
@@ -113,6 +123,9 @@ class ComponentView(DashboardObjectMixin, TemplateView):
         return self.get(*args, **kwargs)
 
     def get_partial_component(self, dashboard):
+        if not self.dashboard_class:
+            raise Exception("Dashboard class not set on view")
+
         for component in dashboard.get_components():
             if component.key == self.kwargs["component"]:
                 return component

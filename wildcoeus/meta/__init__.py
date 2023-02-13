@@ -1,10 +1,10 @@
-from typing import ClassVar, Type, Union
+from typing import Any, ClassVar, Type, Union
 
 from django.apps import apps
 
 
 class ClassWithMeta:
-    _meta: Type["ClassWithMeta.Meta"]
+    _meta: Type[Any]
 
     class Meta:
         abstract: ClassVar[bool] = True
@@ -42,7 +42,9 @@ class ClassWithMeta:
             )
 
         # build the new concrete _meta class
-        _meta = type(f"{cls.__name__}ConcreteMeta", base_meta_classes, {})
+        _meta: Type[ClassWithMeta.Meta] = type(
+            f"{cls.__name__}ConcreteMeta", base_meta_classes, {}
+        )
 
         # if the current classes Meta class doesn't have
         # the name set, replace the current name with

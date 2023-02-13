@@ -5,7 +5,6 @@ import pytest
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.models import OrmTaskResult
-from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.eager import Runner
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task

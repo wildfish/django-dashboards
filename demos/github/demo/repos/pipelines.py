@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 from wildcoeus.dashboards.component import Stat
 from wildcoeus.pipelines import Pipeline, Task
-from wildcoeus.pipelines.registry import pipeline_registry
 
 from .models import Repo, RepoStats, RepoStatsChange
 

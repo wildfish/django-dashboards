@@ -1,7 +1,6 @@
 import pytest
-from pydantic import BaseModel
 
-from wildcoeus.pipelines.tasks import Task
+from wildcoeus.pipelines.tasks import Task, TaskConfig
 from wildcoeus.pipelines.tasks.registry import task_registry
 
 
@@ -27,7 +26,7 @@ def test_request_to_load_a_task_that_isnt_registered___error_is_reported():
 
 
 def test_request_to_load_a_task_that_exists_with_a_valid_config___task_is_loaded():
-    class TestTaskConfigType(BaseModel):
+    class TestTaskConfigType(TaskConfig):
         value: int
 
     class TestTask(Task):

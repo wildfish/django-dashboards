@@ -44,7 +44,7 @@ def test_get_by_classname__not_found__class_name(dashboard):
 
 
 def test_get_by_app_label(dashboard):
-    class ExtraDashboard(dashboard):
+    class ExtraDashboard(dashboard):  # type: ignore
         class Meta:
             app_label = "new"
 
@@ -66,12 +66,12 @@ def test_get_by_slug__not_found(dashboard):
 def test_get_graphql_dashboards(dashboard, model_dashboard):
     model_dashboard.include_in_graphql = True
 
-    class GQLDashboard(dashboard):
+    class GQLDashboard(dashboard):  # type: ignore
         class Meta:
             app_label = "new"
             include_in_graphql = True
 
-    class NotGQLDashboard(dashboard):
+    class NotGQLDashboard(dashboard):  # type: ignore
         class Meta:
             app_label = "new"
             include_in_graphql = False

@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.models import OrmPipelineExecution, PipelineLog
+from wildcoeus.pipelines.models import PipelineLog
 from wildcoeus.pipelines.results.helpers import cleanup_task_results
 
 

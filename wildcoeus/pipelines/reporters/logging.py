@@ -1,5 +1,3 @@
-from typing import Union
-
 from wildcoeus.pipelines.log import logger
 
 from ..results.base import PipelineStorageObject

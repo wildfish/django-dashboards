@@ -1,5 +1,3 @@
-from typing import Union
-
 from ..models import PipelineLog
 from ..results.base import PipelineStorageObject
 from ..status import PipelineTaskStatus
