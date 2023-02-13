@@ -1,31 +1,21 @@
 {% load wildcoeus %}
 
 <div class="menu">
-    {% dashboard_urls "kitchensink" as kitchensink %}
-    {% dashboard_urls "vehicle" as vehicle %}
-
+    {% dashboard_menus %}
     <nav role="navigation">
         <ul class="menu">
-            <li class="{% if  dashboard.get_meta.app_label == "kitchensink" %}active{% endif %}">
-                <a href="{{ kitchensink.0.1 }}">Kitchen Sink</a>
+          {% for section, items in sections.items %}
+            <li class="{% if section == active_section %}active{% endif %}">
+                <a href="#">{{ section }}</a>
                 <ul class="dropdown">
-                    {% for name, url in kitchensink.items %}
-                        <li class="{% if request.path == url %}active{% endif %}">
-                            <a href="{{ url }}">{{ name }}</a>
+                    {% for item in items %}
+                        <li class="{% if item.selected %}active{% endif %}">
+                            <a href="{{ item.url }}">{{ item.title }}</a>
                         </li>
                     {% endfor %}
                 </ul>
             </li>
-            <li class="{% if  dashboard.get_meta.app_label == "vehicle" %}active{% endif %}">
-                <a href="{{ vehicle.0.1 }}">Vehicle</a>
-                <ul class="dropdown">
-                    {% for name, url in vehicle.items %}
-                        <li class="{% if request.path == url %}active{% endif %}">
-                            <a href="{{ url }}">{{ name }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </li>
+            {% endfor %}
         </ul>
     </nav>
     <hr/>

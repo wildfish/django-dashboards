@@ -23,12 +23,14 @@ class Registry(object):
     def __init__(self, module_name=None):
         self.module_name = module_name
         self.items = []
+        self.discovered = False
 
     def __contains__(self, item):
         return item.get_id() not in list(map(lambda d: d.get_id(), self.items))
 
     def reset(self):
         self.items = []
+        self.discovered = False
 
     def remove(self, item):
         if item.get_id() in list(map(lambda d: d.get_id(), self.items)):
@@ -75,8 +77,12 @@ class Registry(object):
         return self.get_urls()
 
     def autodiscover(self):
+        if self.discovered:
+            return
+
         if self.module_name:
             autodiscover_modules(self.module_name)
+            self.discovered = True
 
 
 registry = Registry()
