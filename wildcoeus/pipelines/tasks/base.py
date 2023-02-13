@@ -6,7 +6,7 @@ from pydantic import BaseModel, Extra, ValidationError
 
 from wildcoeus.meta import ClassWithAppConfigMeta
 from wildcoeus.pipelines.reporters import PipelineReporter
-from wildcoeus.pipelines.results.base import BaseTaskResult
+from wildcoeus.pipelines.results.base import TaskResult
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.registry import task_registry
 from wildcoeus.registry.registry import Registerable
@@ -96,7 +96,7 @@ class Task(Registerable, ClassWithAppConfigMeta):
 
     def start(
         self,
-        task_result: BaseTaskResult,
+        task_result: TaskResult,
         reporter: PipelineReporter,
     ):
         try:

@@ -1,11 +1,11 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 
 from wildcoeus.meta import ClassWithAppConfigMeta
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.results.base import BasePipelineExecution
+from wildcoeus.pipelines.results.base import PipelineExecution
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.registry.registry import Registerable
 
@@ -151,7 +151,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
     def start_pipeline(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
     ) -> bool:
@@ -165,7 +165,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
     def handle_error(
         self,
-        execution: BasePipelineExecution,
+        execution: PipelineExecution,
         reporter,
     ):
         # update that pipeline has been cancelled

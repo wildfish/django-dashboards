@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from tests.dashboards.fakes import fake_user
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import PipelineExecution
+from wildcoeus.pipelines.models import OrmPipelineExecution
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import ConfigValidationError, Task, TaskConfig
 
@@ -81,7 +81,7 @@ def test_all_tasks_have_a_good_config___runner_is_started_tasks_are_marked_as_pe
         is True
     )
 
-    pipeline_execution = PipelineExecution.objects.first()
+    pipeline_execution = OrmPipelineExecution.objects.first()
     [pipeline_result] = pipeline_execution.get_pipeline_results()
     [task_a_execution, task_b_execution] = pipeline_result.get_task_executions()
     [task_a_result] = task_a_execution.get_task_results()
@@ -148,7 +148,7 @@ def test_all_tasks_have_a_good_config_and_input_data___runner_is_started_with_in
         is True
     )
 
-    assert PipelineExecution.objects.first().input_data == {"message": "something"}
+    assert OrmPipelineExecution.objects.first().input_data == {"message": "something"}
 
 
 def test_tasks_has_a_missing_parent___error_is_raised():
@@ -182,7 +182,7 @@ def test_tasks_has_a_missing_parent___error_is_raised():
 
     runner.start.assert_not_called()
 
-    pipeline_execution = PipelineExecution.objects.first()
+    pipeline_execution = OrmPipelineExecution.objects.first()
 
     reporter.report_pipeline_execution(
         pipeline_execution,
@@ -228,7 +228,7 @@ def test_pipeline__iterator__all_tasks_have_a_good_config___runner_is_started_ta
         is True
     )
 
-    pipeline_execution = PipelineExecution.objects.first()
+    pipeline_execution = OrmPipelineExecution.objects.first()
     [pipeline_result_a, pipeline_result_b] = pipeline_execution.get_pipeline_results()
     [a_a_execution, a_b_execution] = pipeline_result_a.get_task_executions()
     [a_a_result] = a_a_execution.get_task_results()
@@ -270,7 +270,7 @@ def test_pipeline___model__all_tasks_have_a_good_config___runner_is_started_task
         is True
     )
 
-    pipeline_execution = PipelineExecution.objects.first()
+    pipeline_execution = OrmPipelineExecution.objects.first()
     [pipeline_result_a, pipeline_result_b] = pipeline_execution.get_pipeline_results()
     [task_execution_a] = pipeline_result_a.get_task_executions()
     [task_result_a] = task_execution_a.get_task_results()
@@ -314,7 +314,7 @@ def test_pipeline___model_qs__all_tasks_have_a_good_config___runner_is_started_t
         is True
     )
 
-    pipeline_execution = PipelineExecution.objects.first()
+    pipeline_execution = OrmPipelineExecution.objects.first()
     [pipeline_result_a, pipeline_result_b] = pipeline_execution.get_pipeline_results()
     [task_execution_a] = pipeline_result_a.get_task_executions()
     [task_result_a] = task_execution_a.get_task_results()

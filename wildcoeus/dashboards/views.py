@@ -1,5 +1,5 @@
 import json
-from typing import Callable, Dict, Optional, Protocol, Type, Any
+from typing import Any, Callable, Dict, Optional, Protocol, Type
 
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder

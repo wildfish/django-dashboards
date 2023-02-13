@@ -4,7 +4,7 @@ from unittest.mock import Mock, call
 import pytest
 
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import TaskResult
+from wildcoeus.pipelines.models import OrmTaskResult
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.runners.eager import Runner
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -42,10 +42,10 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    first_task_result = TaskResult.objects.filter(
+    first_task_result = OrmTaskResult.objects.filter(
         execution__pipeline_task="first"
     ).first()
-    second_task_result = TaskResult.objects.filter(
+    second_task_result = OrmTaskResult.objects.filter(
         execution__pipeline_task="second"
     ).first()
 
@@ -92,8 +92,8 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    parent = TaskResult.objects.filter(execution__pipeline_task="parent").first()
-    child = TaskResult.objects.filter(execution__pipeline_task="child").first()
+    parent = OrmTaskResult.objects.filter(execution__pipeline_task="parent").first()
+    child = OrmTaskResult.objects.filter(execution__pipeline_task="child").first()
 
     assert reporter.report_context_object.call_args_list.index(
         call(
@@ -140,8 +140,8 @@ def test_first_task_fails___other_tasks_are_cancelled():
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    bad = TaskResult.objects.filter(execution__pipeline_task="bad").first()
-    good = TaskResult.objects.filter(execution__pipeline_task="good").first()
+    bad = OrmTaskResult.objects.filter(execution__pipeline_task="bad").first()
+    good = OrmTaskResult.objects.filter(execution__pipeline_task="good").first()
 
     assert reporter.report_context_object.call_args_list.index(
         call(

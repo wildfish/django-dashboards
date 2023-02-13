@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type, ClassVar
+from typing import Any, ClassVar, Dict, List, Optional, Type
 
 from django.db.models import Model
 from django.http import HttpRequest

@@ -1,4 +1,4 @@
-from typing import Type, Union, ClassVar
+from typing import ClassVar, Type, Union
 
 from django.apps import apps
 

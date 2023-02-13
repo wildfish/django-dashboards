@@ -1,14 +1,13 @@
 import logging
-from typing import Callable, Union
+from typing import Callable
 
-from django.utils.module_loading import import_string
-
+from wildcoeus.config import object_from_config
 from wildcoeus.pipelines.results.base import (
-    BasePipelineExecution,
-    BasePipelineResult,
-    BasePipelineStorageObject,
-    BaseTaskExecution,
-    BaseTaskResult,
+    PipelineExecution,
+    PipelineResult,
+    PipelineStorageObject,
+    TaskExecution,
+    TaskResult,
 )
 from wildcoeus.pipelines.status import PipelineTaskStatus
 
@@ -16,7 +15,7 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 class PipelineReporter:
     def report(
         self,
-        context_object: BasePipelineStorageObject,
+        context_object: PipelineStorageObject,
         status: PipelineTaskStatus,
         message: str,
     ):  # pragma: nocover
@@ -24,7 +23,7 @@ class PipelineReporter:
 
     def report_pipeline_execution(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         status: PipelineTaskStatus,
         message: str,
     ):
@@ -32,7 +31,7 @@ class PipelineReporter:
 
     def report_pipeline_result(
         self,
-        pipeline_result: BasePipelineResult,
+        pipeline_result: PipelineResult,
         status: PipelineTaskStatus,
         message: str,
     ):
@@ -40,7 +39,7 @@ class PipelineReporter:
 
     def report_task_execution(
         self,
-        task_execution: BaseTaskExecution,
+        task_execution: TaskExecution,
         status: PipelineTaskStatus,
         message: str,
     ):
@@ -48,7 +47,7 @@ class PipelineReporter:
 
     def report_task_result(
         self,
-        task_result: BaseTaskResult,
+        task_result: TaskResult,
         status: PipelineTaskStatus,
         message: str,
     ):
@@ -56,17 +55,17 @@ class PipelineReporter:
 
     def report_context_object(
         self,
-        context_object: BasePipelineStorageObject,
+        context_object: PipelineStorageObject,
         status: PipelineTaskStatus,
         message: str,
     ):
         message_builder: Callable[
-            [BasePipelineStorageObject, PipelineTaskStatus, str], str
+            [PipelineStorageObject, PipelineTaskStatus, str], str
         ] = {
-            BasePipelineExecution.content_type_name: self._build_pipeline_execution_message,
-            BasePipelineResult.content_type_name: self._build_pipeline_result_message,
-            BaseTaskExecution.content_type_name: self._build_task_execution_message,
-            BaseTaskResult.content_type_name: self._build_task_result_message,
+            PipelineExecution.content_type_name: self._build_pipeline_execution_message,
+            PipelineResult.content_type_name: self._build_pipeline_result_message,
+            TaskExecution.content_type_name: self._build_task_execution_message,
+            TaskResult.content_type_name: self._build_task_result_message,
         }[
             context_object.content_type_name
         ]  # type: ignore
@@ -79,7 +78,7 @@ class PipelineReporter:
 
     def _build_pipeline_execution_message(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         status: PipelineTaskStatus,
         message: str,
     ):
@@ -91,7 +90,7 @@ class PipelineReporter:
 
     def _build_pipeline_result_message(
         self,
-        pipeline_result: BasePipelineResult,
+        pipeline_result: PipelineResult,
         status: PipelineTaskStatus,
         message: str,
     ):
@@ -104,7 +103,7 @@ class PipelineReporter:
 
     def _build_task_execution_message(
         self,
-        task_execution: BaseTaskExecution,
+        task_execution: TaskExecution,
         status: PipelineTaskStatus,
         message: str,
     ):
@@ -116,7 +115,7 @@ class PipelineReporter:
         )
 
     def _build_task_result_message(
-        self, task_result: BaseTaskResult, status: PipelineTaskStatus, message: str
+        self, task_result: TaskResult, status: PipelineTaskStatus, message: str
     ):
         return self._build_log_message(
             f"Task result ({task_result.get_id()}) {task_result.get_pipeline_task()} ({task_result.get_task_id()})",
@@ -150,16 +149,8 @@ class PipelineReporter:
 class MultiPipelineReporter(PipelineReporter):
     def __init__(self, reporters):
         logging.info(reporters)
-        self.reporters = [reporter_from_config(reporter) for reporter in reporters]
+        self.reporters = [object_from_config(reporter) for reporter in reporters]
 
     def report(self, *args, **kwargs):
         for reporter in self.reporters:
             reporter.report(*args, **kwargs)
-
-
-def reporter_from_config(reporter):
-    if isinstance(reporter, str):
-        return import_string(reporter)()
-
-    module_path, params = reporter
-    return import_string(module_path)(**params)

@@ -12,10 +12,10 @@ from pydantic import BaseModel
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
-    PipelineResult,
-    TaskExecution,
-    TaskResult,
+    OrmPipelineExecution,
+    OrmPipelineResult,
+    OrmTaskExecution,
+    OrmTaskResult,
 )
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.status import PipelineTaskStatus
@@ -165,17 +165,15 @@ def setup_logs():
     for obj in chain([pe], prs, tes, trs):
         baker.make_recipe(
             "pipelines.fake_pipeline_log",
-            context_type=type(obj).__name__,
+            context_type=obj.content_type_name,
             context_id=obj.id,
-            message=f"{type(obj).__name__} {obj.id}",
+            message=f"{obj.content_type_name} {obj.id}",
             run_id=pe.run_id,
         )
 
 
 def build_expected_message(context_object):
-    return (
-        f"[20/Dec/2022 13:23:55]: {type(context_object).__name__} {context_object.id}"
-    )
+    return f"[20/Dec/2022 13:23:55]: {context_object.content_type_name} {context_object.id}"
 
 
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
@@ -216,7 +214,7 @@ def test_log_list__pipeline_not_in_final_state__status_is_286(
 
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
 def test_log_list__no_filters__all_logs_included(client, staff, setup_logs):
-    pe = PipelineExecution.objects.first()
+    pe = OrmPipelineExecution.objects.first()
 
     client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id]))
@@ -237,7 +235,7 @@ def test_log_list__no_filters__all_logs_included(client, staff, setup_logs):
 def test_log_list__filter_by_pipeline_result__pipeline_result_and_children_in_logs(
     client, staff, setup_logs
 ):
-    pe = PipelineExecution.objects.first()
+    pe = OrmPipelineExecution.objects.first()
     [target, other] = pe.results.all()
 
     client.force_login(staff)
@@ -267,7 +265,7 @@ def test_log_list__filter_by_pipeline_result__pipeline_result_and_children_in_lo
 def test_log_list__filter_by_task_execution__task_execution_and_children_in_logs(
     client, staff, setup_logs
 ):
-    [target, *others] = TaskExecution.objects.all()
+    [target, *others] = OrmTaskExecution.objects.all()
 
     client.force_login(staff)
     response = client.get(
@@ -279,7 +277,7 @@ def test_log_list__filter_by_task_execution__task_execution_and_children_in_logs
         build_expected_message(target.pipeline_result.execution)
         not in response.context_data["logs"]
     )
-    for pr in PipelineResult.objects.all():
+    for pr in OrmPipelineResult.objects.all():
         assert build_expected_message(pr) not in response.context_data["logs"]
 
     for te in others:
@@ -297,7 +295,7 @@ def test_log_list__filter_by_task_execution__task_execution_and_children_in_logs
 def test_log_list__filter_by_task_result__task_result_in_logs(
     client, staff, setup_logs
 ):
-    [target, *others] = TaskResult.objects.all()
+    [target, *others] = OrmTaskResult.objects.all()
 
     client.force_login(staff)
     response = client.get(
@@ -310,10 +308,10 @@ def test_log_list__filter_by_task_result__task_result_in_logs(
         not in response.context_data["logs"]
     )
 
-    for pr in PipelineResult.objects.all():
+    for pr in OrmPipelineResult.objects.all():
         assert build_expected_message(pr) not in response.context_data["logs"]
 
-    for te in TaskExecution.objects.all():
+    for te in OrmTaskExecution.objects.all():
         assert build_expected_message(te) not in response.context_data["logs"]
 
     for tr in others:
@@ -374,7 +372,7 @@ def test_start__post(client, staff, test_pipeline):
         )
 
     assert response.status_code == 302
-    assert PipelineResult.objects.count() == 1
+    assert OrmPipelineResult.objects.count() == 1
 
 
 def test_start__post__with_formdata(client, staff):
@@ -406,7 +404,7 @@ def test_start__post__with_formdata(client, staff):
         )
 
     assert response.status_code == 302
-    assert PipelineResult.objects.count() == 1
+    assert OrmPipelineResult.objects.count() == 1
 
 
 def test_start__post__with_no_formdata(client, staff):

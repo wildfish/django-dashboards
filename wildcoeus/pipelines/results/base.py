@@ -39,7 +39,7 @@ A dictionary type mapping pipeline ids to the ``PipelineDigestItem``
 PipelineDigest = Dict[str, PipelineDigestItem]
 
 
-class BasePipelineStorageObject:
+class PipelineStorageObject:
     """
     Base object for all items in the pipeline results storage.
 
@@ -72,8 +72,8 @@ class BasePipelineStorageObject:
 
     method_prop_re = re.compile("^(get|set)_(.*)$")
 
-    setter: Callable[["BasePipelineStorageObject", str, Any], None] = setattr
-    getter: Callable[["BasePipelineStorageObject", str], None] = getattr
+    setter: Callable[["PipelineStorageObject", str, Any], None] = setattr
+    getter: Callable[["PipelineStorageObject", str], None] = getattr
 
     get_run_id: Callable[[], str]
     get_started: Callable[[], Optional[datetime]]
@@ -106,7 +106,7 @@ class BasePipelineStorageObject:
 
             raise
 
-    def _get_propagate_parent(self) -> Optional["BasePipelineStorageObject"]:
+    def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return None
 
     def report_status_change(
@@ -154,45 +154,45 @@ class BasePipelineStorageObject:
         )
 
 
-class BasePipelineExecution(BasePipelineStorageObject):
+class PipelineExecution(PipelineStorageObject):
     """
     Object to store the overall result of a pipeline run
     """
 
     content_type_name = "PipelineExecution"
-    get_pipeline_results: Callable[[], Sequence["BasePipelineResult"]]
+    get_pipeline_results: Callable[[], Sequence["PipelineResult"]]
 
 
-class BasePipelineResult(BasePipelineStorageObject):
+class PipelineResult(PipelineStorageObject):
     content_type_name = "PipelineResult"
 
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
     get_runner: Callable[[], str]
     get_reporter: Callable[[], str]
-    get_pipeline_execution: Callable[[], BasePipelineExecution]
-    get_task_executions: Callable[[], Sequence["BaseTaskExecution"]]
+    get_pipeline_execution: Callable[[], PipelineExecution]
+    get_task_executions: Callable[[], Sequence["TaskExecution"]]
 
-    def _get_propagate_parent(self) -> Optional["BasePipelineStorageObject"]:
+    def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_pipeline_execution()
 
 
-class BaseTaskExecution(BasePipelineStorageObject):
+class TaskExecution(PipelineStorageObject):
     content_type_name = "TaskExecution"
 
     get_id: Callable[[], Any]
-    get_pipeline_result: Callable[[], BasePipelineResult]
+    get_pipeline_result: Callable[[], PipelineResult]
     get_task_id: Callable[[], str]
     get_pipeline_task: Callable[[], str]
     get_config: Callable[[], Dict[str, Any]]
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
     get_task: Callable[[], "Task"]
-    get_task_results: Callable[[], Sequence["BaseTaskResult"]]
+    get_task_results: Callable[[], Sequence["TaskResult"]]
 
-    def _get_propagate_parent(self) -> Optional["BasePipelineStorageObject"]:
+    def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_pipeline_result()
 
 
-class BaseTaskResult(BasePipelineStorageObject):
+class TaskResult(PipelineStorageObject):
     content_type_name = "TaskResult"
 
     get_id: Callable[[], Any]
@@ -201,9 +201,9 @@ class BaseTaskResult(BasePipelineStorageObject):
     get_config: Callable[[], Dict[str, Any]]
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
     get_serializable_task_object: Callable[[], Dict[str, Any]]
-    get_task_execution: Callable[[], BaseTaskExecution]
+    get_task_execution: Callable[[], TaskExecution]
 
-    def _get_propagate_parent(self) -> Optional["BasePipelineStorageObject"]:
+    def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_task_execution()
 
     def get_task(self) -> "Task":
@@ -226,7 +226,7 @@ class BaseTaskResult(BasePipelineStorageObject):
         return None
 
 
-class BasePipelineResultsStorage:
+class PipelineResultsStorage:
     def build_pipeline_execution(
         self,
         pipeline: "Pipeline",
@@ -235,7 +235,7 @@ class BasePipelineResultsStorage:
         reporter: "PipelineReporter",
         input_data: Dict[str, Any],
         build_all=True,
-    ) -> BasePipelineExecution:
+    ) -> PipelineExecution:
         """
         Creates a pipeline execution object along with all the pipeline results,
         task executions and task results.
@@ -270,26 +270,26 @@ class BasePipelineResultsStorage:
 
     def get_pipeline_executions(
         self, pipeline_id: Optional[str] = None
-    ) -> Sequence[BasePipelineExecution]:
+    ) -> Sequence[PipelineExecution]:
         raise NotImplementedError()
 
-    def get_pipeline_execution(self, run_id) -> BasePipelineExecution | None:
+    def get_pipeline_execution(self, run_id) -> PipelineExecution | None:
         raise NotImplementedError()
 
     def get_pipeline_results(
         self, run_id: Optional[str] = None
-    ) -> Sequence[BasePipelineResult]:
+    ) -> Sequence[PipelineResult]:
         raise NotImplementedError()
 
-    def get_pipeline_result(self, _id) -> BasePipelineResult | None:
+    def get_pipeline_result(self, _id) -> PipelineResult | None:
         raise NotImplementedError()
 
     def get_task_executions(
         self, run_id: Optional[str] = None, pipeline_result_id: Optional[str] = None
-    ) -> Sequence[BaseTaskExecution]:
+    ) -> Sequence[TaskExecution]:
         raise NotImplementedError()
 
-    def get_task_execution(self, _id) -> BaseTaskExecution | None:
+    def get_task_execution(self, _id) -> TaskExecution | None:
         raise NotImplementedError()
 
     def get_task_results(
@@ -297,10 +297,10 @@ class BasePipelineResultsStorage:
         run_id: Optional[str] = None,
         pipeline_result_id: Optional[str] = None,
         task_execution_id: Optional[str] = None,
-    ) -> Sequence[BaseTaskResult]:
+    ) -> Sequence[TaskResult]:
         raise NotImplementedError()
 
-    def get_task_result(self, _id) -> BaseTaskResult | None:
+    def get_task_result(self, _id) -> TaskResult | None:
         raise NotImplementedError()
 
     def cleanup(self, before: Optional[datetime] = None) -> Sequence[str]:

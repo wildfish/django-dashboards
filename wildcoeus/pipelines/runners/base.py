@@ -3,15 +3,15 @@ from typing import Dict, List
 
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import (
-    BasePipelineExecution,
-    BasePipelineResult,
-    BaseTaskExecution,
+    PipelineExecution,
+    PipelineResult,
+    TaskExecution,
 )
 
 
 class PipelineRunner:
     @classmethod
-    def get_task_graph(cls, pipeline_result: BasePipelineResult) -> TopologicalSorter:
+    def get_task_graph(cls, pipeline_result: PipelineResult) -> TopologicalSorter:
         task_graph: Dict[str, List[str]] = {}
 
         pipeline = pipeline_result.get_pipeline()
@@ -29,9 +29,7 @@ class PipelineRunner:
         return TopologicalSorter(task_graph)
 
     @classmethod
-    def get_flat_task_list(
-        cls, pipeline_result: BasePipelineResult
-    ) -> List[BaseTaskExecution]:
+    def get_flat_task_list(cls, pipeline_result: PipelineResult) -> List[TaskExecution]:
         task_graph: Dict[str, List[str]] = {}
 
         pipeline = pipeline_result.get_pipeline()
@@ -55,7 +53,7 @@ class PipelineRunner:
 
     def start(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         reporter: PipelineReporter,
     ):
         return self.start_runner(
@@ -65,7 +63,7 @@ class PipelineRunner:
 
     def start_runner(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         reporter: PipelineReporter,
     ):  # pragma: no cover
         """
