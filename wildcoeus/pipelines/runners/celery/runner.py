@@ -22,10 +22,10 @@ from .tasks import (
 class Runner(PipelineRunner):
     @classmethod
     def build_celery_task(cls, task: BaseTaskResult):
-        celery_task = run_task.si(task.id)
+        celery_task = run_task.si(task.get_id())
         celery_task.link_error(
             run_task_result_report.si(
-                task_result_id=task.id,
+                task_result_id=task.get_id(),
                 status=PipelineTaskStatus.RUNTIME_ERROR.value,
                 message="Task Error",
             )
@@ -70,12 +70,12 @@ class Runner(PipelineRunner):
             )
 
     def build_pipeline_chain(self, pipeline_result: BasePipelineResult):
-        ordered_tasks = self._get_task_graph(pipeline_result)
+        ordered_tasks = self.get_flat_task_list(pipeline_result)
 
         c = chain(
             # Report starting
             run_pipeline_result_report.si(
-                pipeline_result_id=pipeline_result.id,
+                pipeline_result_id=pipeline_result.get_id(),
                 status=PipelineTaskStatus.RUNNING.value,
                 message="Running",
                 propagate=True,

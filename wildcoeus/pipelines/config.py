@@ -2,10 +2,13 @@ from django.conf import settings
 from django.core.files.storage import get_storage_class
 from django.utils.module_loading import import_string
 
+from wildcoeus.pipelines.reporters.base import reporter_from_config
+from wildcoeus.pipelines.runners import PipelineRunner
+
 
 class Config:
     @property
-    def WILDCOEUS_DEFAULT_PIPELINE_RUNNER(cls):
+    def WILDCOEUS_DEFAULT_PIPELINE_RUNNER(cls) -> PipelineRunner:
         runner = getattr(
             settings,
             "WILDCOEUS_PIPELINE_RUNNER",
@@ -18,9 +21,17 @@ class Config:
         reporter = getattr(
             settings,
             "WILDCOEUS_PIPELINE_REPORTER",
-            "wildcoeus.pipelines.reporters.logging.LoggingReporter",
+            (
+                "wildcoeus.pipelines.reporters.base.MultiPipelineReporter",
+                {
+                    "reporters": [
+                        "wildcoeus.pipelines.reporters.logging.LoggingReporter",
+                        "wildcoeus.pipelines.reporters.orm.ORMReporter",
+                    ]
+                },
+            ),
         )
-        return import_string(reporter)()
+        return reporter_from_config(reporter)
 
     @property
     def WILDCOEUS_CLEAR_LOG_DAYS(cls):
@@ -30,12 +41,3 @@ class Config:
             30,
         )
         return days
-
-    @property
-    def WILDCOEUS_LOG_FILE_STORAGE(cls):
-        storage = getattr(
-            settings,
-            "WILDCOEUS_LOG_FILE_STORAGE",
-            "wildcoeus.pipelines.storage.LogFileSystemStorage",
-        )
-        return get_storage_class(storage)()

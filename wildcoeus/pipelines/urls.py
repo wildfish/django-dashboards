@@ -40,6 +40,11 @@ urlpatterns = [
         name="logs-list",
     ),
     path(
+        "<str:run_id>/logs-filter/",
+        views.LogFilterView.as_view(),
+        name="logs-filter",
+    ),
+    path(
         "task-result/<str:pk>/rerun/",
         views.TaskResultReRunView.as_view(),
         name="rerun-task",

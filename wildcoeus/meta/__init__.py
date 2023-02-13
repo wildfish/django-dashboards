@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Type, Union, ClassVar
 
 from django.apps import apps
 
@@ -7,9 +7,9 @@ class ClassWithMeta:
     _meta: Type["ClassWithMeta.Meta"]
 
     class Meta:
-        abstract = True
-        name: str
-        verbose_name: str
+        abstract: ClassVar[bool] = True
+        name: ClassVar[str]
+        verbose_name: ClassVar[str]
 
     _meta = Meta
 

@@ -1,3 +1,4 @@
+import uuid
 from typing import Sequence
 
 from django.db import models
@@ -11,6 +12,7 @@ from django.db.models import (
     fields,
 )
 from django.db.models.query import QuerySet
+from django.utils.functional import cached_property
 from django.utils.timezone import now
 
 from django_extensions.db.models import TimeStampedModel
@@ -27,6 +29,7 @@ from wildcoeus.pipelines.results.base import (
 from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 from wildcoeus.pipelines.tasks.registry import task_registry
+from wildcoeus.pipelines.utils import get_object
 
 
 class PipelineLog(TimeStampedModel):
@@ -77,32 +80,38 @@ class TaskResultQuerySet(QuerySet):
 
 
 class PipelineExecutionQuerySet(QuerySet):
-    def with_task_count(self):
+    def with_extra_stats(self):
+        results_qs = (
+            PipelineResult.objects.values_list("execution__id")
+            .filter(execution_id=OuterRef("id"))
+            .annotate(total=Count("id"))
+            .values("total")
+        )
         tasks_qs = (
-            TaskResult.objects.values_list(
-                "execution__pipeline_result__execution__run_id"
-            )
-            .filter(execution__pipeline_result__execution__run_id=OuterRef("run_id"))
+            TaskResult.objects.values_list("execution__pipeline_result__execution_id")
+            .filter(execution__pipeline_result__execution_id=OuterRef("id"))
             .annotate(total=Count("id"))
             .values("total")
         )
         duration_qs = (
-            TaskResult.objects.values("execution__pipeline_result__execution__run_id")
+            TaskResult.objects.values("execution__pipeline_result__execution_id")
             .filter(
-                execution__pipeline_result__execution__run_id=OuterRef("run_id"),
+                execution__pipeline_result__execution__id=OuterRef("id"),
                 status=PipelineTaskStatus.DONE.value,
             )
             .annotate(duration=Sum(F("completed") - F("started")))
             .values("duration")
         )
         return self.annotate(
-            task_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
+            pipeline_result_count=Subquery(results_qs),
+            task_result_count=Subquery(tasks_qs),
+            duration=Subquery(duration_qs),
         )
 
 
 class PipelineExecution(BasePipelineExecution, models.Model):
     pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255)
+    run_id = models.CharField(max_length=255, default=uuid.uuid4, unique=True)
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
@@ -120,21 +129,33 @@ class PipelineExecution(BasePipelineExecution, models.Model):
     def get_pipeline(self) -> Pipeline:
         return pipeline_registry.get_by_id(self.pipeline_id)
 
-    def report_status_change(
-        self, reporter: PipelineReporter, status: PipelineTaskStatus, message=""
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
 
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
 
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
+class PipelineResultQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(execution__run_id=run_id)
 
-        self.status = status.value
-        self.save()
-        reporter.report_pipeline_execution(self, status, message)
+    def with_extra_stats(self):
+        tasks_qs = (
+            TaskResult.objects.values_list("id")
+            .filter(execution__pipeline_result__execution_id=OuterRef("id"))
+            .annotate(total=Count("id"))
+            .values("total")
+        )
+        duration_qs = (
+            TaskResult.objects.values("id")
+            .filter(
+                execution__pipeline_result__execution__id=OuterRef("id"),
+                status=PipelineTaskStatus.DONE.value,
+            )
+            .annotate(duration=Sum(F("completed") - F("started")))
+            .values("duration")
+        )
+        return self.annotate(
+            task_result_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
+        )
 
 
 class PipelineResult(BasePipelineResult, models.Model):
@@ -152,6 +173,8 @@ class PipelineResult(BasePipelineResult, models.Model):
     started = models.DateTimeField(blank=True, null=True, default=None)
     completed = models.DateTimeField(blank=True, null=True, default=None)
 
+    objects = PipelineResultQuerySet.as_manager()
+
     class Meta:
         ordering = ["-started"]
 
@@ -160,6 +183,9 @@ class PipelineResult(BasePipelineResult, models.Model):
 
     def get_task_results(self):
         return TaskResult.objects.filter(run_id=self.run_id)
+
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
 
     @property
     def pipeline_id(self):
@@ -186,28 +212,9 @@ class PipelineResult(BasePipelineResult, models.Model):
     def failed(self):
         return self.status in FAILED_STATUES
 
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if propagate:
-            self.execution.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_pipeline_result(self, status, message)
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
 
 
 class TaskExecution(BaseTaskExecution, models.Model):
@@ -230,6 +237,9 @@ class TaskExecution(BaseTaskExecution, models.Model):
 
     objects = TaskExecutionQuerySet.as_manager()
 
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
+
     @property
     def input_data(self):
         return self.pipeline_result.input_data
@@ -249,35 +259,16 @@ class TaskExecution(BaseTaskExecution, models.Model):
     def get_task_results(self) -> Sequence["BaseTaskResult"]:
         return self.results.all()
 
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if propagate:
-            self.pipeline_result.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_task_execution(self, status, message)
-
     def get_task(self) -> Task:
         return task_registry.load_task_from_id(
             self.pipeline_task,
             self.task_id,
             self.config,
         )
+
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
 
 
 class TaskResult(BaseTaskResult, models.Model):
@@ -297,6 +288,9 @@ class TaskResult(BaseTaskResult, models.Model):
 
     def __str__(self):
         return f"{self.task_id} ({self.run_id})"
+
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
 
     @property
     def run_id(self):
@@ -347,28 +341,13 @@ class TaskResult(BaseTaskResult, models.Model):
             config=self.config,
         )
 
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
 
-        if propagate:
-            self.execution.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_task_result(self, status, message)
+    @cached_property
+    def task_object(self):
+        return get_object(self.serializable_task_object)
 
 
 class ValueStore(TimeStampedModel):

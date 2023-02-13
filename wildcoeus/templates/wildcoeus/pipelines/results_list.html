@@ -11,7 +11,7 @@
     LOADING
   </div>
   <h4>Logs</h4>
-    <div hx-get="{% url "wildcoeus.pipelines:logs-list" run_id %}" hx-trigger="load, every 2s">
+  <div id="log-list" hx-get="{% url "wildcoeus.pipelines:logs-list" run_id %}" hx-trigger="load, every 2s">
     LOADING
   </div>
 {% endblock %}

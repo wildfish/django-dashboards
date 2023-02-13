@@ -1,9 +1,7 @@
-import tempfile
 from datetime import timedelta
 from io import StringIO
 
 from django.core.management import call_command
-from django.test.utils import override_settings
 from django.utils.timezone import now
 
 import pytest
@@ -16,8 +14,6 @@ from wildcoeus.pipelines.models import (
     TaskExecution,
     TaskResult,
 )
-from wildcoeus.pipelines.reporters.logging import LoggingReporter
-from wildcoeus.pipelines.storage import LogFileSystemStorage, get_log_path
 
 
 pytest_plugins = [
@@ -54,64 +50,6 @@ def test_clear_tasks_and_logs__all_deleted(freezer):
     assert TaskExecution.objects.count() == 0
     assert TaskResult.objects.count() == 0
     assert PipelineLog.objects.count() == 0
-
-
-def test_clear_tasks_and_logs__deletes_files(freezer):
-    today = now().today()
-
-    pipeline_execution = baker.make_recipe(
-        "pipelines.fake_pipeline_execution", run_id="123", started=today
-    )
-    pipeline_result = baker.make_recipe(
-        "pipelines.fake_pipeline_result", execution=pipeline_execution
-    )
-    task_execution = baker.make_recipe(
-        "pipelines.fake_task_execution", pipeline_result=pipeline_result
-    )
-    baker.make_recipe(
-        "pipelines.fake_task_result", execution=task_execution, _quantity=3
-    )
-    baker.make_recipe("pipelines.fake_pipeline_log", run_id="123", _quantity=3)
-
-    freezer.move_to(today + timedelta(days=11))
-    out = StringIO()
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        LoggingReporter._write_log_to_file("Some example text", "123")
-        fs = LogFileSystemStorage()
-        path = get_log_path("123")
-
-        assert fs.exists(path)
-        call_command("clear_tasks_and_logs", days=10, stdout=out)
-        assert fs.exists(path) is False
-
-
-def test_clear_tasks_and_logs__does_not_delete_files_if_date_current():
-    today = now().today()
-
-    pipeline_execution = baker.make_recipe(
-        "pipelines.fake_pipeline_execution", run_id="123", started=today
-    )
-    pipeline_result = baker.make_recipe(
-        "pipelines.fake_pipeline_result", execution=pipeline_execution
-    )
-    task_execution = baker.make_recipe(
-        "pipelines.fake_task_execution", pipeline_result=pipeline_result
-    )
-    baker.make_recipe(
-        "pipelines.fake_task_result", execution=task_execution, _quantity=3
-    )
-    baker.make_recipe("pipelines.fake_pipeline_log", run_id="123", _quantity=3)
-
-    out = StringIO()
-
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        LoggingReporter._write_log_to_file("Some example text", "123")
-        fs = LogFileSystemStorage()
-        path = get_log_path("123")
-
-        call_command("clear_tasks_and_logs", days=10, stdout=out)
-        assert fs.exists(path)
 
 
 def test_clear_tasks_and_logs__non_deleted():

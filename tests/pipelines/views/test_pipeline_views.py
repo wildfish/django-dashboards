@@ -1,4 +1,6 @@
 import tempfile
+from functools import reduce
+from itertools import chain
 from unittest.mock import patch
 
 from django.test.utils import override_settings
@@ -9,9 +11,13 @@ from model_bakery import baker
 from pydantic import BaseModel
 
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import PipelineResult
+from wildcoeus.pipelines.models import (
+    PipelineExecution,
+    PipelineResult,
+    TaskExecution,
+    TaskResult,
+)
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.reporters.logging import LoggingReporter
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 
@@ -30,6 +36,7 @@ pytestmark = pytest.mark.django_db
         reverse("wildcoeus.pipelines:pipeline-execution-list", args=["pipeline-slug"]),
         reverse("wildcoeus.pipelines:results-list", args=["123"]),
         reverse("wildcoeus.pipelines:logs-list", args=["123"]),
+        reverse("wildcoeus.pipelines:logs-filter", args=["123"]),
         reverse("wildcoeus.pipelines:start", args=["pipeline-slug"]),
         reverse("wildcoeus.pipelines:rerun-task", args=["1"]),
     ],
@@ -80,22 +87,20 @@ def test_pipeline_execution_list_queries_pinned(
 def test_results_list__tasks_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
     pr = baker.make_recipe("pipelines.fake_pipeline_result", execution=pe)
-    te = baker.make_recipe(
-        "pipelines.fake_task_execution", pipeline_result=pr, _quantity=3
-    )
+    baker.make_recipe("pipelines.fake_task_execution", pipeline_result=pr, _quantity=3)
 
     client.force_login(staff)
     response = client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
 
     assert response.status_code == 200
     assert "object_list" in list(response.context_data.keys())
-    assert len(response.context_data["object_list"]) == 3
-    assert te[0] in response.context_data["object_list"]
+    assert len(response.context_data["object_list"]) == 1
+    assert pr in response.context_data["object_list"]
 
 
 def test_results_list__tasks_not_completed(client, staff):
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
-    baker.make_recipe("pipelines.fake_pipeline_execution", run_id=pe.run_id)
+    baker.make_recipe("pipelines.fake_pipeline_execution")
 
     pr = baker.make_recipe("pipelines.fake_pipeline_result", execution=pe)
     te = baker.make_recipe("pipelines.fake_task_execution", pipeline_result=pr)
@@ -114,9 +119,7 @@ def test_results_list__tasks_not_completed(client, staff):
 def test_results_list_queries_pinned(client, staff, django_assert_num_queries):
     client.force_login(staff)
     pe = baker.make_recipe("pipelines.fake_pipeline_execution")
-    baker.make_recipe(
-        "pipelines.fake_pipeline_execution", run_id=pe.run_id, _quantity=3
-    )
+    baker.make_recipe("pipelines.fake_pipeline_execution", _quantity=3)
 
     with django_assert_num_queries(4):
         client.get(reverse("wildcoeus.pipelines:results-list", args=[pe.run_id]))
@@ -138,23 +141,185 @@ def test_log_list__tasks_completed(client, staff, snapshot):
     snapshot.assert_match(response.context_data["logs"])
 
 
+@pytest.fixture
+def setup_logs():
+    pe = baker.make_recipe("pipelines.fake_pipeline_execution")
+    prs = baker.make_recipe("pipelines.fake_pipeline_result", execution=pe, _quantity=2)
+    tes = [
+        baker.make_recipe("pipelines.fake_task_execution", pipeline_result=pr)
+        for pr in prs
+    ]
+    trs = list(
+        reduce(
+            lambda a, b: [*a, *b],
+            [
+                baker.make_recipe(
+                    "pipelines.fake_task_result", execution=te, _quantity=2
+                )
+                for te in tes
+            ],
+            [],
+        )
+    )
+
+    for obj in chain([pe], prs, tes, trs):
+        baker.make_recipe(
+            "pipelines.fake_pipeline_log",
+            context_type=type(obj).__name__,
+            context_id=obj.id,
+            message=f"{type(obj).__name__} {obj.id}",
+            run_id=pe.run_id,
+        )
+
+
+def build_expected_message(context_object):
+    return (
+        f"[20/Dec/2022 13:23:55]: {type(context_object).__name__} {context_object.id}"
+    )
+
+
 @pytest.mark.freeze_time("2022-12-20 13:23:55")
-def test_log_list__with_file__tasks_completed(client, staff, snapshot):
-    with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
-        pe = baker.make_recipe("pipelines.fake_pipeline_result")
-        expected_content = "Some example text"
-        LoggingReporter._write_log_to_file(expected_content, pe.run_id)
+@pytest.mark.parametrize("status", PipelineTaskStatus.final_statuses())
+def test_log_list__pipeline_is_in_final_state__status_is_286(
+    client, staff, setup_logs, status
+):
+    pe = baker.make_recipe("pipelines.fake_pipeline_execution", status=status.value)
 
-        client.force_login(staff)
-        response = client.get(
-            reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id])
+    client.force_login(staff)
+    response = client.get(
+        reverse(
+            "wildcoeus.pipelines:logs-list",
+            args=[pe.run_id],
         )
+    )
 
-        assert response.status_code == 286
-        assert (
-            response.context_data["logs"]
-            == f"[20/Dec/2022 13:23:55]: {expected_content}"
+    assert response.status_code == 286
+
+
+@pytest.mark.freeze_time("2022-12-20 13:23:55")
+@pytest.mark.parametrize("status", PipelineTaskStatus.non_final_statuses())
+def test_log_list__pipeline_not_in_final_state__status_is_286(
+    client, staff, setup_logs, status
+):
+    pe = baker.make_recipe("pipelines.fake_pipeline_execution", status=status.value)
+
+    client.force_login(staff)
+    response = client.get(
+        reverse(
+            "wildcoeus.pipelines:logs-list",
+            args=[pe.run_id],
         )
+    )
+
+    assert response.status_code == 200
+
+
+@pytest.mark.freeze_time("2022-12-20 13:23:55")
+def test_log_list__no_filters__all_logs_included(client, staff, setup_logs):
+    pe = PipelineExecution.objects.first()
+
+    client.force_login(staff)
+    response = client.get(reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id]))
+
+    assert build_expected_message(pe) in response.context_data["logs"]
+
+    for pr in pe.results.all():
+        assert build_expected_message(pr) in response.context_data["logs"]
+
+        for te in pr.task_executions.all():
+            assert build_expected_message(te) in response.context_data["logs"]
+
+            for tr in te.results.all():
+                assert build_expected_message(tr) in response.context_data["logs"]
+
+
+@pytest.mark.freeze_time("2022-12-20 13:23:55")
+def test_log_list__filter_by_pipeline_result__pipeline_result_and_children_in_logs(
+    client, staff, setup_logs
+):
+    pe = PipelineExecution.objects.first()
+    [target, other] = pe.results.all()
+
+    client.force_login(staff)
+    response = client.get(
+        reverse("wildcoeus.pipelines:logs-list", args=[pe.run_id])
+        + f"?type=PipelineResult&id={target.id}"
+    )
+
+    assert build_expected_message(pe) not in response.context_data["logs"]
+
+    assert build_expected_message(target) in response.context_data["logs"]
+    for te in target.task_executions.all():
+        assert build_expected_message(te) in response.context_data["logs"]
+
+        for tr in te.results.all():
+            assert build_expected_message(tr) in response.context_data["logs"]
+
+    assert build_expected_message(other) not in response.context_data["logs"]
+    for te in other.task_executions.all():
+        assert build_expected_message(te) not in response.context_data["logs"]
+
+        for tr in te.results.all():
+            assert build_expected_message(tr) not in response.context_data["logs"]
+
+
+@pytest.mark.freeze_time("2022-12-20 13:23:55")
+def test_log_list__filter_by_task_execution__task_execution_and_children_in_logs(
+    client, staff, setup_logs
+):
+    [target, *others] = TaskExecution.objects.all()
+
+    client.force_login(staff)
+    response = client.get(
+        reverse("wildcoeus.pipelines:logs-list", args=[target.run_id])
+        + f"?type=TaskExecution&id={target.id}"
+    )
+
+    assert (
+        build_expected_message(target.pipeline_result.execution)
+        not in response.context_data["logs"]
+    )
+    for pr in PipelineResult.objects.all():
+        assert build_expected_message(pr) not in response.context_data["logs"]
+
+    for te in others:
+        assert build_expected_message(te) not in response.context_data["logs"]
+
+        for tr in te.results.all():
+            assert build_expected_message(tr) not in response.context_data["logs"]
+
+    assert build_expected_message(target) in response.context_data["logs"]
+    for tr in target.results.all():
+        assert build_expected_message(tr) in response.context_data["logs"]
+
+
+@pytest.mark.freeze_time("2022-12-20 13:23:55")
+def test_log_list__filter_by_task_result__task_result_in_logs(
+    client, staff, setup_logs
+):
+    [target, *others] = TaskResult.objects.all()
+
+    client.force_login(staff)
+    response = client.get(
+        reverse("wildcoeus.pipelines:logs-list", args=[target.run_id])
+        + f"?type=TaskResult&id={target.id}"
+    )
+
+    assert (
+        build_expected_message(target.execution.pipeline_result.execution)
+        not in response.context_data["logs"]
+    )
+
+    for pr in PipelineResult.objects.all():
+        assert build_expected_message(pr) not in response.context_data["logs"]
+
+    for te in TaskExecution.objects.all():
+        assert build_expected_message(te) not in response.context_data["logs"]
+
+    for tr in others:
+        assert build_expected_message(tr) not in response.context_data["logs"]
+
+    assert build_expected_message(target) in response.context_data["logs"]
 
 
 def test_log_list__tasks_not_completed(client, staff):
@@ -232,7 +397,6 @@ def test_start__post__with_formdata(client, staff):
             app_label = "pipelinetest"
 
     test_pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     client.force_login(staff)
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
@@ -265,7 +429,6 @@ def test_start__post__with_no_formdata(client, staff):
             app_label = "pipelinetest"
 
     test_pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     client.force_login(staff)
     with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
@@ -295,7 +458,6 @@ def test_rerun_task__post(run_task, client, staff):
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pe = baker.make_recipe(
         "pipelines.fake_pipeline_execution", pipeline_id=pipeline.get_id()

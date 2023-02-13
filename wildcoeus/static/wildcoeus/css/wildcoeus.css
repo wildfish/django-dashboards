@@ -6,11 +6,11 @@
 }
 
 * {
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: auto;
   font-kerning: auto;
 }
 
@@ -28,6 +28,7 @@ body {
 }
 
 a{
+  -webkit-text-decoration: none;
   text-decoration: none;
 }
 
@@ -40,11 +41,13 @@ h1, h2, h3, h4, h5, h6 {
 .dashboard-container, .tab-content {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
+  grid-gap: 10px;
   gap: 10px;
   text-align: center;
 }
 
 .dashboard-component{
+  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
   box-shadow: 0 0 35px 0 var(--shadow);
 }
 
@@ -53,8 +56,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dashboard-component-cta {
+  background-color: rgba(154, 161, 171, 0.15);
   background-color: var(--shadow);
+  color: #1e1e1e;
   color: var(--off-black);
+  -webkit-text-decoration: none;
   text-decoration: none;
   font-size: 1.3rem;
 }
@@ -115,6 +121,7 @@ h1, h2, h3, h4, h5, h6 {
 a{
   color: #000000;
   font-size: 1.1rem;
+  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
   box-shadow: 0 0 35px 0 var(--shadow);
 }
 
@@ -132,12 +139,15 @@ a.active {
 }
 
 .menu li {
+  color: #1e1e1e;
   color: var(--off-black);
+  background: #ececec;
   background: var(--grey);
   display: block;
   float: left;
   padding: 0.5rem 2rem;
   position: relative;
+  -webkit-text-decoration: none;
   text-decoration: none;
   transition-duration: 0.5s;
 }
@@ -200,15 +210,20 @@ a.active {
     font-size: 0.8rem;
 }
 .table thead th {
+    background-color: #ececec;
     background-color: var(--grey);
+    border: solid 1px rgba(154, 161, 171, 0.15);
     border: solid 1px var(--shadow);
+    color: #1e1e1e;
     color: var(--off-black);
     padding: 1rem;
     text-align: left;
     text-shadow: 1px 1px 1px #fff;
 }
 .table tbody td {
+    border: solid 1px rgba(154, 161, 171, 0.15);
     border: solid 1px var(--shadow);
+    color: #1e1e1e;
     color: var(--off-black);
     padding: 10px;
 }
@@ -219,16 +234,21 @@ a.active {
 
 /* pipeline styles */
 .pipeline-logs {
+  background-color: #1e1e1e;
   background-color: var(--off-black);
   padding: 5px;
+  color: #ececec;
   color: var(--grey);
   height: 50vh;
   overflow: auto;
 }
 
 .breadcrumbs{
+    background-color: #ececec;
     background-color: var(--grey);
+    border: solid 1px rgba(154, 161, 171, 0.15);
     border: solid 1px var(--shadow);
+    color: #1e1e1e;
     color: var(--off-black);
     padding: 1rem;
     margin-bottom: 15px;
@@ -251,28 +271,44 @@ a.active {
     background-color: RGBA(220,53,69,1)!important;
 }
 
-.table-success {
+.result-success {
     --table-color: #000;
     --table-bg: #d1e7dd;
     --table-border-color: #bcd0c7;
 }
 
-.table-danger {
+.result-pending {
+    --table-color: #000;
+    --table-bg: rgba(231,223,209,1);
+    --table-border-color: rgba(231,223,209,1);
+}
+
+.result-danger {
     --table-color: #000;
     --table-bg: #f8d7da;
     --table-border-color: #dfc2c4;
 }
 
-.table-primary {
+.result-primary {
     --table-color: #000;
     --table-bg: #cfe2ff;
     --btable-border-color: #bacbe6;
 }
 
-.result-table {
+.result-cancelled {
+    --table-color: #000;
+    --table-bg: var(--grey);
+    --btable-border-color: var(--grey);
+}
+
+.result {
     color: var(--table-color);
     border-color: var(--table-border-color);
     background-color: var(--table-bg);
+}
+
+.result label {
+    display: block;
 }
 
 
@@ -285,6 +321,7 @@ a.active {
   color: black;
   float: left;
   padding: 8px 16px;
+  -webkit-text-decoration: none;
   text-decoration: none;
   transition: background-color .3s;
   border: 1px solid #ddd;
@@ -298,3 +335,35 @@ a.active {
 }
 
 .pagination a:hover:not(.active) {background-color: #ddd;}
+
+/*
+    pipeline results
+ */
+
+.pipeline-results-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pipeline-results-list .pipeline-results-hide-toggle {
+    display: none;
+}
+
+.pipeline-results-list .pipeline-results-toggleable-content {
+    display: none;
+}
+
+.pipeline-results-list .pipeline-results-hide-toggle:checked ~ .pipeline-results-toggleable-content,
+.pipeline-results-list .pipeline-results-toggleable-content:has(.pipeline-results-hide-toggle:checked) {
+    display: block;
+}
+
+.pipeline-results-list .result {
+    padding: 0.5em 1em;
+}
+
+.pipeline-results-list .result:has(> .pipeline-results-hide-toggle:checked) {
+    border: 1px solid black;
+    padding: calc(0.5em - 1px) calc(1em - 1px);
+}

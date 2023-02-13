@@ -7,4 +7,8 @@ class PipelinesConfig(AppConfig):
     verbose_name = "Django Wildcoeus Pipelines"
 
     def ready(self):
-        super(PipelinesConfig, self).ready()
+        from wildcoeus.pipelines.registry import pipeline_registry
+        from wildcoeus.pipelines.tasks import task_registry
+
+        pipeline_registry.autodiscover()
+        task_registry.autodiscover()

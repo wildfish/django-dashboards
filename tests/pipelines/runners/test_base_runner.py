@@ -16,7 +16,6 @@ pytest_plugins = [
 
 
 def test_graph_order__no_parents(test_task):
-    @pipeline_registry.register
     class TestPipeline(Pipeline):
         first = test_task(config={})
         second = test_task(config={})
@@ -31,7 +30,7 @@ def test_graph_order__no_parents(test_task):
         Mock(),
         {},
     )
-    ordered_tasks = PipelineRunner()._get_task_graph(
+    ordered_tasks = PipelineRunner().get_flat_task_list(
         pipeline_execution.get_pipeline_results()[0]
     )
 
@@ -41,12 +40,16 @@ def test_graph_order__no_parents(test_task):
 
 
 def test_graph_order__with_parents(test_task):
-    @pipeline_registry.register
     class TestPipeline(Pipeline):
         first = test_task(config={})
         second = test_task(config={"parents": ["first"]})
         third = test_task(config={"parents": ["second"]})
-        forth = test_task(config={})
+        fourth = test_task(config={})
+
+        ordering = {
+            "second": ["first"],
+            "third": ["second"],
+        }
 
         class Meta:
             app_label = "pipelinetest"
@@ -58,13 +61,13 @@ def test_graph_order__with_parents(test_task):
         Mock(),
         {},
     )
-    ordered_tasks = PipelineRunner()._get_task_graph(
+    ordered_tasks = PipelineRunner().get_flat_task_list(
         pipeline_execution.get_pipeline_results()[0]
     )
 
     assert len(ordered_tasks) == 4
     assert ordered_tasks[0].pipeline_task == "first"
-    assert ordered_tasks[1].pipeline_task == "forth"
+    assert ordered_tasks[1].pipeline_task == "fourth"
     assert ordered_tasks[2].pipeline_task == "second"
     assert ordered_tasks[3].pipeline_task == "third"
 

@@ -23,7 +23,7 @@ def test_report_pipeline_execution_saves_message_to_db():
     assert log.context_id == str(pipeline_execution.id)
     assert (
         log.log_message
-        == f"Pipeline {pipeline_execution.pipeline_id} changed to state DONE: Done"
+        == f"Pipeline execution ({pipeline_execution.run_id}) {pipeline_execution.pipeline_id}: Done"
     )
     assert log.pipeline_id == pipeline_execution.pipeline_id
     assert log.run_id == pipeline_execution.run_id
@@ -44,7 +44,7 @@ def test_report_pipeline_result_saves_message_to_db():
     assert log.context_id == str(pipeline_result.id)
     assert (
         log.log_message
-        == f"Pipeline result {pipeline_result.pipeline_id} changed to state DONE: Done"
+        == f"Pipeline result ({pipeline_result.id}) {pipeline_result.pipeline_id}: Done"
     )
     assert log.pipeline_id == pipeline_result.pipeline_id
     assert log.run_id == pipeline_result.run_id
@@ -68,7 +68,7 @@ def test_report_pipeline_results_writes_saves_message_to_db__with_object():
     assert log.context_id == str(pipeline_result.id)
     assert (
         log.log_message
-        == f"Pipeline result {pipeline_result.pipeline_id} changed to state DONE: Done | "
+        == f"Pipeline result ({pipeline_result.id}) {pipeline_result.pipeline_id}: Done | "
         "pipeline object: {'object': 1}"
     )
     assert log.pipeline_id == pipeline_result.pipeline_id
@@ -90,7 +90,7 @@ def test_report_task_execution_saves_message_to_db():
     assert log.context_id == str(task_execution.id)
     assert (
         log.log_message
-        == f"Task {task_execution.pipeline_task} ({task_execution.task_id}) changed to state DONE: Done"
+        == f"Task execution ({task_execution.id}) {task_execution.pipeline_task} ({task_execution.task_id}): Done"
     )
     assert log.pipeline_id == task_execution.pipeline_id
     assert log.run_id == task_execution.run_id
@@ -118,7 +118,7 @@ def test_report_task_execution_writes_saves_message_to_db__with_object():
     assert log.context_id == str(task_execution.id)
     assert (
         log.log_message
-        == f"Task {task_execution.pipeline_task} ({task_execution.task_id}) changed to state DONE: Done | "
+        == f"Task execution ({task_execution.id}) {task_execution.pipeline_task} ({task_execution.task_id}): Done | "
         "pipeline object: {'object': 1}"
     )
     assert log.pipeline_id == task_execution.pipeline_id
@@ -140,7 +140,7 @@ def test_report_task_result_saves_message_to_db():
     assert log.context_id == str(task_result.id)
     assert (
         log.log_message
-        == f"Task result {task_result.pipeline_task} ({task_result.task_id}) changed to state DONE: Done"
+        == f"Task result ({task_result.id}) {task_result.pipeline_task} ({task_result.task_id}): Done"
     )
     assert log.pipeline_id == task_result.pipeline_id
     assert log.run_id == task_result.run_id
@@ -173,7 +173,7 @@ def test_report_task_result_writes_saves_message_to_db__with_object():
     assert log.context_id == str(task_result.id)
     assert (
         log.log_message
-        == f"Task result {task_result.pipeline_task} ({task_result.task_id}) changed to state DONE: Done | "
+        == f"Task result ({task_result.id}) {task_result.pipeline_task} ({task_result.task_id}): Done | "
         "pipeline object: {'object': 1} | task object: {'object': 2}"
     )
     assert log.pipeline_id == task_result.pipeline_id

@@ -51,10 +51,10 @@ def test_input_is_provided_when_not_expected___error_is_reported_run_is_not_call
             reporter=reporter,
         )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.VALIDATION_ERROR,
-        "Input data was provided when no input type was specified",
+        "Changed state to VALIDATION_ERROR - Input data was provided when no input type was specified",
     )
     task.run_body.assert_not_called()
 
@@ -85,10 +85,10 @@ def test_input_data_does_not_match_the_input_type___error_is_reported_run_is_not
             reporter=reporter,
         )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.VALIDATION_ERROR,
-        '[\n{\n"loc": [\n"value"\n],\n"msg": "value is not a valid integer",\n"type": "type_error.integer"\n}\n]',
+        'Changed state to VALIDATION_ERROR - [\n{\n"loc": [\n"value"\n],\n"msg": "value is not a valid integer",\n"type": "type_error.integer"\n}\n]',
     )
     task.run_body.assert_not_called()
 
@@ -118,12 +118,12 @@ def test_input_data_matches_the_input_type___run_is_called_with_the_cleaned_data
         reporter=reporter,
     )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.RUNNING,
         mock.ANY,
     )
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.DONE,
         mock.ANY,
@@ -154,12 +154,12 @@ def test_input_data_and_type_are_none___run_is_called_with_none():
         reporter=reporter,
     )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.RUNNING,
         mock.ANY,
     )
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.DONE,
         mock.ANY,
@@ -198,10 +198,10 @@ def test_errors_at_runtime___task_is_recorded_as_error():
             reporter=reporter,
         )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.RUNTIME_ERROR,
-        "Some bad error",
+        "Changed state to RUNTIME_ERROR - Some bad error",
     )
 
 
@@ -244,7 +244,7 @@ def test_pipeline_object_accessible__django_object(caplog):
         reporter=reporter,
     )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.DONE,
         mock.ANY,
@@ -292,7 +292,7 @@ def test_pipeline_object_accessible__non_django_object(caplog):
         reporter=reporter,
     )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.DONE,
         mock.ANY,
@@ -334,7 +334,7 @@ def test_task_object_accessible__django_object(caplog):
         reporter=reporter,
     )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result, PipelineTaskStatus.DONE, mock.ANY
     )
 
@@ -369,7 +369,7 @@ def test_task_object_accessible__non_django_object(caplog):
         reporter=reporter,
     )
 
-    reporter.report_task_result.assert_any_call(
+    reporter.report_context_object.assert_any_call(
         task_result,
         PipelineTaskStatus.DONE,
         mock.ANY,

@@ -39,20 +39,6 @@ Firstly we need to add :code:`wildcoeus`, :code:`wildcoeus.pipelines` and the ne
     ]
 
 
-Config
-======
-Then, in order to make pipelines discoverable we need to update :code:`demo/mypipeline/apps/py`::
-
-    from django.apps import AppConfig
-
-    class MypipelineConfig(AppConfig):
-        default_auto_field = 'django.db.models.BigAutoField'
-        name = 'demo.mypipeline'
-
-        def ready(self):
-            from wildcoeus.pipelines.registry import pipeline_registry
-            pipeline_registry.autodiscover()
-
 Migrate
 =======
 Finally we sync the database by running::
@@ -82,18 +68,16 @@ Note: It is important that you name the file :code:`pipelines.py` as this is use
             print("Hello World!")
 
 
-    @pipeline_registry.register
     class FirstPipeline(Pipeline):
         print_message = PrintWelcomeMessageTask()
 
         class Meta:
             title = "First pipeline"
 
-Here we are creating a pipline :code:`FirstPipeline` with one task :code:`print_message`.   Pipelines can
+Here we are creating a pipeline :code:`FirstPipeline` with one task :code:`print_message`.   Pipelines can
 have multiple tasks and we will show this in the next section.
 
-All Pipelines must be decorated with the
-:code:`@pipeline_registry.register` decorator and inherit from the base class :code:`Pipeline`.
+All Pipelines must inherit from the base class :code:`Pipeline`.
 
 We have also defined our first task: :code:`PrintWelcomeMessageTask`.  Here we are just printing "Hello World!" but
 can make this as complex as you require.  All tasks should inherit from :code:`Task` and have a :code:`run` method defined.
@@ -120,8 +104,8 @@ Type 1 to run FirstPipeline.  You will now be shown a list of tasks the pipeline
 
     Run [r], Run eager [e] or Cancel [c]?
 
-You have the option to run the pipeline in eager mode or as a background task via Celery.
-Since we have not set Celery up we will run it in Eager mode by typing e.  You should then see::
+You have the option to run the pipeline in eager mode or against the configured runner.
+Since we have not set a custom up we will run it in Eager mode by typing e.  You should then see::
 
     Hello World!
     Pipeline Completed
@@ -154,7 +138,6 @@ To complete this example we will add another task to our pipeline.  Update :code
                 time.sleep(0.5)
 
 
-    @pipeline_registry.register
     class FirstPipeline(Pipeline):
         print_message = PrintWelcomeMessageTask()
         numbers_task = PrintNumbersTask(config={"parents": ["print_message"]})

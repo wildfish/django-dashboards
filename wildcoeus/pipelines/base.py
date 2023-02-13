@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, ClassVar
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 
 from wildcoeus.meta import ClassWithAppConfigMeta
+from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.results.base import BasePipelineExecution
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.registry.registry import Registerable
@@ -17,39 +18,9 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task
 
 
-class PipelineType(type):
-    def __new__(mcs, name, bases, attrs):
-        """
-        Collect tasks from attributes.
-        """
-
-        attrs["tasks"] = {}
-        for key, value in list(attrs.items()):
-            if isinstance(value, Task):
-                task = attrs.pop(key)
-                task.pipeline_task = key
-                attrs["tasks"][key] = task
-
-        pipeline_class = super().__new__(mcs, name, bases, attrs)
-        tasks = {}
-        for base in reversed(pipeline_class.__mro__):
-            # Collect tasks from base class.
-            if hasattr(base, "tasks"):
-                tasks.update(base.tasks)
-
-            # Field shadowing.
-            for attr, value in base.__dict__.items():
-                if value is None and attr in tasks:
-                    tasks.pop(attr)
-
-        # add tasks to class.
-        pipeline_class.tasks = tasks
-
-        return pipeline_class
-
-
 class Pipeline(Registerable, ClassWithAppConfigMeta):
     tasks: Optional[dict[str, Task]] = {}
+    ordering: Optional[dict[str, List[str]]] = None
 
     def __init__(self):
         self.id = self.get_id()
@@ -57,6 +28,11 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
     def __str__(self):
         return self._meta.verbose_name
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if not cls._meta.abstract:
+            pipeline_registry.register(cls)
 
     @classmethod
     def postprocess_meta(cls, current_class_meta, resolved_meta_class):
@@ -69,7 +45,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
             for k, v in ((k, v) for k, v in base.tasks.items() if isinstance(v, Task)):
                 cls.tasks[k] = v
 
-        # add all components from the current class
+        # add all tasks from the current class
         for k, v in ((k, v) for k, v in cls.__dict__.items() if isinstance(v, Task)):
             cls.tasks[k] = v
 
@@ -231,7 +207,7 @@ class ModelPipeline(Pipeline):
     _meta: Type["ModelPipeline.Meta"]
 
     class Meta:
-        model: Optional[Model] = None
+        model: ClassVar[Model]
 
     def get_queryset(self, *args, **kwargs):
         if self._meta.model is not None:
