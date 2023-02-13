@@ -125,9 +125,9 @@ you to return a plotly ``Figure`` object, hence the name ``to_fig``.
 
             return fig
 
-This example displays a bar chart with ``key`` values along the x-asis and ``value`` values in the y-axis.::
+This example displays a bar chart with ``key`` values along the x-asis and ``value`` values in the y-axis.:
 
-.. image:: _images/serializers_chart.png
+.. image:: ../_images/serializers_chart.png
    :alt: Metal Bar Chart
 
 We deliberately left ``to_fig`` unimplemented so you can have final say over
@@ -229,7 +229,7 @@ set a layout dictionary on your serializer::
 
             return df
 
-.. image:: _images/serializers_layout.png
+.. image:: ../_images/serializers_layout.png
    :alt: Chart
 
 This allows you to change the total look and feel of any chart.  See the Plotly documentation

@@ -4,9 +4,11 @@ Dynamic dashboards
 
 Instead of defining the components for your Dashboard at build time you can
 generate them on the fly as part of the ``__init__()`` function.
-This allows you to tailor the components you show::
+This allows you to tailor the components you show.
 
-First define you Dashboard with an __init__ function::
+First define you Dashboard with an __init__ function:
+
+::
 
     # dashboards.py
     from wildcoeus.dashboards.dashboard import Dashboard

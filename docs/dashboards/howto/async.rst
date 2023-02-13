@@ -5,6 +5,9 @@ Aysnc
 While there is no direct support for Async views currently, it is possible to create a view which would support
 async components.
 
+.. image:: _images/async_component.gif
+   :alt: Demo Dashboard
+
 You first need a to create your own Async compatible component view, for example from our demo (TODO LINK)
 we have:
 
