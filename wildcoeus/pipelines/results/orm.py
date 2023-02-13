@@ -128,7 +128,7 @@ class OrmPipelineResultsStorage(PipelineResultsStorage):
                 total_success=Count(
                     "id", filter=Q(status=PipelineTaskStatus.DONE.value)
                 ),
-                total_failed=Count("id", filter=Q(status__in=FAILED_STATUES)),
+                total_failure=Count("id", filter=Q(status__in=FAILED_STATUES)),
                 last_ran=Max("started"),
                 average_runtime=Avg(F("completed") - F("started")),
                 pipeline_id=F("execution__pipeline_id"),
@@ -137,10 +137,14 @@ class OrmPipelineResultsStorage(PipelineResultsStorage):
         )
 
         return {
-            k: PipelineDigestItem(
-                **v, total_runs=v["total_success"] + v["total_failure"]
+            v["pipeline_id"]: PipelineDigestItem(
+                last_ran=v["last_ran"],
+                average_runtime=v["average_runtime"],
+                total_success=v["total_success"],
+                total_failure=v["total_failure"],
+                total_runs=v["total_success"] + v["total_failure"],
             )
-            for k, v in qs
+            for v in qs
         }
 
     def get_pipeline_executions(self, pipeline_id: Optional[str] = None):

@@ -105,13 +105,13 @@ class Runner(PipelineRunner):
         pipeline_execution: PipelineExecution,
     ):
         on_complete = run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.id,
+            pipeline_execution_id=pipeline_execution.get_run_id(),
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         )
 
         if len(pipeline_execution.get_pipeline_results()) == 1:
-            # build a chord that runs teh only pipeline result
+            # build a chord that runs the only pipeline result
             # and processes the final state of the pipeline
             return chain(
                 self.build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
