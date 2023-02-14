@@ -31,11 +31,15 @@ For example:
         one = Text(value="One")
         two = Text(value="Two")
         three = Text(defer=fetch_something)
+        four = Text(
+            defer=lambda **kwargs: "Deferred text",
+        )
 
 In the above example, when the page first loads only the component ``one`` will be displayed.
-HTMX triggers are then used to fetch ``two``and ``three``.
+HTMX triggers are then used to fetch ``two``, ``three`` and ``four``.
 
-In this example note that ``three`` calls a function, this can be any callable that accepts the kwargs
+In this example note that ``three`` & ``four`` set a defer function, this can be any callable that accepts the kwargs.
+However, value can also take a callable if that suits your requirement.
 
 * request
     *A Django HttpRequest*
@@ -47,7 +51,6 @@ In this example note that ``three`` calls a function, this can be any callable t
 ``defer_url``
 
 A str or callable which acts as ``defer`` but calling after initial load to a specific url.
-
 
 ``def_FOO_value / def_FOO_defer``
 

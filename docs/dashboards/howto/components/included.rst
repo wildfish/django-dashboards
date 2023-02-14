@@ -6,19 +6,145 @@ Included components
 Text
 ++++
 
-TODO example
+Text component is the simplest component. It can be used to display a message:
+
+::
+
+    from wildcoeus.dashboards.component import Text
+    from wildcoeus.dashboards.dashboard import Dashboard
+
+    class ExampleDashboard(Dashboard):
+        text_example = Text(value="Rendered on load")
+        html_example = Text(
+            value="<strong>HTML also rendered on load</strong>",
+            mark_safe=True,
+        )
+
 
 Stat
 ++++
 
-TODO example
+Stat is simply a more controller version of Text, with a little more styling/layout applied to the template:
+
+::
+
+    from wildcoeus.dashboards.component import Text
+    from wildcoeus.dashboards.component.text import StatData
+    from wildcoeus.dashboards.dashboard import Dashboard
+
+    class ExampleDashboard(Dashboard):
+        stat_one = Stat(
+            value=StatData(text="100%", sub_text="increase")
+        )
+        stat_two = Stat(
+            value=StatData(text="88%", sub_text="decrease", change_by="12%"),
+        )
+
+
+``Text`` will be the main value and ``sub_text`` appearing below, ``change_by`` and ``change_by_text`` can
+also be used to display additional information.
+
+Note that StatData is a convenience class, a dict would also work.
+
 
 Chart
 +++++
 
-TODO example
+Charts are displayed front end with plotly.js - a component simply needs to return valid json representation
+of a plotly chart to the component.
 
-When rendered with as a Django view without the built-in templates, plotly.js will be applied to the chart component.
+The simplest way to do this is with `Plotly Express <https://plotly.com/python/plotly-express/>`_.
+
+::
+
+    from wildcoeus.dashboards.component import Chart
+    from wildcoeus.dashboards.dashboard import Dashboard
+
+    import plotly.express as px
+
+    def get_bubble_chart(*args, **kwargs):
+        df = px.data.iris()
+        fig = px.scatter(
+            df,
+            x="sepal_width",
+            y="sepal_length",
+            size="petal_length",
+            color="species",
+        )
+        fig = fig.update_traces(mode="markers")
+        return fig.to_json()
+
+    class ExampleDashboard(Dashboard):
+        bubble_chart_example = Chart(defer=get_bubble_chart)
+
+<TODO INSERT GIF/IMAGE>
+
+However, you can also leverage our ``ChartSerializer`` to make this more concise and reusable. For example if we had
+
+::
+
+    from typing import Optional
+
+    import plotly.express as px
+
+    from wildcoeus.dashboards.component.chart import ChartSerializer
+
+    class ScatterChartSerializer(ChartSerializer):
+        x: Optional[str] = None
+        y: Optional[str] = None
+        size: Optional[str] = None
+        color: Optional[str] = None
+        mode: Optional[str] = "markers"
+
+        def get_x(self, df) -> str:
+            return self.x
+
+        def get_y(self, df) -> str:
+            return self.y
+
+        def get_size(self, df) -> str:
+            return self.size
+
+        def to_fig(self, df) -> go.Figure:
+            fig = px.scatter(
+                df,
+                x=self.get_x(df),
+                y=self.get_y(df),
+                size=self.get_size(df),
+                color=self.color,
+            )
+            fig = fig.update_traces(mode=self.mode)
+
+            return fig
+
+
+    class ExampleBubbleChartSerializer(ScatterChartSerializer):
+        x = "sepal_width"
+        y = "sepal_length"
+        color = "species"
+        size = "petal_length"
+
+        class Meta:
+            title = "Bubble Chart Example"
+
+        def get_data(self, *args, **kwargs):
+            return px.data.iris()
+
+We can then call the serializer with:
+
+::
+
+    from wildcoeus.dashboards.component import Chart
+    from wildcoeus.dashboards.dashboard import Dashboard
+
+    class ExampleDashboard(Dashboard):
+        bubble_chart_example = Chart(
+            defer=ExampleBubbleChartSerializer
+        )
+
+
+Chart serializers also come with other benefits like ORM integration, empty chart generation, the ability to apply
+common layouts etc. For more examples please see the :doc:`Chart Serializers <../serializers/chart>` docs.
 
 Map
 +++
@@ -107,21 +233,15 @@ You can also customise any of the columns in the serializer via `get_FOO_value`:
         def get_first_name_value(obj):
             return obj.first_name.upper()
 
-Additional `Table` attributes
+Additional `Table` attributes:
 
-* page_size
-    * int (default=10) to set the paging size*
-* searching/paging/ordering
-    * bool (default=True) to enable datatables features*
-
+* ``page_size`` (``int`` - ``default=10``): set the paging size
+* ``searching/paging/ordering`` (``bool`` - ``default=True``): enable/disable relevant datatables features.
 
 Additional `TableSerializer` Meta attributes
 
-* first_as_absolute_url
-    * bool (default=False) if the model or object has a get_absolute_url use it in the first column.
-* force_lower
-    * bool (default=True) forces searching and sorting of data to use lower values.
-
+* ``first_as_absolute_url`` (``bool`` - ``default=False``): if the model or object has a get_absolute_url use it in the first column.
+* ``force_lower`` - (``bool`` - ``default=True``): forces searching and sorting of data to use lower values.
 
 BasicTable
 ++++++++++

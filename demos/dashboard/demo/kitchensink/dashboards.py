@@ -58,6 +58,23 @@ class Grid(Enum):
 fake = Faker()
 
 
+def get_bubble_chart(*args, **kwargs):
+    import plotly.express as px
+    df = px.data.iris()
+    fig = px.scatter(
+        df,
+        x="sepal_width",
+        y="sepal_length",
+        size="petal_length",
+        color="species",
+    )
+    fig = fig.update_traces(mode="markers")
+    return fig.to_json()
+
+
+
+
+
 class DemoDashboard(Dashboard):
     link = Text(
         value="Find out more!",
@@ -86,12 +103,12 @@ class DemoDashboard(Dashboard):
         method="get",
         dependents=["chart_example", "stacked_chart_example"],
     )
-    chart_example = Chart(value=ExampleChartSerializer.serialize)
+    chart_example = Chart(value=ExampleChartSerializer)
     stacked_chart_example = Chart(
-        defer=ExampleStackedChartSerializer.serialize,
+        defer=ExampleStackedChartSerializer,
     )
     bubble_chart_example = Chart(
-        defer=ExampleBubbleChartSerializer.serialize,
+        defer=ExampleBubbleChartSerializer,
         grid_css_classes=Grid.ONE.value,
     )
     filter_form = Form(
@@ -101,23 +118,23 @@ class DemoDashboard(Dashboard):
         grid_css_classes=Grid.TWO.value,
     )
     stat_three = Stat(
-        defer=lambda **kwargs: {
-            "text": "33%",
-            "sub_text": kwargs.get("filters", {}).get("country", "all"),
-        },
+        defer=lambda **kwargs: StatData(
+            text="33%",
+            sub_text=kwargs.get("filters", {}).get("country", "all"),
+        ),
         grid_css_classes=Grid.TWO.value,
     )
     line_chart_example = Chart(
         defer=DashboardData.fetch_scatter_chart_data, grid_css_classes=Grid.ONE.value
     )
     stat_one = Stat(
-        value={"text": "100%", "sub_text": "increase"}, grid_css_classes=Grid.FOUR.value
+        value=StatData(text="100%", sub_text="increase"), grid_css_classes=Grid.FOUR.value
     )
     stat_two = Stat(
-        value={"text": "88%", "sub_text": "increase"}, grid_css_classes=Grid.FOUR.value
+        value=StatData(text="88%", sub_text="decrease", change_by="12%"), grid_css_classes=Grid.FOUR.value
     )
     gauge_one = Chart(
-        defer=ExampleGaugeChartSerializer.serialize,
+        defer=ExampleGaugeChartSerializer,
         poll_rate=5,
         grid_css_classes=Grid.FOUR.value,
     )
