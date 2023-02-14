@@ -1,12 +1,12 @@
 import random
-from typing import Dict, List, Union
+from typing import Dict, List, Type, Union, cast
 
 from django import template
 from django.template import RequestContext
 
 from wildcoeus.dashboards.component import Component
 from wildcoeus.dashboards.dashboard import Dashboard
-from wildcoeus.dashboards.menus.menu import DashboardMenuItem, MenuItem
+from wildcoeus.dashboards.menus.menu import DashboardMenuItem, Menu, MenuItem
 from wildcoeus.dashboards.menus.registry import menu_registry
 from wildcoeus.dashboards.registry import registry
 
@@ -80,7 +80,8 @@ class DashboardMenuNode(template.Node):
             # find and load menus from registry
             menu_registry.autodiscover()
 
-            for menu in menu_registry.items:
+            menus = cast(List[Type[Menu]], menu_registry.items)
+            for menu in menus:
                 sections.setdefault(menu.name, [])
                 for menu_item in menu.render(request, context_object):
                     sections[menu.name].append(menu_item)
