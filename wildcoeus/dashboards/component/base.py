@@ -1,6 +1,6 @@
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 from django.db.models import QuerySet
 from django.http import HttpRequest
@@ -12,6 +12,10 @@ from django.utils.safestring import mark_safe
 
 from .. import config
 from ..types import ValueData
+
+
+if TYPE_CHECKING:
+    from ..dashboard import Dashboard
 
 
 @dataclass
@@ -56,7 +60,7 @@ class Component:
     # attrs below can be set, but are inferred when fetching components from the dashboard class.
     key: Optional[str] = None
     verbose_name: Optional[str] = None
-    dashboard: Optional[Any] = None
+    dashboard: Optional["Dashboard"] = None
     object: Optional[Any] = None
     render_type: Optional[str] = None
     serializable: bool = True
@@ -77,7 +81,9 @@ class Component:
 
     @property
     def dashboard_class(self):
-        return self.dashboard.class_name()
+        if self.dashboard:
+            return self.dashboard.class_name()
+        return None
 
     def htmx_poll_rate(self):
         if self.poll_rate:
@@ -147,6 +153,9 @@ class Component:
         """
         Get the absolute or fetch url to be called when a component is deferred.
         """
+        if not self.dashboard:
+            raise Exception("Dashboard is not set on Component")
+
         # <str:app_label>/<str:dashboard>/<str:component>/
         args = [
             self.dashboard._meta.app_label,

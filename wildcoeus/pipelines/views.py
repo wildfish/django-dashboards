@@ -1,29 +1,26 @@
+import re
 import uuid
 
 from django.contrib.auth.mixins import AccessMixin
-from django.db.models import Avg, Count, F, Max, Q
 from django.http import Http404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
+from django.utils.functional import cached_property
 from django.views.generic import FormView, ListView, TemplateView
 from django.views.generic.base import RedirectView
-from django.views.generic.detail import SingleObjectMixin
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.forms import PipelineStartForm
+from wildcoeus.pipelines.forms import LogFilterForm, PipelineStartForm
 from wildcoeus.pipelines.log import logger
-from wildcoeus.pipelines.models import (
-    PipelineExecution,
-    PipelineLog,
-    PipelineResult,
-    TaskExecution,
-    TaskResult,
-)
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.registry import pipeline_registry as registry
+from wildcoeus.pipelines.results.helpers import (
+    get_pipeline_digest,
+    get_pipeline_execution,
+    get_pipeline_executions,
+    get_task_result,
+)
 from wildcoeus.pipelines.runners.celery.tasks import run_pipeline, run_task
 from wildcoeus.pipelines.runners.eager import Runner as EagerRunner
-from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
-from wildcoeus.pipelines.storage import get_log_path
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class IsStaffRequiredMixin(AccessMixin):
@@ -39,46 +36,15 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/pipeline_list.html"
 
     def get_context_data(self, **kwargs):
-        qs = (
-            PipelineResult.objects.values("execution__pipeline_id")
-            .annotate(
-                total_success=Count(
-                    "id", filter=Q(status=PipelineTaskStatus.DONE.value)
-                ),
-                total_failed=Count(
-                    "id",
-                    filter=Q(status__in=FAILED_STATUES),
-                ),
-                last_ran=Max("started"),
-                pipeline_id=F("execution__pipeline_id"),
-            )
-            .order_by("pipeline_id")
-        )
-        runs = {x["pipeline_id"]: x["total_success"] for x in qs}
-        failed = {x["pipeline_id"]: x["total_failed"] for x in qs}
-        last_ran = {x["pipeline_id"]: x["last_ran"] for x in qs}
-
-        # todo: Wrong as it needs to be grouped on run_id when doing the average
-        t_qs = (
-            TaskResult.objects.values(
-                "execution__pipeline_result__execution__pipeline_id"
-            )
-            .annotate(
-                average_runtime=Avg(F("completed") - F("started")),
-                pipeline_id=F("execution__pipeline_result__execution__pipeline_id"),
-            )
-            .order_by("pipeline_id")
-        )
-
-        average_runtime = {x["pipeline_id"]: x["average_runtime"] for x in t_qs}
+        digest = get_pipeline_digest()
 
         return {
             **super().get_context_data(**kwargs),
-            "runs": runs,
-            "failed": failed,
-            "last_ran": last_ran,
-            "average_runtime": average_runtime,
-            "pipelines": registry.items,
+            "runs": {k: v.total_runs for k, v in digest.items()},
+            "failed": {k: v.total_failure for k, v in digest.items()},
+            "last_ran": {k: v.last_ran for k, v in digest.items()},
+            "average_runtime": {k: v.average_runtime for k, v in digest.items()},
+            "pipelines": pipeline_registry.items,
         }
 
 
@@ -87,9 +53,7 @@ class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return PipelineExecution.objects.with_task_count().filter(
-            pipeline_id=self.kwargs["slug"]
-        )
+        return get_pipeline_executions(pipeline_id=self.kwargs["slug"])
 
     def get_context_data(self, **kwargs):
         return {
@@ -159,15 +123,20 @@ class TaskResultView(IsStaffRequiredMixin, TemplateView):
 class TaskResultListView(IsStaffRequiredMixin, ListView):
     template_name = "wildcoeus/pipelines/_results_list.html"
 
+    @cached_property
+    def pipeline_execution(self):
+        pe = get_pipeline_execution(self.kwargs["run_id"])
+        if not pe:
+            raise Http404()
+
+        return pe
+
     def get_queryset(self):
-        return TaskExecution.objects.for_run_id(run_id=self.kwargs["run_id"])
+        return self.pipeline_execution.get_pipeline_results()
 
     def all_tasks_completed(self):
         return (
-            TaskExecution.objects.not_completed()
-            .for_run_id(run_id=self.kwargs["run_id"])
-            .count()
-            == 0
+            self.pipeline_execution.get_status() in PipelineTaskStatus.final_statuses()
         )
 
     def get(self, request, *args, **kwargs):
@@ -180,17 +149,24 @@ class TaskResultListView(IsStaffRequiredMixin, ListView):
 class LogListView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/_log_list.html"
 
+    @cached_property
+    def pipeline_execution(self):
+        pe = get_pipeline_execution(self.kwargs["run_id"])
+        if not pe:
+            raise Http404()
+
+        return pe
+
     def all_tasks_completed(self):
         return (
-            TaskResult.objects.not_completed()
-            .for_run_id(run_id=self.kwargs["run_id"])
-            .count()
-            == 0
+            self.pipeline_execution.get_status() in PipelineTaskStatus.final_statuses()
         )
 
     def _get_orm_logs(self, run_id):
+        form = LogFilterForm(self.request.GET)
+
         logs = (
-            PipelineLog.objects.filter(run_id=run_id)
+            form.qs.filter(run_id=run_id)
             .order_by("created")
             .values_list("created", "message")
         )
@@ -200,14 +176,7 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
         )
 
     def get_logs(self, run_id):
-        fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
-        path = get_log_path(run_id)
-
-        if fs.exists(path):
-            with fs.open(path, "r") as f:
-                logs = f.read()
-        else:
-            logs = self._get_orm_logs(run_id=run_id)
+        logs = self._get_orm_logs(run_id=run_id)
 
         return logs
 
@@ -224,8 +193,36 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
         }
 
 
-class TaskResultReRunView(IsStaffRequiredMixin, SingleObjectMixin, RedirectView):
-    model = TaskResult
+class LogFilterView(IsStaffRequiredMixin, TemplateView):
+    template_name = "wildcoeus/pipelines/_log_filter.html"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs, log_url=self.log_url)
+
+    @property
+    def log_url(self):
+        filter_qs = self.request.GET.get("filter", "")
+        filter_qs_match = re.match(r"(.+)-(\d+)", filter_qs)
+
+        if filter_qs_match:
+            filter_name = filter_qs_match.group(1)
+            filter_value = filter_qs_match.group(2)
+
+            return (
+                reverse("wildcoeus.pipelines:logs-list", kwargs=self.kwargs)
+                + f"?type={filter_name}&id={filter_value}"
+            )
+        else:
+            return reverse("wildcoeus.pipelines:logs-list", kwargs=self.kwargs)
+
+
+class TaskResultReRunView(IsStaffRequiredMixin, RedirectView):
+    def get_object(self, queryset=None):
+        tr = get_task_result(self.kwargs["pk"])
+        if not tr:
+            raise Http404()
+
+        return tr
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -234,27 +231,33 @@ class TaskResultReRunView(IsStaffRequiredMixin, SingleObjectMixin, RedirectView)
             raise Http404()
 
         # start the task again
+        #
+        # TODO: Add a method to run a single task to the runner so we dont need to do this
+        # check as it will fall down for custom runners
+        #
         if isinstance(config.Config().WILDCOEUS_DEFAULT_PIPELINE_RUNNER, EagerRunner):
             run_task(
-                task_id=self.object.task_id,
-                run_id=self.object.run_id,
-                pipeline_id=self.object.pipeline_id,
-                input_data=self.object.input_data,
-                serializable_pipeline_object=None,
-                serializable_task_object=None,
+                task_id=self.object.get_task_id(),
+                run_id=self.object.get_run_id(),
+                pipeline_id=self.object.get_pipeline_id(),
+                input_data=self.object.get_input_data(),
+                serializable_pipeline_object=self.object.get_serializable_pipeline_object(),
+                serializable_task_object=self.object.get_serializable_task_object(),
             )
         else:
             run_task.delay(
-                task_id=self.object.task_id,
-                run_id=self.object.run_id,
-                pipeline_id=self.object.pipeline_id,
-                input_data=self.object.input_data,
-                serializable_pipeline_object=None,
-                serializable_task_object=None,
+                task_id=self.object.get_task_id(),
+                run_id=self.object.get_run_id(),
+                pipeline_id=self.object.get_pipeline_id(),
+                input_data=self.object.get_input_data(),
+                serializable_pipeline_object=self.object.get_serializable_pipeline_object(),
+                serializable_task_object=self.object.get_serializable_task_object(),
             )
 
         response = super().get(request, *args, **kwargs)
         return response
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse_lazy("wildcoeus.pipelines:results", args=(self.object.run_id,))
+        return reverse_lazy(
+            "wildcoeus.pipelines:results", args=(self.object.get_run_id(),)
+        )

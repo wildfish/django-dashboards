@@ -4,8 +4,8 @@ from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from wildcoeus.pipelines import config
-from wildcoeus.pipelines.models import PipelineExecution, PipelineLog
-from wildcoeus.pipelines.storage import get_log_path
+from wildcoeus.pipelines.models import PipelineLog
+from wildcoeus.pipelines.results.helpers import cleanup_task_results
 
 
 class Command(BaseCommand):
@@ -23,17 +23,7 @@ class Command(BaseCommand):
         today = now().today()
         deletion_date = today - timedelta(days=days)
 
-        run_ids = list(
-            PipelineExecution.objects.filter(started__lt=deletion_date).values_list(
-                "run_id", flat=True
-            )
-        )
+        run_ids = cleanup_task_results(before=deletion_date)
 
         if run_ids:
-            PipelineExecution.objects.filter(run_id__in=run_ids).delete()
             PipelineLog.objects.filter(run_id__in=run_ids).delete()
-
-            for run_id in run_ids:
-                path = get_log_path(run_id)
-                fs = config.Config().WILDCOEUS_LOG_FILE_STORAGE
-                fs.delete(path)

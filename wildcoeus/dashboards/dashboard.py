@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, ClassVar, Dict, List, Optional
 
 from django.db.models import Model
 from django.http import HttpRequest
@@ -19,12 +19,11 @@ from wildcoeus.registry.registry import Registerable
 
 
 class Dashboard(Registerable, ClassWithAppConfigMeta):
-    _meta: Type["Dashboard.Meta"]
     components: Dict[str, Any]
 
     class Meta(ClassWithAppConfigMeta.Meta):
         abstract = True
-        include_in_menu: bool
+        include_in_menu: ClassVar[bool]
         permission_classes: Optional[List[BasePermission]] = None
         template_name: Optional[str] = None
         lookup_kwarg: str = "lookup"  # url parameter name
@@ -216,10 +215,10 @@ class Dashboard(Registerable, ClassWithAppConfigMeta):
 
 
 class ModelDashboard(Dashboard):
-    _meta: Type["ModelDashboard.Meta"]
+    object: Model
 
     class Meta(Dashboard.Meta):
-        model: Model
+        model: ClassVar[Model]
         abstract = True
 
     def __init__(self, *args, **kwargs):

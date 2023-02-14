@@ -119,20 +119,27 @@ jinja2==3.1.2
     # via sphinx
 kombu==5.2.4
     # via celery
+libcst==0.4.9
+    # via strawberry-graphql
+markdown-it-py==2.1.0
+    # via rich
 markupsafe==2.1.1
     # via jinja2
 matplotlib-inline==0.1.6
     # via ipython
 mccabe==0.7.0
     # via flake8
+mdurl==0.1.2
+    # via markdown-it-py
 model-bakery==1.9.0
     # via -r requirements.in
-mypy==0.982
+mypy==1.0.0
     # via pytest-mypy
 mypy-extensions==0.4.3
     # via
     #   black
     #   mypy
+    #   typing-inspect
 nodeenv==1.7.0
     # via pre-commit
 numpy==1.24.1
@@ -182,9 +189,10 @@ pydantic==1.10.2
     # via -r requirements.in
 pyflakes==2.5.0
     # via flake8
-pygments==2.13.0
+pygments==2.14.0
     # via
     #   ipython
+    #   rich
     #   sphinx
 pyparsing==3.0.9
     # via packaging
@@ -225,11 +233,15 @@ pytz==2022.5
     #   celery
     #   pandas
 pyyaml==6.0
-    # via pre-commit
+    # via
+    #   libcst
+    #   pre-commit
 redis==4.4.0
     # via fakeredis
 requests==2.28.1
     # via sphinx
+rich==13.3.1
+    # via strawberry-graphql
 six==1.16.0
     # via
     #   asttokens
@@ -281,6 +293,7 @@ traitlets==5.5.0
     #   matplotlib-inline
 typing-extensions==4.4.0
     # via
+    #   libcst
     #   mypy
     #   pydantic
 urllib3==1.26.12

@@ -43,6 +43,7 @@ def get_pipeline_execution(
     first_task_iterator=None,
     second_task_iterator=None,
     pipeline_iterator=None,
+    pipeline_ordering=None,
 ):
     class First(Task):
         class Meta:
@@ -71,6 +72,8 @@ def get_pipeline_execution(
         first = First(**(first_task_kwargs or {}))
         second = Second(**(second_task_kwargs or {}))
 
+        ordering = pipeline_ordering
+
         class Meta:
             app_label = "pipelinetest"
 
@@ -87,7 +90,7 @@ def test_build_celery_canvas___single_pipeline___canvas_is_chain():
     assert chain(
         Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
         run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.id,
+            pipeline_execution_id=pipeline_execution.run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         ),
@@ -109,7 +112,7 @@ def test_build_celery_canvas___multiple_pipeline___canvas_is_chord():
             Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[1]),
         ],
         run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.id,
+            pipeline_execution_id=pipeline_execution.run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         ),
@@ -160,9 +163,7 @@ def test_build_pipeline_chain___no_parents_set___tasks_are_added_in_defined_orde
 def test_build_pipeline_chain___parents_swaps_order___tasks_are_added_respecting_parents():
     runner = Runner()
 
-    pipeline_execution = get_pipeline_execution(
-        first_task_kwargs={"config": {"parents": ["second"]}}
-    )
+    pipeline_execution = get_pipeline_execution(pipeline_ordering={"first": ["second"]})
     pipeline_result = pipeline_execution.get_pipeline_results()[0]
 
     first_task_execution = next(

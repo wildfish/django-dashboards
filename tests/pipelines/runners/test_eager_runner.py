@@ -4,8 +4,7 @@ from unittest.mock import Mock, call
 import pytest
 
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import TaskResult
-from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.models import OrmTaskResult
 from wildcoeus.pipelines.runners.eager import Runner
 from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task
@@ -39,24 +38,23 @@ def test_task_have_no_parents___tasks_are_ran_in_configured_order():
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    first_task_result = TaskResult.objects.filter(
+    first_task_result = OrmTaskResult.objects.filter(
         execution__pipeline_task="first"
     ).first()
-    second_task_result = TaskResult.objects.filter(
+    second_task_result = OrmTaskResult.objects.filter(
         execution__pipeline_task="second"
     ).first()
 
-    assert reporter.report_task_result.call_args_list.index(
+    assert reporter.report_context_object.call_args_list.index(
         call(
             first_task_result,
             PipelineTaskStatus.DONE,
             mock.ANY,
         )
-    ) < reporter.report_task_result.call_args_list.index(
+    ) < reporter.report_context_object.call_args_list.index(
         call(
             second_task_result,
             PipelineTaskStatus.RUNNING,
@@ -90,20 +88,19 @@ def test_task_with_parent_waits_for_parents_to_be_ran():
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    parent = TaskResult.objects.filter(execution__pipeline_task="parent").first()
-    child = TaskResult.objects.filter(execution__pipeline_task="child").first()
+    parent = OrmTaskResult.objects.filter(execution__pipeline_task="parent").first()
+    child = OrmTaskResult.objects.filter(execution__pipeline_task="child").first()
 
-    assert reporter.report_task_result.call_args_list.index(
+    assert reporter.report_context_object.call_args_list.index(
         call(
             parent,
             PipelineTaskStatus.DONE,
             mock.ANY,
         )
-    ) < reporter.report_task_result.call_args_list.index(
+    ) < reporter.report_context_object.call_args_list.index(
         call(
             child,
             PipelineTaskStatus.RUNNING,
@@ -139,20 +136,19 @@ def test_first_task_fails___other_tasks_are_cancelled():
             app_label = "pipelinetest"
 
     pipeline = TestPipeline()
-    pipeline_registry.register(TestPipeline)
 
     pipeline.start(run_id="123", input_data={}, runner=Runner(), reporter=reporter)
 
-    bad = TaskResult.objects.filter(execution__pipeline_task="bad").first()
-    good = TaskResult.objects.filter(execution__pipeline_task="good").first()
+    bad = OrmTaskResult.objects.filter(execution__pipeline_task="bad").first()
+    good = OrmTaskResult.objects.filter(execution__pipeline_task="good").first()
 
-    assert reporter.report_task_result.call_args_list.index(
+    assert reporter.report_context_object.call_args_list.index(
         call(
             bad,
             PipelineTaskStatus.RUNTIME_ERROR,
             mock.ANY,
         )
-    ) < reporter.report_task_result.call_args_list.index(
+    ) < reporter.report_context_object.call_args_list.index(
         call(
             good,
             PipelineTaskStatus.CANCELLED,

@@ -1,7 +1,7 @@
 from typing import Iterable, List
 
 from ..reporters import PipelineReporter
-from ..results.base import BasePipelineExecution, BaseTaskExecution
+from ..results.base import PipelineExecution, TaskExecution
 from ..status import PipelineTaskStatus
 from .base import PipelineRunner
 
@@ -9,7 +9,7 @@ from .base import PipelineRunner
 class Runner(PipelineRunner):
     def _task_can_be_ran(
         self,
-        task_execution: BaseTaskExecution,
+        task_execution: TaskExecution,
         ran_pipeline_tasks: List[str],
     ):
         task = task_execution.get_task()
@@ -24,9 +24,9 @@ class Runner(PipelineRunner):
 
     def _get_next_task(
         self,
-        tasks: Iterable[BaseTaskExecution],
+        tasks: Iterable[TaskExecution],
         ran_pipeline_tasks: List[str],
-    ) -> Iterable[BaseTaskExecution]:
+    ) -> Iterable[TaskExecution]:
         while True:
             task = next(
                 (t for t in tasks if self._task_can_be_ran(t, ran_pipeline_tasks)),
@@ -40,7 +40,7 @@ class Runner(PipelineRunner):
 
     def start_runner(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         reporter: PipelineReporter,
     ) -> bool:
         for pipeline_result in pipeline_execution.get_pipeline_results():

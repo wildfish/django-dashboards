@@ -44,7 +44,7 @@ def test_get_by_classname__not_found__class_name(dashboard):
 
 
 def test_get_by_app_label(dashboard):
-    class ExtraDashboard(dashboard):
+    class ExtraDashboard(dashboard):  # type: ignore
         class Meta:
             app_label = "new"
 

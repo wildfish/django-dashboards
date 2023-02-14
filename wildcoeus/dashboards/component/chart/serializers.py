@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -10,7 +10,6 @@ from wildcoeus.meta import ClassWithMeta
 
 
 class ChartSerializer(ClassWithMeta):
-    _meta: Type["ChartSerializer.Meta"]
     meta_layout_attrs = ["title", "width", "height"]
     layout: Optional[Dict[str, Any]] = None
 
@@ -84,7 +83,7 @@ class ChartSerializer(ClassWithMeta):
 
         return fig.update_layout(**layout)
 
-    def convert_to_df(self, data: Any, columns: List = None) -> pd.DataFrame:
+    def convert_to_df(self, data: Any, columns: Optional[List] = None) -> pd.DataFrame:
         return pd.DataFrame(data, columns=columns)
 
     def get_data(self, *args, **kwargs) -> pd.DataFrame:

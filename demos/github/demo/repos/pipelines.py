@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 from wildcoeus.dashboards.component import Stat
 from wildcoeus.pipelines import Pipeline, Task
-from wildcoeus.pipelines.registry import pipeline_registry
 
 from .models import Repo, RepoStats, RepoStatsChange
 
@@ -140,7 +139,6 @@ class FetchLatestRepoStats(Task):
         )
 
 
-@pipeline_registry.register
 class UpdateRepoStats(Pipeline):
     fetch_latest = FetchLatestRepoStats()
     calc_changes = CalcRepoStatsChanges()

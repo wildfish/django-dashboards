@@ -121,9 +121,9 @@ def test_menu_item__render__sets_children(user, rf):
     menu_item = MenuItem(title="Item 1", url="/", children=children)
     menu_item.render(request=request)
 
-    assert len(menu_item.children) == 1
-    assert c1 in menu_item.children
-    assert c2 not in menu_item.children
+    assert len(menu_item.children) == 1  # type: ignore
+    assert c1 in menu_item.children  # type: ignore
+    assert c2 not in menu_item.children  # type: ignore
 
 
 def test_menu_item__render__sets_children_when_function(user, rf):
@@ -138,7 +138,7 @@ def test_menu_item__render__sets_children_when_function(user, rf):
     menu_item = MenuItem(title="Item 1", url="/", children=make_children)
     menu_item.render(request=request)
 
-    assert len(menu_item.children) == 2
+    assert len(menu_item.children) == 2  # type: ignore
 
 
 def test_menu_item__render__sets_parent(user, rf):

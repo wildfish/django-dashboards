@@ -1,3 +1,4 @@
+import uuid
 from typing import Sequence
 
 from django.db import models
@@ -11,22 +12,22 @@ from django.db.models import (
     fields,
 )
 from django.db.models.query import QuerySet
-from django.utils.timezone import now
+from django.utils.functional import cached_property
 
 from django_extensions.db.models import TimeStampedModel
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import (
-    BasePipelineExecution,
-    BasePipelineResult,
-    BaseTaskExecution,
-    BaseTaskResult,
+    PipelineExecution,
+    PipelineResult,
+    TaskExecution,
+    TaskResult,
 )
 from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 from wildcoeus.pipelines.tasks.registry import task_registry
+from wildcoeus.pipelines.utils import get_object
 
 
 class PipelineLog(TimeStampedModel):
@@ -46,6 +47,149 @@ class PipelineLog(TimeStampedModel):
         return self.log_message
 
 
+class OrmPipelineExecutionQuerySet(QuerySet):
+    def with_extra_stats(self):
+        results_qs = (
+            OrmPipelineResult.objects.values_list("execution__id")
+            .filter(execution_id=OuterRef("id"))
+            .annotate(total=Count("id"))
+            .values("total")
+        )
+        tasks_qs = (
+            OrmTaskResult.objects.values_list(
+                "execution__pipeline_result__execution_id"
+            )
+            .filter(execution__pipeline_result__execution_id=OuterRef("id"))
+            .annotate(total=Count("id"))
+            .values("total")
+        )
+        duration_qs = (
+            OrmTaskResult.objects.values("execution__pipeline_result__execution_id")
+            .filter(
+                execution__pipeline_result__execution__id=OuterRef("id"),
+                status=PipelineTaskStatus.DONE.value,
+            )
+            .annotate(duration=Sum(F("completed") - F("started")))
+            .values("duration")
+        )
+        return self.annotate(
+            pipeline_result_count=Subquery(results_qs),
+            task_result_count=Subquery(tasks_qs),
+            duration=Subquery(duration_qs),
+        )
+
+
+class OrmPipelineExecution(PipelineExecution, models.Model):
+    pipeline_id = models.CharField(max_length=255)
+    run_id = models.CharField(max_length=255, default=uuid.uuid4, unique=True)
+    status = models.CharField(
+        max_length=255,
+        choices=PipelineTaskStatus.choices(),
+        default=PipelineTaskStatus.PENDING.value,
+    )
+    input_data = models.JSONField(blank=True, null=True)
+    started = models.DateTimeField(blank=True, null=True, default=None)
+    completed = models.DateTimeField(blank=True, null=True, default=None)
+
+    objects = OrmPipelineExecutionQuerySet.as_manager()
+
+    def get_pipeline_results(self) -> Sequence["PipelineResult"]:
+        return self.results.all()
+
+    def get_pipeline(self) -> Pipeline:
+        return pipeline_registry.get_by_id(self.pipeline_id)
+
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
+
+
+class OrmPipelineResultQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(execution__run_id=run_id)
+
+    def with_extra_stats(self):
+        tasks_qs = (
+            OrmTaskResult.objects.values_list("id")
+            .filter(execution__pipeline_result__execution_id=OuterRef("id"))
+            .annotate(total=Count("id"))
+            .values("total")
+        )
+        duration_qs = (
+            OrmTaskResult.objects.values("id")
+            .filter(
+                execution__pipeline_result__execution__id=OuterRef("id"),
+                status=PipelineTaskStatus.DONE.value,
+            )
+            .annotate(duration=Sum(F("completed") - F("started")))
+            .values("duration")
+        )
+        return self.annotate(
+            task_result_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
+        )
+
+
+class OrmPipelineResult(PipelineResult, models.Model):
+    execution = models.ForeignKey(
+        OrmPipelineExecution,
+        related_name="results",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    serializable_pipeline_object = models.JSONField(blank=True, null=True)
+    status = models.CharField(
+        max_length=255,
+        choices=PipelineTaskStatus.choices(),
+        default=PipelineTaskStatus.PENDING.value,
+    )
+    runner = models.CharField(max_length=255, blank=True, null=True)
+    reporter = models.CharField(max_length=255, blank=True, null=True)
+    started = models.DateTimeField(blank=True, null=True, default=None)
+    completed = models.DateTimeField(blank=True, null=True, default=None)
+
+    objects = OrmPipelineResultQuerySet.as_manager()
+
+    class Meta:
+        ordering = ["-started"]
+
+    def __str__(self):
+        return f"{self.pipeline_id} started on {self.started}"
+
+    def get_task_results(self):
+        return OrmTaskResult.objects.filter(run_id=self.run_id)
+
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
+
+    @property
+    def pipeline_id(self):
+        return self.execution.pipeline_id
+
+    @property
+    def input_data(self):
+        return self.execution.input_data
+
+    def get_pipeline(self) -> Pipeline:
+        return self.execution.get_pipeline()
+
+    def get_pipeline_execution(self) -> PipelineExecution:
+        return self.execution
+
+    def get_task_executions(self) -> Sequence["TaskExecution"]:
+        return self.task_executions.all()
+
+    @property
+    def run_id(self):
+        return self.execution.run_id
+
+    @property
+    def failed(self):
+        return self.status in FAILED_STATUES
+
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
+
+
 class TaskExecutionQuerySet(QuerySet):
     def for_run_id(self, run_id):
         return self.filter(pipeline_result__execution__run_id=run_id)
@@ -61,158 +205,9 @@ class TaskExecutionQuerySet(QuerySet):
         return self.annotate(duration=duration)
 
 
-class TaskResultQuerySet(QuerySet):
-    def for_run_id(self, run_id):
-        return self.filter(execution__pipeline_result__execution__run_id=run_id)
-
-    def not_completed(self):
-        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
-        return self.filter(status__in=statues)
-
-    def with_duration(self):
-        duration = ExpressionWrapper(
-            F("completed") - F("started"), output_field=fields.DurationField()
-        )
-        return self.annotate(duration=duration)
-
-
-class PipelineExecutionQuerySet(QuerySet):
-    def with_task_count(self):
-        tasks_qs = (
-            TaskResult.objects.values_list(
-                "execution__pipeline_result__execution__run_id"
-            )
-            .filter(execution__pipeline_result__execution__run_id=OuterRef("run_id"))
-            .annotate(total=Count("id"))
-            .values("total")
-        )
-        duration_qs = (
-            TaskResult.objects.values("execution__pipeline_result__execution__run_id")
-            .filter(
-                execution__pipeline_result__execution__run_id=OuterRef("run_id"),
-                status=PipelineTaskStatus.DONE.value,
-            )
-            .annotate(duration=Sum(F("completed") - F("started")))
-            .values("duration")
-        )
-        return self.annotate(
-            task_count=Subquery(tasks_qs), duration=Subquery(duration_qs)
-        )
-
-
-class PipelineExecution(BasePipelineExecution, models.Model):
-    pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255)
-    status = models.CharField(
-        max_length=255,
-        choices=PipelineTaskStatus.choices(),
-        default=PipelineTaskStatus.PENDING.value,
-    )
-    input_data = models.JSONField(blank=True, null=True)
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
-
-    objects = PipelineExecutionQuerySet.as_manager()
-
-    def get_pipeline_results(self) -> Sequence["BasePipelineResult"]:
-        return self.results.all()
-
-    def get_pipeline(self) -> Pipeline:
-        return pipeline_registry.get_by_id(self.pipeline_id)
-
-    def report_status_change(
-        self, reporter: PipelineReporter, status: PipelineTaskStatus, message=""
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_pipeline_execution(self, status, message)
-
-
-class PipelineResult(BasePipelineResult, models.Model):
-    execution = models.ForeignKey(
-        PipelineExecution, related_name="results", on_delete=models.CASCADE, null=True
-    )
-    serializable_pipeline_object = models.JSONField(blank=True, null=True)
-    status = models.CharField(
-        max_length=255,
-        choices=PipelineTaskStatus.choices(),
-        default=PipelineTaskStatus.PENDING.value,
-    )
-    runner = models.CharField(max_length=255, blank=True, null=True)
-    reporter = models.CharField(max_length=255, blank=True, null=True)
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
-
-    class Meta:
-        ordering = ["-started"]
-
-    def __str__(self):
-        return f"{self.pipeline_id} started on {self.started}"
-
-    def get_task_results(self):
-        return TaskResult.objects.filter(run_id=self.run_id)
-
-    @property
-    def pipeline_id(self):
-        return self.execution.pipeline_id
-
-    @property
-    def input_data(self):
-        return self.execution.input_data
-
-    def get_pipeline(self) -> Pipeline:
-        return self.execution.get_pipeline()
-
-    def get_pipeline_execution(self) -> BasePipelineExecution:
-        return self.execution
-
-    def get_task_executions(self) -> Sequence["BaseTaskExecution"]:
-        return self.task_executions.all()
-
-    @property
-    def run_id(self):
-        return self.execution.run_id
-
-    @property
-    def failed(self):
-        return self.status in FAILED_STATUES
-
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if propagate:
-            self.execution.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_pipeline_result(self, status, message)
-
-
-class TaskExecution(BaseTaskExecution, models.Model):
+class OrmTaskExecution(TaskExecution, models.Model):
     pipeline_result = models.ForeignKey(
-        PipelineResult,
+        OrmPipelineResult,
         related_name="task_executions",
         on_delete=models.CASCADE,
         null=True,
@@ -230,6 +225,9 @@ class TaskExecution(BaseTaskExecution, models.Model):
 
     objects = TaskExecutionQuerySet.as_manager()
 
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
+
     @property
     def input_data(self):
         return self.pipeline_result.input_data
@@ -246,31 +244,8 @@ class TaskExecution(BaseTaskExecution, models.Model):
     def serializable_pipeline_object(self):
         return self.pipeline_result.serializable_pipeline_object
 
-    def get_task_results(self) -> Sequence["BaseTaskResult"]:
+    def get_task_results(self) -> Sequence["TaskResult"]:
         return self.results.all()
-
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
-
-        if propagate:
-            self.pipeline_result.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_task_execution(self, status, message)
 
     def get_task(self) -> Task:
         return task_registry.load_task_from_id(
@@ -279,10 +254,29 @@ class TaskExecution(BaseTaskExecution, models.Model):
             self.config,
         )
 
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
 
-class TaskResult(BaseTaskResult, models.Model):
+
+class OrmTaskResultQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(execution__pipeline_result__execution__run_id=run_id)
+
+    def not_completed(self):
+        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
+        return self.filter(status__in=statues)
+
+    def with_duration(self):
+        duration = ExpressionWrapper(
+            F("completed") - F("started"), output_field=fields.DurationField()
+        )
+        return self.annotate(duration=duration)
+
+
+class OrmTaskResult(TaskResult, models.Model):
     execution = models.ForeignKey(
-        TaskExecution, related_name="results", on_delete=models.CASCADE, null=True
+        OrmTaskExecution, related_name="results", on_delete=models.CASCADE, null=True
     )
     serializable_task_object = models.JSONField(blank=True, null=True)
     status = models.CharField(
@@ -293,10 +287,13 @@ class TaskResult(BaseTaskResult, models.Model):
     started = models.DateTimeField(blank=True, null=True, default=None)
     completed = models.DateTimeField(blank=True, null=True, default=None)
 
-    objects = TaskResultQuerySet.as_manager()
+    objects = OrmTaskResultQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.task_id} ({self.run_id})"
+
+    def get_status(self):
+        return PipelineTaskStatus[self.status]
 
     @property
     def run_id(self):
@@ -337,7 +334,7 @@ class TaskResult(BaseTaskResult, models.Model):
     def input_data(self):
         return self.execution.input_data
 
-    def get_task_execution(self) -> BaseTaskExecution:
+    def get_task_execution(self) -> TaskExecution:
         return self.execution
 
     def get_task_instance(self):
@@ -347,28 +344,13 @@ class TaskResult(BaseTaskResult, models.Model):
             config=self.config,
         )
 
-    def report_status_change(
-        self,
-        reporter: PipelineReporter,
-        status: PipelineTaskStatus,
-        propagate=True,
-        message="",
-    ):
-        if not PipelineTaskStatus[self.status].has_advanced(status):
-            return
+    @cached_property
+    def pipeline_object(self):
+        return get_object(self.serializable_pipeline_object)
 
-        if propagate:
-            self.execution.report_status_change(reporter, status, message=message)
-
-        if status == PipelineTaskStatus.RUNNING:
-            self.started = now()
-
-        if status in PipelineTaskStatus.final_statuses():
-            self.completed = now()
-
-        self.status = status.value
-        self.save()
-        reporter.report_task_result(self, status, message)
+    @cached_property
+    def task_object(self):
+        return get_object(self.serializable_task_object)
 
 
 class ValueStore(TimeStampedModel):
