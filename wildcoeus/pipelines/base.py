@@ -205,6 +205,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
 class ModelPipeline(Pipeline):
     class Meta:
+        abstract = True
         model: ClassVar[Model]
 
     def get_queryset(self, *args, **kwargs):

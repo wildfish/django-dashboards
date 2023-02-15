@@ -86,10 +86,11 @@ class OrmPipelineExecution(PipelineExecution, models.Model):
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
     input_data = models.JSONField(blank=True, null=True)
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
     objects = OrmPipelineExecutionQuerySet.as_manager()
 
@@ -140,11 +141,12 @@ class OrmPipelineResult(PipelineResult, models.Model):
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
     runner = models.CharField(max_length=255, blank=True, null=True)
     reporter = models.CharField(max_length=255, blank=True, null=True)
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
     objects = OrmPipelineResultQuerySet.as_manager()
 
@@ -219,9 +221,10 @@ class OrmTaskExecution(TaskExecution, models.Model):
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
     objects = TaskExecutionQuerySet.as_manager()
 
@@ -283,9 +286,10 @@ class OrmTaskResult(TaskResult, models.Model):
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
     objects = OrmTaskResultQuerySet.as_manager()
 
@@ -359,8 +363,8 @@ class ValueStore(TimeStampedModel):
     """
 
     pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255)
-    key = models.CharField(max_length=255)
+    run_id = models.CharField(max_length=255, db_index=True)
+    key = models.CharField(max_length=255, db_index=True)
     value = models.JSONField(blank=True, null=True)
 
     class Meta:
