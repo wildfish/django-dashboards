@@ -115,6 +115,7 @@ There are 2 options for defining the queryset, either:
 
           def get_queryset(self):
              return CustomModel.objects.all()
+
 Ordering
 --------
 
