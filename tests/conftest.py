@@ -6,6 +6,7 @@ from tests.dashboards.app1 import dashboards
 from tests.pipelines.app import pipelines
 from wildcoeus.dashboards.registry import registry
 from wildcoeus.pipelines.registry import pipeline_registry
+from wildcoeus.pipelines.results.helpers import reset_storage_class
 from wildcoeus.pipelines.tasks.registry import task_registry
 
 
@@ -40,3 +41,8 @@ def auto_task_registry():
         pipelines.TestModelPipelineQS.tasks.values(),
     ):
         task_registry.register(type(task))
+
+
+@pytest.fixture(autouse=True)
+def reset_pipeline_storage_class():
+    reset_storage_class()

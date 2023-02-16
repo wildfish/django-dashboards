@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type, ClassVar
+from typing import Any, ClassVar, Dict, List, Optional
 
 from django.db.models import Model
 from django.http import HttpRequest
@@ -19,7 +19,6 @@ from wildcoeus.registry.registry import Registerable
 
 
 class Dashboard(Registerable, ClassWithAppConfigMeta):
-    _meta: Type["Dashboard.Meta"]
     components: Dict[str, Any]
 
     class Meta(ClassWithAppConfigMeta.Meta):
@@ -216,7 +215,7 @@ class Dashboard(Registerable, ClassWithAppConfigMeta):
 
 
 class ModelDashboard(Dashboard):
-    _meta: Type["ModelDashboard.Meta"]
+    object: Model
 
     class Meta(Dashboard.Meta):
         model: ClassVar[Model]

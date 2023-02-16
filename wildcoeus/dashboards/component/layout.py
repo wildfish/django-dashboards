@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Any, List, Optional, Tuple
 
 from django.template import Context, Template
 from django.template.loader import render_to_string
@@ -17,6 +17,7 @@ class LayoutBase:
     template_name: Optional[str] = None
     css_classes: Optional[str] = None
     grid_css_classes: Optional[str] = None
+    layout_components: Tuple[Any, ...]
 
     def __init__(
         self,
@@ -25,10 +26,7 @@ class LayoutBase:
         grid_css_classes=None,
         **kwargs,
     ):
-        if not layout_components:
-            layout_components = []
-
-        self.layout_components = layout_components
+        self.layout_components = layout_components or ()
 
         if css_classes:
             self.css_classes = css_classes

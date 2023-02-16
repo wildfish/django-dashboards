@@ -196,6 +196,9 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
 class LogFilterView(IsStaffRequiredMixin, TemplateView):
     template_name = "wildcoeus/pipelines/_log_filter.html"
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs, log_url=self.log_url)
+
     @property
     def log_url(self):
         filter_qs = self.request.GET.get("filter", "")

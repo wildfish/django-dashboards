@@ -90,7 +90,7 @@ def test_build_celery_canvas___single_pipeline___canvas_is_chain():
     assert chain(
         Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
         run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.id,
+            pipeline_execution_id=pipeline_execution.run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         ),
@@ -112,7 +112,7 @@ def test_build_celery_canvas___multiple_pipeline___canvas_is_chord():
             Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[1]),
         ],
         run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.id,
+            pipeline_execution_id=pipeline_execution.run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         ),

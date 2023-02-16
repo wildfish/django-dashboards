@@ -3,7 +3,7 @@ from django.contrib import admin
 from . import models
 
 
-@admin.register(models.TaskResult)
+@admin.register(models.OrmTaskResult)
 class TaskResultAdmin(admin.ModelAdmin):
     list_display = (
         "pipeline_id",
@@ -17,7 +17,7 @@ class TaskResultAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(models.PipelineResult)
+@admin.register(models.OrmPipelineResult)
 class PipelineResultAdmin(admin.ModelAdmin):
     list_display = (
         "pipeline_id",

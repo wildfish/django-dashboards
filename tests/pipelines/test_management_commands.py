@@ -8,11 +8,11 @@ import pytest
 from model_bakery import baker
 
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
+    OrmPipelineExecution,
+    OrmPipelineResult,
+    OrmTaskExecution,
+    OrmTaskResult,
     PipelineLog,
-    PipelineResult,
-    TaskExecution,
-    TaskResult,
 )
 
 
@@ -45,10 +45,10 @@ def test_clear_tasks_and_logs__all_deleted(freezer):
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
-    assert PipelineExecution.objects.count() == 0
-    assert PipelineResult.objects.count() == 0
-    assert TaskExecution.objects.count() == 0
-    assert TaskResult.objects.count() == 0
+    assert OrmPipelineExecution.objects.count() == 0
+    assert OrmPipelineResult.objects.count() == 0
+    assert OrmTaskExecution.objects.count() == 0
+    assert OrmTaskResult.objects.count() == 0
     assert PipelineLog.objects.count() == 0
 
 
@@ -72,10 +72,10 @@ def test_clear_tasks_and_logs__non_deleted():
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
-    assert PipelineExecution.objects.count() == 1
-    assert PipelineResult.objects.count() == 1
-    assert TaskExecution.objects.count() == 1
-    assert TaskResult.objects.count() == 3
+    assert OrmPipelineExecution.objects.count() == 1
+    assert OrmPipelineResult.objects.count() == 1
+    assert OrmTaskExecution.objects.count() == 1
+    assert OrmTaskResult.objects.count() == 3
     assert PipelineLog.objects.count() == 3
 
 
@@ -106,6 +106,6 @@ def test_clear_tasks_and_logs__part_deleted(freezer):
     out = StringIO()
     call_command("clear_tasks_and_logs", days=10, stdout=out)
 
-    assert PipelineResult.objects.count() == 1
-    assert TaskResult.objects.count() == 2
+    assert OrmPipelineResult.objects.count() == 1
+    assert OrmTaskResult.objects.count() == 2
     assert PipelineLog.objects.count() == 2

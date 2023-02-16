@@ -4,11 +4,11 @@ from faker import Faker
 from model_bakery.recipe import Recipe, foreign_key, seq
 
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
+    OrmPipelineExecution,
+    OrmPipelineResult,
+    OrmTaskExecution,
+    OrmTaskResult,
     PipelineLog,
-    PipelineResult,
-    TaskExecution,
-    TaskResult,
 )
 from wildcoeus.pipelines.status import PipelineTaskStatus
 
@@ -17,7 +17,7 @@ fake = Faker()
 
 
 fake_pipeline_execution = Recipe(
-    PipelineExecution,
+    OrmPipelineExecution,
     pipeline_id=seq("tests.pipelines.fixtures.TestPipeline"),
     run_id=fake.uuid4,
     status=PipelineTaskStatus.PENDING.value,
@@ -26,7 +26,7 @@ fake_pipeline_execution = Recipe(
 
 
 fake_pipeline_result = Recipe(
-    PipelineResult,
+    OrmPipelineResult,
     execution=foreign_key(fake_pipeline_execution),
     status=PipelineTaskStatus.PENDING.value,
     started=lambda: make_aware(fake.date_time_this_month()),
@@ -34,7 +34,7 @@ fake_pipeline_result = Recipe(
 
 
 fake_task_execution = Recipe(
-    TaskExecution,
+    OrmTaskExecution,
     pipeline_result=foreign_key(fake_pipeline_result),
     pipeline_task="first",
     task_id=seq("tests.pipelines.fixtures.TaskFirst"),
@@ -44,7 +44,7 @@ fake_task_execution = Recipe(
 
 
 fake_task_result = Recipe(
-    TaskResult,
+    OrmTaskResult,
     execution=foreign_key(fake_task_execution),
     status=PipelineTaskStatus.PENDING.value,
     started=lambda: make_aware(fake.date_time_this_month()),

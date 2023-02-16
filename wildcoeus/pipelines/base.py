@@ -1,11 +1,11 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 
 from wildcoeus.meta import ClassWithAppConfigMeta
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.results.base import BasePipelineExecution
+from wildcoeus.pipelines.results.base import PipelineExecution
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
 from wildcoeus.registry.registry import Registerable
 
@@ -19,7 +19,7 @@ from wildcoeus.pipelines.tasks.base import Task
 
 
 class Pipeline(Registerable, ClassWithAppConfigMeta):
-    tasks: Optional[dict[str, Task]] = {}
+    tasks: dict[str, Task] = {}
     ordering: Optional[dict[str, List[str]]] = None
 
     def __init__(self):
@@ -151,7 +151,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
     def start_pipeline(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         runner: "PipelineRunner",
         reporter: "PipelineReporter",
     ) -> bool:
@@ -165,7 +165,7 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
     def handle_error(
         self,
-        execution: BasePipelineExecution,
+        execution: PipelineExecution,
         reporter,
     ):
         # update that pipeline has been cancelled
@@ -204,9 +204,8 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
 
 
 class ModelPipeline(Pipeline):
-    _meta: Type["ModelPipeline.Meta"]
-
     class Meta:
+        abstract = True
         model: ClassVar[Model]
 
     def get_queryset(self, *args, **kwargs):

@@ -1,31 +1,42 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 
+from wildcoeus.pipelines.config import Config
+
 
 if TYPE_CHECKING:
     from wildcoeus.pipelines.base import Pipeline
 
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import (
-    BasePipelineExecution,
-    BasePipelineResult,
-    BasePipelineResultsStorage,
-    BaseTaskExecution,
-    BaseTaskResult,
     PipelineDigest,
+    PipelineExecution,
+    PipelineResult,
+    PipelineResultsStorage,
+    TaskExecution,
+    TaskResult,
 )
 from wildcoeus.pipelines.runners import PipelineRunner
 
 
-def get_pipeline_results_storage() -> BasePipelineResultsStorage:
+_storage = None
+
+
+def reset_storage_class():
+    global _storage
+    _storage = None
+
+
+def get_pipeline_results_storage() -> PipelineResultsStorage:
     """
     Gets the configured pipeline results storage.
     """
+    global _storage
 
-    # currently we only support orm storage but this could be extended for redis etc
-    from .orm import OrmPipelineResultsStorage
+    if _storage is None:
+        _storage = Config().WILDCOEUS_PIPELINE_STORAGE
 
-    return OrmPipelineResultsStorage()
+    return _storage
 
 
 def build_pipeline_execution(
@@ -35,7 +46,7 @@ def build_pipeline_execution(
     reporter: PipelineReporter,
     input_data: Dict[str, Any],
     build_all=True,
-) -> BasePipelineExecution:
+) -> PipelineExecution:
     """
     Creates a pipeline execution object along with all the pipeline results,
     task executions and task results.
@@ -69,36 +80,36 @@ def get_pipeline_digest() -> PipelineDigest:
 
 def get_pipeline_executions(
     pipeline_id: Optional[str] = None,
-) -> Sequence[BasePipelineExecution]:
+) -> Sequence[PipelineExecution]:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_executions(pipeline_id=pipeline_id)
 
 
-def get_pipeline_execution(_id) -> BasePipelineExecution | None:
+def get_pipeline_execution(_id) -> PipelineExecution | None:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_execution(_id)
 
 
-def get_pipeline_results(run_id: Optional[str] = None) -> Sequence[BasePipelineResult]:
+def get_pipeline_results(run_id: Optional[str] = None) -> Sequence[PipelineResult]:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_results(run_id=run_id)
 
 
-def get_pipeline_result(_id) -> BasePipelineResult | None:
+def get_pipeline_result(_id) -> PipelineResult | None:
     storage = get_pipeline_results_storage()
     return storage.get_pipeline_result(_id)
 
 
 def get_task_executions(
     run_id: Optional[str] = None, pipeline_result_id: Optional[str] = None
-) -> Sequence[BaseTaskExecution]:
+) -> Sequence[TaskExecution]:
     storage = get_pipeline_results_storage()
     return storage.get_task_executions(
         run_id=run_id, pipeline_result_id=pipeline_result_id
     )
 
 
-def get_task_execution(_id) -> BaseTaskExecution | None:
+def get_task_execution(_id) -> TaskExecution | None:
     storage = get_pipeline_results_storage()
     return storage.get_task_execution(_id)
 
@@ -107,7 +118,7 @@ def get_task_results(
     run_id: Optional[str] = None,
     pipeline_result_id: Optional[str] = None,
     task_execution_id: Optional[str] = None,
-) -> Sequence[BaseTaskResult]:
+) -> Sequence[TaskResult]:
     storage = get_pipeline_results_storage()
     return storage.get_task_results(
         run_id=run_id,
@@ -116,7 +127,7 @@ def get_task_results(
     )
 
 
-def get_task_result(_id) -> BaseTaskResult | None:
+def get_task_result(_id) -> TaskResult | None:
     storage = get_pipeline_results_storage()
     return storage.get_task_result(_id)
 

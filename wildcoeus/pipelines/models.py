@@ -13,18 +13,16 @@ from django.db.models import (
 )
 from django.db.models.query import QuerySet
 from django.utils.functional import cached_property
-from django.utils.timezone import now
 
 from django_extensions.db.models import TimeStampedModel
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.registry import pipeline_registry
-from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import (
-    BasePipelineExecution,
-    BasePipelineResult,
-    BaseTaskExecution,
-    BaseTaskResult,
+    PipelineExecution,
+    PipelineResult,
+    TaskExecution,
+    TaskResult,
 )
 from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
@@ -49,52 +47,24 @@ class PipelineLog(TimeStampedModel):
         return self.log_message
 
 
-class TaskExecutionQuerySet(QuerySet):
-    def for_run_id(self, run_id):
-        return self.filter(pipeline_result__execution__run_id=run_id)
-
-    def not_completed(self):
-        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
-        return self.filter(status__in=statues)
-
-    def with_duration(self):
-        duration = ExpressionWrapper(
-            F("completed") - F("started"), output_field=fields.DurationField()
-        )
-        return self.annotate(duration=duration)
-
-
-class TaskResultQuerySet(QuerySet):
-    def for_run_id(self, run_id):
-        return self.filter(execution__pipeline_result__execution__run_id=run_id)
-
-    def not_completed(self):
-        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
-        return self.filter(status__in=statues)
-
-    def with_duration(self):
-        duration = ExpressionWrapper(
-            F("completed") - F("started"), output_field=fields.DurationField()
-        )
-        return self.annotate(duration=duration)
-
-
-class PipelineExecutionQuerySet(QuerySet):
+class OrmPipelineExecutionQuerySet(QuerySet):
     def with_extra_stats(self):
         results_qs = (
-            PipelineResult.objects.values_list("execution__id")
+            OrmPipelineResult.objects.values_list("execution__id")
             .filter(execution_id=OuterRef("id"))
             .annotate(total=Count("id"))
             .values("total")
         )
         tasks_qs = (
-            TaskResult.objects.values_list("execution__pipeline_result__execution_id")
+            OrmTaskResult.objects.values_list(
+                "execution__pipeline_result__execution_id"
+            )
             .filter(execution__pipeline_result__execution_id=OuterRef("id"))
             .annotate(total=Count("id"))
             .values("total")
         )
         duration_qs = (
-            TaskResult.objects.values("execution__pipeline_result__execution_id")
+            OrmTaskResult.objects.values("execution__pipeline_result__execution_id")
             .filter(
                 execution__pipeline_result__execution__id=OuterRef("id"),
                 status=PipelineTaskStatus.DONE.value,
@@ -109,21 +79,22 @@ class PipelineExecutionQuerySet(QuerySet):
         )
 
 
-class PipelineExecution(BasePipelineExecution, models.Model):
+class OrmPipelineExecution(PipelineExecution, models.Model):
     pipeline_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255, default=uuid.uuid4, unique=True)
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
     input_data = models.JSONField(blank=True, null=True)
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
-    objects = PipelineExecutionQuerySet.as_manager()
+    objects = OrmPipelineExecutionQuerySet.as_manager()
 
-    def get_pipeline_results(self) -> Sequence["BasePipelineResult"]:
+    def get_pipeline_results(self) -> Sequence["PipelineResult"]:
         return self.results.all()
 
     def get_pipeline(self) -> Pipeline:
@@ -133,19 +104,19 @@ class PipelineExecution(BasePipelineExecution, models.Model):
         return PipelineTaskStatus[self.status]
 
 
-class PipelineResultQuerySet(QuerySet):
+class OrmPipelineResultQuerySet(QuerySet):
     def for_run_id(self, run_id):
         return self.filter(execution__run_id=run_id)
 
     def with_extra_stats(self):
         tasks_qs = (
-            TaskResult.objects.values_list("id")
+            OrmTaskResult.objects.values_list("id")
             .filter(execution__pipeline_result__execution_id=OuterRef("id"))
             .annotate(total=Count("id"))
             .values("total")
         )
         duration_qs = (
-            TaskResult.objects.values("id")
+            OrmTaskResult.objects.values("id")
             .filter(
                 execution__pipeline_result__execution__id=OuterRef("id"),
                 status=PipelineTaskStatus.DONE.value,
@@ -158,22 +129,26 @@ class PipelineResultQuerySet(QuerySet):
         )
 
 
-class PipelineResult(BasePipelineResult, models.Model):
+class OrmPipelineResult(PipelineResult, models.Model):
     execution = models.ForeignKey(
-        PipelineExecution, related_name="results", on_delete=models.CASCADE, null=True
+        OrmPipelineExecution,
+        related_name="results",
+        on_delete=models.CASCADE,
+        null=True,
     )
     serializable_pipeline_object = models.JSONField(blank=True, null=True)
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
     runner = models.CharField(max_length=255, blank=True, null=True)
     reporter = models.CharField(max_length=255, blank=True, null=True)
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
-    objects = PipelineResultQuerySet.as_manager()
+    objects = OrmPipelineResultQuerySet.as_manager()
 
     class Meta:
         ordering = ["-started"]
@@ -182,7 +157,7 @@ class PipelineResult(BasePipelineResult, models.Model):
         return f"{self.pipeline_id} started on {self.started}"
 
     def get_task_results(self):
-        return TaskResult.objects.filter(run_id=self.run_id)
+        return OrmTaskResult.objects.filter(run_id=self.run_id)
 
     def get_status(self):
         return PipelineTaskStatus[self.status]
@@ -198,10 +173,10 @@ class PipelineResult(BasePipelineResult, models.Model):
     def get_pipeline(self) -> Pipeline:
         return self.execution.get_pipeline()
 
-    def get_pipeline_execution(self) -> BasePipelineExecution:
+    def get_pipeline_execution(self) -> PipelineExecution:
         return self.execution
 
-    def get_task_executions(self) -> Sequence["BaseTaskExecution"]:
+    def get_task_executions(self) -> Sequence["TaskExecution"]:
         return self.task_executions.all()
 
     @property
@@ -217,9 +192,24 @@ class PipelineResult(BasePipelineResult, models.Model):
         return get_object(self.serializable_pipeline_object)
 
 
-class TaskExecution(BaseTaskExecution, models.Model):
+class TaskExecutionQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(pipeline_result__execution__run_id=run_id)
+
+    def not_completed(self):
+        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
+        return self.filter(status__in=statues)
+
+    def with_duration(self):
+        duration = ExpressionWrapper(
+            F("completed") - F("started"), output_field=fields.DurationField()
+        )
+        return self.annotate(duration=duration)
+
+
+class OrmTaskExecution(TaskExecution, models.Model):
     pipeline_result = models.ForeignKey(
-        PipelineResult,
+        OrmPipelineResult,
         related_name="task_executions",
         on_delete=models.CASCADE,
         null=True,
@@ -231,9 +221,10 @@ class TaskExecution(BaseTaskExecution, models.Model):
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
     objects = TaskExecutionQuerySet.as_manager()
 
@@ -256,7 +247,7 @@ class TaskExecution(BaseTaskExecution, models.Model):
     def serializable_pipeline_object(self):
         return self.pipeline_result.serializable_pipeline_object
 
-    def get_task_results(self) -> Sequence["BaseTaskResult"]:
+    def get_task_results(self) -> Sequence["TaskResult"]:
         return self.results.all()
 
     def get_task(self) -> Task:
@@ -271,20 +262,36 @@ class TaskExecution(BaseTaskExecution, models.Model):
         return get_object(self.serializable_pipeline_object)
 
 
-class TaskResult(BaseTaskResult, models.Model):
+class OrmTaskResultQuerySet(QuerySet):
+    def for_run_id(self, run_id):
+        return self.filter(execution__pipeline_result__execution__run_id=run_id)
+
+    def not_completed(self):
+        statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
+        return self.filter(status__in=statues)
+
+    def with_duration(self):
+        duration = ExpressionWrapper(
+            F("completed") - F("started"), output_field=fields.DurationField()
+        )
+        return self.annotate(duration=duration)
+
+
+class OrmTaskResult(TaskResult, models.Model):
     execution = models.ForeignKey(
-        TaskExecution, related_name="results", on_delete=models.CASCADE, null=True
+        OrmTaskExecution, related_name="results", on_delete=models.CASCADE, null=True
     )
     serializable_task_object = models.JSONField(blank=True, null=True)
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
+        db_index=True,
     )
-    started = models.DateTimeField(blank=True, null=True, default=None)
-    completed = models.DateTimeField(blank=True, null=True, default=None)
+    started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
 
-    objects = TaskResultQuerySet.as_manager()
+    objects = OrmTaskResultQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.task_id} ({self.run_id})"
@@ -331,7 +338,7 @@ class TaskResult(BaseTaskResult, models.Model):
     def input_data(self):
         return self.execution.input_data
 
-    def get_task_execution(self) -> BaseTaskExecution:
+    def get_task_execution(self) -> TaskExecution:
         return self.execution
 
     def get_task_instance(self):
@@ -356,8 +363,8 @@ class ValueStore(TimeStampedModel):
     """
 
     pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255)
-    key = models.CharField(max_length=255)
+    run_id = models.CharField(max_length=255, db_index=True)
+    key = models.CharField(max_length=255, db_index=True)
     value = models.JSONField(blank=True, null=True)
 
     class Meta:

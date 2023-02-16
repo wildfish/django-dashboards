@@ -4,12 +4,7 @@ from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.runners import PipelineRunner
 from wildcoeus.pipelines.status import PipelineTaskStatus
 
-from ...results.base import (
-    BasePipelineExecution,
-    BasePipelineResult,
-    BaseTaskExecution,
-    BaseTaskResult,
-)
+from ...results.base import PipelineExecution, PipelineResult, TaskExecution, TaskResult
 from .tasks import (
     run_pipeline_execution_report,
     run_pipeline_result_report,
@@ -21,7 +16,7 @@ from .tasks import (
 
 class Runner(PipelineRunner):
     @classmethod
-    def build_celery_task(cls, task: BaseTaskResult):
+    def build_celery_task(cls, task: TaskResult):
         celery_task = run_task.si(task.get_id())
         celery_task.link_error(
             run_task_result_report.si(
@@ -41,7 +36,7 @@ class Runner(PipelineRunner):
     @classmethod
     def expand_celery_tasks(
         cls,
-        task: BaseTaskExecution,
+        task: TaskExecution,
     ) -> signature:
         """
         Start a task async. Task reports will be inline however, we add a link error incase
@@ -69,7 +64,7 @@ class Runner(PipelineRunner):
                 on_complete,
             )
 
-    def build_pipeline_chain(self, pipeline_result: BasePipelineResult):
+    def build_pipeline_chain(self, pipeline_result: PipelineResult):
         ordered_tasks = self.get_flat_task_list(pipeline_result)
 
         c = chain(
@@ -107,16 +102,16 @@ class Runner(PipelineRunner):
 
     def build_celery_canvas(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
     ):
         on_complete = run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.id,
+            pipeline_execution_id=pipeline_execution.get_run_id(),
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         )
 
         if len(pipeline_execution.get_pipeline_results()) == 1:
-            # build a chord that runs teh only pipeline result
+            # build a chord that runs the only pipeline result
             # and processes the final state of the pipeline
             return chain(
                 self.build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
@@ -135,7 +130,7 @@ class Runner(PipelineRunner):
 
     def start_runner(
         self,
-        pipeline_execution: BasePipelineExecution,
+        pipeline_execution: PipelineExecution,
         reporter: PipelineReporter,
     ) -> bool:
         return self.build_celery_canvas(pipeline_execution)()

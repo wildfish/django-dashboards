@@ -6,36 +6,36 @@ from django.db.models import Avg, Count, F, Max, Q
 
 from wildcoeus.pipelines.base import Pipeline
 from wildcoeus.pipelines.models import (
-    PipelineExecution,
-    PipelineResult,
-    TaskExecution,
-    TaskResult,
+    OrmPipelineExecution,
+    OrmPipelineResult,
+    OrmTaskExecution,
+    OrmTaskResult,
 )
 from wildcoeus.pipelines.reporters import PipelineReporter
 from wildcoeus.pipelines.results.base import (
-    BasePipelineResult,
-    BasePipelineResultsStorage,
-    BaseTaskExecution,
-    BaseTaskResult,
     PipelineDigest,
     PipelineDigestItem,
+    PipelineResult,
+    PipelineResultsStorage,
+    TaskExecution,
+    TaskResult,
 )
 from wildcoeus.pipelines.runners import PipelineRunner
 from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
 
 
-class OrmPipelineResultsStorage(BasePipelineResultsStorage):
+class OrmPipelineResultsStorage(PipelineResultsStorage):
     def _get_pipeline_execution_qs(self):
-        return PipelineExecution.objects.with_extra_stats()
+        return OrmPipelineExecution.objects.with_extra_stats()
 
     def _get_pipeline_result_qs(self):
-        return PipelineResult.objects.with_extra_stats()
+        return OrmPipelineResult.objects.with_extra_stats()
 
     def _get_task_execution_qs(self):
-        return TaskExecution.objects.all()
+        return OrmTaskExecution.objects.all()
 
     def _get_task_result_qs(self):
-        return TaskResult.objects.all()
+        return OrmTaskResult.objects.all()
 
     def build_pipeline_execution(
         self,
@@ -46,7 +46,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         input_data: Dict[str, Any],
         build_all=True,
     ):
-        execution = PipelineExecution.objects.create(
+        execution = OrmPipelineExecution.objects.create(
             pipeline_id=pipeline.id,
             run_id=run_id,
             input_data=input_data,
@@ -67,7 +67,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         # cant use bulk create here as it doesnt populate the id on some databases
         # https://docs.djangoproject.com/en/4.2/ref/models/querysets/#bulk-create
         pipeline_results = [
-            PipelineResult.objects.create(
+            OrmPipelineResult.objects.create(
                 execution=execution,
                 serializable_pipeline_object=pipeline.get_serializable_pipeline_object(
                     obj
@@ -87,7 +87,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         # cant use bulk create here as it doesnt populate the id on some databases
         # https://docs.djangoproject.com/en/4.2/ref/models/querysets/#bulk-create
         task_executions = [
-            TaskExecution.objects.create(
+            OrmTaskExecution.objects.create(
                 pipeline_result=pipeline_result,
                 pipeline_task=task.pipeline_task,
                 task_id=task.task_id,
@@ -111,7 +111,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
             task_objects = task_iterator if task_iterator is not None else [None]
 
             for obj in task_objects:
-                res = TaskResult.objects.create(
+                res = OrmTaskResult.objects.create(
                     execution=task_execution,
                     serializable_task_object=task.get_serializable_task_object(obj),
                 )
@@ -123,12 +123,12 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
 
     def get_pipeline_digest(self) -> PipelineDigest:
         qs = (
-            PipelineResult.objects.values("execution__pipeline_id")
+            OrmPipelineResult.objects.values("execution__pipeline_id")
             .annotate(
                 total_success=Count(
                     "id", filter=Q(status=PipelineTaskStatus.DONE.value)
                 ),
-                total_failed=Count("id", filter=Q(status__in=FAILED_STATUES)),
+                total_failure=Count("id", filter=Q(status__in=FAILED_STATUES)),
                 last_ran=Max("started"),
                 average_runtime=Avg(F("completed") - F("started")),
                 pipeline_id=F("execution__pipeline_id"),
@@ -137,10 +137,14 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         )
 
         return {
-            k: PipelineDigestItem(
-                **v, total_runs=v["total_success"] + v["total_failure"]
+            v["pipeline_id"]: PipelineDigestItem(
+                last_ran=v["last_ran"],
+                average_runtime=v["average_runtime"],
+                total_success=v["total_success"],
+                total_failure=v["total_failure"],
+                total_runs=v["total_success"] + v["total_failure"],
             )
-            for k, v in qs
+            for v in qs
         }
 
     def get_pipeline_executions(self, pipeline_id: Optional[str] = None):
@@ -156,7 +160,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
 
     def get_pipeline_results(
         self, run_id: Optional[str] = None
-    ) -> Sequence[BasePipelineResult]:
+    ) -> Sequence[PipelineResult]:
         qs = self._get_pipeline_result_qs()
 
         if run_id:
@@ -171,7 +175,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         self,
         run_id: Optional[str] = None,
         pipeline_result_id: Optional[str] = None,
-    ) -> Sequence[BaseTaskExecution]:
+    ) -> Sequence[TaskExecution]:
         qs = self._get_task_execution_qs()
 
         if run_id:
@@ -190,7 +194,7 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
         run_id: Optional[str] = None,
         pipeline_result_id: Optional[str] = None,
         task_execution_id: Optional[str] = None,
-    ) -> Sequence[BaseTaskResult]:
+    ) -> Sequence[TaskResult]:
         qs = self._get_task_result_qs()
 
         if run_id:
@@ -211,12 +215,12 @@ class OrmPipelineResultsStorage(BasePipelineResultsStorage):
 
     def cleanup(self, before: Optional[datetime] = None):
         run_ids = list(
-            PipelineExecution.objects.filter(started__lt=before).values_list(
+            OrmPipelineExecution.objects.filter(started__lt=before).values_list(
                 "run_id", flat=True
             )
         )
 
         if run_ids:
-            PipelineExecution.objects.filter(run_id__in=run_ids).delete()
+            OrmPipelineExecution.objects.filter(run_id__in=run_ids).delete()
 
         return run_ids
