@@ -25,7 +25,7 @@ class CustomComponentView(ComponentView):
         return HttpResponse("Simple response")
 
 
-class CustomComponentDeferView(ComponentView):
+class NoTemplateComponentDeferView(ComponentView):
     def get(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard(request=request)
         component = self.get_partial_component(dashboard=dashboard)

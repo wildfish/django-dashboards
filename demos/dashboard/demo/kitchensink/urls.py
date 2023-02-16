@@ -3,7 +3,7 @@ from django.urls import path
 from demo.kitchensink import dashboards
 from demo.kitchensink.views import (
     AsyncComponentView,
-    CustomComponentDeferView,
+    NoTemplateComponentDeferView,
     CustomComponentView,
     NormalView,
     SyncComponentView,
@@ -34,7 +34,7 @@ urlpatterns = [
     ),
     path(
         "customcomponentdefer/" + COMPONENT_PATTERN,
-        CustomComponentDeferView.as_view(),
+        NoTemplateComponentDeferView.as_view(),
         name="custom-component-defer",
     ),
     path(
