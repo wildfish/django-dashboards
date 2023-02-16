@@ -9,8 +9,8 @@ Welcome to Wildcoeus's documentation!
 Wildcoeus is a set of django applications to help you make data driven solutions.
 Currently, included are:
 
-* `wildcoeus.dashboards <dashboards/index.html>`_: For creating visual representations of your data to the end user.
-* `wildcoeus.pipelines <pipelines/index.html>`_: For running data driven tasks.
+* :doc:`wildcoeus.dashboards <dashboards/index>`: For creating visual representations of your data to the end user.
+* :doc:`wildcoeus.pipelines <pipelines/index>`: For running data driven tasks.
 
 .. toctree::
    :maxdepth: 2
@@ -18,5 +18,6 @@ Currently, included are:
 
    dashboards/index.rst
    pipelines/index.rst
+   api/modules.rst
    contributing.rst
    changelog.rst

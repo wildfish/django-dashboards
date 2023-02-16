@@ -18,6 +18,7 @@ Dashboards
    howto/permissions.rst
    howto/templates.rst
    howto/views.rst
+   howto/menus.rst
    howto/dynamic.rst
    howto/menus.rst
    howto/async.rst
