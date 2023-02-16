@@ -1,6 +1,6 @@
-======
+=====
 Menus
-======
+=====
 
 Wildcoeus allows you to build menus easily and in code.  It also allows you to
 build dashboard menus in only a few lines of code.  It handles the discovery,
@@ -43,7 +43,7 @@ You can define as many ``Menu`` objects as you wish as long as they are in a
 dashboard_menu.py file and registered.
 
 Menu Item
-++++++++
++++++++++
 
 ``MenuItem``  must include a ``title`` and ``url`` parameter which are used when
 rendering the menu.
