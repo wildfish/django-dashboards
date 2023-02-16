@@ -5,7 +5,7 @@ from django_eventstream import send_event
 from pydantic import BaseModel
 
 from wildcoeus.dashboards.component import Stat
-from wildcoeus.pipelines import Pipeline, Task
+from wildcoeus.pipelines.base import Pipeline, Task
 
 from .models import Repo, RepoStats, RepoStatsChange
 
