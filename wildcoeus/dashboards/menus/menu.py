@@ -65,8 +65,7 @@ class DashboardMenu(Menu):
         """
         Get all the other urls for this section/app.
 
-        If the machine is set, get the machine specific dashboards, to do this we need to init the
-        dashboard and set the object manually.
+        If the object is set, get the object specific dashboards too.
         """
         urls = []
 
