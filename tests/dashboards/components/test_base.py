@@ -6,7 +6,7 @@ import pytest
 
 from tests.utils import render_component_test
 from wildcoeus.dashboards.component import Chart, Component, Text
-from wildcoeus.dashboards.component.text import Progress, Stat, Timeline
+from wildcoeus.dashboards.component.text import Stat
 
 
 pytest_plugins = [
@@ -134,7 +134,7 @@ def test_get_absolute_url__with_object(component_kwargs, expected, dashboard, us
     assert component.get_absolute_url() == expected
 
 
-@pytest.mark.parametrize("component_class", [Text, Chart, Progress, Timeline, Stat])
+@pytest.mark.parametrize("component_class", [Text, Chart, Stat])
 @pytest.mark.parametrize(
     "component_kwargs",
     [
