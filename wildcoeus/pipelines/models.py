@@ -24,14 +24,30 @@ from wildcoeus.pipelines.results.base import (
     TaskExecution,
     TaskResult,
 )
-from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
+from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 from wildcoeus.pipelines.tasks.registry import task_registry
 from wildcoeus.pipelines.utils import get_object
 
 
 class PipelineLog(TimeStampedModel):
-    context_type = models.CharField(max_length=255)
+    """
+    Model to store pipeline logs in the database
+
+    :attribute context_type: The type of object to log a message against (one of
+        PipelineExecution, PipelineResult, TaskExecution and TaskResult)
+    :attribute context_id: The id of the object to log a message against
+    :attribute pipeline_id: Id of the pipeline being ran
+    :attribute run_id: The run_id of the object
+    :attribute status: The status of the object
+    :attribute message: The message to record
+    """
+    context_type = models.CharField(max_length=255, choices=[
+        PipelineExecution.content_type_name,
+        PipelineResult.content_type_name,
+        TaskExecution.content_type_name,
+        TaskResult.content_type_name,
+    ])
     context_id = models.CharField(max_length=255)
     pipeline_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255, blank=True)
@@ -40,7 +56,6 @@ class PipelineLog(TimeStampedModel):
 
     @property
     def log_message(self):
-        # return f"Pipeline {self.pipeline_id} changed to state {self.get_status_display()}: {self.message}"
         return self.message
 
     def __str__(self):
@@ -48,7 +63,14 @@ class PipelineLog(TimeStampedModel):
 
 
 class OrmPipelineExecutionQuerySet(QuerySet):
+    """
+    Custom query set for managing pipeline execution objects.
+    """
     def with_extra_stats(self):
+        """
+        Attaches extra properties to the pipeline execution queryset so that
+        each of the objects conform to the results storage interface.
+        """
         results_qs = (
             OrmPipelineResult.objects.values_list("execution__id")
             .filter(execution_id=OuterRef("id"))
@@ -80,6 +102,9 @@ class OrmPipelineExecutionQuerySet(QuerySet):
 
 
 class OrmPipelineExecution(PipelineExecution, models.Model):
+    """
+    Model to store pipeline execution status in the django ORM
+    """
     pipeline_id = models.CharField(max_length=255)
     run_id = models.CharField(max_length=255, default=uuid.uuid4, unique=True)
     status = models.CharField(
@@ -105,9 +130,18 @@ class OrmPipelineExecution(PipelineExecution, models.Model):
 
 class OrmPipelineResultQuerySet(QuerySet):
     def for_run_id(self, run_id):
+        """
+        Fetches all pipeline results for a given run id
+
+        :param run_id: The run id to fetch all objects for.
+        """
         return self.filter(execution__run_id=run_id)
 
     def with_extra_stats(self):
+        """
+        Attaches extra properties to the pipeline result queryset so that
+        each of the objects conform to the results storage interface.
+        """
         tasks_qs = (
             OrmTaskResult.objects.values_list("id")
             .filter(execution__pipeline_result__execution_id=OuterRef("id"))
@@ -183,7 +217,7 @@ class OrmPipelineResult(PipelineResult, models.Model):
 
     @property
     def failed(self):
-        return self.status in FAILED_STATUES
+        return self.status in PipelineTaskStatus.failed_statuses()
 
     @cached_property
     def pipeline_object(self):

@@ -26,7 +26,7 @@ urlpatterns = [
     ),
     path(
         "<str:run_id>/results/",
-        views.TaskResultView.as_view(),
+        views.PipelineResultView.as_view(),
         name="results",
     ),
     path(
