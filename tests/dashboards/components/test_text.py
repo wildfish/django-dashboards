@@ -4,11 +4,7 @@ import pytest
 
 from tests.utils import render_component_test
 from wildcoeus.dashboards.component import CTA
-from wildcoeus.dashboards.component.text import (
-    Stat,
-    StatData,
-    Text,
-)
+from wildcoeus.dashboards.component.text import Stat, StatData, Text
 
 
 pytest_plugins = [

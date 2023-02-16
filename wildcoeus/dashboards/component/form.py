@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional, Type, Literal
+from typing import Any, Dict, Literal, Optional, Type
 
 from django.http import HttpRequest
 from django.urls import reverse
@@ -20,7 +20,7 @@ class FormData:
 @dataclass
 class Form(Component):
     template_name: str = "wildcoeus/dashboards/components/form/form.html"
-    css_classes: Optional[Dict[str, str]] = None
+    css_classes: Optional[Dict[str, str]] = None  # type: ignore
     form: Optional[Type[DashboardForm]] = None
     method: Literal["get", "post"] = "get"
     trigger: Literal["change", "submit"] = "change"
@@ -49,12 +49,12 @@ class Form(Component):
             self.dashboard._meta.app_label,
             self.dashboard_class,
             self.key,
-        ]
+        ]  # type: ignore
 
         # if this is for an object then add lookup param to args
         if self.object:
             # <str:app_label>/<str:dashboard>/<str:lookup>/<str:component>/
-            args.insert(2, getattr(self.object, self.dashboard._meta.lookup_field))
+            args.insert(2, getattr(self.object, self.dashboard._meta.lookup_field))  # type: ignore
 
         return reverse("wildcoeus.dashboards:form_component", args=args)
 

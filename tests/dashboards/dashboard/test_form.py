@@ -21,23 +21,6 @@ class TestForm(DashboardForm):
 
 
 def test_dashboard_form__asdict(dashboard, snapshot):
-    form = TestForm(
-        app_label=dashboard._meta.app_label,
-        dashboard_class=dashboard,
-        key="test",
-    )
+    form = TestForm()
 
     snapshot.assert_match(form.asdict())
-
-
-def test_dashboard_form__get_submit_url(dashboard):
-    form = TestForm(
-        app_label=dashboard._meta.app_label,
-        dashboard_class=dashboard,
-        key="test",
-    )
-
-    assert form.get_submit_url() == reverse(
-        "wildcoeus.dashboards:form_component",
-        args=[dashboard._meta.app_label, dashboard, "test"],
-    )
