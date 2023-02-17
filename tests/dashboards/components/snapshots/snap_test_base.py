@@ -41,21 +41,6 @@ snapshots[
 """
 
 snapshots[
-    "test_render[False-component_kwargs0-Progress] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            
-        </div>
-    
-
-
-"""
-
-snapshots[
     "test_render[False-component_kwargs0-Stat] 1"
 ] = """
 
@@ -97,23 +82,6 @@ value
 """
 
 snapshots[
-    "test_render[False-component_kwargs0-Timeline] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div class="None">
-  
-</div>
-        </div>
-    
-
-
-"""
-
-snapshots[
     "test_render[False-component_kwargs1-Chart] 1"
 ] = """
 
@@ -140,21 +108,6 @@ snapshots[
 <div id="test"></div>
 
 
-        </div>
-    
-
-
-"""
-
-snapshots[
-    "test_render[False-component_kwargs1-Progress] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            
         </div>
     
 
@@ -203,23 +156,6 @@ value
 """
 
 snapshots[
-    "test_render[False-component_kwargs1-Timeline] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div class="None">
-  
-</div>
-        </div>
-    
-
-
-"""
-
-snapshots[
     "test_render[False-component_kwargs2-Chart] 1"
 ] = """
 
@@ -246,21 +182,6 @@ snapshots[
 <div id="test"></div>
 
 
-        </div>
-    
-
-
-"""
-
-snapshots[
-    "test_render[False-component_kwargs2-Progress] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            
         </div>
     
 
@@ -309,23 +230,6 @@ value
 """
 
 snapshots[
-    "test_render[False-component_kwargs2-Timeline] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
-  
-</div>
-        </div>
-    
-
-
-"""
-
-snapshots[
     "test_render[True-component_kwargs0-Chart] 1"
 ] = """
 
@@ -352,21 +256,6 @@ snapshots[
 <div id="test"></div>
 
 
-        </div>
-    
-
-
-"""
-
-snapshots[
-    "test_render[True-component_kwargs0-Progress] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            
         </div>
     
 
@@ -415,40 +304,7 @@ value
 """
 
 snapshots[
-    "test_render[True-component_kwargs0-Timeline] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div class="None">
-  
-</div>
-        </div>
-    
-
-
-"""
-
-snapshots[
     "test_render[True-component_kwargs1-Chart] 1"
-] = """
-
-
-
-    <div hx-get="/app1/testdashboard/@component/test/"
-         hx-trigger="intersect once delay:1ms">
-        <div class="htmx-indicator">
-            Loading...
-        </div>
-    </div>
-
-
-"""
-
-snapshots[
-    "test_render[True-component_kwargs1-Progress] 1"
 ] = """
 
 
@@ -481,22 +337,6 @@ snapshots[
 
 snapshots[
     "test_render[True-component_kwargs1-Text] 1"
-] = """
-
-
-
-    <div hx-get="/app1/testdashboard/@component/test/"
-         hx-trigger="intersect once delay:1ms">
-        <div class="htmx-indicator">
-            Loading...
-        </div>
-    </div>
-
-
-"""
-
-snapshots[
-    "test_render[True-component_kwargs1-Timeline] 1"
 ] = """
 
 
@@ -545,21 +385,6 @@ snapshots[
 """
 
 snapshots[
-    "test_render[True-component_kwargs2-Progress] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            
-        </div>
-    
-
-
-"""
-
-snapshots[
     "test_render[True-component_kwargs2-Stat] 1"
 ] = """
 
@@ -594,23 +419,6 @@ snapshots[
             
 value
 
-        </div>
-    
-
-
-"""
-
-snapshots[
-    "test_render[True-component_kwargs2-Timeline] 1"
-] = """
-
-
-
-    
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div class="[&#x27;a&#x27;, &#x27;b&#x27;]">
-  
-</div>
         </div>
     
 

@@ -40,6 +40,9 @@ class Form(Component):
 
     def get_submit_url(self):
         """url the form sends data to on Submit"""
+        if not self.dashboard:
+            raise Exception("Dashboard is not set on Form Component")
+
         # if it has been passed in use that, otherwise generate based on component
         if self.submit_url:
             return self.submit_url
@@ -49,12 +52,12 @@ class Form(Component):
             self.dashboard._meta.app_label,
             self.dashboard_class,
             self.key,
-        ]  # type: ignore
+        ]
 
         # if this is for an object then add lookup param to args
         if self.object:
             # <str:app_label>/<str:dashboard>/<str:lookup>/<str:component>/
-            args.insert(2, getattr(self.object, self.dashboard._meta.lookup_field))  # type: ignore
+            args.insert(2, getattr(self.object, self.dashboard._meta.lookup_field))
 
         return reverse("wildcoeus.dashboards:form_component", args=args)
 
