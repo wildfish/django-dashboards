@@ -9,7 +9,6 @@ from ...models import Data, Parameter
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-
         vehicles = baker.make("Vehicle", _quantity=5, _bulk_create=True)
         location_param, _ = Parameter.objects.get_or_create(
             name="Current Location", cast_type=Parameter.CastType.COORDINATE

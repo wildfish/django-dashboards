@@ -1,5 +1,6 @@
 from django import forms
 from django.template import Context
+from django.urls import reverse
 
 import pytest
 
@@ -49,7 +50,26 @@ def test_form_component__get_value(dashboard, method, rf):
     assert isinstance(value["form"], TestForm)
     assert value["method"] == method
     assert value["dependents"] == ["component_1"]
-    assert value["action"] == value["form"].get_submit_url()
+    assert value["action"] == component.get_submit_url()
+
+
+def test_form_component__get_submit_url(dashboard):
+    component = Form(form=TestForm)
+    component.dashboard = dashboard
+    component.key = "test"
+
+    assert component.get_submit_url() == reverse(
+        "wildcoeus.dashboards:form_component",
+        args=[dashboard._meta.app_label, dashboard.class_name(), "test"],
+    )
+
+
+def test_form_component__get_submit_url__specified(dashboard):
+    component = Form(form=TestForm, submit_url="/submit-me/")
+    component.dashboard = dashboard
+    component.key = "test"
+
+    assert component.get_submit_url() == "/submit-me/"
 
 
 def test_form_component__get_form_with_get(dashboard, rf):

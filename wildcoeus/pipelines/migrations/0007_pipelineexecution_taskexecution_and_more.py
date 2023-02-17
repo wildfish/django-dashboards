@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0006_rename_pipelineexecution_pipelineresult_and_more"),
     ]

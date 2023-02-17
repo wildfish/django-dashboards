@@ -38,5 +38,6 @@ snapshottest
 # Documentation
 sphinx
 sphinx_rtd_theme
+furo
 
 exceptiongroup

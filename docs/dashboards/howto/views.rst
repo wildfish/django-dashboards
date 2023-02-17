@@ -69,6 +69,11 @@ or including your Dashboard in a normal view:
 ::
 
     # urls.py
+    from django.urls import path
+
+    from .views import (
+        NormalView,
+    )
 
     path(
         "normal/",
@@ -77,6 +82,9 @@ or including your Dashboard in a normal view:
     ),
 
     # views.py
+
+    from django.views.generic import TemplateView
+    from . import DemoDashboard
 
     class NormalView(TemplateView):
         template_name = "..."
@@ -90,3 +98,75 @@ Please note there are caveats to adding your own routes:
 
 * We'd recommend you also disable ``WILDCOEUS_INCLUDE_DASHBOARD_VIEWS`` to avoid duplicate views. Noting that you will still be leveraging the component and form fetch views included in the package.
 * If you decide not to use ``DashboardView`` any permissions_classes will not be applied.
+
+
+Custom component views
+----------------------
+
+Wildcoeus comes bundled with URLs to handle deferred components, however, if need arises you can also add your own. For example:
+
+
+::
+
+    # urls.py
+    from django.urls import path
+
+    from .views import (
+        NoTemplateComponentDeferView,
+        CustomComponentView,
+    )
+
+    from wildcoeus.dashboards.urls import COMPONENT_PATTERN
+    from wildcoeus.dashboards.views import DashboardView
+
+    path(
+        "customcomponent/" + COMPONENT_PATTERN,
+        CustomComponentView.as_view(),
+        name="custom-component",
+    ),
+    path(
+        "notemplatecomponentdefer/" + COMPONENT_PATTERN,
+        NoTemplateComponentDeferView.as_view(),
+        name="custom-component-defer",
+    ),
+
+
+    # views.py
+
+    from django.http import HttpRequest, HttpResponse
+
+    from wildcoeus.dashboards.views import ComponentView
+
+
+    class CustomComponentView(ComponentView):
+        def get(self, request: HttpRequest, *args, **kwargs):
+            return HttpResponse("Simple response")
+
+
+    class NoTemplateComponentDeferView(ComponentView):
+        def get(self, request: HttpRequest, *args, **kwargs):
+            dashboard = self.get_dashboard(request=request)
+            component = self.get_partial_component(dashboard=dashboard)
+
+            # Call the value direct to response, which is essentially what
+            # ComponentView does minus applying the template.
+            return HttpResponse(component.get_value(request=request, call_deferred=True))
+
+
+    # dashboards.py
+
+    class CustomComponentDashboard(Dashboard):
+        custom_response = Text(
+            defer_url=lambda reverse_args: reverse(
+                "custom-component", args=reverse_args
+            ),
+        )
+
+        no_template_response_defer = Text(
+            defer=lambda **kwargs: "Simple Response Via Defer",
+            defer_url=lambda reverse_args: reverse(
+                "custom-component-defer", args=reverse_args
+            ),
+        )
+
+A use case for this is :doc:`Async components <async>` .

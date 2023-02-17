@@ -88,12 +88,13 @@ required by the task itself.
 
 .. warning::
    By default, pydantic models ignore any extra properties. This convention should be followed
-   for :code:`InputType`s so that extra parameters aren't passed to a task causing an error.
-
+   for :code:`InputType` so that extra parameters aren't passed to a task causing an error.
 
 In the following example, when :code:`CustomPipeline` is ran with :code:`{"a": "foo", "b": "bar"}`
 "foo" will be passed to the first task as parameter :code:`a` and "bar" will be passed to
-the second task as parameter :code:`b`::
+the second task as parameter :code:`b`:
+
+::
 
     from pydantic import BaseModel
 

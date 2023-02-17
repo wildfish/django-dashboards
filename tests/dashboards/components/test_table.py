@@ -381,7 +381,7 @@ def test_serializer__value_mapping__queryset(test_user_serializer__qs):
 
     result = test_user_serializer__qs.serialize()
 
-    assert [r["first_name"] for r in result.data] == first_names[:5]
+    assert [r["first_name"] for r in result.data] == first_names
 
 
 @pytest.mark.django_db
@@ -393,7 +393,7 @@ def test_serializer__value_mapping__list(test_user_serializer__list):
 
     result = test_user_serializer__list.serialize()
 
-    assert [r["first_name"] for r in result.data] == first_names[:5]
+    assert [r["first_name"] for r in result.data] == first_names
 
 
 @pytest.mark.django_db

@@ -5,14 +5,18 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('.'))
+
+
+sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("."))
 
 # Specify settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'docs_dj_settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docs_dj_settings")
 
 # Setup Django
 import django
+
+
 django.setup()
 
 # -- Project information -----------------------------------------------------
@@ -35,5 +39,5 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "furo"
 html_static_path = ["_static"]

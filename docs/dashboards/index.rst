@@ -12,13 +12,15 @@ Dashboards
 
    howto/quickstart.rst
    howto/dashboards.rst
-   howto/components.rst
+   howto/components/index.rst
+   howto/serializers/index.rst
    howto/layout.rst
    howto/permissions.rst
    howto/templates.rst
    howto/views.rst
    howto/menus.rst
    howto/dynamic.rst
+   howto/menus.rst
    howto/async.rst
    howto/sse.rst
    howto/settings.rst
