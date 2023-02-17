@@ -1,5 +1,4 @@
 from django import forms
-from django.urls import reverse
 
 from wildcoeus.dashboards.forms import DashboardForm
 
