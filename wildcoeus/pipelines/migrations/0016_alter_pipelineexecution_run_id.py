@@ -5,7 +5,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0015_delete_tasklog_pipelinelog_context_id_and_more"),
     ]

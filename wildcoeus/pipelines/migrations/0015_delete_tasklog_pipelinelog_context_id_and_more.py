@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0014_remove_pipelineresult_input_data_and_more"),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0018_rename_pipelineexecution_ormpipelineexecution_and_more"),
     ]

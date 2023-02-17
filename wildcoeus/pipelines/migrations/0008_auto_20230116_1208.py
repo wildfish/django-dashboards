@@ -9,7 +9,6 @@ def clean_pipeline_and_task_results_objects(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0007_pipelineexecution_taskexecution_and_more"),
     ]

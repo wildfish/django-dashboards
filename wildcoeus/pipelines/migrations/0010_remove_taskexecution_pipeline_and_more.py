@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0009_remove_pipelineresult_pipeline_id_and_more"),
     ]

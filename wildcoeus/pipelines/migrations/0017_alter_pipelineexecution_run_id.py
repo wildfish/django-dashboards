@@ -5,7 +5,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0016_alter_pipelineexecution_run_id"),
     ]
