@@ -214,11 +214,16 @@ class OrmPipelineResultsStorage(PipelineResultsStorage):
         return self._get_task_result_qs().filter(id=_id).first()
 
     def cleanup(self, before: Optional[datetime] = None):
-        run_ids = list(
-            OrmPipelineExecution.objects.filter(started__lt=before).values_list(
-                "run_id", flat=True
+        if before:
+            run_ids = list(
+                OrmPipelineExecution.objects.filter(started__lt=before).values_list(
+                    "run_id", flat=True
+                )
             )
-        )
+        else:
+            run_ids = list(
+                OrmPipelineExecution.objects.values_list("run_id", flat=True)
+            )
 
         if run_ids:
             OrmPipelineExecution.objects.filter(run_id__in=run_ids).delete()

@@ -6,17 +6,27 @@ from wildcoeus.pipelines.runners import PipelineRunner
 
 
 class Config:
+    """
+    Class for resolving settings related to pipelines
+    """
+
     @property
     def WILDCOEUS_DEFAULT_PIPELINE_RUNNER(cls) -> PipelineRunner:
+        """
+        The pipeline runner to use by default
+        """
         runner = getattr(
             settings,
             "WILDCOEUS_PIPELINE_RUNNER",
             "wildcoeus.pipelines.runners.eager.Runner",
         )
-        return import_string(runner)()
+        return object_from_config(runner)
 
     @property
     def WILDCOEUS_DEFAULT_PIPELINE_REPORTER(cls):
+        """
+        The pipeline reporter to use by default
+        """
         reporter = getattr(
             settings,
             "WILDCOEUS_PIPELINE_REPORTER",
@@ -34,6 +44,10 @@ class Config:
 
     @property
     def WILDCOEUS_CLEAR_LOG_DAYS(cls):
+        """
+        The maximum age of logs when ``clear_tasks_and_logs`` is called if no maximum
+        age is specified.
+        """
         days = getattr(
             settings,
             "WILDCOEUS_CLEAR_LOG_DAYS",
@@ -42,7 +56,10 @@ class Config:
         return days
 
     @property
-    def WILDCOEUS_PIPELINE_STORAGE(self):
+    def WILDCOEUS_DEFAULT_PIPELINE_STORAGE(self):
+        """
+        The default storage class to use when storing task results
+        """
         storage = getattr(
             settings,
             "WILDCOEUS_PIPELINES_RESULTS_STORAGE",

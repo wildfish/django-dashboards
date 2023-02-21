@@ -13,6 +13,10 @@ from wildcoeus.pipelines.results.helpers import (
 
 
 class PipelineStartForm(forms.Form):
+    """
+    Form to clean the input for starting a form
+    """
+
     def __init__(self, *args, **kwargs):
         pipeline_cls = kwargs.pop("pipeline_cls")
         super().__init__(*args, **kwargs)
@@ -27,11 +31,20 @@ class PipelineStartForm(forms.Form):
 
 
 class LogFilterForm(forms.Form):
+    """
+    Form for filtering pipeline logs based on the type and id of the selected object
+    """
     type = forms.CharField()
+    """The type of object to filter logs by"""
+
     id = forms.CharField()
+    """The id of the object to filter objects by"""
 
     @property
     def qs(self):
+        """
+        Queryset representing the filtered set of log objects
+        """
         if not self.is_valid():
             return PipelineLog.objects.all()
 

@@ -18,19 +18,22 @@ if TYPE_CHECKING:
 class PipelineDigestItem:
     """
     Data class for storing entries in the pipeline digest
-
-    :attribute total_runs: The total number of times the pipeline has been ran
-    :attribute total_success: The total number of times the pipeline has been successfully ran
-    :attribute total_failure: The total number of times the pipeline has failed
-    :attribute last_ran: The date and time the pipeline was last ran
-    :attribute average_runtime: The average amount of time (in seconds) it takes to run the pipeline
     """
 
     total_runs: int = 0
+    """The total number of times the pipeline has been ran"""
+
     total_success: int = 0
+    """The total number of times the pipeline has been successfully ran"""
+
     total_failure: int = 0
+    """The total number of times the pipeline has failed"""
+
     last_ran: datetime | None = None
+    """The date and time the pipeline was last ran"""
+
     average_runtime: float | None = None
+    """The average amount of time (in seconds) it takes to run the pipeline"""
 
 
 """
@@ -56,38 +59,58 @@ class PipelineStorageObject:
 
     1. First check if ``set_run_id`` is implemented, if it is, use it
     2. If not, return a method that sets the value of ``run_id`` on the object
-
-    :attribute content_type_name: The type name of the results object. This is
-        used throughout the system and is set by the specific base class and
-        should not be changed.
-    :attribute method_prop_re: Regular expression used to extract property name
-        from the lookup item.
-    :attribute getter: The fallback method to use when the a ``get_`` function
-        isn't implemented.
-    :attribute setter: The fallback method to use when the a ``set_`` function
-        isn't implemented.
     """
 
     content_type_name: str
+    """
+    The type name of the results object. This is used throughout the system and is set by the specific base class 
+    and should not be changed.
+    """
 
     method_prop_re = re.compile("^(get|set)_(.*)$")
+    """Regular expression used to extract property name from the lookup item."""
 
     setter: Callable[["PipelineStorageObject", str, Any], None] = setattr
+    """The fallback method to use when the a ``get_`` function isn't implemented."""
+
     getter: Callable[["PipelineStorageObject", str], None] = getattr
+    """The fallback method to use when the a ``set_`` function isn't implemented."""
 
     get_run_id: Callable[[], str]
+    """Returns the id of the running pipeline instance"""
+
     get_started: Callable[[], Optional[datetime]]
+    """Returns the time the pipeline was started"""
+
     set_started: Callable[[datetime], None]
+    """Sets the time the pipeline was started"""
+
     get_completed: Callable[[], Optional[datetime]]
+    """Returns the time the pipeline finished (whether successful or not)"""
+
     set_completed: Callable[[datetime], None]
+    """Sets the time the pipeline finished"""
+
     get_pipeline_id: Callable[[], str]
+    """Returns the id of the registered pipeline class"""
+
     get_status: Callable[[], "PipelineTaskStatus"]
+    """Returns the current status of the pipeline"""
+
     get_input_data: Callable[[], Dict[str, Any]]
+    """Returns the input data for the pipeline run"""
+
     get_pipeline: Callable[[], "Pipeline"]
+    """Returns the registered pipeline class"""
 
     save: Callable[[], Any]
+    """Commits the current object state to the storage"""
 
     def __getattribute__(self, item):
+        """
+        Manages getting and setting from fallback attributes when ``get_``
+        and ``set_`` methods are not defined.
+        """
         try:
             return super().__getattribute__(item)
         except AttributeError:
@@ -107,6 +130,10 @@ class PipelineStorageObject:
             raise
 
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
+        """
+        Returns the parent object to pass statuses to when statuses
+        should be propagated
+        """
         return None
 
     def report_status_change(
@@ -166,11 +193,23 @@ class PipelineExecution(PipelineStorageObject):
 class PipelineResult(PipelineStorageObject):
     content_type_name = "PipelineResult"
 
+    get_id: Callable[[], Any]
+    """Returns id of the task execution in the storage"""
+
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
+    """Returns the object this instance of the pipeline was started with"""
+
     get_runner: Callable[[], str]
+    """Returns a python path to the runner the pipeline was started with"""
+
     get_reporter: Callable[[], str]
+    """Returns a python path to the reporter the pipeline was started with"""
+
     get_pipeline_execution: Callable[[], PipelineExecution]
+    """Returns the pipeline execution object describing the pipeline as whole"""
+
     get_task_executions: Callable[[], Sequence["TaskExecution"]]
+    """Returns all the task execution objects for this particular pipeline instance"""
 
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_pipeline_execution()
@@ -180,33 +219,34 @@ class TaskExecution(PipelineStorageObject):
     content_type_name = "TaskExecution"
 
     get_id: Callable[[], Any]
+    """Returns id of the task execution in the storage"""
+
     get_pipeline_result: Callable[[], PipelineResult]
+    """Gets the pipeline result the task execution is linked to"""
+
     get_task_id: Callable[[], str]
+    """Gets the id of the registered task class"""
+
     get_pipeline_task: Callable[[], str]
+    """Gets the name of the task property on the pipeline class"""
+
     get_config: Callable[[], Dict[str, Any]]
+    """Gets the task config"""
+
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
+    """Returns the object this instance of the pipeline was started with"""
+
     get_task: Callable[[], "Task"]
+    """Gets the registered task class"""
+
     get_task_results: Callable[[], Sequence["TaskResult"]]
+    """Gets all the results for this task execution"""
 
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_pipeline_result()
 
-
-class TaskResult(PipelineStorageObject):
-    content_type_name = "TaskResult"
-
-    get_id: Callable[[], Any]
-    get_task_id: Callable[[], str]
-    get_pipeline_task: Callable[[], str]
-    get_config: Callable[[], Dict[str, Any]]
-    get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
-    get_serializable_task_object: Callable[[], Dict[str, Any]]
-    get_task_execution: Callable[[], TaskExecution]
-
-    def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
-        return self.get_task_execution()
-
     def get_task(self) -> "Task":
+        """Gets the registered task class"""
         from wildcoeus.pipelines.tasks import task_registry
 
         return task_registry.load_task_from_id(
@@ -215,7 +255,42 @@ class TaskResult(PipelineStorageObject):
             config=self.config,
         )
 
+
+class TaskResult(PipelineStorageObject):
+    content_type_name = "TaskResult"
+
+    get_id: Callable[[], Any]
+    """Returns id of the task result in the storage"""
+
+    get_task_id: Callable[[], str]
+    """Gets the id of the registered task class"""
+
+    get_pipeline_task: Callable[[], str]
+    """Gets the name of the task property on the pipeline class"""
+
+    get_config: Callable[[], Dict[str, Any]]
+    """Gets the task config"""
+
+    get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
+    """Returns the object this instance of the pipeline was started with"""
+
+    get_serializable_task_object: Callable[[], Dict[str, Any]]
+    """Returns the object this instance of the pipeline was started with"""
+
+    get_task_execution: Callable[[], TaskExecution]
+    """Returns the task execution related to this object"""
+
+    def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
+        return self.get_task_execution()
+
+    def get_task(self) -> "Task":
+        """Gets the registered task class"""
+        return self.get_task_execution().get_task()
+
     def get_duration(self):
+        """
+        Returns the duration of the task
+        """
         status = self.get_status()
         started = self.get_started()
         completed = self.get_completed()
@@ -266,30 +341,73 @@ class PipelineResultsStorage:
         raise NotImplementedError()
 
     def get_pipeline_digest(self) -> PipelineDigest:
+        """
+        Returns the ``PipelineDigest`` object providing stats for all registered pipeline
+        classes.
+        """
         raise NotImplementedError()
 
     def get_pipeline_executions(
         self, pipeline_id: Optional[str] = None
     ) -> Sequence[PipelineExecution]:
+        """
+        Gets all pipeline executions from the storage. If ``pipeline_id`` is supplied
+        only executions for the given pipeline id will be returned
+
+        :param pipeline_id: The id of the registered pipeline class
+        """
         raise NotImplementedError()
 
     def get_pipeline_execution(self, run_id) -> PipelineExecution | None:
+        """
+        Fetch a specific pipeline execution from the storage.
+
+        If the pipeline execution isn't found, None will be returned.
+
+        :param run_id: The id of the pipeline run to fetch the execution for
+        """
         raise NotImplementedError()
 
     def get_pipeline_results(
         self, run_id: Optional[str] = None
     ) -> Sequence[PipelineResult]:
+        """
+        Gets all pipeline results from the storage. If ``run_id`` is supplied only results
+        for that particular run will be returned.
+
+        :param run_id: The id of the run to filter results by
+        """
         raise NotImplementedError()
 
     def get_pipeline_result(self, _id) -> PipelineResult | None:
+        """
+        Fetch a specific pipeline result from the storage.
+
+        If the pipeline result isn't found, None will be returned.
+
+        :param _id: The id of the result to fetch from storage
+        """
         raise NotImplementedError()
 
     def get_task_executions(
         self, run_id: Optional[str] = None, pipeline_result_id: Optional[str] = None
     ) -> Sequence[TaskExecution]:
+        """
+        Gets all task executions from the storage.
+
+        :param run_id: The id of the run to filter results by
+        :param pipeline_result_id: The id of the parent pipeline result object to filter results by
+        """
         raise NotImplementedError()
 
     def get_task_execution(self, _id) -> TaskExecution | None:
+        """
+        Fetch a specific task execution from the storage.
+
+        If the pipeline result isn't found, None will be returned.
+
+        :param _id: The id of the task execution to fetch from storage
+        """
         raise NotImplementedError()
 
     def get_task_results(
@@ -298,10 +416,30 @@ class PipelineResultsStorage:
         pipeline_result_id: Optional[str] = None,
         task_execution_id: Optional[str] = None,
     ) -> Sequence[TaskResult]:
+        """
+        Gets all task results from the storage.
+
+        :param run_id: The id of the run to filter results by
+        :param pipeline_result_id: The id of the grandparent pipeline result object to filter results by
+        :param task_execution_id: The id of the parent task execution object to filter results by
+        """
         raise NotImplementedError()
 
     def get_task_result(self, _id) -> TaskResult | None:
+        """
+        Fetch a specific task result from the storage.
+
+        If the pipeline result isn't found, None will be returned.
+
+        :param _id: The id of the task result to fetch from storage
+        """
         raise NotImplementedError()
 
     def cleanup(self, before: Optional[datetime] = None) -> Sequence[str]:
+        """
+        Removes all results objects from the storage.
+
+        :param before: If set only objects created before the date will be removed. Otherwise
+            all will be removed.
+        """
         raise NotImplementedError()

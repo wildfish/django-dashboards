@@ -34,7 +34,7 @@ def get_pipeline_results_storage() -> PipelineResultsStorage:
     global _storage
 
     if _storage is None:
-        _storage = Config().WILDCOEUS_PIPELINE_STORAGE
+        _storage = Config().WILDCOEUS_DEFAULT_PIPELINE_STORAGE
 
     return _storage
 
