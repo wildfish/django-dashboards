@@ -17,6 +17,14 @@ from .tasks import (
 class Runner(PipelineRunner):
     @classmethod
     def build_celery_task(cls, task: TaskResult):
+        """
+        Converts the task result into a celery signature. A signature is added to
+        catch errors and record the status change on the results object. If the
+        task config has a :code:`celery_queue` property the task will be assigned
+        to that queue.
+
+        :param task: The task result that represents the task to convert.
+        """
         celery_task = run_task.si(task.get_id())
         celery_task.link_error(
             run_task_result_report.si(
@@ -39,8 +47,13 @@ class Runner(PipelineRunner):
         task: TaskExecution,
     ) -> signature:
         """
-        Start a task async. Task reports will be inline however, we add a link error incase
-        anything occurs above task.
+        Builds a celery chord or canvas based on the task execution. After all tasks
+        instances are ran a task will be ran to update the task execution status.
+
+        If the task has an iterable a chord will be generated to run each task instance
+        in parallel. If there is no iterator a chain will be built.
+
+        :param task: The task execution object to expand.
         """
         on_complete = run_task_execution_report.si(
             task_execution_id=task.id,
@@ -64,7 +77,14 @@ class Runner(PipelineRunner):
                 on_complete,
             )
 
-    def build_pipeline_chain(self, pipeline_result: PipelineResult):
+    def expand_pipeline_result(self, pipeline_result: PipelineResult):
+        """
+        Expands the pipeline into a celery canvas. Currently this builds a chain running
+        each expanded task in series but will be updated to schedule tasks in parallel
+        where possible.
+
+        :param pipeline_result: The pipeline instance to expand
+        """
         ordered_tasks = self.get_flat_task_list(pipeline_result)
 
         c = chain(
@@ -100,12 +120,21 @@ class Runner(PipelineRunner):
 
         return c
 
-    def build_celery_canvas(
+    def expand_pipeline_execution(
         self,
         pipeline_execution: PipelineExecution,
     ):
+        """
+        Expands the pipeline execution into a celery canvas.  After all pipeline
+        instances are ran a task will be ran to update the pipeline execution status.
+
+        If the pipeline has an iterable a chord will be generated to run each pipeline instance
+        in parallel. If there is no iterator a chain will be built.
+
+        :param pipeline_execution: The pipeline execution object to expand.
+        """
         on_complete = run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.get_run_id(),
+            run_id=pipeline_execution.get_run_id(),
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         )
@@ -114,7 +143,7 @@ class Runner(PipelineRunner):
             # build a chord that runs the only pipeline result
             # and processes the final state of the pipeline
             return chain(
-                self.build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
+                self.expand_pipeline_result(pipeline_execution.get_pipeline_results()[0]),
                 on_complete,
             )
         else:
@@ -122,15 +151,26 @@ class Runner(PipelineRunner):
             # and processes the final state of the pipeline
             return chord(
                 [
-                    self.build_pipeline_chain(pipeline_result)
+                    self.expand_pipeline_result(pipeline_result)
                     for pipeline_result in pipeline_execution.get_pipeline_results()
                 ],
                 on_complete,
             )
 
-    def start_runner(
+    def run(
         self,
         pipeline_execution: PipelineExecution,
         reporter: PipelineReporter,
     ) -> bool:
-        return self.build_celery_canvas(pipeline_execution)()
+        """
+        Creates a celery canvas representing the pipeline and schedules it with the celery broker.
+
+        Returns :code:`True` if the pipeline was scheduled successfully, :code:`False`
+        otherwise. This has no guarantee on the completion of the pipeline, just that
+        it has been successfully scheduled.
+
+        :param pipeline_execution: The pipeline execution object representing the
+            pipeline to run.
+        :param reporter: The reporter object to write messages to.
+        """
+        return self.expand_pipeline_execution(pipeline_execution)()

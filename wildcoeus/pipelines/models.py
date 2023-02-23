@@ -504,7 +504,7 @@ class OrmTaskResult(TaskResult, models.Model):
         """Returns the linked task execution"""
         return self.execution
 
-    def get_task_instance(self):
+    def get_task(self):
         """Returns an instance of the registered task"""
         return task_registry.load_task_from_id(
             pipeline_task=self.pipeline_task,

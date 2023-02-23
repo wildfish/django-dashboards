@@ -199,6 +199,9 @@ class PipelineResult(PipelineStorageObject):
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
     """Returns the object this instance of the pipeline was started with"""
 
+    get_pipeline_object: Callable[[], "Pipeline"]
+    """Gets the deserialized pipeline object"""
+
     get_runner: Callable[[], str]
     """Returns a python path to the runner the pipeline was started with"""
 
@@ -210,6 +213,9 @@ class PipelineResult(PipelineStorageObject):
 
     get_task_executions: Callable[[], Sequence["TaskExecution"]]
     """Returns all the task execution objects for this particular pipeline instance"""
+
+    get_pipeline: Callable[[], "Pipeline"]
+    """Returns the registered pipeline class"""
 
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_pipeline_execution()
@@ -235,6 +241,12 @@ class TaskExecution(PipelineStorageObject):
 
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
     """Returns the object this instance of the pipeline was started with"""
+
+    get_pipeline_object: Callable[[], "Pipeline"]
+    """Gets the deserialized pipeline object"""
+
+    get_pipeline: Callable[[], "Pipeline"]
+    """Returns the registered pipeline class"""
 
     get_task: Callable[[], "Task"]
     """Gets the registered task class"""
@@ -274,11 +286,23 @@ class TaskResult(PipelineStorageObject):
     get_serializable_pipeline_object: Callable[[], Dict[str, Any]]
     """Returns the object this instance of the pipeline was started with"""
 
+    get_pipeline_object: Callable[[], "Pipeline"]
+    """Gets the deserialized pipeline object"""
+
     get_serializable_task_object: Callable[[], Dict[str, Any]]
     """Returns the object this instance of the pipeline was started with"""
 
+    get_task_object: Callable[[], "Task"]
+    """Gets the deserialized task object"""
+
     get_task_execution: Callable[[], TaskExecution]
     """Returns the task execution related to this object"""
+
+    get_pipeline: Callable[[], "Pipeline"]
+    """Returns the registered pipeline class"""
+
+    get_task: Callable[[], "Task"]
+    """Gets the registered task class"""
 
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_task_execution()

@@ -5,6 +5,9 @@ from . import PipelineReporter
 
 
 class ORMReporter(PipelineReporter):
+    """
+    A reporter class that writes messages to the django ORM.
+    """
     def report(
         self,
         context_object: PipelineStorageObject,

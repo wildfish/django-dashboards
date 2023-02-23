@@ -88,13 +88,13 @@ def test_build_celery_canvas___single_pipeline___canvas_is_chain():
     pipeline_execution = get_pipeline_execution()
 
     assert chain(
-        Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
+        Runner().expand_pipeline_result(pipeline_execution.get_pipeline_results()[0]),
         run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.run_id,
+            run_id=pipeline_execution.run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         ),
-    ) == Runner().build_celery_canvas(pipeline_execution)
+    ) == Runner().expand_pipeline_execution(pipeline_execution)
 
 
 def test_build_celery_canvas___multiple_pipeline___canvas_is_chord():
@@ -108,15 +108,15 @@ def test_build_celery_canvas___multiple_pipeline___canvas_is_chord():
     ].serializable_pipeline_object == {"obj": 2}
     assert chord(
         [
-            Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[0]),
-            Runner().build_pipeline_chain(pipeline_execution.get_pipeline_results()[1]),
+            Runner().expand_pipeline_result(pipeline_execution.get_pipeline_results()[0]),
+            Runner().expand_pipeline_result(pipeline_execution.get_pipeline_results()[1]),
         ],
         run_pipeline_execution_report.si(
-            pipeline_execution_id=pipeline_execution.run_id,
+            run_id=pipeline_execution.run_id,
             status=PipelineTaskStatus.DONE.value,
             message="Done",
         ),
-    ) == Runner().build_celery_canvas(pipeline_execution)
+    ) == Runner().expand_pipeline_execution(pipeline_execution)
 
 
 def test_build_pipeline_chain___no_parents_set___tasks_are_added_in_defined_order():
@@ -157,7 +157,7 @@ def test_build_pipeline_chain___no_parents_set___tasks_are_added_in_defined_orde
         )
     )
 
-    assert expected == Runner().build_pipeline_chain(pipeline_result)
+    assert expected == Runner().expand_pipeline_result(pipeline_result)
 
 
 def test_build_pipeline_chain___parents_swaps_order___tasks_are_added_respecting_parents():
@@ -199,7 +199,7 @@ def test_build_pipeline_chain___parents_swaps_order___tasks_are_added_respecting
         )
     )
 
-    assert expected == Runner().build_pipeline_chain(pipeline_result)
+    assert expected == Runner().expand_pipeline_result(pipeline_result)
 
 
 def test_expand_celery_task___single_task___result_is_chain():

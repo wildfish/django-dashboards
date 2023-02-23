@@ -13,13 +13,26 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class PipelineReporter:
+    """
+    The base pipeline reporting object to reporting status messages about
+    pipelines. This should be extended providing a :code:`report` method
+    to implement a new reporting mechanism.
+    """
     def report(
         self,
         context_object: PipelineStorageObject,
         status: PipelineTaskStatus,
         message: str,
     ):  # pragma: nocover
-        pass
+        """
+        Writes the report to the report storage mechanism for a particular
+        results storage object.
+
+        :param context_object: The results storage object to write a report for
+        :param status: The status of the context object being reported
+        :param message: The message to record against the context object
+        """
+        raise NotImplementedError()
 
     def report_pipeline_execution(
         self,
@@ -27,6 +40,15 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
+        """
+        Writes the report to the report storage mechanism for a given
+        :code:`PipelineExecution` object.
+
+        :param pipeline_execution: The pipeline execution storage object to write
+            a report for
+        :param status: The status of the pipeline execution being reported
+        :param message: The message to record against the context object
+        """
         self.report_context_object(pipeline_execution, status, message)
 
     def report_pipeline_result(
@@ -35,6 +57,15 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
+        """
+        Writes the report to the report storage mechanism for a given
+        :code:`PipelineResult` object.
+
+        :param pipeline_result: The pipeline result storage object to write
+            a report for
+        :param status: The status of the pipeline result being reported
+        :param message: The message to record against the context object
+        """
         self.report_context_object(pipeline_result, status, message)
 
     def report_task_execution(
@@ -43,6 +74,15 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
+        """
+        Writes the report to the report storage mechanism for a given
+        :code:`TaskExecution` object.
+
+        :param task_execution: The task execution storage object to write
+            a report for
+        :param status: The status of the task execution being reported
+        :param message: The message to record against the context object
+        """
         self.report_context_object(task_execution, status, message)
 
     def report_task_result(
@@ -51,6 +91,15 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
+        """
+        Writes the report to the report storage mechanism for a given
+        :code:`TaskResult` object.
+
+        :param task_result: The task result storage object to write
+            a report for
+        :param status: The status of the task result being reported
+        :param message: The message to record against the context object
+        """
         self.report_context_object(task_result, status, message)
 
     def report_context_object(
@@ -59,6 +108,17 @@ class PipelineReporter:
         status: PipelineTaskStatus,
         message: str,
     ):
+        """
+        Writes the report to the report storage mechanism for a particular
+        results storage object.
+
+        The log message will be built based on the context object provided before
+        being passed onto :code:`report`
+
+        :param context_object: The results storage object to write a report for
+        :param status: The status of the context object being reported
+        :param message: The message to record against the context object
+        """
         message_builder: Callable[
             [PipelineStorageObject, PipelineTaskStatus, str], str
         ] = {
@@ -147,8 +207,17 @@ class PipelineReporter:
 
 
 class MultiPipelineReporter(PipelineReporter):
+    """
+    A reporter class that allows reporting to multiple other reporter classes.
+    """
     def __init__(self, reporters):
-        logging.info(reporters)
+        """
+        :params reporters: A list of reporters to include. Each element in the list is
+            either a python path to the reporter class to use or a 2-tuple where the
+            first element is the the python path to the reporter class and the second
+            element is a dictionary of keyword arguments to pass to the reporter class
+            on instantiation.
+        """
         self.reporters = [object_from_config(reporter) for reporter in reporters]
 
     def report(self, *args, **kwargs):

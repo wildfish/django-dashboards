@@ -7,7 +7,7 @@ from wildcoeus.meta import ClassWithAppConfigMeta
 from wildcoeus.pipelines.registry import pipeline_registry
 from wildcoeus.pipelines.results.base import PipelineExecution
 from wildcoeus.pipelines.results.helpers import build_pipeline_execution
-from wildcoeus.registry.registry import Registerable
+from wildcoeus.registry.registry import Registrable
 
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -18,7 +18,7 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks.base import Task
 
 
-class Pipeline(Registerable, ClassWithAppConfigMeta):
+class Pipeline(Registrable, ClassWithAppConfigMeta):
     """
     The base pipeline class. All pipelines should be a subclass of this.
     """
@@ -159,7 +159,8 @@ class Pipeline(Registerable, ClassWithAppConfigMeta):
     @classmethod
     def get_iterator(cls):
         """
-        Pipelines can iterate over an object to run multiple times.
+        Returns a set of objects for multiple pipeline instances to be created for.
+        If no iteration is required, :code:`None` should be returned.
         """
         return None
 
@@ -267,25 +268,46 @@ class ModelPipeline(Pipeline):
 
     class Meta:
         abstract = True
-        model: ClassVar[Model]
 
-    def get_queryset(self, *args, **kwargs):
+        model: ClassVar[Model]
+        """The model class to use when fetching objects from the database"""
+
+    def get_queryset(self):
+        """
+        Returns a queryset containing all items for the model provided in the meta.
+        If :code:`model` is not defined on the :code:`Meta` class this method must be
+        overridden otherwise an :code:`ImproperlyConfigured` error will be raised.
+        """
         if self._meta.model is not None:
             queryset = self._meta.model._default_manager.all()
         else:
             raise ImproperlyConfigured(
                 "%(self)s is missing a QuerySet. Define "
-                "%(self)s.model or override "
+                "%(self)s.Meta.model or override "
                 "%(self)s.get_queryset()." % {"self": self.__class__.__name__}
             )
 
         return queryset
 
     def get_iterator(self):
+        """
+        Returns an iterator to run the pipeline over. By default this returns the result
+        of :code:`get_queryset`.
+        """
         return self.get_queryset()
 
     @staticmethod
-    def get_serializable_pipeline_object(obj):
+    def get_serializable_pipeline_object(obj: Optional[Model]):
+        """
+        Serializes an django model object so that it can be stored on the pipeline result
+        object.
+
+        If :code:`obj` is not :code:`None` the object will be stored as a dictionary containing
+        :code:`pk`, :code:`app_label` and :code:`model_name` so that the object can be retrieved
+        from the database.
+
+        :param obj: The object to serialize
+        """
         if not obj:
             return None
 

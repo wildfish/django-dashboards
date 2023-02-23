@@ -25,6 +25,9 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class OrmPipelineResultsStorage(PipelineResultsStorage):
+    """
+    Class to store pipeline results in the django ORM
+    """
     def _get_pipeline_execution_qs(self):
         return OrmPipelineExecution.objects.with_extra_stats()
 
