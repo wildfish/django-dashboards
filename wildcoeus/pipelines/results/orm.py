@@ -28,6 +28,7 @@ class OrmPipelineResultsStorage(PipelineResultsStorage):
     """
     Class to store pipeline results in the django ORM
     """
+
     def _get_pipeline_execution_qs(self):
         return OrmPipelineExecution.objects.with_extra_stats()
 
@@ -131,7 +132,9 @@ class OrmPipelineResultsStorage(PipelineResultsStorage):
                 total_success=Count(
                     "id", filter=Q(status=PipelineTaskStatus.DONE.value)
                 ),
-                total_failure=Count("id", filter=Q(status__in=PipelineTaskStatus.failed_statuses())),
+                total_failure=Count(
+                    "id", filter=Q(status__in=PipelineTaskStatus.failed_statuses())
+                ),
                 last_ran=Max("started"),
                 average_runtime=Avg(F("completed") - F("started")),
                 pipeline_id=F("execution__pipeline_id"),

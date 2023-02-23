@@ -108,8 +108,12 @@ def test_build_celery_canvas___multiple_pipeline___canvas_is_chord():
     ].serializable_pipeline_object == {"obj": 2}
     assert chord(
         [
-            Runner().expand_pipeline_result(pipeline_execution.get_pipeline_results()[0]),
-            Runner().expand_pipeline_result(pipeline_execution.get_pipeline_results()[1]),
+            Runner().expand_pipeline_result(
+                pipeline_execution.get_pipeline_results()[0]
+            ),
+            Runner().expand_pipeline_result(
+                pipeline_execution.get_pipeline_results()[1]
+            ),
         ],
         run_pipeline_execution_report.si(
             run_id=pipeline_execution.run_id,

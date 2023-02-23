@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import List, Optional
 
 from django import template
 from django.utils.timezone import now
@@ -22,7 +22,9 @@ def lookup(value, key):
 
 
 @register.filter
-def duration(delta_or_start: Optional[timedelta | datetime], end: Optional[datetime] = None):
+def duration(
+    delta_or_start: Optional[timedelta | datetime], end: Optional[datetime] = None
+):
     """
     Converts a time delta into a formatted string.
 
@@ -124,4 +126,3 @@ def status_text(status: str | PipelineTaskStatus):
         PipelineTaskStatus.CONFIG_ERROR.value: "Configuration Error",
         PipelineTaskStatus.VALIDATION_ERROR.value: "Input Validation Error",
     }.get(status, "")
-

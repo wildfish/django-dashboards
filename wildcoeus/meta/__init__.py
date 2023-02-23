@@ -8,6 +8,7 @@ class ClassWithMeta:
     Base class for classes that need a :code:`Meta` class to be processed into
     the :code:`_meta` property
     """
+
     _meta: Type[Any]
 
     class Meta:
@@ -107,6 +108,7 @@ class ClassWithAppConfigMeta(ClassWithMeta):
     part of a django application, the :code:`app_class` must be specified
     in the :code:`Meta` class otherwise an error is raised.
     """
+
     _meta: Type["ClassWithAppConfigMeta.Meta"]
 
     class Meta(ClassWithMeta.Meta):

@@ -145,6 +145,7 @@ class PipelineResultView(IsStaffRequiredMixin, TemplateView):
 
     :param run_id: The id of the run to view.
     """
+
     template_name = "wildcoeus/pipelines/results_list.html"
 
 
@@ -298,7 +299,7 @@ class TaskResultReRunView(IsStaffRequiredMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        task = self.object.get_task_instance()
+        task = self.object.get_task()
         if task is None:
             raise Http404()
 

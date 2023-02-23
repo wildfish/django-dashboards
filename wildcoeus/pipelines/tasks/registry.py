@@ -7,6 +7,7 @@ class TaskRegistry(Registry):
     """
     Registry to contain all tasks within the project.
     """
+
     def load_task_from_id(
         self,
         pipeline_task: str,

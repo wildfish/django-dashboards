@@ -63,7 +63,7 @@ class PipelineStorageObject:
 
     content_type_name: str
     """
-    The type name of the results object. This is used throughout the system and is set by the specific base class 
+    The type name of the results object. This is used throughout the system and is set by the specific base class
     and should not be changed.
     """
 
@@ -99,9 +99,6 @@ class PipelineStorageObject:
 
     get_input_data: Callable[[], Dict[str, Any]]
     """Returns the input data for the pipeline run"""
-
-    get_pipeline: Callable[[], "Pipeline"]
-    """Returns the registered pipeline class"""
 
     save: Callable[[], Any]
     """Commits the current object state to the storage"""
@@ -181,7 +178,15 @@ class PipelineStorageObject:
         )
 
 
-class PipelineExecution(PipelineStorageObject):
+class GetPipelineMixin:
+    def get_pipeline(self) -> "Pipeline":
+        """Returns the registered pipeline object"""
+        from wildcoeus.pipelines.registry import pipeline_registry
+
+        return pipeline_registry.get(pipeline_task=self.get_pipeline_id())()  # type: ignore
+
+
+class PipelineExecution(GetPipelineMixin, PipelineStorageObject):
     """
     Object to store the overall result of a pipeline run
     """
@@ -190,7 +195,7 @@ class PipelineExecution(PipelineStorageObject):
     get_pipeline_results: Callable[[], Sequence["PipelineResult"]]
 
 
-class PipelineResult(PipelineStorageObject):
+class PipelineResult(GetPipelineMixin, PipelineStorageObject):
     content_type_name = "PipelineResult"
 
     get_id: Callable[[], Any]
@@ -214,14 +219,23 @@ class PipelineResult(PipelineStorageObject):
     get_task_executions: Callable[[], Sequence["TaskExecution"]]
     """Returns all the task execution objects for this particular pipeline instance"""
 
-    get_pipeline: Callable[[], "Pipeline"]
-    """Returns the registered pipeline class"""
-
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_pipeline_execution()
 
 
-class TaskExecution(PipelineStorageObject):
+class GetTaskMixin:
+    def get_task(self) -> "Task":
+        """Gets the registered task object"""
+        from wildcoeus.pipelines.tasks import task_registry
+
+        return task_registry.load_task_from_id(
+            pipeline_task=self.get_pipeline_task(),  # type: ignore
+            task_id=self.get_task_id(),  # type: ignore
+            config=self.get_config(),  # type: ignore
+        )
+
+
+class TaskExecution(GetTaskMixin, GetPipelineMixin, PipelineStorageObject):
     content_type_name = "TaskExecution"
 
     get_id: Callable[[], Any]
@@ -245,30 +259,14 @@ class TaskExecution(PipelineStorageObject):
     get_pipeline_object: Callable[[], "Pipeline"]
     """Gets the deserialized pipeline object"""
 
-    get_pipeline: Callable[[], "Pipeline"]
-    """Returns the registered pipeline class"""
-
-    get_task: Callable[[], "Task"]
-    """Gets the registered task class"""
-
     get_task_results: Callable[[], Sequence["TaskResult"]]
     """Gets all the results for this task execution"""
 
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_pipeline_result()
 
-    def get_task(self) -> "Task":
-        """Gets the registered task class"""
-        from wildcoeus.pipelines.tasks import task_registry
 
-        return task_registry.load_task_from_id(
-            pipeline_task=self.pipeline_task,
-            task_id=self.task_id,
-            config=self.config,
-        )
-
-
-class TaskResult(PipelineStorageObject):
+class TaskResult(GetTaskMixin, GetPipelineMixin, PipelineStorageObject):
     content_type_name = "TaskResult"
 
     get_id: Callable[[], Any]
@@ -298,18 +296,8 @@ class TaskResult(PipelineStorageObject):
     get_task_execution: Callable[[], TaskExecution]
     """Returns the task execution related to this object"""
 
-    get_pipeline: Callable[[], "Pipeline"]
-    """Returns the registered pipeline class"""
-
-    get_task: Callable[[], "Task"]
-    """Gets the registered task class"""
-
     def _get_propagate_parent(self) -> Optional["PipelineStorageObject"]:
         return self.get_task_execution()
-
-    def get_task(self) -> "Task":
-        """Gets the registered task class"""
-        return self.get_task_execution().get_task()
 
     def get_duration(self):
         """

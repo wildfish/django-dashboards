@@ -34,6 +34,7 @@ class LogFilterForm(forms.Form):
     """
     Form for filtering pipeline logs based on the type and id of the selected object
     """
+
     type = forms.CharField()
     """The type of object to filter logs by"""
 

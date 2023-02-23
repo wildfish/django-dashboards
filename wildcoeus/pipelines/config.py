@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.utils.module_loading import import_string
 
 from wildcoeus.config import object_from_config
 from wildcoeus.pipelines.runners import PipelineRunner

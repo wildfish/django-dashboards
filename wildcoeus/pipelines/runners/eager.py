@@ -11,6 +11,7 @@ class Runner(PipelineRunner):
     Runs each tasks synchronously. This should only be used for development
     and is not intended for a production environment.
     """
+
     def _task_can_be_ran(
         self,
         task_execution: TaskExecution,

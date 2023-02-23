@@ -82,9 +82,7 @@ def test_start__start_runner_called(test_pipeline):
         {},
     )
 
-    with patch(
-        "wildcoeus.pipelines.runners.base.PipelineRunner.start_runner"
-    ) as runner:
+    with patch("wildcoeus.pipelines.runners.base.PipelineRunner.run") as runner:
         PipelineRunner().start(
             pipeline_execution,
             reporter=reporter,

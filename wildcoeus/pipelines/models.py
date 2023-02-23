@@ -34,12 +34,16 @@ class PipelineLog(TimeStampedModel):
     """
     Model to store pipeline logs in the database
     """
-    context_type = models.CharField(max_length=255, choices=[
-        PipelineExecution.content_type_name,
-        PipelineResult.content_type_name,
-        TaskExecution.content_type_name,
-        TaskResult.content_type_name,
-    ])
+
+    context_type = models.CharField(
+        max_length=255,
+        choices=[
+            (PipelineExecution.content_type_name, PipelineExecution.content_type_name),
+            (PipelineExecution.content_type_name, PipelineResult.content_type_name),
+            (PipelineExecution.content_type_name, TaskExecution.content_type_name),
+            (PipelineExecution.content_type_name, TaskResult.content_type_name),
+        ],
+    )
     """
     The type of object to log a message against (one of PipelineExecution, PipelineResult, TaskExecution and TaskResult)
     """
@@ -71,6 +75,7 @@ class OrmPipelineExecutionQuerySet(QuerySet):
     """
     Custom query set for managing pipeline execution objects.
     """
+
     def with_extra_stats(self):
         """
         Attaches extra properties to the pipeline execution queryset so that
@@ -194,6 +199,7 @@ class OrmPipelineResult(PipelineResult, models.Model):
     """
     The status of a given pipeline result
     """
+
     execution = models.ForeignKey(
         OrmPipelineExecution,
         related_name="results",

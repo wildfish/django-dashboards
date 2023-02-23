@@ -14,7 +14,7 @@
       <label for="id-toggle-open-task-execution-{{ obj.get_id }}">
         <strong>{{ obj.get_pipeline_task }} ({{ obj.get_task_id }})</strong>
         {% if obj.get_pipeline_object is not None %}<em>for {{ obj.get_pipeline_object }}</em>{% endif %}
-        <span>: {% status_text obj.get_status %} ({% duration obj.get_started obj.get_completed %})</span>
+        <span>: {% status_text obj.get_status %} ({{ obj.get_started|duration:obj.get_completed }})</span>
       </label>
       <ul class="pipeline-results-toggleable-content pipeline-results-list">
         {% include "wildcoeus/pipelines/includes/task-result-listing.html" with object_list=obj.get_task_results %}

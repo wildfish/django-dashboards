@@ -164,12 +164,10 @@ def test_tasks_has_a_missing_parent___error_is_raised():
             app_label = "pipelinetest"
 
     class TestPipeline(Pipeline):
-        bad = BadConfig(
-            config={
-                "parents": ["missing"],
-            }
-        )
-        good = GoodConfig(config={})
+        bad = BadConfig()
+        good = GoodConfig()
+
+        ordering = {"bad": ["missing"]}
 
         class Meta:
             app_label = "pipelinetest"
@@ -282,18 +280,12 @@ def test_pipeline___model__all_tasks_have_a_good_config___runner_is_started_task
     assert pipeline_result_a.status == PipelineTaskStatus.PENDING.value
     assert task_execution_a.status == PipelineTaskStatus.PENDING.value
     assert task_result_a.status == PipelineTaskStatus.PENDING.value
-    assert (
-        task_result_a.get_task().get_object(task_result_a.serializable_pipeline_object)
-        == users[0]
-    )
+    assert task_result_a.get_pipeline_object() == users[0]
 
     assert pipeline_result_b.status == PipelineTaskStatus.PENDING.value
     assert task_execution_b.status == PipelineTaskStatus.PENDING.value
     assert task_result_b.status == PipelineTaskStatus.PENDING.value
-    assert (
-        task_result_b.get_task().get_object(task_result_a.serializable_pipeline_object)
-        == users[0]
-    )
+    assert task_result_a.get_pipeline_object() == users[0]
 
     runner.start.assert_called_once_with(pipeline_execution, reporter=reporter)
 
@@ -326,17 +318,11 @@ def test_pipeline___model_qs__all_tasks_have_a_good_config___runner_is_started_t
     assert pipeline_result_a.status == PipelineTaskStatus.PENDING.value
     assert task_execution_a.status == PipelineTaskStatus.PENDING.value
     assert task_result_a.status == PipelineTaskStatus.PENDING.value
-    assert (
-        task_result_a.get_task().get_object(task_result_a.serializable_pipeline_object)
-        == users[0]
-    )
+    assert task_result_a.get_pipeline_object() == users[0]
 
     assert pipeline_result_b.status == PipelineTaskStatus.PENDING.value
     assert task_execution_b.status == PipelineTaskStatus.PENDING.value
     assert task_result_b.status == PipelineTaskStatus.PENDING.value
-    assert (
-        task_result_b.get_task().get_object(task_result_a.serializable_pipeline_object)
-        == users[0]
-    )
+    assert task_result_a.get_pipeline_object() == users[0]
 
     runner.start.assert_called_once_with(pipeline_execution, reporter=reporter)

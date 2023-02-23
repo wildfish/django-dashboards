@@ -9,6 +9,7 @@ class Registrable:
     """
     Base class for any class that should be registered in a registry.
     """
+
     _meta: Any
 
     @classmethod

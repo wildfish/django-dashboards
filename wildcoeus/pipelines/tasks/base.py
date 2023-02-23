@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -16,6 +16,7 @@ class TaskConfig(BaseModel):
     """
     Base class all task configs should be built from
     """
+
     class Config:
         extra = Extra.allow
 
@@ -28,16 +29,14 @@ class Task(Registrable, ClassWithAppConfigMeta):
 
     pipeline_task: str
     """
-    The attribute this tasks is named against. This is set via 
+    The attribute this tasks is named against. This is set via
     :code:`__init_subclass__` on Pipeline
     """
 
     ConfigType: Type[TaskConfig] = TaskConfig
     """pydantic class used to validate the task arguments"""
 
-    InputType: Optional[
-        Type[BaseModel]
-    ] = None
+    InputType: Optional[Type[BaseModel]] = None
     """pydantic class used to validate task input data"""
 
     def __init_subclass__(cls, **kwargs):
@@ -53,8 +52,8 @@ class Task(Registrable, ClassWithAppConfigMeta):
         self.task_id = self.get_id()
         self._config = config or {}
         self.cleaned_config = self.clean_config(config or {})
-        self.pipeline_object = None
-        self.task_object = None
+        self.pipeline_object: Optional[Any] = None
+        self.task_object: Optional[Any] = None
 
     @classmethod
     def get_iterator(cls):
@@ -181,6 +180,7 @@ class ModelTask(Task):
     """
     The base task class to use when iterating over many model instances.
     """
+
     class Meta:
         model: Optional[str]
         """The model class to use when fetching objects from the database"""
@@ -235,6 +235,7 @@ class TaskError(Exception):
     """
     Base error raised by tasks
     """
+
     def __init__(self, task: Task, msg: str):
         super().__init__(msg)
         self.task = task
@@ -245,6 +246,7 @@ class ConfigValidationError(TaskError):
     """
     Error raised when there is one or more errors in the task config
     """
+
     pass
 
 
@@ -252,4 +254,5 @@ class InputValidationError(TaskError):
     """
     Error raised when there is one or more errors in the task input data
     """
+
     pass

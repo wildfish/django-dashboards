@@ -143,7 +143,9 @@ class Runner(PipelineRunner):
             # build a chord that runs the only pipeline result
             # and processes the final state of the pipeline
             return chain(
-                self.expand_pipeline_result(pipeline_execution.get_pipeline_results()[0]),
+                self.expand_pipeline_result(
+                    pipeline_execution.get_pipeline_results()[0]
+                ),
                 on_complete,
             )
         else:

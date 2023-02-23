@@ -28,18 +28,18 @@ class Pipeline(Registrable, ClassWithAppConfigMeta):
 
     ordering: Optional[dict[str, List[str]]] = None
     """
-    The overridden ordering of tasks in the pipeline. If set, tasks will be ran 
-    in the order they are defined in the pipeline class. If set to something other 
+    The overridden ordering of tasks in the pipeline. If set, tasks will be ran
+    in the order they are defined in the pipeline class. If set to something other
     than :code:`None`, it should be a dictionary of task property names mapped to
     lists of parent task property names. For example::
-    
+
         ordering = {
             "b": ["a"],
             "c": ["b"],
         }
-        
-    would cause :code:`b` to be ran after :code:`a` and :code:`c` to be ran after :code:`b` 
-    
+
+    would cause :code:`b` to be ran after :code:`a` and :code:`c` to be ran after :code:`b`
+
     .. note::
        If defined, anything not present in the dictionary is assumes to have no
        dependencies and can be started at any point.
@@ -108,7 +108,7 @@ class Pipeline(Registrable, ClassWithAppConfigMeta):
             for t in other_tasks
             if t.pipeline_task != task.pipeline_task
         ]
-        parent_keys = self.ordering.get(task.pipeline_task, [])
+        parent_keys = (self.ordering or {}).get(task.pipeline_task, [])
 
         if not all(p in other_pipeline_tasks for p in parent_keys):
             pipeline_execution = build_pipeline_execution(
@@ -142,7 +142,9 @@ class Pipeline(Registrable, ClassWithAppConfigMeta):
         if self.ordering:
             return list(
                 map(
-                    lambda t: self.clean_parents(t, reporter, runner, run_id) if t else t,
+                    lambda t: self.clean_parents(t, reporter, runner, run_id)
+                    if t
+                    else t,
                     self.tasks.values() if self.tasks else {},
                 )
             )

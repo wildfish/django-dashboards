@@ -9,6 +9,7 @@ class LoggingReporter(PipelineReporter):
     """
     A reporter class that writes messages to the standard python logging mechanism.
     """
+
     def report(
         self,
         context_object: PipelineStorageObject,

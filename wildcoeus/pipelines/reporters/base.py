@@ -1,4 +1,3 @@
-import logging
 from typing import Callable
 
 from wildcoeus.config import object_from_config
@@ -18,6 +17,7 @@ class PipelineReporter:
     pipelines. This should be extended providing a :code:`report` method
     to implement a new reporting mechanism.
     """
+
     def report(
         self,
         context_object: PipelineStorageObject,
@@ -210,6 +210,7 @@ class MultiPipelineReporter(PipelineReporter):
     """
     A reporter class that allows reporting to multiple other reporter classes.
     """
+
     def __init__(self, reporters):
         """
         :params reporters: A list of reporters to include. Each element in the list is

@@ -9,7 +9,9 @@ from wildcoeus.pipelines.results.helpers import cleanup_task_results
 
 
 class Command(BaseCommand):
-    help = "Delete PipelineExecution and PipelineLog objects based on a deletion cutoff."
+    help = (
+        "Delete PipelineExecution and PipelineLog objects based on a deletion cutoff."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument("--days", type=int, required=False)
