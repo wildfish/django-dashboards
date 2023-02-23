@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional, Type, Literal
+from typing import Any, Dict, Literal, Optional, Type
 
 from django.http import HttpRequest
 from django.urls import reverse
@@ -20,7 +20,7 @@ class FormData:
 @dataclass
 class Form(Component):
     template_name: str = "wildcoeus/dashboards/components/form/form.html"
-    css_classes: Optional[Dict[str, str]] = None
+    css_classes: Optional[Dict[str, str]] = None  # type: ignore
     form: Optional[Type[DashboardForm]] = None
     method: Literal["get", "post"] = "get"
     trigger: Literal["change", "submit"] = "change"
@@ -40,6 +40,9 @@ class Form(Component):
 
     def get_submit_url(self):
         """url the form sends data to on Submit"""
+        if not self.dashboard:
+            raise Exception("Dashboard is not set on Form Component")
+
         # if it has been passed in use that, otherwise generate based on component
         if self.submit_url:
             return self.submit_url

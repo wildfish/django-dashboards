@@ -1,8 +1,5 @@
-import datetime
 from dataclasses import dataclass, field
-from typing import Callable, Optional, Union
-
-from django.http import HttpRequest
+from typing import Optional, Union
 
 from .base import Component
 

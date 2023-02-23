@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0002_rename_last_run_pipelineexecution_started_and_more"),
     ]

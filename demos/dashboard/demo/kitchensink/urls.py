@@ -3,9 +3,9 @@ from django.urls import path
 from demo.kitchensink import dashboards
 from demo.kitchensink.views import (
     AsyncComponentView,
-    NoTemplateComponentDeferView,
     CustomComponentView,
     NormalView,
+    NoTemplateComponentDeferView,
     SyncComponentView,
 )
 

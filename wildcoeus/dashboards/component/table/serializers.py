@@ -81,6 +81,8 @@ class TableSerializer(TableMixin, ClassWithMeta):
         if filters:
             start = int(filters.get("start", start))
             length = int(filters.get("length", length))
+            if length < 1:
+                length = initial_count
             draw = int(filters.get("draw", draw))
 
         # apply filtering, sorting and pagination (datatables)

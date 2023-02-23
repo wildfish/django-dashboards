@@ -13,7 +13,6 @@ from wildcoeus.dashboards.component import Stat
 class Command(BaseCommand):
     def handle(self, *args, **options):
         while True:
-
             # sse_stat
             value = randint(1, 100)
             sse_stat = Stat(

@@ -60,6 +60,7 @@ fake = Faker()
 
 def get_bubble_chart(*args, **kwargs):
     import plotly.express as px
+
     df = px.data.iris()
     fig = px.scatter(
         df,
@@ -70,9 +71,6 @@ def get_bubble_chart(*args, **kwargs):
     )
     fig = fig.update_traces(mode="markers")
     return fig.to_json()
-
-
-
 
 
 class DemoDashboard(Dashboard):
@@ -128,10 +126,12 @@ class DemoDashboard(Dashboard):
         defer=DashboardData.fetch_scatter_chart_data, grid_css_classes=Grid.ONE.value
     )
     stat_one = Stat(
-        value=StatData(text="100%", sub_text="increase"), grid_css_classes=Grid.FOUR.value
+        value=StatData(text="100%", sub_text="increase"),
+        grid_css_classes=Grid.FOUR.value,
     )
     stat_two = Stat(
-        value=StatData(text="88%", sub_text="decrease", change_by="12%"), grid_css_classes=Grid.FOUR.value
+        value=StatData(text="88%", sub_text="decrease", change_by="12%"),
+        grid_css_classes=Grid.FOUR.value,
     )
     gauge_one = Chart(
         defer=ExampleGaugeChartSerializer,
