@@ -3,58 +3,57 @@ import time
 from pydantic import BaseModel
 
 from wildcoeus.pipelines.base import Pipeline
-from wildcoeus.pipelines.models import ValueStore
 from wildcoeus.pipelines.tasks import Task, TaskConfig
 
 
-class EchoConfigType(TaskConfig):
+class TaskWaitConfigType(TaskConfig):
     wait: int
+#
+#
+# class EchoInputType(BaseModel):
+#     message: str
+#
+#
+# class SaveMessageTask(Task):
+#     title = "Echo message"
+#     ConfigType = TaskWaitConfigType
+#     InputType = EchoInputType
+#
+#     def run(self, pipeline_id: str, run_id: str, cleaned_data):
+#         time.sleep(self.cleaned_config.wait)
+#         ValueStore.store(
+#             pipeline_id=pipeline_id,
+#             run_id=run_id,
+#             key="message",
+#             value=cleaned_data.message,
+#         )
+#
+#
+# class EchoMessageTask(Task):
+#     title = "Echo message from Store"
+#     ConfigType = TaskWaitConfigType
+#     InputType = EchoInputType
+#
+#     def run(self, pipeline_id: str, run_id: str, cleaned_data):
+#         time.sleep(self.cleaned_config.wait)
+#         message = ValueStore.get(
+#             pipeline_id=pipeline_id,
+#             run_id=run_id,
+#             key="message",
+#         )
+#         print(message)
 
-
-class EchoInputType(BaseModel):
-    message: str
-
-
-class SaveMessageTask(Task):
-    title = "Echo message"
-    ConfigType = EchoConfigType
-    InputType = EchoInputType
-
-    def run(self, pipeline_id: str, run_id: str, cleaned_data):
-        time.sleep(self.cleaned_config.wait)
-        ValueStore.store(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            key="message",
-            value=cleaned_data.message,
-        )
-
-
-class EchoMessageTask(Task):
-    title = "Echo message from Store"
-    ConfigType = EchoConfigType
-    InputType = EchoInputType
-
-    def run(self, pipeline_id: str, run_id: str, cleaned_data):
-        time.sleep(self.cleaned_config.wait)
-        message = ValueStore.get(
-            pipeline_id=pipeline_id,
-            run_id=run_id,
-            key="message",
-        )
-        print(message)
-
-
-class BasicPipeline(Pipeline):
-    save_message = SaveMessageTask(config={"wait": 2})
-    echo_message = EchoMessageTask(config={"wait": 4})
-
-    class Meta:
-        title = "Basic pipeline with 2 steps"
+#
+# class BasicPipeline(Pipeline):
+#     save_message = SaveMessageTask(config={"wait": 2})
+#     echo_message = EchoMessageTask(config={"wait": 4})
+#
+#     class Meta:
+#         title = "Basic pipeline with 2 steps"
 
 
 class TestTaskIterator(Task):
-    ConfigType = EchoConfigType
+    ConfigType = TaskWaitConfigType
 
     def run(self, *args, **kwargs):
         time.sleep(self.cleaned_config.wait)

@@ -8,11 +8,11 @@
       <input class="pipeline-results-hide-toggle"
              type="radio"
              name="filter"
-             value="PipelineResult-{{ obj.get_run_id }}"
-             id="id-toggle-open-pipeline-result-{{ obj.get_run_id }}"
+             value="PipelineResult-{{ obj.get_id }}"
+             id="id-toggle-open-pipeline-result-{{ obj.get_id }}"
              hx-get="{% url "wildcoeus.pipelines:logs-filter" obj.get_run_id %}"
       />
-      <label for="id-toggle-open-pipeline-result-{{ obj.get_run_id }}">
+      <label for="id-toggle-open-pipeline-result-{{ obj.get_id }}">
         <strong>{{ obj.get_pipeline_id }}</strong>
         {% if obj.get_pipeline_object is not None %}<em>for {{ obj.get_pipeline_object }}</em>{% endif %}
         <span>: {% status_text obj.get_status %} ({{ obj.get_started|duration:obj.get_completed }})</span>
