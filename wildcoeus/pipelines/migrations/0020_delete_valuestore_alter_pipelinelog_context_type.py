@@ -4,18 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pipelines', '0019_alter_ormpipelineexecution_completed_and_more'),
+        ("pipelines", "0019_alter_ormpipelineexecution_completed_and_more"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='ValueStore',
+            name="ValueStore",
         ),
         migrations.AlterField(
-            model_name='pipelinelog',
-            name='context_type',
-            field=models.CharField(choices=[('PipelineExecution', 'PipelineExecution'), ('PipelineExecution', 'PipelineResult'), ('PipelineExecution', 'TaskExecution'), ('PipelineExecution', 'TaskResult')], max_length=255),
+            model_name="pipelinelog",
+            name="context_type",
+            field=models.CharField(
+                choices=[
+                    ("PipelineExecution", "PipelineExecution"),
+                    ("PipelineExecution", "PipelineResult"),
+                    ("PipelineExecution", "TaskExecution"),
+                    ("PipelineExecution", "TaskResult"),
+                ],
+                max_length=255,
+            ),
         ),
     ]
