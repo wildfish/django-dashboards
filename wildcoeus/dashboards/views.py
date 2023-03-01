@@ -92,6 +92,7 @@ class DashboardView(DashboardObjectMixin, TemplateView):
         else:
             return [self.template_name]
 
+
 class ComponentView(DashboardObjectMixin, TemplateView):
     """
     Component view, partial rendering of a single component to support HTMX calls.
