@@ -27,6 +27,12 @@ else:
 class DashboardObjectMixin(mixin_class):
     dashboard_class: Optional[Dashboard] = None
 
+    def is_ajax(self):
+        return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+    def is_htmx(self):
+        return self.request.headers.get("hx-request") == "true"
+
     def dispatch(self: TemplateView, request, *args, **kwargs):
         if not self.dashboard_class:
             try:
@@ -73,12 +79,18 @@ class DashboardView(DashboardObjectMixin, TemplateView):
     """
 
     template_name: str = "wildcoeus/dashboards/dashboard.html"
+    partial_template_name: str = "wildcoeus/dashboards/dashboard_partial.html"
 
     def get(self, request, *args, **kwargs):
         dashboard = self.get_dashboard(request=request)
         context = self.get_context_data(**{"dashboard": dashboard})
         return self.render_to_response(context)
 
+    def get_template_names(self):
+        if self.is_htmx():  # a certain check
+            return [self.partial_template_name]
+        else:
+            return [self.template_name]
 
 class ComponentView(DashboardObjectMixin, TemplateView):
     """
@@ -86,9 +98,6 @@ class ComponentView(DashboardObjectMixin, TemplateView):
     """
 
     template_name: str = "wildcoeus/dashboards/components/partial.html"
-
-    def is_ajax(self):
-        return self.request.headers.get("x-requested-with") == "XMLHttpRequest"
 
     def get(self, request: HttpRequest, *args, **kwargs):
         dashboard = self.get_dashboard(request=request)
