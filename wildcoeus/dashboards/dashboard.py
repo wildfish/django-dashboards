@@ -15,10 +15,10 @@ from wildcoeus.dashboards.config import Config
 from wildcoeus.dashboards.log import logger
 from wildcoeus.dashboards.permissions import BasePermission
 from wildcoeus.meta import ClassWithAppConfigMeta
-from wildcoeus.registry.registry import Registerable
+from wildcoeus.registry.registry import Registrable
 
 
-class Dashboard(Registerable, ClassWithAppConfigMeta):
+class Dashboard(Registrable, ClassWithAppConfigMeta):
     components: Dict[str, Any]
 
     class Meta(ClassWithAppConfigMeta.Meta):

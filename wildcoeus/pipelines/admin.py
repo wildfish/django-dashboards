@@ -32,6 +32,3 @@ class PipelineResultAdmin(admin.ModelAdmin):
 class PipelineLogAdmin(admin.ModelAdmin):
     list_display = ("log_message", "created")
     list_filter = ("run_id", "context_type", "context_id")
-
-
-admin.site.register(models.ValueStore)

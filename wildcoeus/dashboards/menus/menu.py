@@ -5,7 +5,7 @@ from django.urls import resolve
 
 from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
 from wildcoeus.dashboards.registry import registry
-from wildcoeus.registry.registry import Registerable
+from wildcoeus.registry.registry import Registrable
 
 
 def make_dashboard_item(
@@ -31,7 +31,7 @@ def make_dashboard_item(
     )
 
 
-class Menu(Registerable):
+class Menu(Registrable):
     name: str
 
     @classmethod

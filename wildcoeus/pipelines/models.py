@@ -24,23 +24,47 @@ from wildcoeus.pipelines.results.base import (
     TaskExecution,
     TaskResult,
 )
-from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
+from wildcoeus.pipelines.status import PipelineTaskStatus
 from wildcoeus.pipelines.tasks import Task
 from wildcoeus.pipelines.tasks.registry import task_registry
 from wildcoeus.pipelines.utils import get_object
 
 
 class PipelineLog(TimeStampedModel):
-    context_type = models.CharField(max_length=255)
+    """
+    Model to store pipeline logs in the database
+    """
+
+    context_type = models.CharField(
+        max_length=255,
+        choices=[
+            (PipelineExecution.content_type_name, PipelineExecution.content_type_name),
+            (PipelineExecution.content_type_name, PipelineResult.content_type_name),
+            (PipelineExecution.content_type_name, TaskExecution.content_type_name),
+            (PipelineExecution.content_type_name, TaskResult.content_type_name),
+        ],
+    )
+    """
+    The type of object to log a message against (one of PipelineExecution, PipelineResult, TaskExecution and TaskResult)
+    """
+
     context_id = models.CharField(max_length=255)
+    """The id of the object to log a message against"""
+
     pipeline_id = models.CharField(max_length=255)
+    """Id of the pipeline being ran"""
+
     run_id = models.CharField(max_length=255, blank=True)
+    """The run_id of the object"""
+
     status = models.CharField(max_length=255, choices=PipelineTaskStatus.choices())
+    """The status of the object"""
+
     message = models.TextField(blank=True)
+    """The message to record"""
 
     @property
     def log_message(self):
-        # return f"Pipeline {self.pipeline_id} changed to state {self.get_status_display()}: {self.message}"
         return self.message
 
     def __str__(self):
@@ -48,7 +72,15 @@ class PipelineLog(TimeStampedModel):
 
 
 class OrmPipelineExecutionQuerySet(QuerySet):
+    """
+    Custom query set for managing pipeline execution objects.
+    """
+
     def with_extra_stats(self):
+        """
+        Attaches extra properties to the pipeline execution queryset so that
+        each of the objects conform to the results storage interface.
+        """
         results_qs = (
             OrmPipelineResult.objects.values_list("execution__id")
             .filter(execution_id=OuterRef("id"))
@@ -80,35 +112,69 @@ class OrmPipelineExecutionQuerySet(QuerySet):
 
 
 class OrmPipelineExecution(PipelineExecution, models.Model):
+    """
+    Model to store pipeline execution status in the django ORM
+    """
+
     pipeline_id = models.CharField(max_length=255)
+    """The id of the registered pipeline class"""
+
     run_id = models.CharField(max_length=255, default=uuid.uuid4, unique=True)
+    """The id of the run to link the execution to"""
+
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
         db_index=True,
     )
+    """The current status of the execution"""
+
     input_data = models.JSONField(blank=True, null=True)
+    """The data passed into the pipeline when ran"""
+
     started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The date and time when the run was started"""
+
     completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The date and time when the run finishes (whether successful or not)"""
 
     objects = OrmPipelineExecutionQuerySet.as_manager()
 
     def get_pipeline_results(self) -> Sequence["PipelineResult"]:
+        """
+        Returns all pipeline results associated with this execution
+        from the database
+        """
         return self.results.all()
 
     def get_pipeline(self) -> Pipeline:
+        """
+        Returns the registered pipeline class
+        """
         return pipeline_registry.get_by_id(self.pipeline_id)
 
     def get_status(self):
+        """
+        Returns the current status of the pipeline
+        """
         return PipelineTaskStatus[self.status]
 
 
 class OrmPipelineResultQuerySet(QuerySet):
     def for_run_id(self, run_id):
+        """
+        Fetches all pipeline results for a given run id
+
+        :param run_id: The run id to fetch all objects for.
+        """
         return self.filter(execution__run_id=run_id)
 
     def with_extra_stats(self):
+        """
+        Attaches extra properties to the pipeline result queryset so that
+        each of the objects conform to the results storage interface.
+        """
         tasks_qs = (
             OrmTaskResult.objects.values_list("id")
             .filter(execution__pipeline_result__execution_id=OuterRef("id"))
@@ -130,23 +196,40 @@ class OrmPipelineResultQuerySet(QuerySet):
 
 
 class OrmPipelineResult(PipelineResult, models.Model):
+    """
+    The status of a given pipeline result
+    """
+
     execution = models.ForeignKey(
         OrmPipelineExecution,
         related_name="results",
         on_delete=models.CASCADE,
         null=True,
     )
+    """The pipeline execution relating to the current pipeline run"""
+
     serializable_pipeline_object = models.JSONField(blank=True, null=True)
+    """The object related to this results instance"""
+
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
         db_index=True,
     )
+    """The current status of this result"""
+
     runner = models.CharField(max_length=255, blank=True, null=True)
+    """The python path to the runner the pipeline was started with"""
+
     reporter = models.CharField(max_length=255, blank=True, null=True)
+    """The python path to the reporter the pipeline was started with"""
+
     started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The time the pipeline was started"""
+
     completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The date and time when the run finishes (whether successful or not)"""
 
     objects = OrmPipelineResultQuerySet.as_manager()
 
@@ -156,51 +239,86 @@ class OrmPipelineResult(PipelineResult, models.Model):
     def __str__(self):
         return f"{self.pipeline_id} started on {self.started}"
 
-    def get_task_results(self):
-        return OrmTaskResult.objects.filter(run_id=self.run_id)
-
-    def get_status(self):
+    def get_status(self) -> PipelineTaskStatus:
+        """
+        Returns the current status of the pipeline
+        """
         return PipelineTaskStatus[self.status]
 
     @property
     def pipeline_id(self):
+        """
+        The id of the registered pipeline class
+        """
         return self.execution.pipeline_id
 
     @property
     def input_data(self):
+        """
+        The data the pipeline was started with
+        """
         return self.execution.input_data
 
     def get_pipeline(self) -> Pipeline:
+        """
+        Returns the registered pipeline class
+        """
         return self.execution.get_pipeline()
 
     def get_pipeline_execution(self) -> PipelineExecution:
+        """
+        Returns the parent pipeline execution object
+        """
         return self.execution
 
     def get_task_executions(self) -> Sequence["TaskExecution"]:
+        """
+        Returns all task execution objects for this pipeline instance
+        """
         return self.task_executions.all()
 
     @property
     def run_id(self):
+        """
+        The id of the run for this pipeline
+        """
         return self.execution.run_id
 
     @property
     def failed(self):
-        return self.status in FAILED_STATUES
+        """
+        True if the result is in a failed state, otherwise false
+        """
+        return self.status in PipelineTaskStatus.failed_statuses()
 
     @cached_property
     def pipeline_object(self):
+        """
+        The deserialized pipeline object for this pipeline instance
+        """
         return get_object(self.serializable_pipeline_object)
 
 
 class TaskExecutionQuerySet(QuerySet):
     def for_run_id(self, run_id):
+        """
+        Returns a queryset containing all task executions for the given run id
+
+        :param run_id: The id of the run to filter by
+        """
         return self.filter(pipeline_result__execution__run_id=run_id)
 
     def not_completed(self):
+        """
+        Returns all uncompleted task executions
+        """
         statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
         return self.filter(status__in=statues)
 
     def with_duration(self):
+        """
+        Annotates the queryset with the time it took for all tasks to complete
+        """
         duration = ExpressionWrapper(
             F("completed") - F("started"), output_field=fields.DurationField()
         )
@@ -214,43 +332,63 @@ class OrmTaskExecution(TaskExecution, models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
+    """The pipeline result this task is linked to"""
+
     task_id = models.CharField(max_length=255)
+    """The id of the registered task class"""
+
     pipeline_task = models.CharField(max_length=255)
+    """The name of the task property on the piepline"""
+
     config = models.JSONField()
+    """The configuration used to instantiate the task"""
+
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
         db_index=True,
     )
+    """The string representation of the task status"""
+
     started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The time the pipeline was started"""
+
     completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The date and time when the run finishes (whether successful or not)"""
 
     objects = TaskExecutionQuerySet.as_manager()
 
     def get_status(self):
+        """Returns the status of the task"""
         return PipelineTaskStatus[self.status]
 
     @property
     def input_data(self):
+        """Returns the input data the pipeline was started with"""
         return self.pipeline_result.input_data
 
     @property
     def pipeline_id(self):
+        """The id of the registered pipeline class"""
         return self.pipeline_result.pipeline_id
 
     @property
     def run_id(self):
+        """The id of the current pipeline run"""
         return self.pipeline_result.run_id
 
     @property
     def serializable_pipeline_object(self):
+        """The serialized version of the object associated with the related pipeline instance"""
         return self.pipeline_result.serializable_pipeline_object
 
     def get_task_results(self) -> Sequence["TaskResult"]:
+        """Returns all the task results objects for this execution"""
         return self.results.all()
 
     def get_task(self) -> Task:
+        """Returns the registered task class"""
         return task_registry.load_task_from_id(
             self.pipeline_task,
             self.task_id,
@@ -259,18 +397,30 @@ class OrmTaskExecution(TaskExecution, models.Model):
 
     @cached_property
     def pipeline_object(self):
+        """An instance of the registered pipeline class"""
         return get_object(self.serializable_pipeline_object)
 
 
 class OrmTaskResultQuerySet(QuerySet):
     def for_run_id(self, run_id):
+        """
+        Returns a queryset containing all task results for the given run id
+
+        :param run_id: The id of the run to filter by
+        """
         return self.filter(execution__pipeline_result__execution__run_id=run_id)
 
     def not_completed(self):
+        """
+        Returns all uncompleted task executions
+        """
         statues = [PipelineTaskStatus.PENDING.value, PipelineTaskStatus.RUNNING.value]
         return self.filter(status__in=statues)
 
     def with_duration(self):
+        """
+        Annotates the queryset with the time it took for all tasks to complete
+        """
         duration = ExpressionWrapper(
             F("completed") - F("started"), output_field=fields.DurationField()
         )
@@ -281,15 +431,24 @@ class OrmTaskResult(TaskResult, models.Model):
     execution = models.ForeignKey(
         OrmTaskExecution, related_name="results", on_delete=models.CASCADE, null=True
     )
+    """The task execution object the result is linked to"""
+
     serializable_task_object = models.JSONField(blank=True, null=True)
+    """The serialized version of the object associated with this task instance"""
+
     status = models.CharField(
         max_length=255,
         choices=PipelineTaskStatus.choices(),
         default=PipelineTaskStatus.PENDING.value,
         db_index=True,
     )
+    """The string representation of the task status"""
+
     started = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The time the pipeline was started"""
+
     completed = models.DateTimeField(blank=True, null=True, default=None, db_index=True)
+    """The date and time when the run finishes (whether successful or not)"""
 
     objects = OrmTaskResultQuerySet.as_manager()
 
@@ -297,30 +456,37 @@ class OrmTaskResult(TaskResult, models.Model):
         return f"{self.task_id} ({self.run_id})"
 
     def get_status(self):
+        """Returns the status of the task"""
         return PipelineTaskStatus[self.status]
 
     @property
     def run_id(self):
+        """The id of the current pipeline run"""
         return self.execution.run_id
 
     @property
     def task_id(self):
+        """The id of the registered task class"""
         return self.execution.task_id
 
     @property
     def pipeline_task(self):
+        """The name of the task property on the piepline"""
         return self.execution.pipeline_task
 
     @property
     def serializable_pipeline_object(self):
+        """The serialized version of the object associated with the related pipeline instance"""
         return self.execution.serializable_pipeline_object
 
     @property
     def pipeline_id(self):
+        """The id of the registered pipeline class"""
         return self.execution.pipeline_id
 
     @property
     def duration(self):
+        """The time taken for the task to finish"""
         if (
             self.status == PipelineTaskStatus.DONE.value
             and self.completed
@@ -332,16 +498,20 @@ class OrmTaskResult(TaskResult, models.Model):
 
     @property
     def config(self):
+        """The configuration used to instantiate the task"""
         return self.execution.config
 
     @property
     def input_data(self):
+        """Returns the input data the pipeline was started with"""
         return self.execution.input_data
 
     def get_task_execution(self) -> TaskExecution:
+        """Returns the linked task execution"""
         return self.execution
 
-    def get_task_instance(self):
+    def get_task(self):
+        """Returns an instance of the registered task"""
         return task_registry.load_task_from_id(
             pipeline_task=self.pipeline_task,
             task_id=self.task_id,
@@ -350,39 +520,10 @@ class OrmTaskResult(TaskResult, models.Model):
 
     @cached_property
     def pipeline_object(self):
+        """The deserialized version of the object linked to the pipeline instance"""
         return get_object(self.serializable_pipeline_object)
 
     @cached_property
     def task_object(self):
+        """The deserialized version of the object linked to the task instance"""
         return get_object(self.serializable_task_object)
-
-
-class ValueStore(TimeStampedModel):
-    """
-    Used to store lightweight data between tasks
-    """
-
-    pipeline_id = models.CharField(max_length=255)
-    run_id = models.CharField(max_length=255, db_index=True)
-    key = models.CharField(max_length=255, db_index=True)
-    value = models.JSONField(blank=True, null=True)
-
-    class Meta:
-        unique_together = ("pipeline_id", "run_id", "key")
-
-    @classmethod
-    def store(cls, pipeline_id, run_id, key, value):
-        ValueStore.objects.update_or_create(
-            pipeline_id=pipeline_id, run_id=run_id, key=key, defaults={"value": value}
-        )
-
-    @classmethod
-    def get(cls, pipeline_id, run_id, key):
-        try:
-            data = ValueStore.objects.get(
-                pipeline_id=pipeline_id, run_id=run_id, key=key
-            )
-        except ValueStore.DoesNotExist:
-            return None
-
-        return data.value

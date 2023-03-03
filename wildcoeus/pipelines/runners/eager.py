@@ -7,6 +7,11 @@ from .base import PipelineRunner
 
 
 class Runner(PipelineRunner):
+    """
+    Runs each tasks synchronously. This should only be used for development
+    and is not intended for a production environment.
+    """
+
     def _task_can_be_ran(
         self,
         task_execution: TaskExecution,
@@ -38,11 +43,20 @@ class Runner(PipelineRunner):
             else:
                 break
 
-    def start_runner(
+    def run(
         self,
         pipeline_execution: PipelineExecution,
         reporter: PipelineReporter,
     ) -> bool:
+        """
+        Runs each task synchronously returning :code:`True` when all
+        tasks have completed successfully or returning :code:`False`
+        (or raising an error) if any fail.
+
+        :param pipeline_execution: The pipeline execution object representing the
+            pipeline to run.
+        :param reporter: The reporter object to write messages to.
+        """
         for pipeline_result in pipeline_execution.get_pipeline_results():
             ran_pipeline_tasks: List[str] = []
 

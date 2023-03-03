@@ -16,7 +16,7 @@ help:
 .PHONY: help Makefile api
 
 api:
-	@$(SPHINXAPIDOC) -o api ../wildcoeus
+	@$(SPHINXAPIDOC) --module-first --separate -o api ../wildcoeus ../wildcoeus/pipelines/migrations
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).

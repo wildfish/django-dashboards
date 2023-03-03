@@ -21,10 +21,14 @@ from wildcoeus.pipelines.results.base import (
     TaskResult,
 )
 from wildcoeus.pipelines.runners import PipelineRunner
-from wildcoeus.pipelines.status import FAILED_STATUES, PipelineTaskStatus
+from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class OrmPipelineResultsStorage(PipelineResultsStorage):
+    """
+    Class to store pipeline results in the django ORM
+    """
+
     def _get_pipeline_execution_qs(self):
         return OrmPipelineExecution.objects.with_extra_stats()
 
@@ -128,7 +132,9 @@ class OrmPipelineResultsStorage(PipelineResultsStorage):
                 total_success=Count(
                     "id", filter=Q(status=PipelineTaskStatus.DONE.value)
                 ),
-                total_failure=Count("id", filter=Q(status__in=FAILED_STATUES)),
+                total_failure=Count(
+                    "id", filter=Q(status__in=PipelineTaskStatus.failed_statuses())
+                ),
                 last_ran=Max("started"),
                 average_runtime=Avg(F("completed") - F("started")),
                 pipeline_id=F("execution__pipeline_id"),
@@ -214,11 +220,16 @@ class OrmPipelineResultsStorage(PipelineResultsStorage):
         return self._get_task_result_qs().filter(id=_id).first()
 
     def cleanup(self, before: Optional[datetime] = None):
-        run_ids = list(
-            OrmPipelineExecution.objects.filter(started__lt=before).values_list(
-                "run_id", flat=True
+        if before:
+            run_ids = list(
+                OrmPipelineExecution.objects.filter(started__lt=before).values_list(
+                    "run_id", flat=True
+                )
             )
-        )
+        else:
+            run_ids = list(
+                OrmPipelineExecution.objects.values_list("run_id", flat=True)
+            )
 
         if run_ids:
             OrmPipelineExecution.objects.filter(run_id__in=run_ids).delete()

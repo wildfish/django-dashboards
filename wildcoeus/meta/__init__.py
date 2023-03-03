@@ -4,6 +4,11 @@ from django.apps import apps
 
 
 class ClassWithMeta:
+    """
+    Base class for classes that need a :code:`Meta` class to be processed into
+    the :code:`_meta` property
+    """
+
     _meta: Type[Any]
 
     class Meta:
@@ -97,6 +102,13 @@ class ClassWithMeta:
 
 
 class ClassWithAppConfigMeta(ClassWithMeta):
+    """
+    Base class for classes that need a :code:`Meta` class to be processed and for
+    the app_label to be added to the :code:`_meta` property. If the class is not
+    part of a django application, the :code:`app_class` must be specified
+    in the :code:`Meta` class otherwise an error is raised.
+    """
+
     _meta: Type["ClassWithAppConfigMeta.Meta"]
 
     class Meta(ClassWithMeta.Meta):

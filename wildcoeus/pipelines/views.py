@@ -24,7 +24,12 @@ from wildcoeus.pipelines.status import PipelineTaskStatus
 
 
 class IsStaffRequiredMixin(AccessMixin):
-    """Verify that the current user is_staff."""
+    """
+    Verify that the current user is_staff.
+
+    If the user is not staff the view will return the result of ``handle_no_permission``
+    otherwise the views usual ``dispatch`` method will be called.
+    """
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
@@ -33,6 +38,10 @@ class IsStaffRequiredMixin(AccessMixin):
 
 
 class PipelineListView(IsStaffRequiredMixin, TemplateView):
+    """
+    Renders a list of all registered pipelines along with their running stats.
+    """
+
     template_name = "wildcoeus/pipelines/pipeline_list.html"
 
     def get_context_data(self, **kwargs):
@@ -49,6 +58,12 @@ class PipelineListView(IsStaffRequiredMixin, TemplateView):
 
 
 class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
+    """
+    Renders a list of all ``PipelineExecution``s for a given pipeline.
+
+    :params slug: The id of the pipeline to fetch executions for.
+    """
+
     template_name = "wildcoeus/pipelines/pipeline_execution_list.html"
     paginate_by = 30
 
@@ -63,6 +78,14 @@ class PipelineExecutionListView(IsStaffRequiredMixin, ListView):
 
 
 class PipelineStartView(IsStaffRequiredMixin, FormView):
+    """
+    Renders a form to start a pipeline running. If there is any input data required
+    by any of the tasks, a form will be rendered to allow the user to pass values to
+    the pipeline.
+
+    :params slug: The id of the pipeline to fetch executions for.
+    """
+
     template_name = "wildcoeus/pipelines/pipeline_start.html"
     form_class = PipelineStartForm
 
@@ -116,11 +139,28 @@ class PipelineStartView(IsStaffRequiredMixin, FormView):
         return reverse_lazy("wildcoeus.pipelines:results", args=(self.run_id,))
 
 
-class TaskResultView(IsStaffRequiredMixin, TemplateView):
+class PipelineResultView(IsStaffRequiredMixin, TemplateView):
+    """
+    Shows the results for a given pipeline run.
+
+    :param run_id: The id of the run to view.
+    """
+
     template_name = "wildcoeus/pipelines/results_list.html"
 
 
 class TaskResultListView(IsStaffRequiredMixin, ListView):
+    """
+    View to return the rendered task results view. This is intended to be polled
+    by htmx to render the results list content.
+
+    It will return with a status code of 200 unless the pipeline execution has
+    complete at which point it will resturn with a status code of 286 instructing
+    htmx to stop polling.
+
+    :param run_id: The id of the run to view.
+    """
+
     template_name = "wildcoeus/pipelines/_results_list.html"
 
     @cached_property
@@ -147,6 +187,22 @@ class TaskResultListView(IsStaffRequiredMixin, ListView):
 
 
 class LogListView(IsStaffRequiredMixin, TemplateView):
+    """
+    View to return the rendered logs for the selected context item. . This is intended
+    to be polled by htmx to render the results list content.
+
+    The logs can be filtered by passing 2 query string parameters:
+
+    * ``type``: One of "PipelineResult", "TaskExecution" or "TaskResult".
+    * ``id``: The id of the object in the results storage.
+
+    It will return with a status code of 200 unless the pipeline execution has
+    complete at which point it will resturn with a status code of 286 instructing
+    htmx to stop polling.
+
+    :param run_id: The id of the run to view.
+    """
+
     template_name = "wildcoeus/pipelines/_log_list.html"
 
     @cached_property
@@ -194,6 +250,17 @@ class LogListView(IsStaffRequiredMixin, TemplateView):
 
 
 class LogFilterView(IsStaffRequiredMixin, TemplateView):
+    """
+    View that updates the htmx log view to include filter parameters.
+
+    ``filter`` should be applied as a query parameter. The value should
+    be the the type and id of the object to fetch logs for. For example
+    ``filter=PipelineResult-1`` will filter log by the ``PipelineResult``
+    with id 1.
+
+    :param run_id: The id of the run to view.
+    """
+
     template_name = "wildcoeus/pipelines/_log_filter.html"
 
     def get_context_data(self, **kwargs):
@@ -217,6 +284,12 @@ class LogFilterView(IsStaffRequiredMixin, TemplateView):
 
 
 class TaskResultReRunView(IsStaffRequiredMixin, RedirectView):
+    """
+    View to rerun a specific task.
+
+    :param pk: The id of the task result to rerun.
+    """
+
     def get_object(self, queryset=None):
         tr = get_task_result(self.kwargs["pk"])
         if not tr:
@@ -226,7 +299,7 @@ class TaskResultReRunView(IsStaffRequiredMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        task = self.object.get_task_instance()
+        task = self.object.get_task()
         if task is None:
             raise Http404()
 
