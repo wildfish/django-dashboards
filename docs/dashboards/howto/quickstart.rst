@@ -125,3 +125,16 @@ For this demo the url will be :code:`http://127.0.0.1:8000/dashboards/mydashboar
 
 .. image:: _images/quickstart_dashboard.png
    :alt: Demo Dashboard
+
+
+What Next?
+----------
+
+* Learn more about creating and defining the :doc:`dashboards`.
+
+* See which :doc:`components/index` are available and how to config these to fit your needs.
+
+* Setup :doc:`permissions` to restrict access to your dashboards to individuals or user groups.
+
+* Change the default :doc:`templates` and styles to match your theme.
+

@@ -6,6 +6,8 @@ from wildcoeus.pipelines.tasks import Task, TaskConfig
 
 class TaskWaitConfigType(TaskConfig):
     wait: int
+
+
 #
 #
 # class EchoInputType(BaseModel):

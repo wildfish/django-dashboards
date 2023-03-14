@@ -127,20 +127,60 @@ the settings :code:`WILDCOEUS_DEFAULT_GRID_CSS` by default this is set to :code:
 css_classes
 ===========
 
-You can add extra css classes to your HTMLComponentLayout elements by::
+HTMLComponentLayout elements have their own default css which you can override
+ by adding :code:`css_classes` to the Component.
+
+::
+
+**Default Keys and Values **
+
+* Card
+    "card": "card_component__card"
+
+    "header": "card_component__card-header"
+
+    "image": "card_component__card-img"
+
+    "body": "card_component__card-body"
+
+    "footer": "card_component__card-footer"
+
+
+* TabContainer
+    "tab_container": "tab_component__container"
+
+    "tab_list": "tab_component__tabs"
+
+    "tab_content": "tab_component__content"
+
+
+* Tab
+    "li": "tab_component__li"
+
+    "link": "tab_component__link"
+
+
+* Div
+    "wrapper": ""
+
+Components have multiple css classes so you pass a dict with any keys
+you wish to override.  Any keys not included are kept with their default class.
+
+::
 
     Div(
         HTML("Lorem ipsum dolor sit amet"),
-        css_classes="some-class another-class"
+        css_classes={"wrapper": "some-class another-class"}
     ),
 
 This generates::
 
     <div class="span-12 some-class another-class">
-      <div class="span-12 ">Lorem ipsum dolor sit amet</div>
+      Lorem ipsum dolor sit amet
     </div>
 
-not that setting this does not remove the :code:`grid_css_classes` but instead appends to it
+not that setting this does not affect :code:`grid_css_classes`
+
 
 Component Layout Objects
 ------------------------

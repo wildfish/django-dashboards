@@ -1,15 +1,26 @@
-<div class="span-6">
+<div class="span-6" style="display: flex; flex-direction: column; justify-content: space-evenly;">
+    <h3>Text Blocks</h3>
+    <hr style="color: white; width: 100%" />
     {{ dashboard.components.text_example }}
     {{ dashboard.components.html_example }}
     {{ dashboard.components.calculated_example }}
 </div>
 
 <div class="span-6">
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum purus sapien, sodales in accumsan eget,
+  </p>
     {{ dashboard.components.chart_example }}
 </div>
-
-<div class="span-12" style="display: flex; border: 1px dotted #dddddd; background-color: #dee6e8">
-    <div style="flex: 1">
+<p class="span-12">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum purus sapien, sodales in accumsan eget,
+  tempus sit amet nisl. Cras nec erat porttitor, maximus mauris eget, elementum eros.
+  Nullam erat massa, lobortis id velit non, viverra fringilla nunc.
+  Morbi in urna vel ante faucibus blandit ac non quam.
+</p>
+<div class="span-12" style="display: flex; border: 1px dotted #dddddd;">
+  <h3>Chart + Stat Blocks</h3>
+    <div style="flex: 2">
         {{ dashboard.components.line_chart_example }}
     </div>
     <div style="flex: 1">

@@ -1,16 +1,16 @@
 <div class="{{ css }}">
-  <div class="card {{ card_css }}">
+  <div class="{{ component_css.card }}">
     {% if heading %}
-    <div class="d-flex card-header justify-content-between align-items-center">
+    <div class="{{ component_css.header }}">
       <h4 class="header-title">{{ heading }}</h4>
       {% if actions %}
-      <div class="dropdown">
-        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="mdi mdi-dots-vertical"></i>
-        </a>
-        <div class="dropdown-menu dropdown-menu-end" style="">
+      <div x-data="{ open: false }" class="dropdown">
+        <button x-on:click="open = ! open" aria-expanded="false" class="dropdown-btn">
+          Actions
+        </button>
+        <div x-show="open" class="dropdown-content">
           {% for a in actions %}
-          <a href="{{a.0}}" class="dropdown-item">{{a.1}}</a>
+          <a href="{{a.0}}">{{a.1}}</a>
           {% endfor %}
         </div>
       </div>
@@ -18,13 +18,13 @@
     </div>
     {% endif %}
     {% if image_url %}
-        <img class="card-img-top" src="{{image_url}}" alt="{{ element_id }}">
+        <img class="{{ component_css.image }}" src="{{image_url}}" alt="{{ element_id }}">
     {% endif %}
-    <div class="card-body{% if heading %} card-heading{% endif %}">
+    <div class="{{ component_css.body }}">
       {{ components }}
     </div>
     {% if footer %}
-      <div class="card-footer">{{ footer }}</div>
+      <div class="{{ component_css.footer }}">{{ footer }}</div>
     {% endif %}
   </div>
 </div>

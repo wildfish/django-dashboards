@@ -10,7 +10,8 @@ from django.urls import reverse, reverse_lazy
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 
-from .. import config
+from wildcoeus.dashboards import config
+
 from ..types import ValueData
 
 
@@ -67,13 +68,32 @@ class Component:
 
     # replicated on LayoutBase TODO need to handle this better
     icon: Optional[str] = None  # html string .e.g <i class="fa-up"></i>
-    css_classes: Optional[str] = None
+    css_classes: Optional[Union[str, Dict[str, str]]] = None
     grid_css_classes: Optional[str] = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
     poll_rate: Optional[int] = None  # In seconds, TODO make default a setting
     trigger_on: Optional[str] = None
 
     # attrs below should not be changed
     dependent_components: Optional[list["Component"]] = None
+
+    def __post_init__(self):
+        default_css_classes = config.Config().WILDCOEUS_COMPONENT_CLASSES.get(
+            self.__class__.__name__, None
+        )
+
+        # if nothing passed in set to default
+        if self.css_classes is None:
+            self.css_classes = default_css_classes
+
+        # if passed in css is a dict, use defaults for missing classes
+        elif isinstance(self.css_classes, dict):
+            if isinstance(default_css_classes, dict):
+                default_css_classes.update(self.css_classes)
+            else:
+                # if no default value just set it to be what is passed in
+                default_css_classes = self.css_classes
+
+            self.css_classes = default_css_classes
 
     @property
     def is_deferred(self) -> bool:

@@ -31,7 +31,7 @@ class ClassWithMeta:
         # the abstract flag
         base_meta_classes = (
             MakeMetaConcrete,
-            *(base._meta for base in cls.__bases__ if hasattr(base, "_meta")),
+            *(base._meta for base in cls.__bases__ if hasattr(base, "_meta")),  # type: ignore
         )
 
         # if the current class has a Meta class

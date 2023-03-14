@@ -1,5 +1,5 @@
 <div id="{{ component.key }}">
-  <table id="{{ component.key }}_table" class="table table-striped nowrap {{ component.css_classes }}" style="width:100%"></table>
+  <table id="{{ component.key }}_table" class="{{ component.css_classes.table }}" style="width:100%"></table>
 </div>
 
 {% with data_key="data_"|add:component.key columns_key="columns_"|add:component.key %}

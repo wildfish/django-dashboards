@@ -3,7 +3,7 @@ from typing import Optional
 
 from django.contrib.auth.models import User
 
-from wildcoeus.dashboards.component import Chart, Stat
+from wildcoeus.dashboards.component import Chart, Component, Stat
 from wildcoeus.dashboards.component.text import StatData
 from wildcoeus.dashboards.types import ValueData
 
@@ -45,3 +45,15 @@ class SharedComponent(Stat):
     value: ValueData = lambda **kwargs: StatData(
         text=User.objects.count(), sub_text="User Count"
     )
+
+
+@dataclass
+class GaugeData:
+    title: str = ""
+    value: Optional[ValueData] = None
+    max_value: ValueData = 100
+
+
+@dataclass
+class Gauge(Component):
+    template_name: str = "demo/includes/gauge.html"

@@ -4,6 +4,7 @@ from typing import Any, Dict, Literal, Optional, Type
 from django.http import HttpRequest
 from django.urls import reverse
 
+from .. import config
 from ..forms import DashboardForm
 from ..types import ValueData
 from .base import Component, value_render_encoder
@@ -20,20 +21,20 @@ class FormData:
 @dataclass
 class Form(Component):
     template_name: str = "wildcoeus/dashboards/components/form/form.html"
-    css_classes: Optional[Dict[str, str]] = None  # type: ignore
     form: Optional[Type[DashboardForm]] = None
     method: Literal["get", "post"] = "get"
     trigger: Literal["change", "submit"] = "change"
     submit_url: Optional[str] = None
 
     def __post_init__(self):
-        default_css_classes = {
-            "form": "form",
-            "table": "table form-table",
-            "button": "btn",
-        }
+        default_css_classes = config.Config().WILDCOEUS_COMPONENT_CLASSES["Form"]
+        # make sure css_classes is a dict as this is what form template requires
+        if self.css_classes and isinstance(self.css_classes, str):
+            # if sting assume this is form class
+            self.css_classes = {"form": self.css_classes}
+
         # update defaults with any css classes which have been passed in
-        if isinstance(self.css_classes, dict):
+        if isinstance(default_css_classes, dict) and isinstance(self.css_classes, dict):
             default_css_classes.update(self.css_classes)
 
         self.css_classes = default_css_classes

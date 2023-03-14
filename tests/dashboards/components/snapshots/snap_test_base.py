@@ -31,7 +31,7 @@ snapshots[
     </script>
 
 
-<div id="test"></div>
+<div id="test" class=""></div>
 
 
         </div>
@@ -51,8 +51,8 @@ snapshots[
             <div class="stat">
   
   
-  <h2></h2>
-  <p>
+  <h2 class="stat__heading"></h2>
+  <p class="stat__text">
     
     <span></span>
   </p>
@@ -105,7 +105,7 @@ snapshots[
     </script>
 
 
-<div id="test"></div>
+<div id="test" class=""></div>
 
 
         </div>
@@ -125,8 +125,8 @@ snapshots[
             <div class="stat">
   
   
-  <h2></h2>
-  <p>
+  <h2 class="stat__heading"></h2>
+  <p class="stat__text">
     
     <span></span>
   </p>
@@ -179,7 +179,7 @@ snapshots[
     </script>
 
 
-<div id="test"></div>
+<div id="test" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
 
 
         </div>
@@ -196,11 +196,11 @@ snapshots[
 
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div class="stat">
+            <div class="">
   
   
-  <h2></h2>
-  <p>
+  <h2 class=""></h2>
+  <p class="">
     
     <span></span>
   </p>
@@ -253,7 +253,7 @@ snapshots[
     </script>
 
 
-<div id="test"></div>
+<div id="test" class=""></div>
 
 
         </div>
@@ -273,8 +273,8 @@ snapshots[
             <div class="stat">
   
   
-  <h2></h2>
-  <p>
+  <h2 class="stat__heading"></h2>
+  <p class="stat__text">
     
     <span></span>
   </p>
@@ -375,7 +375,7 @@ snapshots[
     </script>
 
 
-<div id="test"></div>
+<div id="test" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
 
 
         </div>
@@ -392,11 +392,11 @@ snapshots[
 
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div class="stat">
+            <div class="">
   
   
-  <h2></h2>
-  <p>
+  <h2 class=""></h2>
+  <p class="">
     
     <span></span>
   </p>

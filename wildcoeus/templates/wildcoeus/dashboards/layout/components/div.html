@@ -1,3 +1,3 @@
-<div {% if css %}class="{{ css }}"{% endif %}>
+<div class="{{ css }} {{ component_css.wrapper|default_if_none:"" }}">
   {{ components }}
 </div>

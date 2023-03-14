@@ -17,7 +17,6 @@ Features
 
 * Dashboard view generation with components including stats, tables, charts and more.
 * HTMX driven dashboards and templates for a modern MPA interface.
-* Dashboard API via GraphQL to support detached front ends such as React.
 * Data pipeline management with configurable runners (celery support included) and management UI.
 
 Supports Django 3.2 to 4.1, on Python 3.9+.

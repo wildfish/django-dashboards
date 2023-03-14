@@ -1,0 +1,18 @@
+{% extends "wildcoeus/dashboards/dashboard.html" %}
+
+{% comment %}
+    Note this example uses Alpine.js to control the tabs, it's an excellent library to use
+    alongside HTMX and is incuded in wildcoeus example js.
+{% endcomment %}
+
+{% block content %}
+    <div class="tabs" hx-target="#partial-dashboard" x-data="{ tab: '{{ initial_tab.get_absolute_url }}'}">
+        {% for dashboard in tabs %}
+            <div class="tab">
+                <a hx-get="{{ dashboard.get_absolute_url }}" :class="tab == '{{ dashboard.get_absolute_url }}' && 'active'" x-on:click="tab = '{{ dashboard.get_absolute_url }}';">{{ dashboard.Meta.name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+    <hr>
+    <div id="partial-dashboard" hx-get="{{ initial_tab.get_absolute_url }}" hx-trigger="load" class="dashboard-container"></div>
+{% endblock %}

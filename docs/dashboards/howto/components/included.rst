@@ -20,6 +20,7 @@ Text component is the simplest component. It can be used to display a message:
             mark_safe=True,
         )
 
+The `Text` component can render either plain text or HTML with the addition of the `mark_safe=True` attribute.
 
 Stat
 ++++
@@ -74,10 +75,14 @@ The simplest way to do this is with `Plotly Express <https://plotly.com/python/p
         fig = fig.update_traces(mode="markers")
         return fig.to_json()
 
+
     class ExampleDashboard(Dashboard):
         bubble_chart_example = Chart(defer=get_bubble_chart)
 
-<TODO INSERT GIF/IMAGE>
+
+.. image:: ../_images/components_chart_example.png
+   :alt: Chart Example
+
 
 However, you can also leverage our ``ChartSerializer`` to make this more concise and reusable. For example if we had
 
@@ -143,15 +148,127 @@ We can then call the serializer with:
         )
 
 
+This produces the same chart as in the first example.
+
 Chart serializers also come with other benefits like ORM integration, empty chart generation, the ability to apply
 common layouts etc. For more examples please see the :doc:`Chart Serializers <../serializers/chart>` docs.
+
 
 Map
 +++
 
-TODO example
+Maps are also displayed front end with plotly.js - a component simply needs to return valid json representation
+of a plotly map or mapbox map to the component.
 
-When rendered with as a Django view without the built-in templates, plotly.js (mapbox) will be applied to the chart component.
+::
+
+    import json
+    from wildcoeus.dashboards.component import Map
+    from wildcoeus.dashboards.dashboard import Dashboard
+
+    def fetch_scatter_map_data(*args, **kwargs):
+        return json.dumps(
+            dict(
+                data=[
+                    dict(
+                        lat=[40.7127, 51.5072],
+                        lon=[-74.0059, 0.1275],
+                        mode="lines",
+                        type="scattergeo",
+                        line={"width": 2, "color": "blue"},
+                    )
+                ],
+                layout=dict(
+                    title="London to NYC Great Circle",
+                    showlegend=False,
+                    geo={
+                        "resolution": 50,
+                        "showland": True,
+                        "showlakes": True,
+                        "landcolor": "rgb(204, 204, 204)",
+                        "countrycolor": "rgb(204, 204, 204)",
+                        "lakecolor": "rgb(255, 255, 255)",
+                        "projection": {"type": "equirectangular"},
+                        "coastlinewidth": 2,
+                        "lataxis": {
+                            "range": [20, 60],
+                            "showgrid": True,
+                            "tickmode": "linear",
+                            "dtick": 10,
+                        },
+                        "lonaxis": {
+                            "range": [-100, 20],
+                            "showgrid": True,
+                            "tickmode": "linear",
+                            "dtick": 20,
+                        },
+                    },
+                ),
+            )
+        )
+
+    class ExampleDashboard(Dashboard):
+        scatter_map_example = Map(defer=fetch_scatter_map_data)
+
+.. image:: ../_images/components_map_example_1.png
+   :alt: Scatter Map
+
+
+Because `Map` is just an extension of `Chart` you can also leverage plotly express and `ChartSerializer`
+to render maps.
+
+::
+
+    # dashboards.py
+    from typing import Optional, List
+    import plotly.express as px
+
+    from wildcoeus.dashboards.component.chart import ChartSerializer
+    from wildcoeus.dashboards.component import Map
+    from wildcoeus.dashboards.dashboard import Dashboard
+
+
+    class ChoroplethMapSerializer(ChartSerializer):
+        locations: List[str]
+        locationmode: Optional[str] = "USA-states"
+        color: Optional[List[int]] = None
+        scope: Optional[str] = "usa"
+
+        def get_data(self, *args, **kwargs):
+            return dict(
+                locations=self.locations,
+                locationmode=self.locationmode,
+                color=self.color,
+                scope=self.scope,
+            )
+
+        def to_fig(self, data) -> go.Figure:
+            fig = px.choropleth(
+                **data
+            )
+
+            return fig
+
+
+    class ExampleMapSerializer(ChoroplethMapSerializer):
+        locations = ["CA", "TX", "NY"]
+        color = [1, 2, 3]
+
+        class Meta:
+            title = "Example Choroplet Map"
+
+
+    class ExampleDashboard(Dashboard):
+        map_example = Map(defer=ExampleMapSerializer)
+
+
+.. image:: ../_images/components_map_example_2.png
+   :alt: Choroplet Map
+
+
+Using Chart serializers comes with other benefits such as ORM integration, empty chart generation, the ability to apply
+common layouts etc. For more examples please see the :doc:`Chart Serializers <../serializers/chart>` docs.
+
 
 Table
 +++++

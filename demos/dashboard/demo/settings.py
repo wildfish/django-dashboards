@@ -254,6 +254,7 @@ class Common(Configuration):
     EVENTSTREAM_ALLOW_HEADERS = "Authorization"
 
     WILDCOEUS_DEFAULT_GRID_CSS = "span-4"
+
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,

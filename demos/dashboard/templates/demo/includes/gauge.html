@@ -1,0 +1,27 @@
+{% load humanize %}
+<div class="gauge">
+    {% if component.href %}<a href="{{ component.href }}">{% endif %}
+    {% if component.icon %}
+        <div class="float-end">
+            {{ component.icon|safe }}
+        </div>
+    {% endif %}
+
+    <script type="module">
+        var componentGauge = Gauge(document.getElementById("{{ component.key }}"), {
+            max: {{rendered_value.max_value}},
+            label: function (value) {
+                return value;
+            },
+            value: {{rendered_value.value}},
+        });
+
+        componentGauge.setValue({{rendered_value.value}});
+        componentGauge.setValueAnimated({{rendered_value.value}}, 2);
+    </script>
+
+    <div id="{{ component.key }}" class="gauge-container">
+        <span class="title-text">{{ rendered_value.title }}</span>
+    </div>
+    {% if component.href %}</a>{% endif %}
+</div>

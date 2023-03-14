@@ -1,0 +1,65 @@
+.menu ul {
+  background: var(--dark-two);
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  display: flex;
+  z-index: 2;
+}
+
+.menu li {
+  background: var(--dark-two);
+  display: block;
+  float: left;
+  padding: 0.5rem 2rem;
+  position: relative;
+  text-decoration: none;
+}
+
+.menu li a {
+  color: #FFFFFF;
+}
+
+.menu li.active, .menu li ul li.active {
+  background-color: var(--primary);
+}
+
+.menu li:hover,
+.menu li:focus-within {
+  background-color: var(--primary);
+  cursor: pointer;
+}
+
+.menu li:focus-within a {
+  outline: none;
+}
+
+.menu ul li ul {
+  display: none;
+  left: 0;
+  margin-top: 0.5rem;
+  min-width: 4em;
+  opacity: 0;
+  position: absolute;
+  visibility: hidden;
+}
+
+.menu ul li:hover > ul,
+.menu ul li:focus-within > ul,
+.menu ul li ul:hover,
+.menu ul li ul:focus {
+  visibility: visible;
+  opacity: 0.95;
+  display: block;
+}
+
+.menu ul li ul li {
+  clear: both;
+  width: 100%;
+  padding: 0;
+}
+
+.menu ul li ul li a {
+  display: block;
+  padding: 0.5rem 2rem;
+}

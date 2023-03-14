@@ -9,11 +9,18 @@ from demo.kitchensink.charts import (
     ExampleBubbleChartSerializer,
     ExampleChartSerializer,
     ExampleGaugeChartSerializer,
+    ExampleMapSerializer,
     ExampleStackedChartSerializer,
 )
-from demo.kitchensink.components import SharedComponent, SSEChart, SSEStat
+from demo.kitchensink.components import (
+    Gauge,
+    GaugeData,
+    SharedComponent,
+    SSEChart,
+    SSEStat,
+)
 from demo.kitchensink.data import DashboardData
-from demo.kitchensink.forms import ExampleForm, MedalForm
+from demo.kitchensink.forms import MedalForm
 from demo.kitchensink.tables import ExampleTableSerializer
 from faker import Faker
 
@@ -53,6 +60,7 @@ class Grid(Enum):
     TWO = "span-6"
     THREE = "span-4"
     FOUR = "span-3"
+    FIVE = "span-2"
 
 
 fake = Faker()
@@ -81,65 +89,60 @@ class DemoDashboard(Dashboard):
                 "wildcoeus.dashboards:kitchensink_demodashboardcustomtemplate"
             ),
         ),
-        grid_css_classes=Grid.FOUR.value,
+        grid_css_classes=Grid.TWO.value,
     )
     text_example = Text(
         value="Rendered on load",
-        grid_css_classes=Grid.FOUR.value,
+        grid_css_classes=Grid.TWO.value,
+        template_name="demo/one.html",
     )
     html_example = Text(
         value="<strong>HTML also rendered on load</strong>",
         mark_safe=True,
-        grid_css_classes=Grid.FOUR.value,
+        grid_css_classes=Grid.THREE.value,
     )
     calculated_example = Text(
         defer=lambda **kwargs: "Deferred text",
-        grid_css_classes=Grid.FOUR.value,
+        grid_css_classes=Grid.THREE.value,
+        trigger_on="click",
     )
     form_example = Form(
         form=MedalForm,
         method="get",
         dependents=["chart_example", "stacked_chart_example"],
+        grid_css_classes=Grid.THREE.value,
     )
-    chart_example = Chart(value=ExampleChartSerializer)
+    chart_example = Chart(
+        value=ExampleChartSerializer,
+        grid_css_classes=Grid.TWO.value,
+    )
     stacked_chart_example = Chart(
         defer=ExampleStackedChartSerializer,
+        grid_css_classes=Grid.TWO.value,
     )
     bubble_chart_example = Chart(
         defer=ExampleBubbleChartSerializer,
         grid_css_classes=Grid.ONE.value,
     )
-    filter_form = Form(
-        form=ExampleForm,
-        method="get",
-        dependents=["line_chart_example", "stat_three"],
-        grid_css_classes=Grid.TWO.value,
-    )
-    stat_three = Stat(
-        defer=lambda **kwargs: StatData(
-            text="33%",
-            sub_text=kwargs.get("filters", {}).get("country", "all"),
-        ),
-        grid_css_classes=Grid.TWO.value,
-    )
-    line_chart_example = Chart(
-        defer=DashboardData.fetch_scatter_chart_data, grid_css_classes=Grid.ONE.value
-    )
     stat_one = Stat(
         value=StatData(text="100%", sub_text="increase"),
-        grid_css_classes=Grid.FOUR.value,
+        grid_css_classes=Grid.TWO.value,
     )
     stat_two = Stat(
         value=StatData(text="88%", sub_text="decrease", change_by="12%"),
-        grid_css_classes=Grid.FOUR.value,
+        grid_css_classes=Grid.TWO.value,
     )
     gauge_one = Chart(
         defer=ExampleGaugeChartSerializer,
         poll_rate=5,
-        grid_css_classes=Grid.FOUR.value,
+        grid_css_classes=Grid.TWO.value,
     )
-    gauge_two = Chart(
-        defer=DashboardData.fetch_gauge_chart_data_two, grid_css_classes=Grid.FOUR.value
+    gauge_svg = Gauge(
+        value=GaugeData(
+            title="SVG Gauge",
+            value=55,
+        ),
+        grid_css_classes=Grid.TWO.value,
     )
     free_text_example = Text(
         defer=DashboardData.fetch_html, mark_safe=True, grid_css_classes=Grid.ONE.value
@@ -157,7 +160,7 @@ class DemoDashboard(Dashboard):
         defer=DashboardData.fetch_scatter_map_data, grid_css_classes=Grid.TWO.value
     )
     choropleth_map_example = Map(
-        defer=DashboardData.fetch_choropleth_map_data, grid_css_classes=Grid.TWO.value
+        defer=ExampleMapSerializer, grid_css_classes=Grid.TWO.value
     )
 
     class Meta:
@@ -171,9 +174,6 @@ class DemoDashboardCustomTemplate(DemoDashboard):
 
 
 class DemoDashboardWithLayout(DemoDashboard):
-    chart_example = Chart(
-        defer=DashboardData.fetch_bar_chart_data, grid_css_classes=Grid.ONE.value
-    )
     calculated_example = Text(
         defer=lambda **kwargs: "some calculated text", grid_css_classes=Grid.THREE.value
     )
@@ -184,21 +184,26 @@ class DemoDashboardWithLayout(DemoDashboard):
 
     class Layout(Dashboard.Layout):
         components = ComponentLayout(
-            Header(heading="Header", size=2),
+            Header(heading="Header", size=1),
             HTML(
                 "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec vestibulum orci. Sed ac eleifend "
                 "diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum "
                 "dolor sit amet, consectetur adipiscing elit.</p>",
             ),
-            Card("text_example", "html_example", grid_css_classes=Grid.THREE.value),
+            Card("text_example", "html_example", grid_css_classes=Grid.TWO.value),
             Card(
                 Div("stat_one"),
                 Div("stat_two"),
                 Div("stat_three"),
-                grid_css_classes=Grid.DOUBLE.value,
+                heading="Grouped Stats",
+                footer="footer text",
+                grid_css_classes=Grid.TWO.value,
             ),
             HR(),
             Header(heading="Tab Example", size=3),
+            HTML(
+                "<p>Like other deferred components, we only render what is in view, so other tabs only load on click."
+            ),
             TabContainer(
                 Tab(
                     "Calculated Example",
@@ -220,7 +225,7 @@ class DemoDashboardWithLayout(DemoDashboard):
 class AdminDashboard(Dashboard):
     admin_text = Text(value="Admin Only Text")
     scatter_map_example = Map(defer=DashboardData.fetch_scatter_map_data)
-    choropleth_map_example = Map(defer=DashboardData.fetch_choropleth_map_data)
+    choropleth_map_example = Map(defer=ExampleMapSerializer)
 
     class Meta:
         name = "Admin Only"
@@ -358,6 +363,7 @@ class CustomComponentDashboard(Dashboard):
         defer_url=lambda reverse_args: reverse(
             "kitchensink:custom-component", args=reverse_args
         ),
+        grid_css_classes=Grid.TWO.value,
     )
 
     # Simplistic example which calls it's own view, but refers back to defer via the
@@ -367,6 +373,7 @@ class CustomComponentDashboard(Dashboard):
         defer_url=lambda reverse_args: reverse(
             "kitchensink:custom-component-defer", args=reverse_args
         ),
+        grid_css_classes=Grid.TWO.value,
     )
 
     # Example in which third party is called via sync.
@@ -374,6 +381,7 @@ class CustomComponentDashboard(Dashboard):
         defer_url=lambda reverse_args: reverse(
             "kitchensink:sync-component", args=reverse_args
         ),
+        grid_css_classes=Grid.TWO.value,
     )
 
     # Example in which third party is called via async.
@@ -381,6 +389,7 @@ class CustomComponentDashboard(Dashboard):
         defer_url=lambda reverse_args: reverse(
             "kitchensink:async-component", args=reverse_args
         ),
+        grid_css_classes=Grid.TWO.value,
     )
 
     class Meta:

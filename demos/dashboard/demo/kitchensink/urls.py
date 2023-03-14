@@ -4,9 +4,10 @@ from demo.kitchensink import dashboards
 from demo.kitchensink.views import (
     AsyncComponentView,
     CustomComponentView,
-    NormalView,
     NoTemplateComponentDeferView,
+    StandardView,
     SyncComponentView,
+    TabbedView,
 )
 
 from wildcoeus.dashboards.urls import COMPONENT_PATTERN
@@ -20,11 +21,17 @@ urlpatterns = [
         DashboardView.as_view(dashboard_class=dashboards.DemoDashboard),
         name="dashboard-one",
     ),
-    # Add a dashboard as via a normal django view
+    # Add a dashboard as via a standard django view
     path(
-        "normal/",
-        NormalView.as_view(),
-        name="dashboard-normal",
+        "standard/",
+        StandardView.as_view(),
+        name="dashboard-standard",
+    ),
+    # Add a dashboard as via a standard django view with tabs
+    path(
+        "tabbed/",
+        TabbedView.as_view(),
+        name="dashboard-tabbed",
     ),
     # Custom defer_url examples
     path(

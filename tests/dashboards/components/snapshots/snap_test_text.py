@@ -52,8 +52,8 @@ snapshots[
             <div class="stat">
   
   
-  <h2>100%</h2>
-  <p>
+  <h2 class="stat__heading">100%</h2>
+  <p class="stat__text">
     
     <span>increase</span>
   </p>
@@ -76,8 +76,8 @@ snapshots[
             <div class="stat">
   
   
-  <h2>100%</h2>
-  <p>
+  <h2 class="stat__heading">100%</h2>
+  <p class="stat__text">
     
     <span>increase</span>
   </p>
@@ -100,12 +100,12 @@ snapshots[
             <div class="stat">
   
   
-  <h2>100%</h2>
-  <p>
+  <h2 class="stat__heading">100%</h2>
+  <p class="stat__text">
     
-    <span class="text-success" style="margin-right: 0.75em">
+    <span class="text-success">
     
-      <i class="mdi mdi-arrow-up-bold"></i>
+      &uarr;
        Change
     </span>
     
@@ -130,8 +130,8 @@ snapshots[
             <div class="stat">
   
   
-  <h2>100%</h2>
-  <p>
+  <h2 class="stat__heading">100%</h2>
+  <p class="stat__text">
     
     <span>increase</span>
   </p>
@@ -170,12 +170,12 @@ snapshots[
             <div class="stat">
   
   
-  <h2>100%</h2>
-  <p>
+  <h2 class="stat__heading">100%</h2>
+  <p class="stat__text">
     
-    <span class="text-success" style="margin-right: 0.75em">
+    <span class="text-success">
     
-      <i class="mdi mdi-arrow-up-bold"></i>
+      &uarr;
        Change
     </span>
     

@@ -1,8 +1,10 @@
 :root {
-  --shadow: rgba(154, 161, 171, 0.15);
-  --off-black: #1e1e1e;
+  --dark-one: #343434;
+  --dark-two: #393939;
+  --dark-three: #b2b2b2;
   --grey: #ececec;
   --white: #fff;
+  --primary: rgba(82, 198, 53, 0.82);
 }
 
 * {
@@ -10,7 +12,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: auto;
   font-kerning: auto;
 }
 
@@ -18,7 +19,9 @@ html {
   font-size: 1.2em;
   line-height: 1.4;
   font-weight: 400;
-  font-family: 'Helvetica Neue';
+  font-family: 'Helvetica Neue', serif;
+  background-color: var(--dark-one);
+  color: var(--white);
 }
 
 body {
@@ -28,6 +31,9 @@ body {
 }
 
 a{
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 1.1rem;
   -webkit-text-decoration: none;
   text-decoration: none;
 }
@@ -38,42 +44,92 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -.02em;
 }
 
-.dashboard-container, .tab-content {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-gap: 10px;
-  gap: 10px;
-  text-align: center;
+hr{
+  border-color: var(--primary);
 }
 
-.dashboard-component{
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
-  box-shadow: 0 0 35px 0 var(--shadow);
+.menu ul {
+  background: var(--dark-two);
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  display: flex;
+  z-index: 2;
 }
 
-.dashboard-component-inner {
-  padding: 1em;
-}
-
-.dashboard-component-cta {
-  background-color: rgba(154, 161, 171, 0.15);
-  background-color: var(--shadow);
-  color: #1e1e1e;
-  color: var(--off-black);
+.menu li {
+  background: var(--dark-two);
+  display: block;
+  float: left;
+  padding: 0.5rem 2rem;
+  position: relative;
   -webkit-text-decoration: none;
   text-decoration: none;
-  font-size: 1.3rem;
 }
 
-/* use a lib or generate all the variants with scss for... */
+.menu li a {
+  color: #FFFFFF;
+}
+
+.menu li.active, .menu li ul li.active {
+  background-color: var(--primary);
+}
+
+.menu li:hover,
+.menu li:focus-within {
+  background-color: var(--primary);
+  cursor: pointer;
+}
+
+.menu li:focus-within a {
+  outline: none;
+}
+
+.menu ul li ul {
+  display: none;
+  left: 0;
+  margin-top: 0.5rem;
+  min-width: 4em;
+  opacity: 0;
+  position: absolute;
+  visibility: hidden;
+}
+
+.menu ul li:hover > ul,
+.menu ul li:focus-within > ul,
+.menu ul li ul:hover,
+.menu ul li ul:focus {
+  visibility: visible;
+  opacity: 0.95;
+  display: block;
+}
+
+.menu ul li ul li {
+  clear: both;
+  width: 100%;
+  padding: 0;
+}
+
+.menu ul li ul li a {
+  display: block;
+  padding: 0.5rem 2rem;
+}
+
+/* This is an example - you'd ideally use a lib or scss to compile this, add responsiveness etc */
 
 .span-3 {
-  grid-column-end: span 3;
+  grid-column-end: span 3 !important;
+}
+
+.span-3 {
   grid-auto-rows: min-content;
 }
 
 .span-4 {
-  grid-column-end: span 4;
+  grid-column-end: span 4 !important;
+}
+
+.span-4 {
   grid-auto-rows: min-content;
 }
 
@@ -97,111 +153,78 @@ h1, h2, h3, h4, h5, h6 {
   grid-auto-rows: min-content;
 }
 
-.fade-in.htmx-added {
-  opacity: 0;
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: 1rem;
+  gap: 1rem;
+  text-align: center;
+  width: 100%;
 }
 
-.fade-in {
-  opacity: 1;
-  transition: opacity 1s ease-out;
+h1, h2, h3, h4, p, .tab-container {
+  grid-column: 1 / 13;
+}
+
+.dashboard-component{
+  border-radius: 15px;
+  background-color: var(--dark-two);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.dashboard-component *{
+    /* allow sub nesting, by assuming not set is 12 */
+    grid-column-end: span 12;
+}
+
+.tab-content div.active .dashboard-component{
+    border-radius: 0 15px 15px 15px;
+}
+
+.dashboard-component-inner {
+  padding: 2rem;
+}
+
+.dashboard-component-cta {
+  color: var(--off-black);
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  font-size: 1.3rem;
 }
 
 .tabs{
+  border-top: 2px var(--off-black) solid;
   display: flex;
-  margin: 0;
+  flex-wrap: wrap;
+  margin-left: 0;
   padding: 0;
-}
-
-.tab-link {
-  background-color: #ffffff;
+  padding-top: 35px;
   list-style: none;
-  padding: 1rem;
 }
 
-a{
-  color: #000000;
-  font-size: 1.1rem;
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
-  box-shadow: 0 0 35px 0 var(--shadow);
+.tabs div, .tabs .tab{
+    background-color: var(--dark-two);
+    padding: 10px 20px;
 }
 
-a.active {
-  border-bottom: 1px solid green;
+.tabs div a, .tabs .tab a{
+    color: var(--white);
 }
 
-.menu ul {
-  background: #ffffff;
-  list-style: none;
-  margin: 0;
-  padding-left: 0;
-  display: flex;
-  z-index: 2;
+.tabs div a.active, .tabs .tab a.active{
+    color: var(--primary);
+    border-bottom: 1px solid var(--primary);
 }
 
-.menu li {
-  color: #1e1e1e;
-  color: var(--off-black);
-  background: #ececec;
-  background: var(--grey);
-  display: block;
-  float: left;
-  padding: 0.5rem 2rem;
-  position: relative;
-  -webkit-text-decoration: none;
-  text-decoration: none;
-  transition-duration: 0.5s;
+.dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate, .paginate_button, .paginate_button.current{
+    color: var(--white) !important;
+    font-size: 0.9rem !important;
 }
 
-.menu li a {
-  color: #1e1e1e;
+.dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate, .paginate_button, .paginate_button.current{
+    margin-bottom: 10px;
 }
-
-.menu li.active, .menu li ul li.active {
-  background: #bcced5;
-}
-
-.menu li:hover,
-.menu li:focus-within {
-  background: #bcced5;
-  cursor: pointer;
-}
-
-.menu li:focus-within a {
-  outline: none;
-}
-
-.menu ul li ul {
-  background: #ffffff;
-  visibility: hidden;
-  opacity: 0;
-  min-width: 3rem;
-  position: absolute;
-  transition: all 0.5s ease;
-  margin-top: 0.5rem;
-  left: 0;
-  display: none;
-}
-
-.menu ul li:hover > ul,
-.menu ul li:focus-within > ul,
-.menu ul li ul:hover,
-.menu ul li ul:focus {
-  visibility: visible;
-  opacity: 1;
-  display: block;
-}
-
-.menu ul li ul li {
-  clear: both;
-  width: 100%;
-  padding: 0;
-}
-
-.menu ul li ul li a {
-  display: block;
-  padding: 0.5rem 2rem;
-}
-
 
 .table {
     border-collapse: collapse;
@@ -209,47 +232,124 @@ a.active {
     width: 100%;
     font-size: 0.8rem;
 }
+
 .table thead th {
-    background-color: #ececec;
-    background-color: var(--grey);
-    border: solid 1px rgba(154, 161, 171, 0.15);
-    border: solid 1px var(--shadow);
-    color: #1e1e1e;
-    color: var(--off-black);
+    background-color: var(--dark-one);
     padding: 1rem;
     text-align: left;
-    text-shadow: 1px 1px 1px #fff;
+    text-shadow: 1px 1px 1px var(--white);;
 }
+
 .table tbody td {
-    border: solid 1px rgba(154, 161, 171, 0.15);
-    border: solid 1px var(--shadow);
-    color: #1e1e1e;
-    color: var(--off-black);
+    border: solid 1px var(--dark-one);
     padding: 10px;
 }
 
-.form-table tbody td {
-    text-align: left;
+.customComponent{
+    background-color: var(--primary);
+    border-radius: 20px;
+    padding: 10px 5px;
+    margin: 10px;
+    font-size: 0.8em;
+}
+
+.gauge-container{
+    margin: auto;
+    max-width: 65%;
+}
+
+.card {
+    position: relative;
+    height: 100%;
+}
+
+.card .card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0;
+    background-color: var(--dark-three);
+    padding: 1rem;
+    border-bottom: solid 1px rgba(154, 161, 171, 0.15);
+    border-bottom: solid 1px var(--shadow);
+}
+
+.card .card-header .header-title {
+    flex: 1 1 auto;
+    font-size: 1.2em;
+}
+
+.card .card-header .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.card .card-header .dropdown .dropdown-btn {
+  color: white;
+  padding: 6px;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+}
+
+.card .card-header .dropdown .dropdown-content {
+  position: absolute;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.card .card-header .dropdown .dropdown-content a {
+  color: black;
+  font-size: 1em;
+  padding: 12px 16px;
+  -webkit-text-decoration: none;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  display: block;
+}
+
+.card .card-header .dropdown .dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.card .card-img {
+    width: 100%;
+}
+
+.card .card-body {
+    padding: 5px;
+}
+
+.card-body-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-column-gap: 10px;
+}
+
+.card .card-body p {
+    font-size: 1rem;
+}
+
+.card .card-footer {
+    flex: 1 1 auto;
+    padding: 5px;
+    font-size: 0.75em;
+    background-color: var(--dark-three);
 }
 
 /* pipeline styles */
+
 .pipeline-logs {
-  background-color: #1e1e1e;
-  background-color: var(--off-black);
+  background-color: var(--dark-one);
   padding: 5px;
-  color: #ececec;
-  color: var(--grey);
+  color: var(--dark-two);
   height: 50vh;
   overflow: auto;
 }
 
 .breadcrumbs{
-    background-color: #ececec;
-    background-color: var(--grey);
-    border: solid 1px rgba(154, 161, 171, 0.15);
-    border: solid 1px var(--shadow);
-    color: #1e1e1e;
-    color: var(--off-black);
+    background-color: var(--dark-two);
+    color: var(--white);
     padding: 1rem;
     margin-bottom: 15px;
     text-align: left;
@@ -298,7 +398,7 @@ a.active {
 .result-cancelled {
     --table-color: #000;
     --table-bg: var(--grey);
-    --btable-border-color: var(--grey);
+    --btable-border-color: var(--dark-two);
 }
 
 .result {
@@ -311,14 +411,12 @@ a.active {
     display: block;
 }
 
-
 .pagination {
   display: inline-block;
     margin-top: 10px;
 }
 
 .pagination a {
-  color: black;
   float: left;
   padding: 8px 16px;
   -webkit-text-decoration: none;

@@ -1,9 +1,9 @@
-<div class="{{ css }}" x-data="{ tab: '{{ first.tab_label|slugify }}' }">
-    <ul id="{{ element_id }}" class="{{ tab_list_classes }}" >
+<div class="{{ css }} {{ component_css.tab_container }}" x-data="{ tab: '{{ first.tab_label|slugify }}' }">
+    <div id="{{ element_id }}" class="{{ component_css.tabs }}" >
         {{ tabs|safe }}
-    </ul>
+    </div>
 
-    <div class="tab-content">
+    <div class="{{ component_css.tab_content }}">
         {{ tab_panels }}
     </div>
 </div>

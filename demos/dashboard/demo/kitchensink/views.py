@@ -5,18 +5,29 @@ from django.utils.decorators import classonlymethod
 from django.views.generic import TemplateView
 
 import httpx
-from demo.kitchensink.dashboards import DemoDashboard
+from demo.kitchensink.dashboards import DemoDashboard, DynamicDashboard
 
 from wildcoeus.dashboards.views import ComponentView
 
 
-class NormalView(TemplateView):
-    template_name = "wildcoeus/dashboards/dashboard.html"
+class StandardView(TemplateView):
+    template_name = "demo/standard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["dashboard"] = DemoDashboard()
 
+        return context
+
+
+class TabbedView(TemplateView):
+    template_name = "demo/tabbed.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tabs = [DemoDashboard(), DynamicDashboard(request=self.request)]
+        context["tabs"] = tabs
+        context["initial_tab"] = tabs[0]
         return context
 
 

@@ -72,12 +72,12 @@ or including your Dashboard in a normal view:
     from django.urls import path
 
     from .views import (
-        NormalView,
+        StandardView,
     )
 
     path(
         "normal/",
-        NormalView.as_view(),
+        StandardView.as_view(),
         name="normal",
     ),
 
@@ -86,7 +86,7 @@ or including your Dashboard in a normal view:
     from django.views.generic import TemplateView
     from . import DemoDashboard
 
-    class NormalView(TemplateView):
+    class StandardView(TemplateView):
         template_name = "..."
 
         def get_context_data(self, **kwargs):
@@ -94,9 +94,52 @@ or including your Dashboard in a normal view:
             context["dashboard"] = DemoDashboard()
             return context
 
+This can be taken further to allow for for multiple dashboards to be displayed in the same view, for example here
+is how you'd make tabbed dashboards, which leverage HTMXs lazy loading and partial dashboards.
+
+
+::
+
+    # urls.py - as per above
+    # views.py
+
+    from django.views.generic import TemplateView
+    from . import DemoDashboard
+
+    class TabbedView(TemplateView):
+        template_name = "tabbed.html"
+
+        def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            tabs = [DemoDashboard(), DynamicDashboard(request=self.request)]
+            context["tabs"] = tabs
+            context["initial_tab"] = tabs[0]
+            return context
+
+    # templates/tabbed.html
+
+    {% extends "wildcoeus/dashboards/dashboard.html" %}
+
+    {% comment %}
+        Note this example uses Alpine.js to control the tabs, it's an excellent library to use
+        alongside HTMX and is incuded in wildcoeus example js.
+    {% endcomment %}
+
+    {% block content %}
+        <div class="tabs" hx-target="#partial-dashboard" x-data="{ tab: '{{ selected_url }}'">
+            {% for dashboard in tabs %}
+                <div class="tab">
+                    <a hx-get="{{ dashboard.get_absolute_url }}" :class="tab == '{{ dashboard.get_absolute_url }}' && 'active'" x-on:click="tab = '{{ dashboard.get_absolute_url }}';">{{ dashboard.Meta.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+        <div id="partial-dashboard" hx-get="{{ initial_tab.get_absolute_url }}" hx-trigger="load" class="dashboard-container"></div>
+    {% endblock %}
+
+
 Please note there are caveats to adding your own routes:
 
-* We'd recommend you also disable ``WILDCOEUS_INCLUDE_DASHBOARD_VIEWS`` to avoid duplicate views. Noting that you will still be leveraging the component and form fetch views included in the package.
+* If you only want your own views you can disable ``WILDCOEUS_INCLUDE_DASHBOARD_VIEWS``. Noting that you will still be leveraging the component and form fetch views included in the package.
 * If you decide not to use ``DashboardView`` any permissions_classes will not be applied.
 
 

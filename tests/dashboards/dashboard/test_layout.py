@@ -36,13 +36,61 @@ def test_html_component__render(rf, component_class, dashboard, snapshot):
     context = Context({"request": request})
 
     snapshot.assert_match(
-        component_class("component_1", css_classes="css_class").render(
+        component_class("component_1", css_classes={}).render(
             dashboard=dashboard(request=request), context=context
         )
     )
 
 
-@pytest.mark.parametrize("component_class", [Div, Tab, Card])
+def test_html_component__div__css_classes(rf, dashboard, snapshot):
+    request = rf.get("/")
+    context = Context({"request": request})
+
+    html = Div("component_1", css_classes={"wrapper": "css_class"}).render(
+        dashboard=dashboard(request=request), context=context
+    )
+
+    assert "css_class" in html
+    snapshot.assert_match(html)
+
+
+def test_html_component__tabcontainer__css_classes(rf, dashboard, snapshot):
+    request = rf.get("/")
+    context = Context({"request": request})
+
+    html = TabContainer(
+        Tab("component_1"), css_classes={"tab_container": "css_class"}
+    ).render(dashboard=dashboard(request=request), context=context)
+
+    assert "css_class" in html
+    snapshot.assert_match(html)
+
+
+def test_html_component__tab__css_classes(rf, dashboard, snapshot):
+    request = rf.get("/")
+    context = Context({"request": request})
+
+    html = Tab("component_1", css_classes={"tab_content": "css_class"}).render(
+        dashboard=dashboard(request=request), context=context
+    )
+
+    assert "css_class" in html
+    snapshot.assert_match(html)
+
+
+def test_html_component__card__css_classes(rf, dashboard, snapshot):
+    request = rf.get("/")
+    context = Context({"request": request})
+
+    html = Card("component_1", css_classes={"card": "css_class"}).render(
+        dashboard=dashboard(request=request), context=context
+    )
+
+    assert "css_class" in html
+    snapshot.assert_match(html)
+
+
+@pytest.mark.parametrize("component_class", [Div, Card])
 def test_html_component__grid_css_classes__render(rf, component_class, dashboard):
     request = rf.get("/")
     context = Context({"request": request})
@@ -55,7 +103,7 @@ def test_html_component__grid_css_classes__render(rf, component_class, dashboard
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("component_class", [Div, Tab, Card])
+@pytest.mark.parametrize("component_class", [Div, Card])
 def test_html_component__grid_css_classes_not_set__default(
     rf, component_class, dashboard, settings
 ):

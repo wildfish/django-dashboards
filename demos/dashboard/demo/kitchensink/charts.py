@@ -1,5 +1,5 @@
 import random
-from typing import Optional
+from typing import List, Optional
 
 import plotly.express as px
 import plotly.graph_objs as go
@@ -7,7 +7,17 @@ import plotly.graph_objs as go
 from wildcoeus.dashboards.component.chart import ChartSerializer
 
 
-class ScatterChartSerializer(ChartSerializer):
+class DarkChartSerializer(ChartSerializer):
+    def apply_layout(self, fig: go.Figure):
+        fig = super().apply_layout(fig)
+        return fig.update_layout(
+            template="plotly_dark",
+            plot_bgcolor="rgba(0,0,0,0.05)",
+            paper_bgcolor="rgba(0,0,0,0.05)",
+        )
+
+
+class ScatterChartSerializer(DarkChartSerializer):
     x: Optional[str] = None
     y: Optional[str] = None
     size: Optional[str] = None
@@ -36,7 +46,7 @@ class ScatterChartSerializer(ChartSerializer):
         return fig
 
 
-class BarChartSerializer(ChartSerializer):
+class BarChartSerializer(DarkChartSerializer):
     x: Optional[str] = None
     y: Optional[str] = None
     color: Optional[str] = None
@@ -61,13 +71,32 @@ class BarChartSerializer(ChartSerializer):
         return fig
 
 
+class ChoroplethMapSerializer(DarkChartSerializer):
+    locations: List[str]
+    locationmode: Optional[str] = "USA-states"
+    color: Optional[List[int]] = None
+    scope: Optional[str] = "usa"
+
+    def get_data(self, *args, **kwargs):
+        return dict(
+            locations=self.locations,
+            locationmode=self.locationmode,
+            color=self.color,
+            scope=self.scope,
+        )
+
+    def to_fig(self, data) -> go.Figure:
+        fig = px.choropleth(**data)
+
+        return fig
+
+
 class ExampleChartSerializer(BarChartSerializer):
     x = "nation"
     y = "count"
     layout = dict(
         xaxis_title="Nation",
         yaxis_title="Total Medals",
-        font=dict(family="Courier New, monospace", size=14, color="RebeccaPurple"),
     )
 
     class Meta:
@@ -114,7 +143,7 @@ class ExampleBubbleChartSerializer(ScatterChartSerializer):
         return px.data.iris()
 
 
-class ExampleGaugeChartSerializer(ChartSerializer):
+class ExampleGaugeChartSerializer(DarkChartSerializer):
     class Meta:
         title = "Gauge Speed Example"
 
@@ -129,3 +158,11 @@ class ExampleGaugeChartSerializer(ChartSerializer):
         )
 
         return fig
+
+
+class ExampleMapSerializer(ChoroplethMapSerializer):
+    locations = ["CA", "TX", "NY"]
+    color = [1, 2, 3]
+
+    class Meta:
+        title = "Example Choroplet Map"

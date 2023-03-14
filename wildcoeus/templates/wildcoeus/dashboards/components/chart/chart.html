@@ -14,5 +14,5 @@
     </script>
 {% endwith %}
 
-<div id="{{ component.key }}"></div>
+<div id="{{ component.key }}" class="{{ component.css_classes|default_if_none:"" }}"></div>
 

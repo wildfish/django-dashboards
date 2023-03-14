@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Type, Union
 
+from wildcoeus.dashboards import config
 from wildcoeus.dashboards.component import Component
 from wildcoeus.dashboards.component.table import SerializedTable, TableSerializer
 
@@ -14,7 +15,19 @@ class BasicTable(Component):
     template_name: str = "wildcoeus/dashboards/components/table/basic.html"
     value: Optional[Union[Callable[..., SerializedTable], Type[TableSerializer]]] = None
     defer: Optional[Union[Callable[..., SerializedTable], Type[TableSerializer]]] = None
-    css_classes: Optional[str] = "table"
+
+    def __post_init__(self):
+        default_css_classes = config.Config().WILDCOEUS_COMPONENT_CLASSES["Table"]
+        # make sure css_classes is a dict as this is what form template requires
+        if self.css_classes and isinstance(self.css_classes, str):
+            # if sting assume this is form class
+            self.css_classes = {"table": self.css_classes}
+
+        # update defaults with any css classes which have been passed in
+        if isinstance(default_css_classes, dict) and isinstance(self.css_classes, dict):
+            default_css_classes.update(self.css_classes)
+
+        self.css_classes = default_css_classes
 
 
 @dataclass
@@ -32,3 +45,16 @@ class Table(Component):
     defer: Optional[Union[Callable[..., SerializedTable], Type[TableSerializer]]] = None
     defer_url: Optional[Callable[..., str]] = None
     poll_rate: Optional[int] = None
+
+    def __post_init__(self):
+        default_css_classes = config.Config().WILDCOEUS_COMPONENT_CLASSES["Table"]
+        # make sure css_classes is a dict as this is what form template requires
+        if self.css_classes and isinstance(self.css_classes, str):
+            # if sting assume this is form class
+            self.css_classes = {"table": self.css_classes}
+
+        # update defaults with any css classes which have been passed in
+        if isinstance(default_css_classes, dict) and isinstance(self.css_classes, dict):
+            default_css_classes.update(self.css_classes)
+
+        self.css_classes = default_css_classes

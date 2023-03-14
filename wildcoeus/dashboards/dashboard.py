@@ -58,11 +58,11 @@ class Dashboard(Registrable, ClassWithAppConfigMeta):
         # collect all the components from all the base classes
         cls.components = {}
         for base in reversed(cls.__bases__):
-            if not hasattr(base, "components") or not isinstance(base.components, dict):
+            if not hasattr(base, "components") or not isinstance(base.components, dict):  # type: ignore
                 continue
 
             for k, v in (
-                (k, v) for k, v in base.components.items() if isinstance(v, Component)
+                (k, v) for k, v in base.components.items() if isinstance(v, Component)  # type: ignore
             ):
                 cls.components[k] = v
 
@@ -191,6 +191,10 @@ class Dashboard(Registrable, ClassWithAppConfigMeta):
 
         # Render with template
         if template_name:
+            # set required attributes on each component
+            self.get_components()
+            # add dashboard to the context so it's available for the template
+            context["dashboard"] = self
             return mark_safe(render_to_string(template_name, context))
 
         # No layout, so create default one, copying any LayoutOptions elements from the component to the card

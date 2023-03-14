@@ -5,11 +5,13 @@
 {% block wildcoeus_js %}
     {{ block.super }}
     {% include "wildcoeus/dashboards/includes/static/js.html" %}
+    <script src="{% static 'js/svg-gauge.js' %}"></script>
 {% endblock %}
 
 {% block wildcoeus_style %}
     {{ block.super }}
     {% include "wildcoeus/dashboards/includes/static/style.html" %}
+    <link rel="stylesheet" href="{% static "css/menu.css" %}">
 {% endblock %}
 
 {% block body %}

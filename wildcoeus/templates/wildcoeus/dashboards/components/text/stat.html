@@ -1,18 +1,18 @@
-<div class="stat">
+<div class="{{ component.css_classes.stat }}">
   {% if component.href %}<a href="{{ component.href }}">{% endif %}
   {% if component.icon %}
-  <div class="float-end">
+  <div class="{{ component.css_classes.icon }}">
     {{ component.icon|safe }}
   </div>
   {% endif %}
-  <h2>{{ rendered_value.text }}</h2>
-  <p>
+  <h2 class="{{ component.css_classes.heading }}">{{ rendered_value.text }}</h2>
+  <p class="{{ component.css_classes.text }}">
     {% if rendered_value.change_by_display %}
-    <span class="text-{% if rendered_value.change_by > 0 %}success{% else %}danger{% endif %}" style="margin-right: 0.75em">
+    <span class="text-{% if rendered_value.change_by > 0 %}success{% else %}danger{% endif %}">
     {% if rendered_value.change_by > 0 %}
-      <i class="mdi mdi-arrow-up-bold"></i>
+      &uarr;
       {% else %}
-      <i class="mdi mdi-arrow-down-bold"></i>
+      &darr;
       {% endif %} {{ rendered_value.change_by_display }}
     </span>
     {% endif %}

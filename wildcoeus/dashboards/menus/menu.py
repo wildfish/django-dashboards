@@ -114,7 +114,7 @@ class MenuItem:
 
         if (
             request.resolver_match
-            and request.resolver_match.url_name in resolve(self.url).url_name
+            and request.resolver_match.url_name == resolve(self.url).url_name
         ):
             self.selected = True
 

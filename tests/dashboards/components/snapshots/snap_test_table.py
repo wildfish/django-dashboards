@@ -43,7 +43,7 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             <div id="test">
-  <table id="test_table" class="table table-striped nowrap None" style="width:100%"></table>
+  <table id="test_table" class="table" style="width:100%"></table>
 </div>
 
 
@@ -119,7 +119,7 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             <div id="test">
-  <table id="test_table" class="table table-striped nowrap None" style="width:100%"></table>
+  <table id="test_table" class="table" style="width:100%"></table>
 </div>
 
 
@@ -179,7 +179,7 @@ snapshots[
             
 
 <div id="test">
-  <table id="test_table" class="[&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%">
+  <table id="test_table" class="table" style="width:100%">
     <thead>
     
     </thead>
@@ -204,7 +204,7 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             <div id="test">
-  <table id="test_table" class="table table-striped nowrap [&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%"></table>
+  <table id="test_table" class="table" style="width:100%"></table>
 </div>
 
 
@@ -280,7 +280,7 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             <div id="test">
-  <table id="test_table" class="table table-striped nowrap None" style="width:100%"></table>
+  <table id="test_table" class="table" style="width:100%"></table>
 </div>
 
 
@@ -363,7 +363,7 @@ snapshots[
             
 
 <div id="test">
-  <table id="test_table" class="[&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%">
+  <table id="test_table" class="table" style="width:100%">
     <thead>
     
     </thead>
@@ -388,7 +388,7 @@ snapshots[
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
             <div id="test">
-  <table id="test_table" class="table table-striped nowrap [&#x27;a&#x27;, &#x27;b&#x27;]" style="width:100%"></table>
+  <table id="test_table" class="table" style="width:100%"></table>
 </div>
 
 

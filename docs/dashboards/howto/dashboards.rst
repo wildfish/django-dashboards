@@ -110,7 +110,8 @@ them on screen using common HTML elements such Divs.
                 Card("chart_example", grid_css_classes="span-12")
             )
 
-See Layout for further information.
+See :doc:`layout` for further information.
+
 
 Model Dashboard
 ===============

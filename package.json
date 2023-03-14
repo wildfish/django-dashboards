@@ -11,6 +11,7 @@
   "devDependencies": {
     "postcss": "^8.4.21",
     "postcss-cli": "^10.1.0",
+    "postcss-import": "^15.1.0",
     "postcss-preset-env": "^8.0.0"
   }
 }

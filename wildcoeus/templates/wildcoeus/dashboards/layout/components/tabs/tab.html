@@ -1,5 +1,5 @@
-<li class="{{ li_css_classes }}">
+<div class="{{ tab_css_classes }}">
   <a :class="{ 'active': tab === '{{ tab_label|slugify }}' }" x-on:click.prevent="tab = '{{ tab_label|slugify }}'" href="#" class="{{ link_css_classes }}">
     {{ tab_label }}
   </a>
-</li>
+</div>

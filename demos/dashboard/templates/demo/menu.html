@@ -6,7 +6,7 @@
         <ul class="menu">
           {% for section, items in sections.items %}
             <li class="{% if section == active_section %}active{% endif %}">
-                <a href="#">{{ section }}</a>
+                <a href="{{ items.0.url }}">{{ section }}</a>
                 <ul class="dropdown">
                     {% for item in items %}
                         <li class="{% if item.selected %}active{% endif %}">
@@ -16,6 +16,15 @@
                 </ul>
             </li>
             {% endfor %}
+            {% url "kicthensink:dashboard-standard" as standard_url %}
+            <li class="{% if request.META.PATH_INFO == standard_url %}active{% endif %}">
+                <a href="{{ standard_url }}">Standard View</a>
+            </li>
+
+            {% url "kicthensink:dashboard-tabbed" as tabbed_url %}
+            <li class="{% if request.META.PATH_INFO == tabbed_url %}active{% endif %}">
+                <a href="{{ tabbed_url }}">Tabbed View</a>
+            </li>
         </ul>
     </nav>
     <hr/>
