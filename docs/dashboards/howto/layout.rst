@@ -24,7 +24,7 @@ We can add a custom layout to the example dashboard from the quickstart guide
 
 :code:`demo/mydashboard/dashboards.py`::
 
-    from wildcoeus.dashboards.component.layout import Card, ComponentLayout, HTML
+    from dashboards.component.layout import Card, ComponentLayout, HTML
 
     class DemoDashboard(Dashboard):
         text_example = Text(value="Lorem ipsum dolor sit amet, consectetur adipiscing elit....")
@@ -106,7 +106,7 @@ To save on typing and to make things easier to update we recommend creating a he
 class to define css classes.  e.g.::
 
     class Grid(Enum):
-        DEFAULT = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
+        DEFAULT = config.Config().DASHBOARDS_DEFAULT_GRID_CSS
         ONE = "span-12"
         TWO = "span-6 sm-span-12"
         THREE = "span-4 sm-span-12"
@@ -122,7 +122,7 @@ You can then use this on the component::
     )
 
 Any component which does not have :code:`grid_css_classes` will automatically get one assigned based on
-the settings :code:`WILDCOEUS_DEFAULT_GRID_CSS` by default this is set to :code:`span-6`
+the settings :code:`DASHBOARDS_DEFAULT_GRID_CSS` by default this is set to :code:`span-6`
 
 css_classes
 ===========
@@ -185,7 +185,7 @@ not that setting this does not affect :code:`grid_css_classes`
 Component Layout Objects
 ------------------------
 
-These live in :code:`wildcoeus.dashboards.component.layout`.
+These live in :code:`dashboards.component.layout`.
 
 **Div**: Simply wraps the contents in a <div>::
 
@@ -276,7 +276,7 @@ HTML Layout Objects
 
 Similar to Component layout objects but for html elements rather than components
 
-These live in :code:`wildcoeus.dashboards.component.layout`.
+These live in :code:`dashboards.component.layout`.
 
 **HTML**: Simply displays the content wrapped in a div::
 
@@ -306,13 +306,13 @@ generates::
 Creating your own Component Layout Objects
 ------------------------------------------
 
-Wildcoeus provides a few commonly used layout elements to get you started and you can easily get by with these.
+django-dashboards provides a few commonly used layout elements to get you started and you can easily get by with these.
 However if you need to create your own Component Layout object this is very easy to do.
 
 New component layouts should inherit from HTMLComponentLayout and provide a template_name
 which is a path to a html file to render.  Lets create a new :code:`DivWithImage` object.  Create a new file :code:`demo/mydashboard/layout.py`::
 
-    from wildcoeus.dashboards.component.layout import HTMLComponentLayout
+    from dashboards.component.layout import HTMLComponentLayout
 
     class DivWithImage(HTMLComponentLayout):
         template_name: str = "demo/div_with_image.html"

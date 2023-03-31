@@ -9,13 +9,11 @@
 envdir
 django_configurations
 django_eventstream
+django-cors-headers
 django_silk
 faker
 httpx
 model_bakery
-plotly
 psutil
 psycopg2
-pandas
-plotly_express
 whitenoise

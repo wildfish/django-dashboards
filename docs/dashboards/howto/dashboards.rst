@@ -13,7 +13,7 @@ includes a class subclassed from ``Dashboard``:
 
 ::
 
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.dashboard import Dashboard
 
 
     class DemoDashboard(Dashboard):
@@ -23,8 +23,8 @@ The various components can then be added to the Dashboard object:
 
 ::
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Text, Chart
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text, Chart
 
 
     class DemoDashboard(Dashboard):
@@ -42,8 +42,8 @@ To do this add a class called ``Meta`` as a child of the dashboard object:
 ::
 
     from django.utils.translation import gettext_lazy as _
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Text, Chart
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text, Chart
 
 
     class DemoDashboard(Dashboard):
@@ -74,8 +74,8 @@ You can do this by passing the ``Dashboard`` class to the dashboard registry ``r
 
 ::
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.registry import registry
+    from dashboards.dashboard import Dashboard
+    from dashboards.registry import registry
 
 
     class DemoDashboard(Dashboard):
@@ -94,7 +94,7 @@ them on screen using common HTML elements such Divs.
 
 ::
 
-    from wildcoeus.dashboards.component.layout import Card, ComponentLayout, HTML
+    from dashboards.component.layout import Card, ComponentLayout, HTML
 
     class DemoDashboard(Dashboard):
         text_example = Text(value="Lorem ipsum dolor sit amet, consectetur adipiscing elit....")
@@ -128,7 +128,7 @@ Set the model in the dashboard meta class.  This will include all objects:
 
 ::
 
-    from wildcoeus.dashboards.dashboard import ModelDashboard
+    from dashboards.dashboard import ModelDashboard
 
     class DemoDashboard(ModelDashboard):
         ...
@@ -142,7 +142,7 @@ you do not wish to be made available.
 
 ::
 
-    from wildcoeus.dashboards.dashboard import ModelDashboard
+    from dashboards.dashboard import ModelDashboard
 
     class DemoDashboard(ModelDashboard):
         ...
@@ -158,7 +158,7 @@ The object is fetched based on the url and is passed into each component as an
 The default for the lookup value will be the `pk` of the object but this can be changed
 in the ``Meta`` class::
 
-    from wildcoeus.dashboards.dashboard import ModelDashboard
+    from dashboards.dashboard import ModelDashboard
 
     class DemoDashboard(ModelDashboard):
         ...

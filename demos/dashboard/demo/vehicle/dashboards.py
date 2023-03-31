@@ -5,17 +5,17 @@ from demo.vehicle.forms import VehicleTypeFilterForm
 from demo.vehicle.models import Vehicle
 from demo.vehicle.tables import VehicleTableSerializer
 
-from wildcoeus.dashboards import config
-from wildcoeus.dashboards.component import CTA, Form, Map, Stat, Table
-from wildcoeus.dashboards.component.layout import HTML, Card, ComponentLayout, Div
-from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
-from wildcoeus.dashboards.registry import registry
+from dashboards import config
+from dashboards.component import CTA, Form, Map, Stat, Table
+from dashboards.component.layout import HTML, Card, ComponentLayout, Div
+from dashboards.dashboard import Dashboard, ModelDashboard
+from dashboards.registry import registry
 
 
 class Grid(Enum):
     """define css classes here for grid layout"""
 
-    DEFAULT = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
+    DEFAULT = config.Config().DASHBOARDS_DEFAULT_GRID_CSS
     ONE = "span-12"
     DOUBLE = "span-9"
     TWO = "span-6"

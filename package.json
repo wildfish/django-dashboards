@@ -1,12 +1,12 @@
 {
-  "name": "django-wildcoeus",
+  "name": "django-dashboards",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:wildfish/django-wildcoeus.git",
+  "repository": "git@github.com:wildfish/django-dashboards.git",
   "author": "Wildfish <developers@wildfish.com>",
   "license": "MIT",
   "scripts": {
-    "build-css": "postcss wildcoeus/static/wildcoeus/css/src/index.css -o wildcoeus/static/wildcoeus/css/wildcoeus.css"
+    "build-css": "postcss dashboards/static/dashboards/css/src/index.css -o dashboards/static/dashboards/css/dashboards.css"
   },
   "devDependencies": {
     "postcss": "^8.4.21",

@@ -3,8 +3,8 @@ from django.urls import resolve
 
 import pytest
 
-from wildcoeus.dashboards.menus.menu import Menu, MenuItem
-from wildcoeus.dashboards.menus.registry import menu_registry
+from dashboards.menus.menu import Menu, MenuItem
+from dashboards.menus.registry import menu_registry
 
 
 pytestmark = pytest.mark.django_db(reset_sequences=True)
@@ -29,7 +29,7 @@ def menu():
             children = [
                 MenuItem(title="Item 1.1", url="/", children=grandchildren),
                 MenuItem(title="Item 1.2", url="/"),
-                MenuItem(title="Item 1.3", url="/app1/testmodeldashboard/1/"),
+                MenuItem(title="Item 1.3", url="/dash/app1/testmodeldashboard/1/"),
             ]
 
             parent = [
@@ -56,7 +56,7 @@ def test_template_tag(model_dashboard, menu, user, rf):
     menu_registry.discovered = True  # set to True so it doesn't run autodiscover
 
     out = Template(
-        "{% load wildcoeus %}"
+        "{% load dashboards %}"
         "{% dashboard_menus %}"
         "{{ active_section }},"
         "{% for item in sections.MenuTest %}"

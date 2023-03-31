@@ -19,7 +19,7 @@ or applying global permissions classes with by adding the following to your sett
 
 ::
 
-    WILDCOEUS_DEFAULT_PERMISSION_CLASSES = ["wildcoeus.dashboards.permissions.IsAdminUser"]
+    DASHBOARDS_DEFAULT_PERMISSION_CLASSES = ["dashboards.permissions.IsAdminUser"]
 
 
 Built in permission classes
@@ -46,7 +46,7 @@ Custom permissions
 ==================
 
 For more granular permission control, subclass one of the built in permissions or
-``wildcoeus.dashboards.permission.BasePermission``. For example:
+``dashboards.permission.BasePermission``. For example:
 
 ::
 

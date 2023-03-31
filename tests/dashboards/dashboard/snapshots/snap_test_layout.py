@@ -30,7 +30,7 @@ value
 
 
 
-    <div hx-get="/app1/testdashboard/@component/component_2/"
+    <div hx-get="/dash/app1/testdashboard/@component/component_2/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
             Loading...
@@ -185,7 +185,7 @@ value
 
 
 
-    <div hx-get="/app1/testdashboard/@component/component_2/"
+    <div hx-get="/dash/app1/testdashboard/@component/component_2/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
             Loading...
@@ -214,7 +214,7 @@ value
 
 
 
-    <div hx-get="/app1/testdashboard/@component/component_2/"
+    <div hx-get="/dash/app1/testdashboard/@component/component_2/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
             Loading...

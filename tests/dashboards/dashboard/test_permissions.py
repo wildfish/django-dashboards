@@ -4,8 +4,8 @@ from django.http import HttpResponseRedirect
 
 import pytest
 
-from wildcoeus.dashboards import permissions
-from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
+from dashboards import permissions
+from dashboards.dashboard import Dashboard, ModelDashboard
 
 
 pytest_plugins = [
@@ -22,8 +22,8 @@ def test_dashboard__get_dashboard_permissions__permissions_set(admin_dashboard):
 def test_dashboard__get_dashboard_permissions__no_permissions_set__uses_default(
     dashboard, settings
 ):
-    settings.WILDCOEUS_DEFAULT_PERMISSION_CLASSES = [
-        "wildcoeus.dashboards.permissions.IsAdminUser"
+    settings.DASHBOARDS_DEFAULT_PERMISSION_CLASSES = [
+        "dashboards.permissions.IsAdminUser"
     ]
     assert dashboard.get_dashboard_permissions() == [permissions.IsAdminUser()]
 

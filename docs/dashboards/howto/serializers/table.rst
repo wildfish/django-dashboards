@@ -63,7 +63,7 @@ data step becomes really easy.  Either set the Model you're interested in (in th
 serializers Meta class), or if you need more control over the queryset you can override the `get_queryset()` method.::
 
 
-    from wildcoeus.dashboards.component.table import TableSerializer
+    from dashboards.component.table import TableSerializer
 
     class ExampleTableSerializer(TableSerializer):
         class Meta:
@@ -76,7 +76,7 @@ serializers Meta class), or if you need more control over the queryset you can o
 
 or::
 
-    from wildcoeus.dashboards.component.table import TableSerializer
+    from dashboards.component.table import TableSerializer
 
     class ExampleTableSerializer(TableSerializer):
         class Meta:

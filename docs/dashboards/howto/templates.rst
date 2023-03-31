@@ -2,13 +2,13 @@
 Templates & Styles
 ==================
 
-Wildcoeus comes with a set of default templates and styles but these can be
+django-dashboards comes with a set of default templates and styles but these can be
 easily customised to fit your needs.
 
 Design
 ------
 
-Wildcoeus comes with a default css stylesheet which includes a grid layout
+django-dashboards comes with a default css stylesheet which includes a grid layout
 as well as basic styling for each component.
 
 .. image:: _images/templates_style.png
@@ -29,16 +29,16 @@ to you if you are coming from a Django background.
 
 ::
 
-    # templates/wildcoeus/dashboards/base.html
+    # templates/dashboards/base.html
 
     <!DOCTYPE html>
     <html lang="en">
         <head>
-            <title>Wildcoeus | {% block title %}{{ dashboard.get_meta.name }}{% endblock title %}</title>
+            <title>django-dashboards | {% block title %}{{ dashboard.get_meta.name }}{% endblock title %}</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            {% block wildcoeus_js %}{% endblock wildcoeus_js %}
-            {% block wildcoeus_style %}{% endblock wildcoeus_style %}
+            {% block dashboards_js %}{% endblock dashboards_js %}
+            {% block dashboards_style %}{% endblock dashboards_style %}
         </head>
         <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
             {% block body %}
@@ -50,7 +50,7 @@ to you if you are coming from a Django background.
         </body>
     </html>
 
-This is the default HTML code in Wildcoeus.  When creating your own base template
+This is the default HTML code in django-dashboards.  When creating your own base template
 you should follow this so you don't loose any content blocks.
 
 ::
@@ -83,27 +83,27 @@ Dashboard Template
 ++++++++++++++++++
 
 If you have created a base template which is not in the
-folder ``templates/wildcoeus/dashboards/base.html`` or you
+folder ``templates/dashboards/base.html`` or you
 simply want to change how the default dashboard page looks you
 can do this by creating a ``dashboard.html``
-file in ``templates/wildcoeus/dashboards/``.
+file in ``templates/dashboards/``.
 
 ::
 
-    # templates/wildcoeus/dashboards/dashboard.html
+    # templates/dashboards/dashboard.html
 
-    {% extends "wildcoeus/dashboards/base.html" %}
+    {% extends "dashboards/base.html" %}
     {% load static %}
-    {% load wildcoeus %}
+    {% load dashboards %}
 
-    {% block wildcoeus_js %}
+    {% block dashboards_js %}
         {{ block.super }}
-        {% include "wildcoeus/dashboards/includes/static/js.html" %}
+        {% include "dashboards/includes/static/js.html" %}
     {% endblock %}
 
-    {% block wildcoeus_style %}
+    {% block dashboards_style %}
         {{ block.super }}
-        {% include "wildcoeus/dashboards/includes/static/style.html" %}
+        {% include "dashboards/includes/static/style.html" %}
     {% endblock %}
 
     {% block content_title %}
@@ -116,7 +116,7 @@ file in ``templates/wildcoeus/dashboards/``.
       </div>
     {% endblock %}
 
-This example is the default Wildcoeus file.
+This example is the default django-dashboards file.
 
 The file should extend from ``base.html`` and you should populate / add the
 blocks as required.  If you have created your own base template make sure
@@ -125,51 +125,51 @@ to update the extends path.
 CSS
 +++
 
-Wildcoeus comes with its own css styles which are imported from the file
-``wildcoeus/dashboards/includes/static/style.html``  If you want to continue
+django-dashboards comes with its own css styles which are imported from the file
+``dashboards/includes/static/style.html``  If you want to continue
 using these styles make sure
-``{% include "wildcoeus/dashboards/includes/static/style.html" %}``
-is present in the ``wildcoeus_style`` block.
+``{% include "dashboards/includes/static/style.html" %}``
+is present in the ``dashboards_style`` block.
 
 If you wish to remove the base styles you can either: create your own
-``wildcoeus/dashboards/includes/static/style.html`` file locally or
+``dashboards/includes/static/style.html`` file locally or
 set the block to empty if you are overriding dashboard.html or base.html ::
 
-    {% block wildcoeus_style %}{% endblock %}
+    {% block dashboards_style %}{% endblock %}
 
-Wildcoeus includes Datatables for the Table component and requires
-``wildcoeus/vendor/css/datatables.min.css`` for styling.
-If you have removed ``wildcoeus/dashboards/includes/static/style.html`` remember
+django-dashboards includes Datatables for the Table component and requires
+``dashboards/vendor/css/datatables.min.css`` for styling.
+If you have removed ``dashboards/includes/static/style.html`` remember
 to add this import somewhere or your tables will not be styled.
 
 If you want to include your own stylesheet(s) as well as the default one,
 you can either:
 
-Create a ``wildcoeus/dashboards/includes/static/style.html`` locally
-which imports wildcoeus.css
+Create a ``dashboards/includes/static/style.html`` locally
+which imports dashboards.css
 
 Or
 
 Include them in your local dashboard.html or base.html file ::
 
-    {% block wildcoeus_style %}
-        {% include "wildcoeus/dashboards/includes/static/style.html" %}
+    {% block dashboards_style %}
+        {% include "dashboards/includes/static/style.html" %}
         <link rel="stylesheet" href="{% static 'demo/css/styles.css' %}">
     {% endblock %}
 
 If adding them to base.html you will need to have ``{{ block.super }}``
-in the dashboard.html ``wildcoeus_style`` block.
+in the dashboard.html ``dashboards_style`` block.
 
 JS
 +++
 
 Just as with CSS, you can override the default JS files used by:
-creating your own ``wildcoeus/dashboards/includes/static/js.html``, or changing
-the ``wildcoeus_js`` block in base.html or dashboard.html ::
+creating your own ``dashboards/includes/static/js.html``, or changing
+the ``dashboards_js`` block in base.html or dashboard.html ::
 
-    {% block wildcoeus_js %}
+    {% block dashboards_js %}
         {{ block.super }}
-        {% include "wildcoeus/dashboards/includes/static/js.html" %}
+        {% include "dashboards/includes/static/js.html" %}
     {% endblock %}
 
 This is useful if you want to add extra Javascript files to your project or
@@ -178,9 +178,9 @@ have custom components which require additional JS libraries.
 Another reason you may override this is if you are wanting to add a build tool
 such as Vite JS or Webpack to your project to replace the default setup.
 
-Wildcoeus needs certain js libraries to function correctly so check which
+django-dashboards needs certain js libraries to function correctly so check which
 libraries are in
-``wildcoeus/dashboards/includes/static/js.html`` before making changes.
+``dashboards/includes/static/js.html`` before making changes.
 
 render_dashboard template tag
 +++++++++++++++++++++++++++++
@@ -191,7 +191,7 @@ The code which actually renders the dashboards is ::
     {% render_dashboard dashboard %}
     ...
 
-This uses the template tag ``render_dashboard`` from ``wildcoeus`` and takes
+This uses the template tag ``render_dashboard`` from ``dashboards`` and takes
 the dashboard object and renders it to the page.
 
 Using this template tag allows you to render a dashboard to any template you wish.
@@ -209,14 +209,14 @@ folder which matches the path for the component (see below).
 
 **Components**:
 
-* ``Chart`` - wildcoeus/components/chart/chart.html
-* ``Form`` - wildcoeus/components/form/form.html
-* ``Map`` - wildcoeus/components/form/map.html
-* ``Table`` - wildcoeus/components/table/index.html
-* ``BasicTable`` - wildcoeus/components/table/basic.html
-* ``HTML`` - wildcoeus/components/table/html.html
-* ``Stat`` - wildcoeus/components/table/stat.html
-* ``Text`` - wildcoeus/components/table/text.html
+* ``Chart`` - dashboards/components/chart/chart.html
+* ``Form`` - dashboards/components/form/form.html
+* ``Map`` - dashboards/components/form/map.html
+* ``Table`` - dashboards/components/table/index.html
+* ``BasicTable`` - dashboards/components/table/basic.html
+* ``HTML`` - dashboards/components/table/html.html
+* ``Stat`` - dashboards/components/table/stat.html
+* ``Text`` - dashboards/components/table/text.html
 
 Replacing these files will update all components on a dashboard.
 
@@ -228,9 +228,9 @@ Updating a LayoutComponent template is safer and probably more likely.
 
 **LayoutComponents**:
 
-* ``Card`` - wildcoeus/layout/components/card.html
-* ``Div`` - wildcoeus/layout/components/div.html
-* ``Tab`` - wildcoeus/layout/components/tab.html, wildcoeus/layout/components/container.html, wildcoeus/layout/components/content.html
+* ``Card`` - dashboards/layout/components/card.html
+* ``Div`` - dashboards/layout/components/div.html
+* ``Tab`` - dashboards/layout/components/tab.html, dashboards/layout/components/container.html, dashboards/layout/components/content.html
 
 The default templates come with their own structure and css applied but this
 may not fit your needs.  For example if you have integrated Bootstrap
@@ -245,12 +245,12 @@ rather than changing the HTML.  An example could be if you are using Bootstrap
 css you may want the component to include some additional Bootstrap
 helper classes.
 
-Wildcoeus allows you to change the default css classes for any Component or
-LayoutComponent via the setting ``WILDCOEUS_LAYOUT_COMPONENT_CLASSES``
-and ``WILDCOEUS_COMPONENT_CLASSES``.
+django-dashboards allows you to change the default css classes for any Component or
+LayoutComponent via the setting ``DASHBOARDS_LAYOUT_COMPONENT_CLASSES``
+and ``DASHBOARDS_COMPONENT_CLASSES``.
 
-WILDCOEUS_LAYOUT_COMPONENT_CLASSES
-++++++++++++++++++++++++++++++++++
+DASHBOARDS_LAYOUT_COMPONENT_CLASSES
++++++++++++++++++++++++++++++++++++
 
 The value should be a dict containing all or any keys ``Card``, ``Tab``, ``Div``,
 with each key being either a dictionary depending on
@@ -283,7 +283,7 @@ The default classes are ::
 
 For example to update the ``header`` class for ``Card`` you would add ::
 
-    WILDCOEUS_LAYOUT_COMPONENT_CLASSES = {
+    DASHBOARDS_LAYOUT_COMPONENT_CLASSES = {
         "Card": {
             "header": "alternative-card-header",
         }
@@ -294,8 +294,8 @@ To your settings.py file.
 Any keys not defined will default to the original definition.
 
 
-WILDCOEUS_COMPONENT_CLASSES
-+++++++++++++++++++++++++++
+DASHBOARDS_COMPONENT_CLASSES
+++++++++++++++++++++++++++++
 
 The value should be a dict containing all or any keys ``Form``, ``Table``,
 ``BasicTable``, ``Stat`` and ``Chart`` with each key being either a
@@ -323,7 +323,7 @@ The default classes are ::
 
 For example to update the ``stat`` class for ``Stat`` you would add ::
 
-    WILDCOEUS_COMPONENT_CLASSES = {
+    DASHBOARDS_COMPONENT_CLASSES = {
         "Stat": {
             "stat": "stat",
             "icon": "stat__icon",
@@ -443,13 +443,13 @@ If you do, make sure to review the original template first.
 Alternative loading message
 ---------------------------
 
-By default Wildcoeus shows the text "Loading..." while a deferred component
+By default django-dashboards shows the text "Loading..." while a deferred component
 is loading.  You can change this by creating your own a loading.html
-template in the folder ``templates/wildcoeus/dashboards/components/``
+template in the folder ``templates/dashboards/components/``
 
 ::
 
-    # templates/wildcoeus/dashboards/components/loading.html
+    # templates/dashboards/components/loading.html
     <div class="loading-img">
         <img src="/path/to/loading.gif" />
     </div>
@@ -462,15 +462,15 @@ Changing the Default Grid Layout
 --------------------------------
 
 Dashboards follow a grid layout with a default of 2 components per row.
-You can change this by adding ``WILDCOEUS_DEFAULT_GRID_CSS`` to your settings
+You can change this by adding ``DASHBOARDS_DEFAULT_GRID_CSS`` to your settings
 file.
 
 ::
 
-    WILDCOEUS_DEFAULT_GRID_CSS = "span-6"
+    DASHBOARDS_DEFAULT_GRID_CSS = "span-6"
 
 The value should match a css class available in the stylesheet(s). The following
-classes are available in wildcoeus.css:
+classes are available in dashboards.css:
 
 * ``span-3`` - 4 columns
 * ``span-4`` - 3 columns

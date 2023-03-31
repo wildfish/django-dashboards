@@ -10,8 +10,8 @@ Text component is the simplest component. It can be used to display a message:
 
 ::
 
-    from wildcoeus.dashboards.component import Text
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.dashboard import Dashboard
 
     class ExampleDashboard(Dashboard):
         text_example = Text(value="Rendered on load")
@@ -29,9 +29,9 @@ Stat is simply a more controller version of Text, with a little more styling/lay
 
 ::
 
-    from wildcoeus.dashboards.component import Text
-    from wildcoeus.dashboards.component.text import StatData
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.component.text import StatData
+    from dashboards.dashboard import Dashboard
 
     class ExampleDashboard(Dashboard):
         stat_one = Stat(
@@ -58,8 +58,8 @@ The simplest way to do this is with `Plotly Express <https://plotly.com/python/p
 
 ::
 
-    from wildcoeus.dashboards.component import Chart
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Chart
+    from dashboards.dashboard import Dashboard
 
     import plotly.express as px
 
@@ -92,7 +92,7 @@ However, you can also leverage our ``ChartSerializer`` to make this more concise
 
     import plotly.express as px
 
-    from wildcoeus.dashboards.component.chart import ChartSerializer
+    from dashboards.component.chart import ChartSerializer
 
     class ScatterChartSerializer(ChartSerializer):
         x: Optional[str] = None
@@ -139,8 +139,8 @@ We can then call the serializer with:
 
 ::
 
-    from wildcoeus.dashboards.component import Chart
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Chart
+    from dashboards.dashboard import Dashboard
 
     class ExampleDashboard(Dashboard):
         bubble_chart_example = Chart(
@@ -163,8 +163,8 @@ of a plotly map or mapbox map to the component.
 ::
 
     import json
-    from wildcoeus.dashboards.component import Map
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Map
+    from dashboards.dashboard import Dashboard
 
     def fetch_scatter_map_data(*args, **kwargs):
         return json.dumps(
@@ -223,9 +223,9 @@ to render maps.
     from typing import Optional, List
     import plotly.express as px
 
-    from wildcoeus.dashboards.component.chart import ChartSerializer
-    from wildcoeus.dashboards.component import Map
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component.chart import ChartSerializer
+    from dashboards.component import Map
+    from dashboards.dashboard import Dashboard
 
 
     class ChoroplethMapSerializer(ChartSerializer):
@@ -291,7 +291,7 @@ table component:
 ::
 
     # tables.py
-    from wildcoeus.dashboards.component.table import TableSerializer
+    from dashboards.component.table import TableSerializer
 
     class ExampleTableSerializer(TableSerializer):
         class Meta:
@@ -394,9 +394,9 @@ As well as the form you can pass some optional attributes to control how it func
 
     from django import forms
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Form
-    from wildcoeus.dashboards.forms import DashboardForm
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Form
+    from dashboards.forms import DashboardForm
 
     class GradeForm(DashboardForm):
         grade = forms.ChoiceField(
@@ -424,10 +424,10 @@ their grade.
     import random
     from django import forms
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Form
-    from wildcoeus.dashboards.forms import DashboardForm
-    from wildcoeus.dashboards.component.table import TableSerializer
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Form
+    from dashboards.forms import DashboardForm
+    from dashboards.component.table import TableSerializer
 
 
     class StudentSerializer(TableSerializer):
@@ -510,10 +510,10 @@ the ``Form`` component
     import copy
     from django import forms
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Form
-    from wildcoeus.dashboards.forms import DashboardForm
-    from wildcoeus.dashboards.component.table import TableSerializer
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Form
+    from dashboards.forms import DashboardForm
+    from dashboards.component.table import TableSerializer
 
 
     student_list = [

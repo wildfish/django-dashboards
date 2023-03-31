@@ -1,5 +1,5 @@
-from wildcoeus.dashboards.menus.menu import DashboardMenu
-from wildcoeus.dashboards.menus.registry import menu_registry
+from dashboards.menus.menu import DashboardMenu
+from dashboards.menus.registry import menu_registry
 
 
 class VehicleMenu(DashboardMenu):

@@ -1,6 +1,0 @@
-<div>
-<h2>{{ component.key }}</h2>
-<div hx-ext="sse" sse-connect="{{ component.pushpin_url }}" sse-swap="repo-{{ rendered_value.full_name }}-{{ component.key }}">
-{% include "wildcoeus/dashboards/components/text/stat.html" %}
-</div>
-</div>

@@ -2,8 +2,7 @@ from django.template import Context
 
 import pytest
 
-from tests.utils import render_dashboard_test
-from wildcoeus.dashboards.component.layout import (
+from dashboards.component.layout import (
     HTML,
     Card,
     ComponentLayout,
@@ -12,6 +11,7 @@ from wildcoeus.dashboards.component.layout import (
     Tab,
     TabContainer,
 )
+from tests.utils import render_dashboard_test
 
 
 pytest_plugins = [
@@ -107,7 +107,7 @@ def test_html_component__grid_css_classes__render(rf, component_class, dashboard
 def test_html_component__grid_css_classes_not_set__default(
     rf, component_class, dashboard, settings
 ):
-    settings.WILDCOEUS_DEFAULT_GRID_CSS = "default-css-class"
+    settings.DASHBOARDS_DEFAULT_GRID_CSS = "default-css-class"
 
     request = rf.get("/")
     context = Context({"request": request})

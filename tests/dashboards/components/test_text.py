@@ -2,9 +2,9 @@ from django.template import Context
 
 import pytest
 
+from dashboards.component import CTA
+from dashboards.component.text import Stat, StatData, Text
 from tests.utils import render_component_test
-from wildcoeus.dashboards.component import CTA
-from wildcoeus.dashboards.component.text import Stat, StatData, Text
 
 
 pytest_plugins = [

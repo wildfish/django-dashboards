@@ -20,7 +20,7 @@ we have:
 
     import httpx
 
-    from wildcoeus.dashboards.views import ComponentView
+    from dashboards.views import ComponentView
 
 
     class AsyncComponentView(ComponentView):
@@ -60,7 +60,7 @@ url must append ``COMPONENT_PATTERN``.
 
     from .views import AsyncComponentView
 
-    from wildcoeus.dashboards.urls import COMPONENT_PATTERN
+    from dashboards.urls import COMPONENT_PATTERN
 
 
     urlpatterns = [
@@ -80,8 +80,8 @@ any component:
     # views.py
     from django.urls import reverse
 
-    from wildcoeus.dashboards.component import Text
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.dashboard import Dashboard
 
 
     class AsyncComponentDashboard(Dashboard):

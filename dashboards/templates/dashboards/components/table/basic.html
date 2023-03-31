@@ -1,0 +1,21 @@
+{% load dashboards %}
+{% with columns=rendered_value.columns %}
+<div id="{{ component.key }}">
+  <table id="{{ component.key }}_table" class="{{ component.css_classes.table }}" style="width:100%">
+    <thead>
+    {% for title in columns.values %}
+      <th>{{ title|safe }}</th>
+    {% endfor %}
+    </thead>
+    <tbody>
+    {% for row in rendered_value.data %}
+    <tr>
+      {% for id in columns.keys %}
+          <td>{{ row|lookup:id|safe }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endwith %}

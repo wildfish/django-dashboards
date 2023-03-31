@@ -1,6 +1,6 @@
 import pytest
 
-from wildcoeus.dashboards.registry import registry
+from dashboards.registry import registry
 
 
 pytest_plugins = [

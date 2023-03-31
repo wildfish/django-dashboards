@@ -3,7 +3,7 @@ from django.http import Http404
 
 import pytest
 
-from wildcoeus.dashboards.views import DashboardView
+from dashboards.views import DashboardView
 
 
 pytest_plugins = [
@@ -26,7 +26,7 @@ def test_get_template_names__default(rf, dashboard):
     view = DashboardView(dashboard_class=dashboard)
     view.setup(rf.get("/"))
 
-    assert view.get_template_names() == ["wildcoeus/dashboards/dashboard.html"]
+    assert view.get_template_names() == ["dashboards/dashboard.html"]
 
 
 def test_get_dashboard__dashboard_class_defined(rf, dashboard):

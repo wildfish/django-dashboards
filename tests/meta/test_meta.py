@@ -1,4 +1,4 @@
-from wildcoeus.meta import ClassWithMeta
+from dashboards.meta import ClassWithMeta
 
 
 class BaseConcreteClass(ClassWithMeta):

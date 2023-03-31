@@ -2,7 +2,7 @@
 Menus
 =====
 
-Wildcoeus allows you to build menus easily and in code.  It also allows you to
+django-dashboards allows you to build menus easily and in code.  It also allows you to
 build dashboard menus in only a few lines of code.  It handles the discovery,
 url routing and permission checks all for you out the box.
 
@@ -22,8 +22,8 @@ a list of ``MenuItem`` objects for that menu.
 ::
 
     # example/dashboard_menu.py
-    from wildcoeus.dashboards.menus.menu import Menu, MenuItem
-    from wildcoeus.dashboards.menus.registry import menu_registry
+    from dashboards.menus.menu import Menu, MenuItem
+    from dashboards.menus.registry import menu_registry
 
     class ExampleMenu(Menu):
         name = "Example Menu"
@@ -104,8 +104,8 @@ its contents as children.
 ::
 
     # example/dashboard_menu.py
-    from wildcoeus.dashboards.menus.menu import DashboardMenu
-    from wildcoeus.dashboards.menus.registry import menu_registry
+    from dashboards.menus.menu import DashboardMenu
+    from dashboards.menus.registry import menu_registry
 
     class ExampleMenu(DashboardMenu):
         name = "Example Menu"
@@ -120,8 +120,8 @@ This needs to match the app the dashboards are registered against.
 The example above assumes you have a dashboard.py file within an example app::
 
     # example/dashboards.py
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Text
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text
 
 
     class Dashboard1(Dashboard):
@@ -166,7 +166,7 @@ You can use the helper function ``make_dashboard_item()`` to generate the object
 ::
 
     # example/dashboard_menu.py
-    from wildcoeus.dashboards.menus.menu import DashboardMenu, make_dashboard_item
+    from dashboards.menus.menu import DashboardMenu, make_dashboard_item
     ...
 
 
@@ -212,11 +212,11 @@ Display
 To display the menu in your site, call the ``{% dashboard_menus %}`` templatetag
 within the html file, then loop through the ``sections`` variable to render the menu.
 
-Wildcoeus does not provide any HTML for a menu out the box as it is assumed you want to
+django-dashboards does not provide any HTML for a menu out the box as it is assumed you want to
 control how it looks and feels yourself.  An example of how this could look is::
 
     // menu.html
-    {% load wildcoeus %}
+    {% load dashboards %}
 
     <div class="menu">
         {% dashboard_menus %}
@@ -239,7 +239,7 @@ control how it looks and feels yourself.  An example of how this could look is::
         <hr/>
     </div>
 
-As you can see, first add ``{% load wildcoeus %}`` and call ``{% dashboard_menus %}`` to
+As you can see, first add ``{% load dashboards %}`` and call ``{% dashboard_menus %}`` to
 get the menus into context.  This automatically adds a ``sections`` dictionary variable
 which holds all the registered menus which we can then loop though.
 

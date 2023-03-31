@@ -122,10 +122,7 @@ class Common(Configuration):
         # Third party
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
-        "django_extensions",
-        # required for wildcoeus
-        "wildcoeus",
-        "wildcoeus.dashboards",
+        "dashboards",
         "corsheaders",
         "django_eventstream",
         # Project
@@ -133,7 +130,7 @@ class Common(Configuration):
         "demo.vehicle.apps.VehicleConfig",
     ]
     MIDDLEWARE = [
-        # django_grip required for wildcoeus/dashboards/eventstream
+        # django_grip required for dashboards/eventstream
         "django_grip.GripMiddleware",
         "django.middleware.security.SecurityMiddleware",
         "corsheaders.middleware.CorsMiddleware",
@@ -253,7 +250,7 @@ class Common(Configuration):
     EVENTSTREAM_ALLOW_CREDENTIALS = True
     EVENTSTREAM_ALLOW_HEADERS = "Authorization"
 
-    WILDCOEUS_DEFAULT_GRID_CSS = "span-4"
+    DASHBOARDS_DEFAULT_GRID_CSS = "span-4"
 
     LOGGING = {
         "version": 1,
@@ -268,7 +265,7 @@ class Common(Configuration):
             "level": "WARNING",
         },
         "loggers": {
-            "wildcoeus": {
+            "django-dashboards": {
                 "handlers": ["console"],
                 "level": "DEBUG",
                 "propagate": False,

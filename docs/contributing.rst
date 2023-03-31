@@ -8,13 +8,13 @@ Contributions are welcome by pull request. Check the github to see what needs wo
 Installing
 ==========
 
-The easiest way to work on django-wildcoeus is to fork the project on github, then
+The easiest way to work on django-dashboards is to fork the project on github, then
 install it to a virtualenv::
 
-    virtualenv django-wildcoeus
-    cd django-wildcoeus
+    virtualenv django-dashboards
+    cd django-dashboards
     source bin/activate
-    pip install -e git+git@github.com:USERNAME/django-wildcoeus.git#egg=django-wildcoeus
+    pip install -e git+git@github.com:USERNAME/django-dashboards.git#egg=django-dashboards
 
 (replacing ``USERNAME`` with your username).
 

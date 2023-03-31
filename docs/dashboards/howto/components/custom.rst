@@ -17,7 +17,7 @@ be to write a new component, with value preset:
     # components.py
     from django.contrib.auth.models import User
 
-    from wildcoeus.dashboards.component import Stat, StatData
+    from dashboards.component import Stat, StatData
 
     @dataclass
     class UserCountStatComponent(Stat):
@@ -47,8 +47,8 @@ First create the component:
     from dataclasses import dataclass, field
     from typing import Optional
 
-    from wildcoeus.dashboards.component import Component, Stat
-    from wildcoeus.dashboards.types import ValueData
+    from dashboards.component import Component, Stat
+    from dashboards.types import ValueData
 
     @dataclass
     class GaugeData:

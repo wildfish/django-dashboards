@@ -23,8 +23,8 @@ HTMX triggers are then used to fetch ``three`` and ``four`` after initial load s
 
 ::
 
-    from wildcoeus.dashboards.component import Text
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.dashboard import Dashboard
 
     def fetch_something(request, *args, **kwargs)
         return f"Hello {request.user.username}"
@@ -49,7 +49,7 @@ Whenever a callable is used it is passed a number of kwargs.
 * request
     *A Django HttpRequest*
 * dashboard
-    *The wildcoeus.dashboards.Dashboard instance the component belongs to*
+    *The dashboards.Dashboard instance the component belongs to*
 * filters
     *A dict containing any GET/POST params sent during the request*
 
@@ -75,8 +75,8 @@ You do this by declaring a ``get_<FOO>_<method>`` function where ``FOO`` is the 
 
 ::
 
-    from wildcoeus.dashboards.component import Text
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.dashboard import Dashboard
 
     class ExampleDashboard(Dashboard):
         value_from_method = Text()
@@ -102,7 +102,7 @@ defer_url
 +++++++++
 
 By default a component renders the ``ComponentView`` during a defer call from HTMX.  \
-This is a builtin Wildcoeus view which renders just that component to the screen.  If required,
+This is a builtin django-dashboards view which renders just that component to the screen.  If required,
 you can create your own version of this.  You do this by creating your own view and providing the url as a
 callable to ``defer_url``.  A use case for this is :doc:`Async components <async>` .
 
@@ -137,14 +137,14 @@ allowing you to link to another page/dashboard from within a dashboard.
 ::
 
     from django.urls import reverse_lazy
-    from wildcoeus.dashboards.component import CTA
+    from dashboards.component import CTA
 
     ...
     link = Text(
         value="Find out more!",
         cta=CTA(
             href=reverse_lazy(
-                "wildcoeus.dashboards:demo_demodashboard"
+                "dashboards:demo_demodashboard"
             ),
         ),
     )

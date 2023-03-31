@@ -1,0 +1,30 @@
+{% extends "dashboards/base.html" %}
+{% load static %}
+{% load dashboards %}
+
+{% block dashboards_js %}
+    {{ block.super }}
+    {% include "dashboards/includes/static/js.html" %}
+    <script src="{% static 'js/svg-gauge.js' %}"></script>
+{% endblock %}
+
+{% block dashboards_style %}
+    {{ block.super }}
+    {% include "dashboards/includes/static/style.html" %}
+    <link rel="stylesheet" href="{% static "css/menu.css" %}">
+{% endblock %}
+
+{% block body %}
+    {% include "demo/menu.html" %}
+
+    {% block content_title %}
+        <h2>{{ dashboard.get_meta.verbose_name }}</h2>
+    {% endblock content_title %}
+
+    {% block content %}
+        <div class="dashboard-container">
+            {% render_dashboard dashboard %}
+        </div>
+    {% endblock %}
+
+{% endblock %}

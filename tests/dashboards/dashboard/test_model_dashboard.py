@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 import pytest
 
-from wildcoeus.dashboards.dashboard import ModelDashboard
+from dashboards.dashboard import ModelDashboard
 
 
 pytest_plugins = [
@@ -95,7 +95,7 @@ def test_model_dashboard__get_absolute_url(model_dashboard, user, rf):
 
     dashboard = model_dashboard(request=request, lookup=lookup)
 
-    assert dashboard.get_absolute_url() == f"/app1/testmodeldashboard/{lookup}/"
+    assert dashboard.get_absolute_url() == f"/dash/app1/testmodeldashboard/{lookup}/"
 
 
 @pytest.mark.django_db

@@ -2,7 +2,7 @@ from django.core.exceptions import PermissionDenied
 
 import pytest
 
-from wildcoeus.dashboards.views import FormComponentView
+from dashboards.views import FormComponentView
 
 
 pytest_plugins = [
@@ -27,9 +27,9 @@ def test_get(rf, filter_dashboard):
 
 def test_get_template_names__partial(rf, filter_dashboard):
     view = FormComponentView(dashboard_class=filter_dashboard)
-    view.setup(rf.get("/app1/TestFilterDashboard/component_1/"))
+    view.setup(rf.get("/dash/app1/TestFilterDashboard/component_1/"))
 
-    assert view.get_template_names() == ["wildcoeus/dashboards/components/partial.html"]
+    assert view.get_template_names() == ["dashboards/components/partial.html"]
 
 
 @pytest.mark.django_db
@@ -58,7 +58,7 @@ def test_admin_only_dashboard__with_permission(
 
 
 def test_post(filter_dashboard, rf):
-    request = rf.post("/app1/TestFilterDashboard/component_1/", {"country": "two"})
+    request = rf.post("/dash/app1/TestFilterDashboard/component_1/", {"country": "two"})
     view = FormComponentView(dashboard_class=filter_dashboard)
     view.setup(request=request, component="filter_component")
     response = view.post(request)
@@ -67,7 +67,7 @@ def test_post(filter_dashboard, rf):
 
 
 def test_post_ajax(filter_dashboard, rf, snapshot):
-    request = rf.post("/app1/TestFilterDashboard/component_1/", {"country": "two"})
+    request = rf.post("/dash/app1/TestFilterDashboard/component_1/", {"country": "two"})
     request.headers = {"x-requested-with": "XMLHttpRequest"}
     view = FormComponentView(dashboard_class=filter_dashboard)
     view.setup(request=request, component="filter_component")

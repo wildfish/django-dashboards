@@ -3,7 +3,7 @@ from django.http import Http404
 
 import pytest
 
-from wildcoeus.dashboards.views import ComponentView
+from dashboards.views import ComponentView
 
 
 pytest_plugins = [
@@ -23,7 +23,7 @@ def test_get(rf, dashboard):
 
 
 def test_get__json(rf, dashboard, snapshot):
-    request = rf.get("/app1/TestDashboard/component_2/")
+    request = rf.get("/dash/app1/TestDashboard/component_2/")
     request.htmx = False
     request.headers = {"x-requested-with": "XMLHttpRequest"}
     view = ComponentView(dashboard_class=dashboard)
@@ -50,7 +50,7 @@ def test_post(rf, dashboard):
 
 
 def test_post__json(rf, dashboard, snapshot):
-    request = rf.get("/app1/TestDashboard/component_2/")
+    request = rf.get("/dash/app1/TestDashboard/component_2/")
     request.htmx = False
     request.headers = {"x-requested-with": "XMLHttpRequest"}
     view = ComponentView(dashboard_class=dashboard)
@@ -67,13 +67,13 @@ def test_post__json(rf, dashboard, snapshot):
 
 def test_get_template_names__partial(rf, dashboard):
     view = ComponentView(dashboard_class=dashboard)
-    view.setup(rf.get("/app1/TestDashboard/component_1/"))
+    view.setup(rf.get("/dash/app1/TestDashboard/component_1/"))
 
-    assert view.get_template_names() == ["wildcoeus/dashboards/components/partial.html"]
+    assert view.get_template_names() == ["dashboards/components/partial.html"]
 
 
 def test_get_partial__htmx__component_found(rf, dashboard):
-    request = rf.get("/app1/TestDashboard/component_1/")
+    request = rf.get("/dash/app1/TestDashboard/component_1/")
     request.htmx = True
     view = ComponentView(dashboard_class=dashboard)
     view.setup(
@@ -89,7 +89,7 @@ def test_get_partial__htmx__component_found(rf, dashboard):
 
 
 def test_get_partial__component_not_found(rf, dashboard):
-    request = rf.get("/app1/TestDashboard/component_10/")
+    request = rf.get("/dash/app1/TestDashboard/component_10/")
     view = ComponentView(dashboard_class=dashboard)
     view.setup(
         request,
@@ -101,7 +101,7 @@ def test_get_partial__component_not_found(rf, dashboard):
 
 
 def test_get__partial_template(rf, dashboard, snapshot):
-    request = rf.get("/app1/TestDashboard/component_2/")
+    request = rf.get("/dash/app1/TestDashboard/component_2/")
     request.htmx = True
     view = ComponentView(dashboard_class=dashboard)
     view.setup(

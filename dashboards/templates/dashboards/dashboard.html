@@ -1,0 +1,23 @@
+{% extends "dashboards/base.html" %}
+{% load static %}
+{% load dashboards %}
+
+{% block dashboards_js %}
+    {{ block.super }}
+    {% include "dashboards/includes/static/js.html" %}
+{% endblock %}
+
+{% block dashboards_style %}
+    {{ block.super }}
+    {% include "dashboards/includes/static/style.html" %}
+{% endblock %}
+
+{% block content_title %}
+  <h2>{{ dashboard.get_meta.name }}</h2>
+{% endblock %}
+
+{% block content %}
+  <div class="dashboard-container">
+    {% render_dashboard dashboard %}
+  </div>
+{% endblock %}

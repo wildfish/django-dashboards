@@ -1,7 +1,7 @@
 Components
 ==========
 
-A key part of building a dashboard in Wildcoeus is components.
+A key part of building a dashboard in django-dashboards is components.
 
 Components act as the building blocks of a dashboard with each component an element.
 
@@ -9,8 +9,8 @@ Generally components are added to dashboards as attributes
 
 ::
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Text, Chart
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text, Chart
 
 
     class DemoDashboard(Dashboard):
@@ -22,8 +22,8 @@ for details on this see :doc:`dynamic dashboards <../dynamic>`
 
 ::
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Text
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text
 
     class DynamicDashboard(Dashboard):
         def __init__(self, request: HttpRequest, *args, **kwargs):
@@ -34,7 +34,7 @@ for details on this see :doc:`dynamic dashboards <../dynamic>`
             self.components[f"dynamic_component_{r}"] = Text(
                 value=f"Component {r}")
 
-Wildcoeus comes bundled with a number of predefined components but you can also easily build
+django-dashboards comes bundled with a number of predefined components but you can also easily build
 your own if needs be see :doc:`dynamic dashboards <./custom>`.
 
 

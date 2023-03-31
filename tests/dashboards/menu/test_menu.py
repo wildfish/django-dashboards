@@ -2,7 +2,7 @@ from django.urls import resolve
 
 import pytest
 
-from wildcoeus.dashboards.menus.menu import (
+from dashboards.menus.menu import (
     DashboardMenu,
     DashboardMenuItem,
     Menu,

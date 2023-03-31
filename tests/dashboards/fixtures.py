@@ -19,9 +19,7 @@ from tests.dashboards.app1.dashboards import (
 
 @pytest.fixture(autouse=True)
 def mock_random_ms_delay():
-    with patch(
-        "wildcoeus.dashboards.templatetags.wildcoeus.random.randint"
-    ) as random_ms_delay:
+    with patch("dashboards.templatetags.dashboards.random.randint") as random_ms_delay:
         random_ms_delay.return_value = 1
         yield random_ms_delay
 

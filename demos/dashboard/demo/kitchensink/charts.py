@@ -4,7 +4,7 @@ from typing import List, Optional
 import plotly.express as px
 import plotly.graph_objs as go
 
-from wildcoeus.dashboards.component.chart import ChartSerializer
+from dashboards.component.chart import ChartSerializer
 
 
 class DarkChartSerializer(ChartSerializer):

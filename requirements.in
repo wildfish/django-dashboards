@@ -2,12 +2,6 @@
 # Project requirements
 #
 
-# Core
-celery
-django-cors-headers
-django-extensions
-pydantic
-
 # Charts
 pandas
 plotly
@@ -21,7 +15,6 @@ pre-commit
 
 # Testing
 django-webtest
-fakeredis
 model-bakery
 py
 pytest

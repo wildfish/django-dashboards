@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Django Dashboards | {% block title %}{{ dashboard.get_meta.name }}{% endblock title %}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        {% block dashboards_js %}{% endblock dashboards_js %}
+        {% block dashboards_style %}{% endblock dashboards_style %}
+    </head>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        {% block body %}
+            {% block content_title %}{% endblock content_title %}
+            <div class="content">
+                {% block content %}{% endblock content %}
+            </div>
+        {% endblock body %}
+    </body>
+</html>

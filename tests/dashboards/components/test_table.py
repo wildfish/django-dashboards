@@ -8,14 +8,11 @@ from django.template import Context
 
 import pytest
 
+from dashboards.component import BasicTable, Table
+from dashboards.component.table.mixins import TableFilterMixin, TableSortMixin
+from dashboards.component.table.serializers import SerializedTable, TableSerializer
 from tests.dashboards.fakes import fake_user
 from tests.utils import render_component_test
-from wildcoeus.dashboards.component import BasicTable, Table
-from wildcoeus.dashboards.component.table.mixins import TableFilterMixin, TableSortMixin
-from wildcoeus.dashboards.component.table.serializers import (
-    SerializedTable,
-    TableSerializer,
-)
 
 
 pytest_plugins = [

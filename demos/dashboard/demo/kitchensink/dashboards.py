@@ -24,18 +24,9 @@ from demo.kitchensink.forms import MedalForm
 from demo.kitchensink.tables import ExampleTableSerializer
 from faker import Faker
 
-from wildcoeus.dashboards import config
-from wildcoeus.dashboards.component import (
-    CTA,
-    BasicTable,
-    Chart,
-    Form,
-    Map,
-    Stat,
-    Table,
-    Text,
-)
-from wildcoeus.dashboards.component.layout import (
+from dashboards import config
+from dashboards.component import CTA, BasicTable, Chart, Form, Map, Stat, Table, Text
+from dashboards.component.layout import (
     HR,
     HTML,
     Card,
@@ -45,16 +36,16 @@ from wildcoeus.dashboards.component.layout import (
     Tab,
     TabContainer,
 )
-from wildcoeus.dashboards.component.text import StatData
-from wildcoeus.dashboards.dashboard import Dashboard
-from wildcoeus.dashboards.permissions import IsAdminUser
-from wildcoeus.dashboards.registry import registry
+from dashboards.component.text import StatData
+from dashboards.dashboard import Dashboard
+from dashboards.permissions import IsAdminUser
+from dashboards.registry import registry
 
 
 class Grid(Enum):
     """define css classes here for grid layout"""
 
-    DEFAULT = config.Config().WILDCOEUS_DEFAULT_GRID_CSS
+    DEFAULT = config.Config().DASHBOARDS_DEFAULT_GRID_CSS
     ONE = "span-12"
     DOUBLE = "span-9"
     TWO = "span-6"
@@ -85,9 +76,7 @@ class DemoDashboard(Dashboard):
     link = Text(
         value="Find out more!",
         cta=CTA(
-            href=reverse_lazy(
-                "wildcoeus.dashboards:kitchensink_demodashboardcustomtemplate"
-            ),
+            href=reverse_lazy("dashboards:kitchensink_demodashboardcustomtemplate"),
         ),
         grid_css_classes=Grid.TWO.value,
     )

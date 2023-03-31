@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 import httpx
 from demo.kitchensink.dashboards import DemoDashboard, DynamicDashboard
 
-from wildcoeus.dashboards.views import ComponentView
+from dashboards.views import ComponentView
 
 
 class StandardView(TemplateView):

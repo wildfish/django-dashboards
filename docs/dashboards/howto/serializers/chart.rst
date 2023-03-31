@@ -35,7 +35,7 @@ This is a list of fields on your model which you are interested in.  Under the h
 the serializer also converts your queryset into a Pandas Dataframe so is
 required for this.::
 
-    from wildcoeus.dashboards.component.chart import ChartSerializer
+    from dashboards.component.chart import ChartSerializer
 
     class ExampleChartSerializer(ChartSerializer):
         class Meta:
@@ -46,7 +46,7 @@ required for this.::
 
 or::
 
-    from wildcoeus.dashboards.component.chart import ChartSerializer
+    from dashboards.component.chart import ChartSerializer
 
     class ExampleChartSerializer(ChartSerializer):
         class Meta:

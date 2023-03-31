@@ -1,6 +1,6 @@
 name: Tests
 
-# Test django-wildcoeus on:
+# Test django-dashboards on:
 #   all supported Django and Python versions
 
 on:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: py-${{ matrix.python-version }} dj-${{ matrix.django-version }} Wildcoeus
+    name: py-${{ matrix.python-version }} dj-${{ matrix.django-version }} Dashboards
     runs-on: ubuntu-latest
     strategy:
       matrix:

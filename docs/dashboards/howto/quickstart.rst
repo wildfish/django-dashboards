@@ -14,11 +14,11 @@ Create a new Django project::
     cd demo
 
     # Create a virtual environment
-    pyenv virtualenv 3.11.0 django-wildcoeus-demo
-    pyenv activate django-wildcoeus-demo
+    pyenv virtualenv 3.11.0 django-dashboards-demo
+    pyenv activate django-dashboards-demo
 
     # Install
-    pip install django-wildcoeus
+    pip install django-dashboards
 
     # Set up a new project
     django-admin startproject demo .
@@ -33,9 +33,9 @@ Dashboards
 ----------
 First you need to setup a dashboard definition.  Create a new file :code:`demo/mydashboard/dashboards.py`::
 
-    from wildcoeus.dashboards.dashboard import Dashboard
-    from wildcoeus.dashboards.component import Text, Chart
-    from wildcoeus.dashboards.registry import registry
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text, Chart
+    from dashboards.registry import registry
     from demo.mydashboard.data import DashboardData
 
     class DemoDashboard(Dashboard):
@@ -98,17 +98,17 @@ Next we need to wire up the dashboard urls.  In :code:`demo/urls.py`::
 
     urlpatterns = [
         path('admin/', admin.site.urls),
-        path('dashboards/', include('wildcoeus.dashboards.urls')),
+        path('dashboards/', include('dashboards.urls')),
     ]
 
 Settings
 --------
-Finally add :code:`wildcoeus`, :code:`wildcoeus.dashboards` and your new app :code:`demo.mydashboard` to INSTALLED_APPS in :code:`demo/settings.py`::
+Finally add :code:`dashboards`, :code:`dashboards` and your new app :code:`demo.mydashboard` to INSTALLED_APPS in :code:`demo/settings.py`::
 
     INSTALLED_APPS = [
         ...
-        "wildcoeus",
-        "wildcoeus.dashboards",
+        "dashboards",
+        "dashboards",
         "demo.mydashboard",
     ]
 

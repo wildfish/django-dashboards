@@ -17,11 +17,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.humanize",
-    "wildcoeus",
-    "wildcoeus.dashboards",
-    "wildcoeus.pipelines",
+    "dashboards",
     "tests.dashboards.app1",
-    "tests.pipelines.app",
 ]
 
 MIDDLEWARE = [

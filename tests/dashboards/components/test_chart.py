@@ -5,8 +5,8 @@ import plotly.express as px
 import plotly.graph_objs as go
 import pytest
 
+from dashboards.component.chart.serializers import ChartSerializer
 from tests.dashboards.fakes import fake_user
-from wildcoeus.dashboards.component.chart.serializers import ChartSerializer
 
 
 pytest_plugins = [

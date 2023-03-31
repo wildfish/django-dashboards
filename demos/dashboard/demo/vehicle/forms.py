@@ -1,6 +1,6 @@
 from django import forms
 
-from wildcoeus.dashboards.forms import DashboardForm
+from dashboards.forms import DashboardForm
 
 from .models import Vehicle
 

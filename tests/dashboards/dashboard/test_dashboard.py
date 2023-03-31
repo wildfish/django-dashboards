@@ -1,8 +1,8 @@
 import pytest
 
+from dashboards.component import Text
+from dashboards.dashboard import Dashboard
 from tests.dashboards.app1.dashboards import TestDashboard, TestModelDashboard
-from wildcoeus.dashboards.component import Text
-from wildcoeus.dashboards.dashboard import Dashboard
 
 
 pytest_plugins = [
@@ -44,7 +44,7 @@ def test__get_components__with_parent__no_layout(complex_dashboard, rf):
 @pytest.mark.django_db
 def test_dashboard__get_absolute_url(dashboard, rf):
     request = rf.get("/")
-    assert dashboard(request=request).get_absolute_url() == "/app1/testdashboard/"
+    assert dashboard(request=request).get_absolute_url() == "/dash/app1/testdashboard/"
 
 
 @pytest.mark.django_db

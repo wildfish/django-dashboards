@@ -22,7 +22,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Wildcoeus"
+project = "django-dashboards"
 copyright = "2022, Wildfish"
 author = "Wildfish"
 release = "0.0.1"

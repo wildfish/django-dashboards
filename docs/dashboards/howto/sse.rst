@@ -90,13 +90,13 @@ is a new template which will leverage HTMX and a property to get the pushpin URL
 
 ::
 
-    from wildcoeus.dashboards.component import Chart, Stat
+    from dashboards.component import Chart, Stat
     from dataclasses import dataclass
     from typing import Optional
 
     @dataclass
     class SSEStat(Stat):
-        template: str = "wildcoeus/dashboards/components/sse_stat.html"
+        template: str = "dashboards/components/sse_stat.html"
         poll_rate: Optional[int] = 10
 
         @staticmethod
@@ -109,7 +109,7 @@ is a new template which will leverage HTMX and a property to get the pushpin URL
 
     @dataclass
     class SSEChart(Chart):
-        template: str = "wildcoeus/dashboards/components/sse_chart.html"
+        template: str = "dashboards/components/sse_chart.html"
         poll_rate: Optional[int] = None
 
         @staticmethod
@@ -138,7 +138,7 @@ At a template level, taking SSEStat as an example, we can the built in SSE featu
 
 
 In order for events to be sent you could either have a cron job, management command, celery task or one even
-of our pipelines. For example in our demo, we render the Stat fully into an event:
+one of our django-pipelines. For example in our demo, we render the Stat fully into an event:
 
 ::
 

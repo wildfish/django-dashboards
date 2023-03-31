@@ -1,0 +1,10 @@
+{% load dashboards %}
+{# For HTMX deferred calls #}
+{% render_component component=component htmx=False %}
+
+{# When partial is called, we also render any dependent components #}
+{% for dependent in component.dependent_components %}
+    <div hx-swap-oob="innerHTML:#component-{{ dependent.key }}-inner">
+        {% render_component component=dependent htmx=False %}
+    </div>
+{% endfor %}

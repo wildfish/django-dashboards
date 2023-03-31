@@ -3,8 +3,8 @@ Views & Routing
 ===============
 
 By default any ``Dashboard`` registered will have a generic view and url routing created for it as
-long as you have included ``include('wildcoeus.dashboards.urls')`` in your ``urls.py``
-and ``WILDCOEUS_INCLUDE_DASHBOARD_VIEWS = True`` (defualt) in your ``settings.py``
+long as you have included ``include('dashboards.urls')`` in your ``urls.py``
+and ``DJANGO_DASHBOARDS_DASHBOARD_VIEWS = True`` (defualt) in your ``settings.py``
 
 For example if you added the following dashboard to the app ``test``:
 
@@ -23,7 +23,7 @@ and included in your route urls:
 
     # urls.py
 
-    path('dashboards/', include('wildcoeus.dashboards.urls')),
+    path('dashboards/', include('dashboards.urls')),
 
 
 The dashboard will then be available at ``/dashboard/test/demodashboard/``, or using ``reverse``:
@@ -32,7 +32,7 @@ The dashboard will then be available at ``/dashboard/test/demodashboard/``, or u
 
     # view.py
 
-    reverse("wildcoeus.dashboards:test_demodashboard")
+    reverse("dashboards:test_demodashboard")
     # reverse("<namespace>:<app_label>_<slug_dashboard_class_name>")
 
 You can also provide a namespace as per Django's urls:
@@ -41,7 +41,7 @@ You can also provide a namespace as per Django's urls:
 
     # urls.py
 
-    path("dashboards/", include("wildcoeus.dashboards.urls", "customnamespace"))
+    path("dashboards/", include("dashboards.urls", "customnamespace"))
 
     # view.py
 
@@ -118,11 +118,11 @@ is how you'd make tabbed dashboards, which leverage HTMXs lazy loading and parti
 
     # templates/tabbed.html
 
-    {% extends "wildcoeus/dashboards/dashboard.html" %}
+    {% extends "dashboards/dashboard.html" %}
 
     {% comment %}
         Note this example uses Alpine.js to control the tabs, it's an excellent library to use
-        alongside HTMX and is incuded in wildcoeus example js.
+        alongside HTMX and is incuded in dashboards example js.
     {% endcomment %}
 
     {% block content %}
@@ -139,14 +139,14 @@ is how you'd make tabbed dashboards, which leverage HTMXs lazy loading and parti
 
 Please note there are caveats to adding your own routes:
 
-* If you only want your own views you can disable ``WILDCOEUS_INCLUDE_DASHBOARD_VIEWS``. Noting that you will still be leveraging the component and form fetch views included in the package.
+* If you only want your own views you can disable ``DJANGO_DASHBOARDS_DASHBOARD_VIEWS``. Noting that you will still be leveraging the component and form fetch views included in the package.
 * If you decide not to use ``DashboardView`` any permissions_classes will not be applied.
 
 
 Custom component views
 ----------------------
 
-Wildcoeus comes bundled with URLs to handle deferred components, however, if need arises you can also add your own. For example:
+django-dashboards comes bundled with URLs to handle deferred components, however, if need arises you can also add your own. For example:
 
 
 ::
@@ -159,8 +159,8 @@ Wildcoeus comes bundled with URLs to handle deferred components, however, if nee
         CustomComponentView,
     )
 
-    from wildcoeus.dashboards.urls import COMPONENT_PATTERN
-    from wildcoeus.dashboards.views import DashboardView
+    from dashboards.urls import COMPONENT_PATTERN
+    from dashboards.views import DashboardView
 
     path(
         "customcomponent/" + COMPONENT_PATTERN,
@@ -178,7 +178,7 @@ Wildcoeus comes bundled with URLs to handle deferred components, however, if nee
 
     from django.http import HttpRequest, HttpResponse
 
-    from wildcoeus.dashboards.views import ComponentView
+    from dashboards.views import ComponentView
 
 
     class CustomComponentView(ComponentView):

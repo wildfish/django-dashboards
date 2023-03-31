@@ -1,6 +1,6 @@
 from demo.vehicle.data import VehicleData
 
-from wildcoeus.dashboards.component.table import TableSerializer
+from dashboards.component.table import TableSerializer
 
 
 class VehicleTableSerializer(TableSerializer):

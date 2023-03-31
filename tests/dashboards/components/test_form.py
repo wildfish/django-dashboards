@@ -4,9 +4,9 @@ from django.urls import reverse
 
 import pytest
 
+from dashboards.component import Form
+from dashboards.forms import DashboardForm
 from tests.utils import render_component_test
-from wildcoeus.dashboards.component import Form
-from wildcoeus.dashboards.forms import DashboardForm
 
 
 pytest_plugins = [
@@ -59,7 +59,7 @@ def test_form_component__get_submit_url(dashboard):
     component.key = "test"
 
     assert component.get_submit_url() == reverse(
-        "wildcoeus.dashboards:form_component",
+        "dashboards:form_component",
         args=[dashboard._meta.app_label, dashboard.class_name(), "test"],
     )
 

@@ -3,13 +3,13 @@ import json
 from django import forms
 from django.contrib.auth.models import User
 
-from wildcoeus.dashboards import permissions
-from wildcoeus.dashboards.component import Chart, Form, Table, Text
-from wildcoeus.dashboards.component.layout import HR, ComponentLayout, Div
-from wildcoeus.dashboards.component.table import TableSerializer
-from wildcoeus.dashboards.dashboard import Dashboard, ModelDashboard
-from wildcoeus.dashboards.forms import DashboardForm
-from wildcoeus.dashboards.registry import registry
+from dashboards import permissions
+from dashboards.component import Chart, Form, Table, Text
+from dashboards.component.layout import HR, ComponentLayout, Div
+from dashboards.component.table import TableSerializer
+from dashboards.dashboard import Dashboard, ModelDashboard
+from dashboards.forms import DashboardForm
+from dashboards.registry import registry
 
 
 class TestDashboard(Dashboard):

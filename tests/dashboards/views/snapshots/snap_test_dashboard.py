@@ -12,23 +12,23 @@ snapshots[
 ] = """<!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Wildcoeus | Test Dashboard</title>
+        <title>Django Dashboards | Test Dashboard</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         
     
     
-<script src="/static/wildcoeus/vendor/js/htmx.min.js"></script>
-<script src="/static/wildcoeus/vendor/js/alpine.min.js" defer></script>
-<script src="/static/wildcoeus/vendor/js/plotly.min.js"></script>
-<script src="/static/wildcoeus/vendor/js/jquery.min.js"></script>
-<script src="/static/wildcoeus/vendor/js/datatables.min.js"></script>
+<script src="/static/dashboards/vendor/js/htmx.min.js"></script>
+<script src="/static/dashboards/vendor/js/alpine.min.js" defer></script>
+<script src="/static/dashboards/vendor/js/plotly.min.js"></script>
+<script src="/static/dashboards/vendor/js/jquery.min.js"></script>
+<script src="/static/dashboards/vendor/js/datatables.min.js"></script>
 
         
     
     
-<link rel="stylesheet" href="/static/wildcoeus/css/wildcoeus.css">
-<link rel="stylesheet" href="/static/wildcoeus/vendor/css/datatables.min.css">
+<link rel="stylesheet" href="/static/dashboards/css/dashboards.css">
+<link rel="stylesheet" href="/static/dashboards/vendor/css/datatables.min.css">
 
 
     </head>
@@ -104,23 +104,23 @@ snapshots[
 ] = """<!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Wildcoeus | Test Dashboard</title>
+        <title>Django Dashboard | Test Dashboard</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         
     
     
-<script src="/static/wildcoeus/vendor/js/htmx.min.js"></script>
-<script src="/static/wildcoeus/vendor/js/alpine.min.js" defer></script>
-<script src="/static/wildcoeus/vendor/js/plotly.min.js"></script>
-<script src="/static/wildcoeus/vendor/js/jquery.min.js"></script>
-<script src="/static/wildcoeus/vendor/js/datatables.min.js"></script>
+<script src="/static/dashboards/vendor/js/htmx.min.js"></script>
+<script src="/static/dashboards/vendor/js/alpine.min.js" defer></script>
+<script src="/static/dashboards/vendor/js/plotly.min.js"></script>
+<script src="/static/dashboards/vendor/js/jquery.min.js"></script>
+<script src="/static/dashboards/vendor/js/datatables.min.js"></script>
 
         
     
     
-<link rel="stylesheet" href="/static/wildcoeus/css/wildcoeus.css">
-<link rel="stylesheet" href="/static/wildcoeus/vendor/css/datatables.min.css">
+<link rel="stylesheet" href="/static/dashboards/css/dashboards.css">
+<link rel="stylesheet" href="/static/dashboards/vendor/css/datatables.min.css">
 
 
     </head>

@@ -18,7 +18,7 @@ urlpatterns = [
     ),
     path(
         "dashboard/",
-        include("wildcoeus.dashboards.urls"),
+        include("dashboards.urls"),
     ),
     path("admin/", admin.site.urls),
 ]

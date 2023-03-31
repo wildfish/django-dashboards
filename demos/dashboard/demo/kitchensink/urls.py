@@ -10,8 +10,8 @@ from demo.kitchensink.views import (
     TabbedView,
 )
 
-from wildcoeus.dashboards.urls import COMPONENT_PATTERN
-from wildcoeus.dashboards.views import DashboardView
+from dashboards.urls import COMPONENT_PATTERN
+from dashboards.views import DashboardView
 
 
 urlpatterns = [

@@ -7,7 +7,7 @@ from django.utils.html import strip_spaces_between_tags
 
 from django_eventstream import send_event
 
-from wildcoeus.dashboards.component import Stat
+from dashboards.component import Stat
 
 
 class Command(BaseCommand):

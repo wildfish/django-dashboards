@@ -11,7 +11,7 @@ First define you Dashboard with an __init__ function:
 ::
 
     # dashboards.py
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.dashboard import Dashboard
 
     class DynamicDashboard(Dashboard):
         def __init__(self, request: HttpRequest, *args, **kwargs):
@@ -23,7 +23,7 @@ You can then manually add any components to the ``self.components`` dictionary:
 ::
 
     # dashboards.py
-    from wildcoeus.dashboards.dashboard import Dashboard
+    from dashboards.dashboard import Dashboard
 
     class DynamicDashboard(Dashboard):
         def __init__(self, request: HttpRequest, *args, **kwargs):

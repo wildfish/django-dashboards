@@ -22,11 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     # Third party
     "django.contrib.staticfiles",
-    "django_extensions",
-    # wildcoeus
-    "wildcoeus",
-    "wildcoeus.dashboards",
-    "wildcoeus.pipelines",
+    "dashboards",
     # Project
 ]
 
@@ -108,14 +104,4 @@ LOGGING = {
         "handlers": ["console"],
         "level": "WARNING",
     },
-    "loggers": {
-        "wildcoeus-pipelines": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-    },
 }
-
-
-WILDCOEUS_PIPELINE_RUNNER = "wildcoeus.pipelines.runners.celery.runner.Runner"

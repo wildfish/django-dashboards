@@ -1,7 +1,8 @@
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 
 urlpatterns = [
-    path("", include("wildcoeus.pipelines.urls")),
-    path("", include("wildcoeus.dashboards.urls")),
+    path("", TemplateView.as_view(template_name="index.html")),
+    path("dash/", include("dashboards.urls")),
 ]
