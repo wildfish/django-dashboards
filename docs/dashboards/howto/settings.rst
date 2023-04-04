@@ -36,3 +36,19 @@ DJANGO_DASHBOARDS_DASHBOARD_VIEWS
 
 Set this to ``False`` to disable any registered Dashboards from automatically having a route
 to the generic DashboardView added to the urls.
+
+DASHBOARDS_LAYOUT_COMPONENT_CLASSES
+===================================
+
+Change the default classes provided to cards, for example to add the classes ``primary-card`` to all
+uses of ``Card``
+
+    DASHBOARDS_LAYOUT_COMPONENT_CLASSES = {
+        "Card": {
+            "card": "primary-card card",
+        }
+    }
+
+
+Default is imported from ``dashboards.component.layout.DEFAULT_LAYOUT_COMPONENT_CLASSES`` and merged with
+any changes set via this setting.

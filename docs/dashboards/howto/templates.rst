@@ -362,6 +362,9 @@ providing a ``template_name`` to the dashboards Meta class.
             template_name = "demo/custom.html"
     ...
 
+.. note::
+   The full example code for this dashboard is available in the repo at ``demos/dashboard/demo/kitchensink/dashboards.py``
+
 This is useful if you wish to create a complex layout that
 is not possible via the ``LayoutComponent`` or grid css classes - see :doc:`layout`.
 You may also use this if you wish to add additional HTML elements which are
@@ -370,7 +373,7 @@ not present in the Dashboard and don't want to do it via Layout.
 ::
 
     # templates/demo/custom.html
-    <div class="span-6" style="display: flex; flex-direction: column; justify-content: space-evenly; background-color: #9ca0a5;">
+    <div class="span-6" style="display: flex; flex-direction: column; justify-content: space-evenly;">
         <h3>Text Blocks</h3>
         <hr style="color: white; width: 100%" />
         {{ dashboard.components.text_example }}
@@ -390,7 +393,7 @@ not present in the Dashboard and don't want to do it via Layout.
       Nullam erat massa, lobortis id velit non, viverra fringilla nunc.
       Morbi in urna vel ante faucibus blandit ac non quam.
     </p>
-    <div class="span-12" style="display: flex; border: 1px dotted #dddddd; background-color: #dee6e8">
+    <div class="span-12" style="display: flex; border: 1px dotted #dddddd;">
       <h3>Chart + Stat Blocks</h3>
         <div style="flex: 2">
             {{ dashboard.components.line_chart_example }}
@@ -400,12 +403,14 @@ not present in the Dashboard and don't want to do it via Layout.
         </div>
     </div>
 
+
 .. image:: _images/templates_custom_template.png
    :alt: Custom Template
 
-Note you access individual components from the ``components`` attribute
-on the ``dashboard`` object.  Keys should match the attribute name in
-the Dashboard class.
+.. note::
+    you access individual components from the ``components`` attribute
+    on the ``dashboard`` object.  Keys should match the attribute name in
+    the Dashboard class.
 
 
 Custom Component Templates

@@ -32,6 +32,7 @@ TAB_CLASSES: Dict[str, str] = {
 DIV_CLASSES: Dict[str, str] = {"wrapper": ""}
 
 
+
 DEFAULT_LAYOUT_COMPONENT_CLASSES: Dict[str, Dict[str, str]] = {
     "Card": CARD_CLASSES,
     "TabContainer": TAB_CONTAINER_CLASSES,

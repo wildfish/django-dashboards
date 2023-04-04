@@ -60,12 +60,15 @@ h1, h2, h3, h4, p, .tab-container {
     border-bottom: 1px solid var(--primary);
 }
 
-.dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate, .paginate_button, .paginate_button.current{
+.dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate{
     color: var(--white) !important;
     font-size: 0.9rem !important;
     margin-bottom: 10px;
 }
 
+.dataTables_length select{
+    color: var(--white) !important;
+}
 
 .table {
     border-collapse: collapse;

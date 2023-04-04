@@ -78,8 +78,9 @@ check at ``dispatch()`` with:
             raise PermissionDenied()
         ## continue with access
 
-Note that ``has_permissions`` is used, which checks ``has_permission`` for all the ``permission_classes``
-assigned to the dashboard or permissions setting.
+.. note::
+    ``has_permissions`` is used, which checks ``has_permission`` for all the ``permission_classes``
+    assigned to the dashboard or permissions setting.
 
 ``handled`` controls whether or not ``has_permissions`` should call ``handle_no_permission``
 on the permission class or simply return False when ``has_permission`` fails.

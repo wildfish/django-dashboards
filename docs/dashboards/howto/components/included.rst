@@ -45,7 +45,8 @@ Stat is simply a more controller version of Text, with a little more styling/lay
 ``Text`` will be the main value and ``sub_text`` appearing below, ``change_by`` and ``change_by_text`` can
 also be used to display additional information.
 
-Note that StatData is a convenience class, a dict would also work.
+.. note::
+    that StatData is a convenience class, a dict would also work.
 
 
 Chart
@@ -79,11 +80,6 @@ The simplest way to do this is with `Plotly Express <https://plotly.com/python/p
     class ExampleDashboard(Dashboard):
         bubble_chart_example = Chart(defer=get_bubble_chart)
 
-
-.. image:: ../_images/components_chart_example.png
-   :alt: Chart Example
-
-
 However, you can also leverage our ``ChartSerializer`` to make this more concise and reusable. For example if we had
 
 ::
@@ -91,6 +87,7 @@ However, you can also leverage our ``ChartSerializer`` to make this more concise
     from typing import Optional
 
     import plotly.express as px
+    import plotly.graph_objs as go
 
     from dashboards.component.chart import ChartSerializer
 
@@ -100,6 +97,14 @@ However, you can also leverage our ``ChartSerializer`` to make this more concise
         size: Optional[str] = None
         color: Optional[str] = None
         mode: Optional[str] = "markers"
+
+        def apply_layout(self, fig: go.Figure):
+            fig = super().apply_layout(fig)
+            return fig.update_layout(
+                template="plotly_dark",
+                plot_bgcolor="rgba(0,0,0,0.05)",
+                paper_bgcolor="rgba(0,0,0,0.05)",
+            )
 
         def get_x(self, df) -> str:
             return self.x
@@ -147,8 +152,16 @@ We can then call the serializer with:
             defer=ExampleBubbleChartSerializer
         )
 
+.. note::
+    In this example, we use `apply_layout` to make the chart use a dark theme,
+    you can make your own classes/mixins to apply this globally.
 
-This produces the same chart as in the first example.
+Both versions produce the same base chart:
+
+.. image:: ../_images/components_chart_example.png
+   :alt: Chart Example
+
+
 
 Chart serializers also come with other benefits like ORM integration, empty chart generation, the ability to apply
 common layouts etc. For more examples please see the :doc:`Chart Serializers <../serializers/chart>` docs.
@@ -210,10 +223,6 @@ of a plotly map or mapbox map to the component.
     class ExampleDashboard(Dashboard):
         scatter_map_example = Map(defer=fetch_scatter_map_data)
 
-.. image:: ../_images/components_map_example_1.png
-   :alt: Scatter Map
-
-
 Because `Map` is just an extension of `Chart` you can also leverage plotly express and `ChartSerializer`
 to render maps.
 
@@ -221,7 +230,9 @@ to render maps.
 
     # dashboards.py
     from typing import Optional, List
+
     import plotly.express as px
+    import plotly.graph_objs as go
 
     from dashboards.component.chart import ChartSerializer
     from dashboards.component import Map
@@ -261,8 +272,9 @@ to render maps.
     class ExampleDashboard(Dashboard):
         map_example = Map(defer=ExampleMapSerializer)
 
+Here are the two components side by side:
 
-.. image:: ../_images/components_map_example_2.png
+.. image:: ../_images/components_map_examples.png
    :alt: Choroplet Map
 
 
@@ -273,56 +285,65 @@ common layouts etc. For more examples please see the :doc:`Chart Serializers <..
 Table
 +++++
 
-When rendered with as a Django view without the built-in templates, datatables.js will be applied to the table component.
-
 To make tables easier to add to a component, you can subclass `TableSerializer` and pass
 it's `serialize` function directly to defer or value. This will give you a searchable and sortable
-table component:
+table datatables.js component:
 
 ::
 
-    # dashboards.py
-    ...
-    table_example = Table(
-        defer=ExampleTableSerializer,
-    )
+    import random
 
-
-::
-
-    # tables.py
+    from dashboards.component import Table
+    from dashboards.dashboard import Dashboard
     from dashboards.component.table import TableSerializer
+    from dashboards.registry import registry
 
-    class ExampleTableSerializer(TableSerializer):
+
+    class StudentSerializer(TableSerializer):
         class Meta:
-            title = "Example table"
+            title = "Students"
             columns = {
-                "id": "Title",
                 "name": "Name",
-                "progress": "Progress",
-                "gender": "Gender",
-                "dob": "DOB",
+                "grade": "Grade",
+                "predicted": "Predicted",
             }
 
         @staticmethod
-        def get_data(**kwargs):
-            return [
+        def get_data(filters, **kwargs):
+            students = [
                 {
-                    "id": 1,
-                    "name": f"Name",
-                    "progress": 1,
-                    "gender": "male",
-                    "rating": 1,
-                    "col": 1,
-                    "dob": "19/02/1984",
+                    "name": f"Student {r}",
+                    "grade": random.choice(["a", "b", "c"]),
+                    "predicted": random.choice(["a", "b", "c"]),
                 }
+                for r in range(10)
             ]
+            # apply grade filter if available
+            if filters and "grade" in filters and filters["grade"] != "all":
+                students = list(filter(lambda x: x["grade"] == filters["grade"], students))
+
+            return students
+
+
+    class StudentDashboard(Dashboard):
+        student_table = Table(value=StudentSerializer, grid_css_classes="span-12")
+
+        class Meta:
+            name = "Students"
+
+
+    registry.register(StudentDashboard)
+
+.. image:: ../_images/components_table.png
+   :alt: Form Filter
+
+
 
 Serializer can also be driven directly from Meta.model or defining a get_queryset(obj) method:
 
 ::
 
-    class ExampleTableSerializer(TableSerializer):
+    class StaffSerializer(TableSerializer):
         class Meta:
             title = "Staff table"
             columns = {
@@ -343,12 +364,14 @@ You can also customise any of the columns in the serializer via `get_FOO_value`:
 
 ::
 
-    class ExampleTableSerializer(TableSerializer):
+    class StaffSerializer(TableSerializer):
         ...
 
         @staticmethod
         def get_first_name_value(obj):
             return obj.first_name.upper()
+
+        ...
 
 Additional `Table` attributes:
 
@@ -394,8 +417,8 @@ As well as the form you can pass some optional attributes to control how it func
 
     from django import forms
 
-    from dashboards.dashboard import Dashboard
     from dashboards.component import Form
+    from dashboards.dashboard import Dashboard
     from dashboards.forms import DashboardForm
 
     class GradeForm(DashboardForm):
@@ -408,26 +431,55 @@ As well as the form you can pass some optional attributes to control how it func
             )
         )
 
-    class DemoDashboard(Dashboard):
+    class GradeDashboard(Dashboard):
         grade_form = Form(
             form=GradeForm,
         )
-        ...
 
-This creates a form with a single dropdown with grades form A-C shown.  You can imagine
-this being useful as a filter on a table, where students can be filtered based on
-their grade.
+This creates a form with a single dropdown with grades form A-C shown.
+
+You could also create a form that adds a student:
 
 ::
 
-    # dashboards.py
+    class AddStudentForm(DashboardForm):
+        name = forms.CharField(required=True)
+        final_grade = forms.ChoiceField(
+            choices=(
+                ("a", "A"),
+                ("b", "B"),
+                ("c", "C"),
+            )
+        )
+
+        def save(self):
+            global student_list
+
+            student_list.append(
+                {
+                    "name": self.cleaned_data["name"],
+                    "grade": self.cleaned_data["final_grade"],
+                }
+            )
+
+Dependents and add Form
++++++++++++++++++++++++
+
+All components accept a dependents list, these are other components that will update when the
+component changes or is actioned. A good use case for this is a dashboard like the above
+a filter which updates the table.
+
+::
+
     import random
     from django import forms
 
+    from dashboards.component import Table
     from dashboards.dashboard import Dashboard
     from dashboards.component import Form
     from dashboards.forms import DashboardForm
     from dashboards.component.table import TableSerializer
+    from dashboards.registry import registry
 
 
     class StudentSerializer(TableSerializer):
@@ -436,6 +488,7 @@ their grade.
             columns = {
                 "name": "Name",
                 "grade": "Grade",
+                "predicted": "Predicted",
             }
 
         @staticmethod
@@ -444,6 +497,7 @@ their grade.
                 {
                     "name": f"Student {r}",
                     "grade": random.choice(["a", "b", "c"]),
+                    "predicted": random.choice(["a", "b", "c"]),
                 }
                 for r in range(10)
             ]
@@ -470,23 +524,15 @@ their grade.
             form=GradeForm,
             method="get",
             dependents=["student_table"],
+            grid_css_classes="span-12"
         )
-        student_table = Table(value=StudentSerializer)
+        student_table = Table(value=StudentSerializer, grid_css_classes="span-12")
 
         class Meta:
             name = "Students"
 
 
     registry.register(StudentDashboard)
-
-.. image:: ../_images/components_form_filter.png
-   :alt: Form Filter
-
-.. image:: ../_images/components_form_filter_applied.png
-   :alt: Form Filter Applied
-
-This example includes everything in the one file but in reality you may want to
-split these up into different files to keep your code clean.
 
 You will notice ``dependents`` has been set as an attribute on the ``Form`` component.
 If populated, this refreshes all components listed when the form is changed.
@@ -497,33 +543,36 @@ As well as reloading the component, all form data is automatically passed into
 the ``get_data()`` method of the ``TableSerializer`` when the form is changed.
 In the example we use this to filter down the students based on the grade selected.
 
-As mentioned you may also want to add a form which creates data.  This can also
+You may also want to add a form which creates data and updates the table.  This can also
 be achieved following the same process but with an additional ``save()`` method
 on the ``DashboardForm`` to define how to create the data.  When doing this type
 of form you will also want to pass ``method="post"`` and ``trigger="submit"`` into
-the ``Form`` component
+the ``Form`` component.
+
+Below is a full example how to create a dashboard that achieves this.
 
 ::
 
-    # dashboards.py
     import random
-    import copy
     from django import forms
 
+    from dashboards.component import Table
     from dashboards.dashboard import Dashboard
     from dashboards.component import Form
     from dashboards.forms import DashboardForm
     from dashboards.component.table import TableSerializer
+    from dashboards.registry import registry
 
 
-    student_list = [
+    # For example purposes! Store your data in the ORM or elsewhere!
+    students = [
         {
             "name": f"Student {r}",
             "grade": random.choice(["a", "b", "c"]),
+            "predicted": random.choice(["a", "b", "c"]),
         }
-        for r in range(5)
+        for r in range(10)
     ]
-
 
     class StudentSerializer(TableSerializer):
         class Meta:
@@ -531,19 +580,17 @@ the ``Form`` component
             columns = {
                 "name": "Name",
                 "grade": "Grade",
+                "predicted": "Predicted",
             }
 
         @staticmethod
         def get_data(filters, **kwargs):
-            global student_list
-
-            students = copy.copy(student_list)
-
             # apply grade filter if available
+            students_list = students
             if filters and "grade" in filters and filters["grade"] != "all":
-                students = list(filter(lambda x: x["grade"] == filters["grade"], students))
+                students_list = list(filter(lambda x: x["grade"] == filters["grade"], students))
 
-            return students
+            return students_list
 
 
     class GradeForm(DashboardForm):
@@ -568,9 +615,7 @@ the ``Form`` component
         )
 
         def save(self):
-            global student_list
-
-            student_list.append(
+            students.append(
                 {
                     "name": self.cleaned_data["name"],
                     "grade": self.cleaned_data["final_grade"],
@@ -583,15 +628,17 @@ the ``Form`` component
             form=GradeForm,
             method="get",
             dependents=["student_table"],
+            grid_css_classes="span-6"
         )
-        student_table = BasicTable(value=StudentSerializer)
-        add_form = Form(
+        add = Form(
             form=AddStudentForm,
             method="post",
             trigger="submit",
             css_classes={"btn": "btn btn-primary"},
-            dependents=["student_table"]
+            dependents=["student_table"],
+            grid_css_classes="span-6"
         )
+        student_table = Table(value=StudentSerializer, grid_css_classes="span-12")
 
         class Meta:
             name = "Students"
@@ -600,7 +647,7 @@ the ``Form`` component
     registry.register(StudentDashboard)
 
 
-.. image:: ../_images/components_add_form.png
+.. image:: ../_images/dependent_table_dashboard.gif
    :alt: Form Filter Applied
 
 

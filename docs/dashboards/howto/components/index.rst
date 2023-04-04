@@ -10,32 +10,21 @@ Generally components are added to dashboards as attributes
 ::
 
     from dashboards.dashboard import Dashboard
-    from dashboards.component import Text, Chart
-
-
-    class DemoDashboard(Dashboard):
-        text_example = Text(value="Lorem ipsum dolor sit amet, consectetur elit....")
-        chart_example = Chart(defer=fetch_chart_data)
-
-However you can also define your components via  ``__init__`` if you require more granular control,
-for details on this see :doc:`dynamic dashboards <../dynamic>`
-
-::
-
-    from dashboards.dashboard import Dashboard
     from dashboards.component import Text
+    from dashboards.registry import registry
 
-    class DynamicDashboard(Dashboard):
-        def __init__(self, request: HttpRequest, *args, **kwargs):
-            super().__init__(request=request, *args, **kwargs)
 
-        # Generated components
-        for r in range(1, 3):
-            self.components[f"dynamic_component_{r}"] = Text(
-                value=f"Component {r}")
+    class FirstDashboard(Dashboard):
+        welcome = Text(value="Welcome to Django Dashboards!")
 
-django-dashboards comes bundled with a number of predefined components but you can also easily build
-your own if needs be see :doc:`dynamic dashboards <./custom>`.
+        class Meta:
+            name = "First Dashboard"
+
+
+    registry.register(FirstDashboard)
+
+django-dashboards comes bundled with a number of predefined components but you can also build your own, use them
+dynamically and much more:
 
 
 .. toctree::

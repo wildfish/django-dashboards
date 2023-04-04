@@ -123,3 +123,4 @@ dmypy.json
 # project specific
 dev-docker-compose.yml
 *.idea
+demos/docs

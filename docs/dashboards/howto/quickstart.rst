@@ -5,9 +5,9 @@
 What Next?
 ----------
 
-* Learn more about creating and defining the :doc:`dashboards`.
+* Learn more about creating and defining the :doc:`dashboards` and model dashboards (i.e a dashboard DetailView) and altering the :doc:`layout` of your dashboards.
 
-* See which :doc:`components/index` are available and how to config these to fit your needs.
+* See which :doc:`components/index` are available and how to configure these to fit your needs. See also how to :doc:`components/custom` components.
 
 * Setup :doc:`permissions` to restrict access to your dashboards to individuals or user groups.
 

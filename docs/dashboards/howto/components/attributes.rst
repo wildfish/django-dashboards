@@ -275,12 +275,15 @@ dependents
 List of components to refresh after the current component has reloaded.
 
 ::
+
     ...
 
     def get_chart_data(self, **kwargs):
         filter = kwargs["filter"]
+
         if "start_date" in filter and filter["start_date"]:
             qs = SalesData.objects.filter(date__gt=filter["start_date"])
+
         data = convert_qs_table(qs)  // fake function
         return data
 
@@ -291,6 +294,7 @@ List of components to refresh after the current component has reloaded.
             dependents=["sales_data"],
         )
         sales_data = Table(defer=get_chart_data)
+
 
 When ``FilterForm`` is submitted the ``sales_data`` component will automatically be reloaded.
 See the Form component docs for how forms function.

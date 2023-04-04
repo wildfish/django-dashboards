@@ -2,7 +2,7 @@
 Dynamic dashboards
 ==================
 
-Instead of defining the components for your Dashboard at build time you can
+Instead of defining the components for your Dashboard statically you can
 generate them on the fly as part of the ``__init__()`` function.
 This allows you to tailor the components you show.
 

@@ -113,3 +113,7 @@ You can then use the new component in your dashboard:
             value=55,
         )
     )
+
+
+.. image:: ../_images/components_gauge.png
+   :alt: Form Filter

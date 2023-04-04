@@ -5,56 +5,30 @@ Dashboards
 Dashboards are used to define which and how components are shown on the page.
 They consist of a list of component objects along with an optional Layout class.
 
-Standard
-========
-
-To create a dashboard you must first create a ``dashboards.py`` file in your Django app which
-includes a class subclassed from ``Dashboard``:
+Dashboards can live anywhere in your codebase (we tend to use ``dashboards.py`` or a dashboards directory),
+they must inherit from Dashboard and be registered:
 
 ::
 
     from dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.registry import registry
+
+    class FirstDashboard(Dashboard):
+        welcome = Text(value="Welcome to Django Dashboards!")
+
+        class Meta:
+            name = "First Dashboard"
 
 
-    class DemoDashboard(Dashboard):
-        ...
+    registry.register(FirstDashboard)
 
-The various components can then be added to the Dashboard object:
-
-::
-
-    from dashboards.dashboard import Dashboard
-    from dashboards.component import Text, Chart
-
-
-    class DemoDashboard(Dashboard):
-        text_example = Text(value="Lorem ipsum dolor sit amet, consectetur elit....")
-        chart_example = Chart(defer=fetch_chart_data)
+Registering your enables the included urls and views used to display the dashboards and fetch deferred components.
 
 Meta
 ----
 
-Each dashboard may supply a custom ``Meta`` class.  This is combined with the
-``Meta`` classes from each of the dashboard base classes to create a merged metaclass
-accessible from the ``_meta`` property of the dashboard.
-To do this add a class called ``Meta`` as a child of the dashboard object:
-
-::
-
-    from django.utils.translation import gettext_lazy as _
-    from dashboards.dashboard import Dashboard
-    from dashboards.component import Text, Chart
-
-
-    class DemoDashboard(Dashboard):
-        text_example = Text(value="Lorem ipsum dolor sit amet, consectetur elit....")
-        chart_example = Chart(defer=fetch_chart_data)
-
-        class Meta:
-            name = _("Demo Dashboard")
-
-
-The base dashboard meta class contains the following properties:
+As shown above, Meta can be used to change the some configuration propeties including:
 
 * ``include_in_menu``: (``bool``): This specifies whether the dashboard should be included in any menus.  Defaults to ``True``
 * ``permission_classes`` (``List[BasePermission]``):  This is a list of permissions a user must have in order to view the dashboard.  See Permissions for more details.  If not specified anyone can view the dashboard.
@@ -64,62 +38,52 @@ The base dashboard meta class contains the following properties:
 * ``verbose_name`` (``str``): A long name for the dashboard to appear in titles etc.  If not set the ``name`` attribute will be used.
 * ``app_label`` (``str``): The name of the app the dashboard is part of, used when looking up the dashboard in the registry and building the automatic urls.  If not set the ``app_label`` is discovered from the django app registry.
 
-Registry
---------
-
-When you create a dashboard you must register it in order for the automatic url routing to be set.
-
-You can do this by passing the ``Dashboard`` class to the dashboard registry ``register`` function
-
-::
-
-    from dashboards.dashboard import Dashboard
-    from dashboards.registry import registry
-
-
-    class DemoDashboard(Dashboard):
-        ...
-
-
-    registry.register(DemoDashboard)
-
 Layout
 ------
-Dashboards by default display components in a 2 column grid but this can be
+Dashboards by with our default styles applied display components in a 2 column grid but this can be
 changed to fit your needs.  This is done by adding a ``Layout``
 class to your Dashboard and populating the ``components`` attribute with a
 :code:`ComponentLayout` class.  In this you can order your components and position
-them on screen using common HTML elements such Divs.
+them on screen using common HTML elements such Divs. You can also nest components inside the layout components:
 
 ::
 
-    from dashboards.component.layout import Card, ComponentLayout, HTML
+    from dashboards.component.layout import ComponentLayout, HTML, Card, Header
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.registry import registry
 
-    class DemoDashboard(Dashboard):
-        text_example = Text(value="Lorem ipsum dolor sit amet, consectetur adipiscing elit....")
-        chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
+
+    class LayoutDashboard(Dashboard):
+        welcome = Text(value="Welcome to Django Dashboards!")
+        nested_one = Text(value="1")
+        nested_two = Text(value="2")
 
         class Meta:
-            name = "Demo Dashboard"
+            name = "First Dashboard"
 
         class Layout(Dashboard.Layout):
             components = ComponentLayout(
-                HTML("<p>Welcome to our demo app</p>"),
-                Card("text_example", grid_css_classes="span-12"),
-                Card("chart_example", grid_css_classes="span-12")
+                Header(heading="Hello", size=2),
+                HTML("<small>123.00</small>"),
+                Card("welcome", grid_css_classes="span-12"),
+                Card("nested_one", "nested_two"),
             )
+
+
+    registry.register(LayoutDashboard)
 
 See :doc:`layout` for further information.
 
 
 Model Dashboard
-===============
+---------------
 
-Model Dashboards act the same as a standard dashboard but have access to a single Django model.
+Model Dashboards act the same as a standard dashboard but have access to a single Django model similar to DetailView.
 This allows you to create a single dashboard which changes depending on the object you are viewing.
 
 To create a Model dashboard you extend from ``ModelDashboard`` rather than ``Dashboard``.  You must
-then set the queryset where the objects will fetch from.
+then set the model/queryset where the objects will fetch from.
 
 There are 2 options for this, either:
 
@@ -128,13 +92,16 @@ Set the model in the dashboard meta class.  This will include all objects:
 ::
 
     from dashboards.dashboard import ModelDashboard
+    from yourapp.models import CustomModel
 
-    class DemoDashboard(ModelDashboard):
+    class CustomDashboard(ModelDashboard):
         ...
 
         class Meta:
             name = "Demo Dashboard"
             model = CustomModel
+
+    registry.register(CustomDashboard)
 
 Define a ``get_queryset()`` on the dashboard.  This allows you to filter out any objects
 you do not wish to be made available.
@@ -142,12 +109,16 @@ you do not wish to be made available.
 ::
 
     from dashboards.dashboard import ModelDashboard
+    from yourapp.models import CustomModel
 
-    class DemoDashboard(ModelDashboard):
+    class CustomDashboard(ModelDashboard):
         ...
 
         def get_queryset(self):
             return CustomModel.objects.all()
+
+
+    registry.register(CustomDashboard)
 
 The object is fetched based on the url and is passed into each component as an
 ``object`` attribute.::
@@ -159,7 +130,7 @@ in the ``Meta`` class::
 
     from dashboards.dashboard import ModelDashboard
 
-    class DemoDashboard(ModelDashboard):
+    class CustomDashboard(ModelDashboard):
         ...
 
         class Meta:
@@ -167,6 +138,8 @@ in the ``Meta`` class::
             model = CustomModel
             lookup_kwarg: str = "slug_field"
             lookup_field: str = "slug"
+
+    registry.register(CustomDashboard)
 
 Which would create the url pattern::
 

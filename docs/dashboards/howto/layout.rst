@@ -2,10 +2,11 @@
 Layouts
 =======
 
-Dashboards by default display components in a 2 column grid, but
-this can be customized to fit your needs.  This is done using a :code:`ComponentLayout`
-which allows you to order components and position them on screen using common
-HTML elements such Divs.
+Dashboards by with our default styles applied display components in a 2 column grid but this can be
+changed to fit your needs.  This is done by adding a ``Layout``
+class to your Dashboard and populating the ``components`` attribute with a
+:code:`ComponentLayout` class.  In this you can order your components and position
+them on screen using common HTML elements such Divs.
 
 ComponentLayout Class
 ---------------------
@@ -13,7 +14,7 @@ ComponentLayout Class
 :code:`ComponentLayout` is assigned to the :code:`components` element
 of the :code:`Layout` class of a :code:`Dashboard` object.
 
-They are initialized with a number of objects, which can be
+They are initialized with a number of classes, which can be
 of type :code:`Components`, :code:`HTMLComponentLayout` or :code:`HTML`.
 :code:`Components` reference the component elements in the Dashboard,
 :code:`HTMLComponentLayout` is a HTML element wrapper.  These can be nested
@@ -24,62 +25,83 @@ We can add a custom layout to the example dashboard from the quickstart guide
 
 :code:`demo/mydashboard/dashboards.py`::
 
-    from dashboards.component.layout import Card, ComponentLayout, HTML
 
-    class DemoDashboard(Dashboard):
-        text_example = Text(value="Lorem ipsum dolor sit amet, consectetur adipiscing elit....")
-        chart_example = Chart(defer=DashboardData.fetch_bar_chart_data)
+    from dashboards.component.layout import ComponentLayout, HTML, Card, Header
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.registry import registry
+
+
+    class LayoutDashboard(Dashboard):
+        welcome = Text(value="Welcome to Django Dashboards!")
+        nested_one = Text(value="1")
+        nested_two = Text(value="2")
 
         class Meta:
-            name = "Demo Dashboard"
+            name = "First Dashboard"
 
         class Layout(Dashboard.Layout):
             components = ComponentLayout(
-                HTML("<p>Welcome to our demo app</p>"),
-                Card("text_example", grid_css_classes="span-12"),
-                Card("chart_example", grid_css_classes="span-12")
+                Header(heading="Hello", size=2),
+                HTML("<small>123.00</small>"),
+                Card("welcome", grid_css_classes="span-12"),
+                Card("nested_one", "nested_two"),
             )
 
-This will render the dashboard with a html paragraph tag, followed by the text_example,
-wrapped in a div with card classes (this should be familiar to bootstrap users), and
-finally the chart, again wrapped in a div card.
 
-When referencing dashboard components you just need to add the component attribute in a string.
-When using custom layouts only components referenced in the layout will be displayed.
+    registry.register(LayoutDashboard)
 
-This should look similar to the original dashboard with just an extra html element,
-this is because the default layout wraps each component in the card div.
+
+When referencing dashboard components you just need to add the component attribute in a string. Components and
+Layout classes can also be nested as shown above, allowing you to add your own layout classes and add
+further control.
 
 .. image:: _images/layout_basic.png
    :alt: Demo Dashboard
 
 This is a very basic example but you can do much more.  Lets now change the layout::
 
-    class Layout(Dashboard.Layout):
-        components = ComponentLayout(
-            Header(heading="Welcome", size=2),
-            HTML("<p>Below is the results from our investigation:</p>"),
-            Card(
-                HTML("<h1>Chart Example</h1>"),
-                Div("chart_example", grid_css_classes="span-12"),
-                grid_css_classes="span-6"
-            ),
-            Card(
-                HTML("<h1>Text Example</h1>"),
-                Div("text_example", grid_css_classes="span-12"),
-                grid_css_classes="span-6"
-            ),
-            HR(),
-            HTML("<p>Please contact us for more information.</p>")
-        )
+
+    from dashboards.component.layout import ComponentLayout, HTML, Card, Header, Div
+    from dashboards.dashboard import Dashboard
+    from dashboards.component import Text
+    from dashboards.registry import registry
+
+
+    class LayoutDashboard(Dashboard):
+        welcome = Text(value="Welcome to Django Dashboards!")
+        nested_one = Text(value="1")
+        nested_two = Text(value="2")
+
+        class Meta:
+            name = "Layout Dashboard"
+
+        class Layout(Dashboard.Layout):
+            components = ComponentLayout(
+                Header(heading="Welcome", size=2),
+                HTML("<p>Below is the results from our investigation:</p>"),
+                Card(
+                    HTML("<h1>Welcome Example</h1>"),
+                    Div("welcome", grid_css_classes="span-12"),
+                    grid_css_classes="span-6"
+                ),
+                Card(
+                    HTML("<h1>Nested Example</h1>"),
+                    Div("nested_one", grid_css_classes="span-6"),
+                    Div("nested_two", grid_css_classes="span-6"),
+                    grid_css_classes="span-6"
+                ),
+                HTML("<p>Please contact us for more information.</p>")
+            )
+
+
+    registry.register(LayoutDashboard)
+
 
 This creates
 
 .. image:: _images/layout_complex.png
    :alt: Demo Dashboard
-
-This is a very simple dashboard with only 2 components but should give you a feel for
-what you can create.
 
 HTMLComponentLayout attributes
 ------------------------------
@@ -91,16 +113,16 @@ These vary depending on the element but common to all objects are
 grid_css_classes
 ================
 
-In the complex example above
-we used the grid_css_classes attribute to lay the divs in the card side by side.
+In the examples above we used ``grid_css_classes`` to change the width.
+
 If we had 3 components we could add the extra card and change the grid_css_classes to "span-4".::
 
     Card(
-        "text_example",
+        "component_name",
         grid_css_classes="span-4"
     ),
 
-The css grid layout is based on 12 columns.
+The started css provided has a grid layout is based on 12 columns i.e span-4, span-6 etc.
 
 To save on typing and to make things easier to update we recommend creating a helper
 class to define css classes.  e.g.::
@@ -117,7 +139,7 @@ This should look familiar to someone who uses the bootstrap stylesheet
 You can then use this on the component::
 
     Card(
-        "text_example",
+        "component_name",
         grid_css_classes=Grid.THREE.value
     )
 
@@ -127,12 +149,7 @@ the settings :code:`DASHBOARDS_DEFAULT_GRID_CSS` by default this is set to :code
 css_classes
 ===========
 
-HTMLComponentLayout elements have their own default css which you can override
- by adding :code:`css_classes` to the Component.
-
-::
-
-**Default Keys and Values **
+HTMLComponentLayout elements have their own default css which you can override by adding :code:`css_classes` to the Component.
 
 * Card
     "card": "card_component__card"
@@ -179,51 +196,65 @@ This generates::
       Lorem ipsum dolor sit amet
     </div>
 
-not that setting this does not affect :code:`grid_css_classes`
+
+.. note::
+    setting this does not affect :code:`grid_css_classes`
+
+You can also update class mappings as a global level by setting ```DASHBOARDS_LAYOUT_COMPONENT_CLASSES```
+
 
 
 Component Layout Objects
 ------------------------
 
-These live in :code:`dashboards.component.layout`.
+Found in :code:`dashboards.component.layout`.
 
 **Div**: Simply wraps the contents in a <div>::
 
-    Div(HTML("<p>Please contact us for more information.</p>"), css_classes="more-styles", grid_css_classes="span-6"))
+    Div(HTML("<p>Please contact us for more information.</p>"), css_classes={"wrapper": "some-class another-class"}, grid_css_classes="span-6")
 
 
 generates::
 
-    <div class="span-6 more-styles">
-      <div class="span-12 "><p>Please contact us for more information.</p></div>
+    <div class="dashboard-component span-6 some-class another-class">
+      <p>Please contact us for more information.</p>
     </div>
 
 
 **Card**: A common layout element used in popular css templates such as Bootstrap::
 
-    Card(HTML("<p>Please contact us for more information.</p>"), grid_css_classes="span-12", css_classes="more-styles", heading="some title" footer="some footer text" image_url="" actions=[("http://google.com", "Google")])
+    Card(
+        HTML("<p>Please contact us for more information.</p>"),
+            grid_css_classes="span-12",
+            heading="some title",
+            footer = "some footer text",
+            image_url = "",
+            actions = [("http://google.com", "Google")]
+        )
+    )
 
 This example would generate the following html::
 
-    <div class="card more-styles">
-        <div class="card-header justify-content-between align-items-center">
+    <div class="dashboard-component span-12">
+      <div class="card">
+        <div class="card-header">
           <h4 class="header-title">some title</h4>
-          <div class="dropdown">
-            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="mdi mdi-dots-vertical"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end" style="">
-              <a href="http://google.com" class="dropdown-item">Google</a>
+          <div x-data="{ open: false }" class="dropdown">
+            <button x-on:click="open = ! open" aria-expanded="false" class="dropdown-btn">
+              Actions
+            </button>
+            <div x-show="open" class="dropdown-content" style="display: none;">
+              <a href="http://google.com">Google</a>
             </div>
           </div>
         </div>
-        <div class="card-body pt-0">
-          <div class="span-12 ">
-            <p>Please contact us for more information.</p>
-          </div>
+        <div class="card-body">
+          <p>Please contact us for more information.</p>
         </div>
-          <div class="card-footer">some footer text</div>
+        <div class="card-footer">some footer text</div>
       </div>
+    </div>
+
 
 **TabContainer & Tab**: A more complex component but useful when grouping content within a page::
 
@@ -241,30 +272,33 @@ This example would generate the following html::
         grid_css_classes="span-12",
     ),
 
-Note All :code:`Tab` s must be wrapped in a :code:`TabContainer`::
 
-    <div class="span-12 tab-container" x-data="{ tab: 'tab-1' }">
-        <ul>
-            <li>
-              <a :class="{ 'active': tab === 'tab-1' }" x-on:click.prevent="tab = 'tab-1'" href="#" class="active">
-                Tab 1
-              </a>
-            </li>
-            <li>
-              <a :class="{ 'active': tab === 'tab-2' }" x-on:click.prevent="tab = 'tab-2'" href="#" class="">
-                Tab 2
-              </a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div :class="{ 'active show': tab === 'tab-1' }" x-show="tab === 'tab-1'" class="active show" style="">
-                <div class="span-12 tab-content">
-                  <div class="span-12 ">Lorem ipsum dolor sit amet.</div>
-                </div>
+.. note::
+    All :code:`Tab` s must be wrapped in a :code:`TabContainer`
+
+
+::
+
+    <div class="dashboard-component span-12 tab-container" x-data="{ tab: 'tab-1' }">
+        <div id="" class="tabs">
+            <div class="tab">
+                <a :class="{ 'active': tab === 'tab-1' }" x-on:click.prevent="tab = 'tab-1'" href="#" class="active">
+                    Tab 1
+                </a>
             </div>
-            <div :class="{ 'active show': tab === 'tab-2' }" x-show="tab === 'tab-2'" class="" style="display: none;">
-                <div class="span-12 tab-content">
-              <div class="span-12 ">Please contact us for more information.</div>
+            <div class="tab">
+                <a :class="{ 'active': tab === 'tab-2' }" x-on:click.prevent="tab = 'tab-2'" href="#" class="">
+                    Tab 2
+                </a>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div :class="{ ' active show': tab === 'tab-1' }" x-show="tab === 'tab-1'" class="active show" style="">
+                Lorem ipsum dolor sit amet.
+            </div>
+            <div :class="{ ' active show': tab === 'tab-2' }" x-show="tab === 'tab-2'" class="" style="display: none;">
+                Please contact us for more information.
             </div>
         </div>
     </div>
@@ -318,31 +352,43 @@ which is a path to a html file to render.  Lets create a new :code:`DivWithImage
         template_name: str = "demo/div_with_image.html"
         image_url: str = ""
 
-Now lets create the template. Create a new file :code:`demo/templates/demo/div_with_image.html`::
+Now lets create the template. Create a new file :code:`demo/templates/demo/div_with_image.html`, ensuring your
+django settings templates are configured for that location::
 
     <div {% if css %}class="{{ css }}"{% endif %}>
         <img src="{{ image_url }}" />
       {{ components }}
     </div>
 
-Note that the :code:`image_url` attribute is automatically available in the template.
-This is built in and allows you to include any extra attributes you may require by simply
-adding them to you class.
+.. note::
+    that the :code:`image_url` attribute is automatically available in the template.
+    This is built in and allows you to include any extra attributes you may require by simply
+    adding them to you class.
 
 Its now ready to use in our dashboard::
 
-    from demo.mydashboard.layout
+    from dashboards.component.layout import ComponentLayout, HTML, Header
+    from dashboards.dashboard import Dashboard
+    from dashboards.registry import registry
 
-    class DemoDashboard(Dashboard):
-        [...]
-        DivWithImage(HTML("Lorem ipsum dolor sit amet."), image_url="https://via.placeholder.com/150")
+    from .layout import DivWithImage
 
-Run your site and you should now see
+    class LayoutDashboard(Dashboard):
+        class Meta:
+            name = "Layout Dashboard"
 
-.. image:: _images/custom_component_layout.png
-   :alt: Custom Layout Component
+        class Layout(Dashboard.Layout):
+            components = ComponentLayout(
+                Header(heading="Welcome", size=2),
+                DivWithImage(HTML("Lorem ipsum dolor sit amet."), image_url="https://via.placeholder.com/150"),
+            )
 
-If you site complains about not being able to find div_with_image.html make sure your settings include::
+
+    registry.register(LayoutDashboard)
+
+In this case you'd also need to add some additional CSS to float the image/text ad required.
+
+If you see a Django warning about not being able to find div_with_image.html make sure your settings include::
 
     TEMPLATES = [
         {
