@@ -9,17 +9,17 @@ on:
 
 jobs:
   test:
-    name: py-${{ matrix.python-version }} dj-${{ matrix.django-version }} Dashboards
+    name: py-${{ matrix.python-version }} dj-${{ matrix.django-version }} django-dashboards
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
-#          - "3.9"
-#          - "3.10"
+          - "3.9"
+          - "3.10"
           - "3.11"
         django-version:
-#          - "3.2"
-#          - "4.0"
+          - "3.2"
+          - "4.0"
           - "4.1"
     steps:
       - uses: actions/checkout@v2
@@ -33,11 +33,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install "django~=${{ matrix.django-version }}.0"
-      - name: Test Dashboard
+      - name: Lint
         working-directory: .
         run: |
-          pytest
           flake8
+      - name: Test
+        working-directory: .
+        run: |
+          pytest -x
 #      - name: Upload coverage to Codecov
 #        uses: codecov/codecov-action@v1
 #        with:

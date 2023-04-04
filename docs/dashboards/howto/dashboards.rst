@@ -56,7 +56,6 @@ To do this add a class called ``Meta`` as a child of the dashboard object:
 
 The base dashboard meta class contains the following properties:
 
-* ``include_in_graphql`` (``bool``): Defines if the dashboard should be shown in the graphql api.  If not set, this will be ``True``.
 * ``include_in_menu``: (``bool``): This specifies whether the dashboard should be included in any menus.  Defaults to ``True``
 * ``permission_classes`` (``List[BasePermission]``):  This is a list of permissions a user must have in order to view the dashboard.  See Permissions for more details.  If not specified anyone can view the dashboard.
 * ``template_name`` (``str``):  If specified this is the template which will be used to render the dashboard.  This allows you to have full control over how the dashboard is displayed.

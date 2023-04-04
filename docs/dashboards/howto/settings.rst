@@ -15,7 +15,7 @@ You can point to one of our built in permissions classes as detailed in :doc:`pe
 
 
 DASHBOARDS_DEFAULT_GRID_CSS
-==========================
+===========================
 
 ``DASHBOARDS_DEFAULT_GRID_CSS = "span-6"``
 
