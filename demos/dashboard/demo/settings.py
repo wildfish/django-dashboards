@@ -123,7 +123,6 @@ class Common(Configuration):
         "whitenoise.runserver_nostatic",
         "django.contrib.staticfiles",
         "dashboards",
-        "corsheaders",
         "django_eventstream",
         # Project
         "demo.kitchensink.apps.KitchenSinkConfig",
@@ -133,7 +132,6 @@ class Common(Configuration):
         # django_grip required for dashboards/eventstream
         "django_grip.GripMiddleware",
         "django.middleware.security.SecurityMiddleware",
-        "corsheaders.middleware.CorsMiddleware",
         "whitenoise.middleware.WhiteNoiseMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
         "django.middleware.common.CommonMiddleware",
@@ -228,24 +226,7 @@ class Common(Configuration):
 
     FIXTURE_DIRS = [BASE_DIR / "fixtures"]
 
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "%(levelname)s %(asctime)s %(module)s "
-                "%(process)d %(thread)d %(message)s"
-            },
-        },
-        "handlers": {"console": {"class": "logging.StreamHandler"}},
-        "loggers": {
-            "django": {"handlers": ["console"], "level": "INFO"},
-        },
-    }
-
-    CORS_ALLOW_ALL_ORIGINS = True
-
-    GRIP_URL = "http://localhost:5561"
+    GRIP_URL = "http://pushpin:5561"
     EVENTSTREAM_ALLOW_ORIGIN = "http://127.0.0.1:8000"
     EVENTSTREAM_ALLOW_CREDENTIALS = True
     EVENTSTREAM_ALLOW_HEADERS = "Authorization"

@@ -5,11 +5,12 @@
 
 # Specific for this demo only.
 # TODO until pip installable
--e ../../
+django-dashboards
 envdir
 django_configurations
 django_eventstream
 django-cors-headers
+django_redis
 django_silk
 faker
 httpx

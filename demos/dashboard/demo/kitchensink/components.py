@@ -10,7 +10,7 @@ from dashboards.types import ValueData
 
 @dataclass
 class SSEStat(Stat):
-    template: str = "dashboards/components/sse_stat.html"
+    template_name: str = "dashboards/components/sse_stat.html"
     poll_rate: Optional[int] = 10
 
     @staticmethod
@@ -18,12 +18,12 @@ class SSEStat(Stat):
         """
         Assuming docker pushpin is running, in real world this would be proxied to application.
         """
-        return "http://localhost:7999/events/"
+        return "http://127.0.0.1:7999/events/"
 
 
 @dataclass
 class SSEChart(Chart):
-    template: str = "dashboards/components/sse_chart.html"
+    template_name: str = "dashboards/components/sse_chart.html"
     poll_rate: Optional[int] = None
 
     @staticmethod
@@ -31,7 +31,7 @@ class SSEChart(Chart):
         """
         Assuming docker pushpin is running, in real world this would be proxied to application.
         """
-        return "http://localhost:7999/events/"
+        return "http://127.0.0.1:7999/events/"
 
 
 @dataclass

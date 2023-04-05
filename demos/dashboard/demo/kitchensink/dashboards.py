@@ -326,10 +326,17 @@ class SSEDashboard(Dashboard):
             "sub_text": "Via poll",
         },
         poll_rate=3,
+        grid_css_classes="span-6",
     )
-    sse_stat = SSEStat()
-    standard_chart = Chart(defer=DashboardData.fetch_sse_chart_data)
-    sse_chart = SSEChart(defer=DashboardData.fetch_sse_chart_data, poll_rate=10)
+    sse_stat = SSEStat(grid_css_classes="span-6")
+    standard_chart = Chart(
+        defer=DashboardData.fetch_sse_chart_data, grid_css_classes="span-6"
+    )
+    sse_chart = SSEChart(
+        defer=DashboardData.fetch_sse_chart_data,
+        poll_rate=10,
+        grid_css_classes="span-6",
+    )
 
     class Meta:
         name = "SSE Example"

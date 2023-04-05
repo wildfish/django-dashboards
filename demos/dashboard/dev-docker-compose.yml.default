@@ -35,6 +35,8 @@ services:
       DATABASE_USER: demo
       DATABASE_PASSWORD: demo
       DJANGO_REDIS_HOST: redis
+      WAIT_HOSTS: postgres:5432,redis:6379
+      WAIT_AFTER: 5
     ports:
       - "8000:8000"
     volumes:
@@ -42,3 +44,13 @@ services:
     depends_on:
       - postgres
       - redis
+
+  pushpin:
+    image: fanout/pushpin
+    environment:
+      target: 'django:8000'
+    ports:
+      - "5561:5561"
+      - "7999:7999"
+    volumes:
+      - "./pushpin.conf:/etc/pushpin/:rw"

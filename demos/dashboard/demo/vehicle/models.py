@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Q, QuerySet
 
 from dateutil.relativedelta import relativedelta
+from django.urls import reverse
 
 
 class VehicleQueryset(QuerySet):
@@ -66,6 +67,12 @@ class Vehicle(models.Model):
         qs = qs.order_by("-timestamp")
 
         return list(map(lambda x: x.convert(), qs))
+
+    def get_absolute_url(self):
+        return reverse(
+            "dashboards:vehicle_vehicledetaildashboard_detail",
+            args=[self.pk],
+        )
 
 
 class Parameter(models.Model):

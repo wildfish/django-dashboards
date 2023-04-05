@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 value={"text": f"{value}%", "sub_text": "Via SSE"}, key="sse_stat"
             )
             rendered_stat = render_to_string(
-                sse_stat.template,
+                sse_stat.template_name,
                 {
                     "component": sse_stat,
                     "rendered_value": sse_stat.get_value(),

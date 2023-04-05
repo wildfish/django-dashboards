@@ -9,7 +9,7 @@ class DashboardData:
 
     @staticmethod
     def fetch_html(*args, **kwargs) -> str:
-        return getattr(FlatText.objects.all().first(), "text", "")
+        return getattr(FlatText.objects.all().first(), "text", "Flat Text")
 
     @staticmethod
     def fetch_scatter_map_data(*args, **kwargs) -> str:

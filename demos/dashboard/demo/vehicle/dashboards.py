@@ -77,24 +77,7 @@ class VehicleDetailDashboard(ModelDashboard):
     vehicle_details = Stat(
         defer=VehicleData.fetch_vehicle_details, grid_css_classes=Grid.TWO.value
     )
-    map = Map(defer=VehicleData.fetch_last_route, grid_css_classes=Grid.TWO.value)
-
-    class Layout(Dashboard.Layout):
-        components = ComponentLayout(
-            Card(
-                Div("vehicle_details", grid_css_classes=Grid.ONE.value),
-                heading="Details",
-                actions=[
-                    (
-                        CTA(dashboard="demo.vehicle.dashboards.VehicleDetailDashboard"),
-                        "Edit",
-                    ),
-                ],
-                css_classes={"body": "card-body card-body-grid"},
-                grid_css_classes=Grid.ONE.value,
-            ),
-            "map",
-        )
+    map = Map(defer=VehicleData.fetch_last_route, grid_css_classes=Grid.ONE.value)
 
     class Meta:
         name = "Vehicle Detail"

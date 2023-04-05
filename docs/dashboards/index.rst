@@ -23,3 +23,4 @@ Dashboards
    howto/async.rst
    howto/sse.rst
    howto/settings.rst
+   howto/demo.rst

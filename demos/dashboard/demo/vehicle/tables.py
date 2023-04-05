@@ -13,6 +13,7 @@ class VehicleTableSerializer(TableSerializer):
             "current_mileage": "Mileage",
             "next_mot_due": "MOT Due",
         }
+        first_as_absolute_url = True
 
     def get_queryset(self, **kwargs):
         return VehicleData.get_queryset(filters=kwargs["filters"])

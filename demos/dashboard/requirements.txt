@@ -4,12 +4,13 @@
 #
 #    pip-compile
 #
--e ../../
-    # via -r requirements.in
+django-dashboards==0.1.0
 anyio==3.6.2
     # via httpcore
 asgiref==3.6.0
     # via django
+async-timeout==4.0.2
+    # via redis
 autopep8==2.0.2
     # via django-silk
 certifi==2022.12.7
@@ -25,6 +26,7 @@ django==4.1.7
     #   django-cors-headers
     #   django-dashboards
     #   django-grip
+    #   django-redis
     #   django-silk
     #   model-bakery
 django-configurations==2.4
@@ -37,6 +39,8 @@ django-eventstream==4.5.1
     # via -r requirements.in
 django-grip==3.2.0
     # via django-eventstream
+django-redis==5.2.0
+    # via -r requirements.in
 django-silk==5.0.3
     # via -r requirements.in
 envdir==1.0.1
@@ -111,6 +115,8 @@ python-dateutil==2.8.2
     #   pandas
 pytz==2023.3
     # via pandas
+redis==4.5.4
+    # via django-redis
 requests==2.28.2
     # via pubcontrol
 rfc3986[idna2008]==1.5.0
@@ -139,6 +145,8 @@ statsmodels==0.13.5
     # via plotly-express
 tenacity==8.2.2
     # via plotly
+typing-extensions==4.5.0
+    # via django-dashboards
 urllib3==1.26.15
     # via requests
 werkzeug==2.2.3
