@@ -5,11 +5,6 @@ Chart Serializers
 A ``ChartSerializer`` object can be passed to any ``Chart`` component as a argument for ``value`` or ``defer``:
 
 ::
-
-    # dashboards.py
-
-    ...
-
     class DemoDashboard(Dashboard):
         chart_example_value = Chart(value=ExampleChartSerializer)
         chart_example_defer = Chart(defer=ExampleChartSerializer)
@@ -20,7 +15,7 @@ Serializers automatically fetch and convert data into a format which can be rend
 Creating a Chart Serializer
 ++++++++++++++++++++++++++++
 
-To create a Chart Serializer all you need to do is: subclass ``ChartSerializer``, define your data
+To create a Chart Serializer all you need to do is: inherit from ``ChartSerializer``, define your data
 and implement a ``to_fig`` method.
 
 Data
@@ -36,6 +31,7 @@ the serializer also converts your queryset into a Pandas Dataframe so is
 required for this.::
 
     from dashboards.component.chart import ChartSerializer
+    from yourapp.models import ExampleModel
 
     class ExampleChartSerializer(ChartSerializer):
         class Meta:
@@ -47,6 +43,8 @@ required for this.::
 or::
 
     from dashboards.component.chart import ChartSerializer
+    from yourapp.models import ExampleModel
+
 
     class ExampleChartSerializer(ChartSerializer):
         class Meta:
@@ -77,7 +75,8 @@ When overriding ``get_queryset()`` you also have access to any GET or POST data 
         return qs
 
 If your data doesn't come from a Django model you can still use serializers to prepare your data for Charts.
-To do this just override the ``get_data`` method on the serializer e.g.::
+To do this just override the ``get_data`` method on the serializer for example below we pull a pandas Dataframe
+example from plotly express.:F
 
     def get_data(self, *args, **kwargs):
         df = px.data.medals_long()
@@ -125,7 +124,7 @@ you to return a plotly ``Figure`` object, hence the name ``to_fig``.
 
             return fig
 
-This example displays a bar chart with ``key`` values along the x-asis and ``value`` values in the y-axis.:
+    This example displays a bar chart with ``key`` values along the x-asis and ``value`` values in the y-axis.:
 
 .. image:: ../_images/serializers_chart.png
    :alt: Metal Bar Chart
@@ -228,9 +227,6 @@ set a layout dictionary on your serializer::
             df = px.data.medals_long()
 
             return df
-
-.. image:: ../_images/serializers_layout.png
-   :alt: Chart
 
 This allows you to change the total look and feel of any chart.  See the Plotly documentation
 for a full list of parameters you can set - https://plotly.com/python/reference/layout/
