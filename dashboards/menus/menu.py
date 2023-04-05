@@ -83,7 +83,7 @@ class DashboardMenu(Menu):
         return urls
 
 
-@dataclass(kw_only=True)
+@dataclass()
 class MenuItem:
     title: str
     url: Optional[str] = ""
@@ -132,7 +132,6 @@ class MenuItem:
 
         selected = None
         for child in self.children:
-            print(child.url)
             child_resolved_url_name = resolve(child.url).url_name
             if (
                 child.url
@@ -148,12 +147,19 @@ class MenuItem:
                 selected = selected.parent
 
 
-@dataclass(kw_only=True)
+_no_default = Dashboard
+
+
+@dataclass()
 class DashboardMenuItem(MenuItem):
     """MenuItem which expects a Dashboard class to check permissions against.  Ignores other check_func"""
 
-    dashboard: Union[Type[Dashboard], Type[ModelDashboard]]
+    dashboard: Union[Type[Dashboard], Type[ModelDashboard]] = _no_default
 
     def check(self, request):
         """only visible if the user has access to the dashboard"""
         self.visible = self.dashboard.has_permissions(request, handle=False)
+
+    def __post_init__(self):
+        if self.dashboard is _no_default:
+            raise TypeError("__init__ missing 1 required argument: 'dashboard'")
