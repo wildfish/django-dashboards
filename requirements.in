@@ -12,6 +12,7 @@ ipython
 ipdb
 pip-tools
 pre-commit
+typing_extensions
 
 # Testing
 django-webtest

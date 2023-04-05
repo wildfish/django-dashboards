@@ -1,11 +1,13 @@
 import json
-from typing import TYPE_CHECKING, Callable, Dict, Optional, Protocol, Type, TypeAlias
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Protocol, Type
 
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpRequest, HttpResponse
 from django.views import View
 from django.views.generic import TemplateView
+
+from typing_extensions import TypeAlias
 
 from dashboards.dashboard import Dashboard
 from dashboards.exceptions import DashboardNotFoundError
