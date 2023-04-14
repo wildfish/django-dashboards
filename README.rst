@@ -9,8 +9,14 @@ https://github.com/wildfish/django-dashboards
 .. image:: https://github.com/wildfish/django-dashboards/actions/workflows/build.yml/badge.svg
     :target: https://github.com/wildfish/django-dashboards
 
-.. image:: https://coveralls.io/repos/wildfish/django-dashboards/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/wildfish/django-dashboards?branch=main
+.. image:: https://codecov.io/gh/wildfish/django-dashboards/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/wildfish/django-dashboards
+
+.. image:: https://badge.fury.io/py/django-dashboards.svg
+    :target: https://pypi.python.org/pypi/django-dashboards/
+
+.. image:: https://img.shields.io/pypi/pyversions/django-dashboards.svg
+    :target: https://pypi.python.org/pypi/django-dashboards/
 
 Features
 ========
