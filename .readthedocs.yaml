@@ -4,3 +4,6 @@ python:
 sphinx:
   builder: html
   configuration: docs/conf.py
+python:
+   install:
+   - requirements: docs/requirements.txt
