@@ -20,7 +20,7 @@ Features
 
 Supports Django 3.2 to 4.1, on Python 3.9+.
 
-See the `full documentation <https://django-dashboards.readthedocs.io>`_ for details
+See the `full documentation <https://wildfish-django-dashboards.readthedocs.io>`_ for details
 of how django-dashboards works.
 
 .. inclusion-quickstart-do-not-remove
