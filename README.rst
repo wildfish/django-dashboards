@@ -9,7 +9,7 @@ https://github.com/wildfish/django-dashboards
 .. image:: https://github.com/wildfish/django-dashboards/actions/workflows/build.yml/badge.svg
     :target: https://github.com/wildfish/django-dashboards
 
-.. image:: https://codecov.io/gh/wildfish/django-dashboards/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/wildfish/django-dashboards/branch/main/graph/badge.svg
   :target: https://codecov.io/gh/wildfish/django-dashboards
 
 .. image:: https://badge.fury.io/py/django-dashboards.svg
