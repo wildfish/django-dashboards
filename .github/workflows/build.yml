@@ -42,7 +42,7 @@ jobs:
         working-directory: .
         run: |
           pytest -x
-#      - name: Upload coverage to Codecov
-#        uses: codecov/codecov-action@v1
-#        with:
-#          name: ${{ matrix.python-version }}-${{ matrix.django-version }}-postgres
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          name: ${{ matrix.python-version }}-${{ matrix.django-version }}
