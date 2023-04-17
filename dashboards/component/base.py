@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 
 from dashboards import config
 
@@ -190,6 +191,9 @@ class Component:
             url = reverse("dashboards:dashboard_component", args=args)
 
         return url
+
+    def template_id(self):
+        return slugify(self.get_absolute_url())
 
     def __str__(self):
         return self.render(context=Context({}))

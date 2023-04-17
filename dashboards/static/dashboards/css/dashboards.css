@@ -166,19 +166,19 @@ h1, h2, h3, h4, p, .tab-container {
   grid-column: 1 / 13;
 }
 
-.dashboard-component{
+.card{
   border-radius: 15px;
   background-color: var(--dark-two);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
 }
 
-.dashboard-component *{
+.card *{
     /* allow sub nesting, by assuming not set is 12 */
     grid-column-end: span 12;
 }
 
-.tab-content div.active .dashboard-component{
+.tab-content div.active .card{
     border-radius: 0 15px 15px 15px;
 }
 

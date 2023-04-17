@@ -1,10 +1,10 @@
-{% with "data_"|add:component.key as data_key %}
+{% with "data_"|add:component.template_id as data_key %}
     <script type="module">
-        var data_{{ component.key }} = {{rendered_value|safe}};
+        var data_{{ component.template_id }} = {{rendered_value|safe}};
         Plotly.newPlot(
-            '{{ component.key }}',
-            data_{{ component.key }}.data,
-            data_{{ component.key }}.layout,
+            '{{ component.template_id }}',
+            data_{{ component.template_id }}.data,
+            data_{{ component.template_id }}.layout,
             {
                 displayModeBar: {{ component.displayModeBar|yesno:'"hover",false'|safe }},
                 staticPlot: {{ component.staticPlot|yesno:"true,false" }},
@@ -14,5 +14,5 @@
     </script>
 {% endwith %}
 
-<div id="{{ component.key }}" class="{{ component.css_classes|default_if_none:"" }}"></div>
+<div id="{{ component.template_id }}" class="{{ component.css_classes|default_if_none:"" }}"></div>
 

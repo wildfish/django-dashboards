@@ -14,7 +14,7 @@ snapshots[
 
 
     <a href="/">
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 click here
 
@@ -31,7 +31,7 @@ snapshots[
 
 
     <a href="/">
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 click here
 
@@ -48,7 +48,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
@@ -72,7 +72,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
@@ -96,7 +96,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
@@ -126,7 +126,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
@@ -166,7 +166,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
