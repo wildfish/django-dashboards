@@ -131,7 +131,7 @@ At a template level, taking SSEStat as an example, we can the built in SSE featu
 
 ::
 
-    <div hx-ext="sse" sse-connect="{{ component.pushpin_url }}" sse-swap="{{ component.key }}">
+    <div hx-ext="sse" sse-connect="{{ component.pushpin_url }}" sse-swap="{{ component.template_id }}">
       Contents of this box will be updated in real time
       with every SSE received.
     </div>

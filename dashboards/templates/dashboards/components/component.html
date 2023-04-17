@@ -10,7 +10,7 @@
     </div>
 {% else %}
     {% if component.cta %}<a href="{{ component.cta|cta_href:component.object }}">{% endif %}
-        <div id="component-{{ component.key }}-inner" class="dashboard-component-inner fade-in">
+        <div id="component-{{ component.template_id }}-inner" class="dashboard-component-inner fade-in">
             {% include component.template_name %}
         </div>
     {% if component.cta %}</a>{% endif %}

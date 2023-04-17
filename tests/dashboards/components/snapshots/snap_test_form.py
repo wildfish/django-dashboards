@@ -14,8 +14,8 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <form hx-get="/dash/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><table class="table form-table"><tbody><tr><th><label for="id_number">Number:</label></th><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <form hx-get="/dash/app1/testdashboard/test/@form/?key=dashapp1testdashboardcomponenttest" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-dashapp1testdashboardcomponenttest-inner"><table class="table form-table"><tbody><tr><th><label for="id_number">Number:</label></th><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
         </div>
     
 
@@ -29,8 +29,8 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <form hx-get="/dash/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><table class="table form-table"><tbody><tr><th><label for="id_number">Number:</label></th><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <form hx-get="/dash/app1/testdashboard/test/@form/?key=dashapp1testdashboardcomponenttest" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-dashapp1testdashboardcomponenttest-inner"><table class="table form-table"><tbody><tr><th><label for="id_number">Number:</label></th><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
         </div>
     
 

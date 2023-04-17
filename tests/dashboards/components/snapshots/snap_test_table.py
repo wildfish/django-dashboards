@@ -14,11 +14,11 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 
-<div id="test">
-  <table id="test_table" class="table" style="width:100%">
+<div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%">
     <thead>
     
     </thead>
@@ -41,26 +41,26 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div id="test">
-  <table id="test_table" class="table" style="width:100%"></table>
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%"></table>
 </div>
 
 
   
-    <script id="data_test" type="application/json">"value"</script>
+    <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">""</script>
+  <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
-      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
 
       
-          let data_test = JSON.parse(document.getElementById('data_test').textContent);
-          let rows_test = data_test.data;
+          let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
+          let rows_dashapp1testdashboardcomponenttest = data_dashapp1testdashboardcomponenttest.data;
 
           var options = {
-              data: rows_test,
-              columns: columns_test,
+              data: rows_dashapp1testdashboardcomponenttest,
+              columns: columns_dashapp1testdashboardcomponenttest,
               pageLength: 10,
               scrollX: true,
               searching: true,
@@ -71,7 +71,7 @@ snapshots[
 
       
 
-      var table_test = $('#test_table').DataTable(options);
+      var table_dashapp1testdashboardcomponenttest = $('#dashapp1testdashboardcomponenttest_table').DataTable(options);
   </script>
 
 
@@ -90,11 +90,11 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 
-<div id="test">
-  <table id="test_table" class="table" style="width:100%">
+<div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%">
     <thead>
     
     </thead>
@@ -117,16 +117,16 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div id="test">
-  <table id="test_table" class="table" style="width:100%"></table>
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%"></table>
 </div>
 
 
   
-  <script id="columns_test" type="application/json">""</script>
+  <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
-      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
 
       
           $.ajaxSetup({
@@ -141,7 +141,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
-              columns: columns_test,
+              columns: columns_dashapp1testdashboardcomponenttest,
               pageLength: 10,
               ajax: {
                   url: "/dash/app1/testdashboard/@component/test/",
@@ -156,7 +156,7 @@ snapshots[
           }
       
 
-      var table_test = $('#test_table').DataTable(options);
+      var table_dashapp1testdashboardcomponenttest = $('#dashapp1testdashboardcomponenttest_table').DataTable(options);
   </script>
 
 
@@ -175,11 +175,11 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 
-<div id="test">
-  <table id="test_table" class="table" style="width:100%">
+<div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%">
     <thead>
     
     </thead>
@@ -202,26 +202,26 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div id="test">
-  <table id="test_table" class="table" style="width:100%"></table>
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%"></table>
 </div>
 
 
   
-    <script id="data_test" type="application/json">"value"</script>
+    <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">""</script>
+  <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
-      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
 
       
-          let data_test = JSON.parse(document.getElementById('data_test').textContent);
-          let rows_test = data_test.data;
+          let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
+          let rows_dashapp1testdashboardcomponenttest = data_dashapp1testdashboardcomponenttest.data;
 
           var options = {
-              data: rows_test,
-              columns: columns_test,
+              data: rows_dashapp1testdashboardcomponenttest,
+              columns: columns_dashapp1testdashboardcomponenttest,
               pageLength: 10,
               scrollX: true,
               searching: true,
@@ -232,7 +232,7 @@ snapshots[
 
       
 
-      var table_test = $('#test_table').DataTable(options);
+      var table_dashapp1testdashboardcomponenttest = $('#dashapp1testdashboardcomponenttest_table').DataTable(options);
   </script>
 
 
@@ -251,11 +251,11 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 
-<div id="test">
-  <table id="test_table" class="table" style="width:100%">
+<div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%">
     <thead>
     
     </thead>
@@ -278,26 +278,26 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div id="test">
-  <table id="test_table" class="table" style="width:100%"></table>
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%"></table>
 </div>
 
 
   
-    <script id="data_test" type="application/json">"value"</script>
+    <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">""</script>
+  <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
-      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
 
       
-          let data_test = JSON.parse(document.getElementById('data_test').textContent);
-          let rows_test = data_test.data;
+          let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
+          let rows_dashapp1testdashboardcomponenttest = data_dashapp1testdashboardcomponenttest.data;
 
           var options = {
-              data: rows_test,
-              columns: columns_test,
+              data: rows_dashapp1testdashboardcomponenttest,
+              columns: columns_dashapp1testdashboardcomponenttest,
               pageLength: 10,
               scrollX: true,
               searching: true,
@@ -308,7 +308,7 @@ snapshots[
 
       
 
-      var table_test = $('#test_table').DataTable(options);
+      var table_dashapp1testdashboardcomponenttest = $('#dashapp1testdashboardcomponenttest_table').DataTable(options);
   </script>
 
 
@@ -359,11 +359,11 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 
-<div id="test">
-  <table id="test_table" class="table" style="width:100%">
+<div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%">
     <thead>
     
     </thead>
@@ -386,26 +386,26 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <div id="test">
-  <table id="test_table" class="table" style="width:100%"></table>
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <div id="dashapp1testdashboardcomponenttest">
+  <table id="dashapp1testdashboardcomponenttest_table" class="table" style="width:100%"></table>
 </div>
 
 
   
-    <script id="data_test" type="application/json">"value"</script>
+    <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
-  <script id="columns_test" type="application/json">""</script>
+  <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
-      var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
 
       
-          let data_test = JSON.parse(document.getElementById('data_test').textContent);
-          let rows_test = data_test.data;
+          let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
+          let rows_dashapp1testdashboardcomponenttest = data_dashapp1testdashboardcomponenttest.data;
 
           var options = {
-              data: rows_test,
-              columns: columns_test,
+              data: rows_dashapp1testdashboardcomponenttest,
+              columns: columns_dashapp1testdashboardcomponenttest,
               pageLength: 10,
               scrollX: true,
               searching: true,
@@ -416,7 +416,7 @@ snapshots[
 
       
 
-      var table_test = $('#test_table').DataTable(options);
+      var table_dashapp1testdashboardcomponenttest = $('#dashapp1testdashboardcomponenttest_table').DataTable(options);
   </script>
 
 

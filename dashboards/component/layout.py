@@ -128,7 +128,7 @@ class HTMLComponentLayout(ComponentLayout):
         component_context = self.component_context
         component_context.update(
             {
-                "css": css_template("dashboard-component", self.grid_css_classes),
+                "css": css_template(self.grid_css_classes),
                 "component_css": self.component_css,
             }
         )

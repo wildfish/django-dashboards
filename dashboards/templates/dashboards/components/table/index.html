@@ -1,22 +1,22 @@
-<div id="{{ component.key }}">
-  <table id="{{ component.key }}_table" class="{{ component.css_classes.table }}" style="width:100%"></table>
+<div id="{{ component.template_id }}">
+  <table id="{{ component.template_id }}_table" class="{{ component.css_classes.table }}" style="width:100%"></table>
 </div>
 
-{% with data_key="data_"|add:component.key columns_key="columns_"|add:component.key %}
+{% with data_key="data_"|add:component.template_id columns_key="columns_"|add:component.template_id %}
   {% if not component.is_deferred %}
     {{ rendered_value|json_script:data_key }}
   {% endif %}
   {{ rendered_value.columns_datatables|json_script:columns_key }}
   <script type="module">
-      var columns_{{ component.key }} = JSON.parse(document.getElementById('{{ columns_key }}').textContent);
+      var columns_{{ component.template_id }} = JSON.parse(document.getElementById('{{ columns_key }}').textContent);
 
       {% if not component.is_deferred %}
-          let data_{{ component.key }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
-          let rows_{{ component.key }} = data_{{ component.key }}.data;
+          let data_{{ component.template_id }} = JSON.parse(document.getElementById('{{ data_key }}').textContent);
+          let rows_{{ component.template_id }} = data_{{ component.template_id }}.data;
 
           var options = {
-              data: rows_{{ component.key }},
-              columns: columns_{{ component.key }},
+              data: rows_{{ component.template_id }},
+              columns: columns_{{ component.template_id }},
               pageLength: {{ component.page_size|default:25 }},
               scrollX: true,
               searching: {{ component.searching|yesno:"true,false" }},
@@ -38,7 +38,7 @@
               paging: {{ component.paging|yesno:"true,false" }},
               info: {{ component.paging|yesno:"true,false" }},
               ordering: {{ component.ordering|yesno:"true,false" }},
-              columns: columns_{{ component.key }},
+              columns: columns_{{ component.template_id }},
               pageLength: {{ component.page_size|default:25 }},
               ajax: {
                   url: "{{ component.get_absolute_url }}",
@@ -53,7 +53,7 @@
           }
       {% endif %}
 
-      var table_{{ component.key }} = $('#{{ component.key }}_table').DataTable(options);
+      var table_{{ component.template_id }} = $('#{{ component.template_id }}_table').DataTable(options);
   </script>
 {% endwith %}
 

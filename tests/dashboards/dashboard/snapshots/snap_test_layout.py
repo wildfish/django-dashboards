@@ -9,14 +9,14 @@ snapshots = Snapshot()
 
 snapshots[
     "test_dashboard__render_layout 1"
-] = """}{<hr /><div class="dashboard-component span-6 ">
-  <div class="dashboard-component span-6 ">
+] = """}{<hr /><div class="span-6 ">
+  <div class="span-6 ">
   
 
 
 
     
-        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -25,7 +25,7 @@ value
 
 
 
-</div><div class="dashboard-component span-6 ">
+</div><div class="span-6 ">
   
 
 
@@ -48,7 +48,7 @@ snapshots["test_html__render 1"] = "some text...."
 
 snapshots[
     "test_html_component__card__css_classes 1"
-] = """<div class="dashboard-component span-6">
+] = """<div class="span-6">
   <div class="css_class">
     
     
@@ -58,7 +58,7 @@ snapshots[
 
 
     
-        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -74,13 +74,13 @@ value
 
 snapshots[
     "test_html_component__div__css_classes 1"
-] = """<div class="dashboard-component span-6 css_class">
+] = """<div class="span-6 css_class">
   
 
 
 
     
-        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -93,7 +93,7 @@ value
 
 snapshots[
     "test_html_component__render[Card] 1"
-] = """<div class="dashboard-component span-6">
+] = """<div class="span-6">
   <div class="card">
     
     
@@ -103,7 +103,7 @@ snapshots[
 
 
     
-        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -119,13 +119,13 @@ value
 
 snapshots[
     "test_html_component__render[Div] 1"
-] = """<div class="dashboard-component span-6 ">
+] = """<div class="span-6 ">
   
 
 
 
     
-        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -150,7 +150,7 @@ snapshots[
 
 snapshots[
     "test_html_component__tabcontainer__css_classes 1"
-] = """<div class="dashboard-component span-6 css_class" x-data="{ tab: \'component_1\' }">
+] = """<div class="span-6 css_class" x-data="{ tab: \'component_1\' }">
     <div id="" class="tabs" >
         <div class="tab">
   <a :class="{ \'active\': tab === \'component_1\' }" x-on:click.prevent="tab = \'component_1\'" href="#" class="">
@@ -173,7 +173,7 @@ snapshots[
 
 
     
-        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -202,7 +202,7 @@ snapshots[
 
 
     
-        <div id="component-component_1-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -227,7 +227,7 @@ value
 
 
     
-        <div id="component-component_3-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponentcomponent_3-inner" class="dashboard-component-inner fade-in">
             
 value from callable
 
@@ -239,7 +239,7 @@ value from callable
 
 snapshots[
     "test_tab_container__render 1"
-] = """<div class="dashboard-component span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text\' }">
+] = """<div class="span-6 tab-container" x-data="{ tab: \'htmlhtmlsome-text\' }">
     <div id="" class="tabs" >
         <div class="tab">
   <a :class="{ \'active\': tab === \'htmlhtmlsome-text\' }" x-on:click.prevent="tab = \'htmlhtmlsome-text\'" href="#" class="">

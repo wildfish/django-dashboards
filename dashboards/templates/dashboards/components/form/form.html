@@ -1,5 +1,5 @@
 {% spaceless %}
-  <form hx-{{ rendered_value.method }}="{{ rendered_value.action }}?key={{ component.key }}" hx-trigger="{{ component.trigger }}" hx-swap="outerHTML" hx-target="#component-{{ component.key }}-inner">
+  <form hx-{{ rendered_value.method }}="{{ rendered_value.action }}?key={{ component.template_id }}" hx-trigger="{{ component.trigger }}" hx-swap="outerHTML" hx-target="#component-{{ component.template_id }}-inner">
     <table class="{{ component.css_classes.table }}">
       <tbody>
       {{ rendered_value.form.as_table }}
