@@ -142,7 +142,7 @@ This gives you the ability to filter, sort and paginate your data out the box.
 The TableSerializer has been built to accommodate this, knowing how to process and
 apply this to your dataset without you needing to do anything extra.
 
-If you decide to swap out the Table compoent for something other than Datatables
+If you decide to swap out the Table component for something other than Datatables
 you may need to implement your own ``filter()`` and ``sort()`` methods on the TableSerializer
 class.
 

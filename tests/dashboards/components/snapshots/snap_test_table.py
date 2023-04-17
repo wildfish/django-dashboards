@@ -51,8 +51,10 @@ snapshots[
     <script id="data_test" type="application/json">"value"</script>
   
   <script id="columns_test" type="application/json">""</script>
+  <script id="order_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var order_test = JSON.parse(document.getElementById('order_test').textContent);
 
       
           let data_test = JSON.parse(document.getElementById('data_test').textContent);
@@ -67,6 +69,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_test,
           }
 
       
@@ -125,8 +128,10 @@ snapshots[
 
   
   <script id="columns_test" type="application/json">""</script>
+  <script id="order_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var order_test = JSON.parse(document.getElementById('order_test').textContent);
 
       
           $.ajaxSetup({
@@ -143,6 +148,7 @@ snapshots[
               ordering: true,
               columns: columns_test,
               pageLength: 10,
+              order: order_test,
               ajax: {
                   url: "/dash/app1/testdashboard/@component/test/",
                   type: "POST",
@@ -212,8 +218,10 @@ snapshots[
     <script id="data_test" type="application/json">"value"</script>
   
   <script id="columns_test" type="application/json">""</script>
+  <script id="order_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var order_test = JSON.parse(document.getElementById('order_test').textContent);
 
       
           let data_test = JSON.parse(document.getElementById('data_test').textContent);
@@ -228,6 +236,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_test,
           }
 
       
@@ -288,8 +297,10 @@ snapshots[
     <script id="data_test" type="application/json">"value"</script>
   
   <script id="columns_test" type="application/json">""</script>
+  <script id="order_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var order_test = JSON.parse(document.getElementById('order_test').textContent);
 
       
           let data_test = JSON.parse(document.getElementById('data_test').textContent);
@@ -304,6 +315,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_test,
           }
 
       
@@ -396,8 +408,10 @@ snapshots[
     <script id="data_test" type="application/json">"value"</script>
   
   <script id="columns_test" type="application/json">""</script>
+  <script id="order_test" type="application/json">""</script>
   <script type="module">
       var columns_test = JSON.parse(document.getElementById('columns_test').textContent);
+      var order_test = JSON.parse(document.getElementById('order_test').textContent);
 
       
           let data_test = JSON.parse(document.getElementById('data_test').textContent);
@@ -412,6 +426,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_test,
           }
 
       
