@@ -51,8 +51,10 @@ snapshots[
     <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
   <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
+  <script id="order_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
       var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
+      var order_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('order_dashapp1testdashboardcomponenttest').textContent);
 
       
           let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
@@ -67,6 +69,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_dashapp1testdashboardcomponenttest,
           }
 
       
@@ -125,8 +128,10 @@ snapshots[
 
   
   <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
+  <script id="order_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
       var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
+      var order_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('order_dashapp1testdashboardcomponenttest').textContent);
 
       
           $.ajaxSetup({
@@ -143,6 +148,7 @@ snapshots[
               ordering: true,
               columns: columns_dashapp1testdashboardcomponenttest,
               pageLength: 10,
+              order: order_dashapp1testdashboardcomponenttest,
               ajax: {
                   url: "/dash/app1/testdashboard/@component/test/",
                   type: "POST",
@@ -212,8 +218,10 @@ snapshots[
     <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
   <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
+  <script id="order_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
       var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
+      var order_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('order_dashapp1testdashboardcomponenttest').textContent);
 
       
           let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
@@ -228,6 +236,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_dashapp1testdashboardcomponenttest,
           }
 
       
@@ -288,8 +297,10 @@ snapshots[
     <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
   <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
+  <script id="order_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
       var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
+      var order_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('order_dashapp1testdashboardcomponenttest').textContent);
 
       
           let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
@@ -304,6 +315,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_dashapp1testdashboardcomponenttest,
           }
 
       
@@ -396,8 +408,10 @@ snapshots[
     <script id="data_dashapp1testdashboardcomponenttest" type="application/json">"value"</script>
   
   <script id="columns_dashapp1testdashboardcomponenttest" type="application/json">""</script>
+  <script id="order_dashapp1testdashboardcomponenttest" type="application/json">""</script>
   <script type="module">
       var columns_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('columns_dashapp1testdashboardcomponenttest').textContent);
+      var order_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('order_dashapp1testdashboardcomponenttest').textContent);
 
       
           let data_dashapp1testdashboardcomponenttest = JSON.parse(document.getElementById('data_dashapp1testdashboardcomponenttest').textContent);
@@ -412,6 +426,7 @@ snapshots[
               paging: true,
               info: true,
               ordering: true,
+              order: order_dashapp1testdashboardcomponenttest,
           }
 
       
