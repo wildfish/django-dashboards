@@ -1,0 +1,36 @@
+.form-table {
+  text-align: left;
+}
+
+.form-table label {
+  font-weight: bold;
+}
+
+.form-table input,
+.form-table textarea,
+.form-table select {
+  padding: 0.5em;
+  border-radius: 0.5em;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary)
+}
+
+.form-table .helptext {
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-size: 0.7rem;
+}
+
+.errorlist {
+  color: var(--color-danger);
+  list-style: none;
+  text-align: left;
+  padding-left: 10px;
+  margin: 0;
+}
+
+.form-table .errorlist {
+  padding-left: 0;
+}
