@@ -69,6 +69,7 @@
 .menu .dropdown li a {
   display: block;
   padding: 0.5rem 2rem;
+  white-space: nowrap;
 }
 
 .menu-card {
