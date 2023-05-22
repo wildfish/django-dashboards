@@ -1,5 +1,6 @@
+{% load dashboards %}
 {% spaceless %}
-  {% with rendered_value.form.get_context as ctx %}
+  {% with rendered_value.form|get_form_context as ctx %}
   <form hx-{{ rendered_value.method }}="{{ rendered_value.action }}?key={{ component.key }}" hx-trigger="{{ component.trigger }}" hx-swap="outerHTML" hx-target="#component-{{ component.key }}-inner">
     {{ ctx.errors }}
     <table class="{{ component.css_classes.table }}">
@@ -26,5 +27,5 @@
     </table>
     {% for field in hidden_fields %}{{ field }}{% endfor %}
   </form>
-  {% endwith %}
+  {% endwith %}}
 {% endspaceless %}

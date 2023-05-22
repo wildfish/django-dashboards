@@ -15,7 +15,9 @@ snapshots[
 
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <form hx-get="/dash/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><table class="table form-table"><tbody><tr><td><label for="id_number">Number:</label><br></td><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
+            
+<form hx-get="/dash/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><table class="table form-table"><tbody><tr><td><label for="id_number">Number:</label><br></td><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
+  }
         </div>
     
 
@@ -30,7 +32,9 @@ snapshots[
 
     
         <div id="component-test-inner" class="dashboard-component-inner fade-in">
-            <form hx-get="/dash/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><table class="table form-table"><tbody><tr><td><label for="id_number">Number:</label><br></td><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
+            
+<form hx-get="/dash/app1/testdashboard/test/@form/?key=test" hx-trigger="change" hx-swap="outerHTML" hx-target="#component-test-inner"><table class="table form-table"><tbody><tr><td><label for="id_number">Number:</label><br></td><td><select name="number" id="id_number"><option value="one">one</option><option value="two">two</option><option value="three">three</option></select></td></tr></tbody></table></form>
+  }
         </div>
     
 
