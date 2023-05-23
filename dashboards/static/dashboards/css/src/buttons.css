@@ -1,0 +1,31 @@
+.btn {
+  height: 2em;
+  border-radius: 1em;
+  text-align: center;
+  border: 0;
+  box-shadow: var(--shadow);
+  transition: all var(--transition-time);
+  padding: 0 1em;
+}
+
+.btn.cta {
+  background-color: var(--color-cta-background);
+  color: var(--color-cta-text);
+}
+
+.btn.cta:hover,
+.btn.cta:active {
+  background-color: var(--color-cta-hover-background);
+  color: var(--color-cta-hover-text);
+}
+
+.btn.cta.alt {
+  background-color: var(--color-cta-alt-background);
+  color: var(--color-cta-alt-text);
+}
+
+.btn.cta.alt:hover,
+.btn.cta.alt:active {
+  background-color: var(--color-cta-alt-hover-background);
+  color: var(--color-cta-alt-hover-text);
+}

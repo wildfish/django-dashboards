@@ -1,8 +1,20 @@
+{% load dashboards %}
 {% spaceless %}
+  {% with rendered_value.form|get_form_context as ctx %}
   <form hx-{{ rendered_value.method }}="{{ rendered_value.action }}?key={{ component.template_id }}" hx-trigger="{{ component.trigger }}" hx-swap="outerHTML" hx-target="#component-{{ component.template_id }}-inner">
+    {{ ctx.errors }}
     <table class="{{ component.css_classes.table }}">
       <tbody>
-      {{ rendered_value.form.as_table }}
+      {% for field, errors in ctx.fields %}
+        <tr>
+          <td>
+            {{ field.label_tag}}<br>
+            {% if field.help_text %}<span class="helptext">{{ field.help_text|safe }}</span>{% endif %}
+            {{ errors }}
+          </td>
+          <td>{{ field }}</td>
+        </tr>
+      {% endfor %}
       {% if component.trigger == "submit" %}
         <tr>
           <td>&nbsp;</td>
@@ -13,5 +25,7 @@
       {% endif %}
       </tbody>
     </table>
+    {% for field in hidden_fields %}{{ field }}{% endfor %}
   </form>
+  {% endwith %}}
 {% endspaceless %}

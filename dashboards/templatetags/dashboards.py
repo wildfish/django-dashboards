@@ -3,6 +3,7 @@ from typing import Dict, List, Type, Union, cast
 
 from django import template
 from django.template import RequestContext
+from django.utils.translation import gettext as _
 
 from dashboards.component import Component
 from dashboards.dashboard import Dashboard
@@ -92,3 +93,42 @@ class DashboardMenuNode(template.Node):
         context["sections"] = sections
         context["active_section"] = active_section
         return ""
+
+
+@register.filter()
+def get_form_context(form):
+    """
+    In the form template we use `form.get_context`, this doesnt exist in dj 3.2.
+    This filter provides similar functionality when `get_context` is missing.
+
+    This will be removed when the oldest supported version supports
+    `form.get_context`
+    """
+    if hasattr(form, "get_context"):
+        return form.get_context()
+
+    # patch to account for Form.get_context not existing in dj 3.2
+    fields = []
+    hidden_fields = []
+    top_errors = form.non_field_errors().copy()
+
+    bound_items = [(name, form[name]) for name in form.fields]
+    for name, bf in bound_items:
+        bf_errors = form.error_class(bf.errors)
+        if bf.is_hidden:
+            if bf_errors:
+                top_errors += [
+                    _("(Hidden field %(name)s) %(error)s")
+                    % {"name": name, "error": str(e)}
+                    for e in bf_errors
+                ]
+            hidden_fields.append(bf)
+        else:
+            errors_str = str(bf_errors)
+            fields.append((bf, errors_str))
+    return {
+        "form": form,
+        "fields": fields,
+        "hidden_fields": hidden_fields,
+        "errors": top_errors,
+    }

@@ -1,5 +1,15 @@
 /* This is an example - you'd ideally use a lib or scss to compile this, add responsiveness etc */
 
+.span-1 {
+  grid-column-end: span 1 !important;
+  grid-auto-rows: min-content;
+}
+
+.span-2 {
+  grid-column-end: span 2 !important;
+  grid-auto-rows: min-content;
+}
+
 .span-3 {
   grid-column-end: span 3 !important;
   grid-auto-rows: min-content;
@@ -10,8 +20,18 @@
   grid-auto-rows: min-content;
 }
 
+.span-5 {
+  grid-column-end: span 5 !important;
+  grid-auto-rows: min-content;
+}
+
 .span-6 {
   grid-column-end: span 6;
+  grid-auto-rows: min-content;
+}
+
+.span-7 {
+  grid-column-end: span 7;
   grid-auto-rows: min-content;
 }
 
@@ -22,6 +42,16 @@
 
 .span-9 {
   grid-column-end: span 9;
+  grid-auto-rows: min-content;
+}
+
+.span-10 {
+  grid-column-end: span 10;
+  grid-auto-rows: min-content;
+}
+
+.span-11 {
+  grid-column-end: span 11;
   grid-auto-rows: min-content;
 }
 

@@ -1,5 +1,5 @@
-.menu ul {
-  background: var(--dark-two);
+.menu {
+  background: var(--color-background-secondary);
   list-style: none;
   margin: 0;
   padding-left: 0;
@@ -8,7 +8,7 @@
 }
 
 .menu li {
-  background: var(--dark-two);
+  background: var(--color-background-secondary);
   display: block;
   float: left;
   padding: 0.5rem 2rem;
@@ -17,16 +17,16 @@
 }
 
 .menu li a {
-  color: #FFFFFF;
+  color: var(--color-text-primary);
 }
 
 .menu li.active, .menu li ul li.active {
-  background-color: var(--primary);
+  background-color: var(--color-background-tertiary);
 }
 
 .menu li:hover,
 .menu li:focus-within {
-  background-color: var(--primary);
+  background-color: var(--color-background-tertiary);
   cursor: pointer;
 }
 
@@ -34,32 +34,71 @@
   outline: none;
 }
 
-.menu ul li ul {
+.menu .dropdown {
   display: none;
   left: 0;
-  margin-top: 0.5rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
   min-width: 4em;
   opacity: 0;
   position: absolute;
   visibility: hidden;
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border);
+  border-top: 0;
+  overflow: hidden;
+  border-radius: 0 0 15px 15px;
 }
 
-.menu ul li:hover > ul,
-.menu ul li:focus-within > ul,
-.menu ul li ul:hover,
-.menu ul li ul:focus {
+.menu li:hover > .dropdown,
+.menu li:focus-within > .dropdown,
+.menu li .dropdown:hover,
+.menu li .dropdown:focus {
   visibility: visible;
-  opacity: 0.95;
+  opacity: 1;
   display: block;
+  z-index: 1;
 }
 
-.menu ul li ul li {
+.menu .dropdown li {
   clear: both;
   width: 100%;
   padding: 0;
 }
 
-.menu ul li ul li a {
+.menu .dropdown li a {
   display: block;
   padding: 0.5rem 2rem;
+  white-space: nowrap;
+}
+
+.menu-card {
+  display: flex;
+  margin-bottom: 1em;
+}
+
+.menu-card nav {
+  flex-grow: 1;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--color-border);
+  border-right: 0;
+  border-left: 0;
+}
+
+.menu-card .bumper {
+  width: 15px;
+  overflow: hidden;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  z-index: 1;
+}
+
+.menu-card .bumper:first-child {
+  border-radius: 15px 0 0 15px;
+  border-right: 0;
+}
+
+.menu-card .bumper:last-child {
+  border-radius: 0 15px 15px 0;
+  border-left: 0;
 }

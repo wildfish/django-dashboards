@@ -4,7 +4,7 @@
 
 {# When partial is called, we also render any dependent components #}
 {% for dependent in component.dependent_components %}
-    <div hx-swap-oob="innerHTML:#component-{{ dependent.template_id }}-inner">
+    <div hx-swap-oob="outerHTML:#component-{{ dependent.template_id }}-inner">
         {% render_component component=dependent htmx=False %}
     </div>
 {% endfor %}

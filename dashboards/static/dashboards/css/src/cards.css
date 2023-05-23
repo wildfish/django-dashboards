@@ -1,0 +1,87 @@
+.card {
+  position: relative;
+  height: 100%;
+  border-radius: 15px;
+  background-color: var(--color-background-secondary);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--color-border);
+}
+
+.card *{
+    /* allow sub nesting, by assuming not set is 12 */
+    grid-column-end: span 12;
+}
+
+.card .card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0;
+  background-color: var(--color-background-tertiary);
+  padding: 1rem;
+  border-bottom: solid 1px var(--color-border);
+}
+
+.card .card-header .header-title {
+  flex: 1 1 auto;
+  font-size: 1.2em;
+}
+
+.card .card-header .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.card .card-header .dropdown .dropdown-btn {
+  color: white;
+  padding: 6px;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+}
+
+.card .card-header .dropdown .dropdown-content {
+  position: absolute;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.card .card-header .dropdown .dropdown-content a {
+  color: black;
+  font-size: 1em;
+  padding: 12px 16px;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  display: block;
+}
+
+.card .card-header .dropdown .dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.card .card-img {
+  width: 100%;
+}
+
+.card .card-body {
+  padding: 5px;
+}
+
+.card-body-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-column-gap: 10px;
+}
+
+.card .card-body p {
+  font-size: 1rem;
+}
+
+.card .card-footer {
+  flex: 1 1 auto;
+  padding: 5px;
+  font-size: 0.75em;
+  background-color: var(--color-background-tertiary);
+}
