@@ -1,7 +1,7 @@
 {% load dashboards %}
 {% with columns=rendered_value.columns %}
-<div id="{{ component.key }}">
-  <table id="{{ component.key }}_table" class="{{ component.css_classes.table }}" style="width:100%">
+<div id="{{ component.template_id }}">
+  <table id="{{ component.template_id }}_table" class="{{ component.css_classes.table }}" style="width:100%">
     <thead>
     {% for title in columns.values %}
       <th>{{ title|safe }}</th>

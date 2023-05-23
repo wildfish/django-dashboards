@@ -7,8 +7,12 @@ For an overview of what has changed between versions, see the :ref:`changelog`.
 
 .. _changelog:
 
-
-x.x.x, 2023-X-XXX
+0.1.2 2023-05-17
 -----------------
 
-TODO - Initial public release
+added `template_id` for unique component keys in templates.
+
+0.1.1 2023-05-14
+-----------------
+
+Initial public release

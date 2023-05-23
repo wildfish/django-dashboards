@@ -9,8 +9,14 @@ https://github.com/wildfish/django-dashboards
 .. image:: https://github.com/wildfish/django-dashboards/actions/workflows/build.yml/badge.svg
     :target: https://github.com/wildfish/django-dashboards
 
-.. image:: https://coveralls.io/repos/wildfish/django-dashboards/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/wildfish/django-dashboards?branch=main
+.. image:: https://codecov.io/gh/wildfish/django-dashboards/branch/main/graph/badge.svg
+  :target: https://codecov.io/gh/wildfish/django-dashboards
+
+.. image:: https://badge.fury.io/py/django-dashboards.svg
+    :target: https://pypi.python.org/pypi/django-dashboards/
+
+.. image:: https://img.shields.io/pypi/pyversions/django-dashboards.svg
+    :target: https://pypi.python.org/pypi/django-dashboards/
 
 Features
 ========
@@ -20,7 +26,7 @@ Features
 
 Supports Django 3.2 to 4.1, on Python 3.9+.
 
-See the `full documentation <https://django-dashboards.readthedocs.io>`_ for details
+See the `full documentation <https://wildfish-django-dashboards.readthedocs.io>`_ for details
 of how django-dashboards works.
 
 .. inclusion-quickstart-do-not-remove

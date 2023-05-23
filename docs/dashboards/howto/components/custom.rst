@@ -81,7 +81,7 @@ Then create a template to render:
         {% endif %}
 
         <script type="module">
-            var componentGauge = Gauge(document.getElementById("{{ component.key }}"), {
+            var componentGauge = Gauge(document.getElementById("{{ component.template_id }}"), {
                 max: {{rendered_value.max_value}},
                 label: function (value) {
                     return value;
@@ -93,7 +93,7 @@ Then create a template to render:
             componentGauge.setValueAnimated({{rendered_value.value}}, 2);
         </script>
 
-        <div id="{{ component.key }}" class="gauge-container">
+        <div id="{{ component.template_id }}" class="gauge-container">
             <span class="title-text">{{ rendered_value.title }}</span>
         </div>
         {% if component.href %}</a>{% endif %}

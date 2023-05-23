@@ -14,14 +14,14 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
     <script type="module">
-        var data_test = value;
+        var data_dashapp1testdashboardcomponenttest = value;
         Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
+            'dashapp1testdashboardcomponenttest',
+            data_dashapp1testdashboardcomponenttest.data,
+            data_dashapp1testdashboardcomponenttest.layout,
             {
                 displayModeBar: "hover",
                 staticPlot: false,
@@ -31,7 +31,7 @@ snapshots[
     </script>
 
 
-<div id="test" class=""></div>
+<div id="dashapp1testdashboardcomponenttest" class=""></div>
 
 
         </div>
@@ -47,7 +47,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
@@ -71,7 +71,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -88,14 +88,14 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
     <script type="module">
-        var data_test = value;
+        var data_dashapp1testdashboardcomponenttest = value;
         Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
+            'dashapp1testdashboardcomponenttest',
+            data_dashapp1testdashboardcomponenttest.data,
+            data_dashapp1testdashboardcomponenttest.layout,
             {
                 displayModeBar: "hover",
                 staticPlot: false,
@@ -105,7 +105,7 @@ snapshots[
     </script>
 
 
-<div id="test" class=""></div>
+<div id="dashapp1testdashboardcomponenttest" class=""></div>
 
 
         </div>
@@ -121,7 +121,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
@@ -145,7 +145,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -162,14 +162,14 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
     <script type="module">
-        var data_test = value;
+        var data_dashapp1testdashboardcomponenttest = value;
         Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
+            'dashapp1testdashboardcomponenttest',
+            data_dashapp1testdashboardcomponenttest.data,
+            data_dashapp1testdashboardcomponenttest.layout,
             {
                 displayModeBar: "hover",
                 staticPlot: false,
@@ -179,7 +179,7 @@ snapshots[
     </script>
 
 
-<div id="test" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
+<div id="dashapp1testdashboardcomponenttest" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
 
 
         </div>
@@ -195,7 +195,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="">
   
   
@@ -219,7 +219,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -236,14 +236,14 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
     <script type="module">
-        var data_test = value;
+        var data_dashapp1testdashboardcomponenttest = value;
         Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
+            'dashapp1testdashboardcomponenttest',
+            data_dashapp1testdashboardcomponenttest.data,
+            data_dashapp1testdashboardcomponenttest.layout,
             {
                 displayModeBar: "hover",
                 staticPlot: false,
@@ -253,7 +253,7 @@ snapshots[
     </script>
 
 
-<div id="test" class=""></div>
+<div id="dashapp1testdashboardcomponenttest" class=""></div>
 
 
         </div>
@@ -269,7 +269,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
   
   
@@ -293,7 +293,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 value
 
@@ -358,14 +358,14 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
     <script type="module">
-        var data_test = value;
+        var data_dashapp1testdashboardcomponenttest = value;
         Plotly.newPlot(
-            'test',
-            data_test.data,
-            data_test.layout,
+            'dashapp1testdashboardcomponenttest',
+            data_dashapp1testdashboardcomponenttest.data,
+            data_dashapp1testdashboardcomponenttest.layout,
             {
                 displayModeBar: "hover",
                 staticPlot: false,
@@ -375,7 +375,7 @@ snapshots[
     </script>
 
 
-<div id="test" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
+<div id="dashapp1testdashboardcomponenttest" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
 
 
         </div>
@@ -391,7 +391,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="">
   
   
@@ -415,7 +415,7 @@ snapshots[
 
 
     
-        <div id="component-test-inner" class="dashboard-component-inner fade-in">
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
 value
 

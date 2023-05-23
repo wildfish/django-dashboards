@@ -350,6 +350,7 @@ Serializer can also be driven directly from Meta.model or defining a get_queryse
                 "id": "ID",
                 "first_name": "First Name",
             }
+            order = ["-first_name", "id"]
             # model = User
 
         @classmethod
@@ -382,6 +383,7 @@ Additional `TableSerializer` Meta attributes
 
 * ``first_as_absolute_url`` (``bool`` - ``default=False``): if the model or object has a get_absolute_url use it in the first column.
 * ``force_lower`` - (``bool`` - ``default=True``): forces searching and sorting of data to use lower values.
+* ``order`` - (``list``): list of fields from columns to order by, prefix with - for descending.
 
 BasicTable
 ++++++++++

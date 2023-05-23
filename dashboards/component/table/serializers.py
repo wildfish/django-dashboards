@@ -19,6 +19,7 @@ class SerializedTable:
     data: List[Dict[str, Any]]
     columns: Dict[str, Any]
     columns_datatables: List[Dict[str, Any]]
+    order: List[Any]
     draw: Optional[int] = 0
     total: Optional[int] = 0
     filtered: Optional[int] = 0
@@ -35,6 +36,7 @@ class TableSerializer(TableMixin, ClassWithMeta):
 
     class Meta:
         columns: Dict[str, str]
+        order: List[str]
         title: Optional[str] = None
         model: Optional[str] = None
         first_as_absolute_url = False
@@ -132,12 +134,23 @@ class TableSerializer(TableMixin, ClassWithMeta):
 
                 processed_data.append(values)
 
+        order = [0, "asc"]
+        if hasattr(self._meta, "order"):
+            order = [
+                [
+                    list(self._meta.columns.keys()).index(v.replace("-", "")),
+                    "desc" if "-" in v else "asc",
+                ]
+                for v in self._meta.order
+            ]
+
         return SerializedTable(
             data=processed_data,
             columns=self._meta.columns,
             columns_datatables=[
                 {"data": d, "title": t} for d, t in self._meta.columns.items()
             ],
+            order=order,
             draw=draw,
             total=initial_count,
             filtered=filtered_count,
