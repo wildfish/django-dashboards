@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-django-dashboards==0.1.2
+django-dashboards==0.1.3
 anyio==3.6.2
     # via httpcore
 asgiref==3.6.0

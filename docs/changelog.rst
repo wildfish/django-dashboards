@@ -7,6 +7,11 @@ For an overview of what has changed between versions, see the :ref:`changelog`.
 
 .. _changelog:
 
+0.1.3 2023-05-23
+-----------------
+
+updated default styles
+
 0.1.2 2023-05-17
 -----------------
 
