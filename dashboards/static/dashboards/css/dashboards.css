@@ -17,6 +17,8 @@
   --color-light-cta-alt-hover-background: #fafafa;
   --color-light-cta-alt-text: #404040;
   --color-light-cta-alt-hover-text: var(--color-light-cta-alt-text);
+  --color-light-gauge-background: #a3a3a3;
+  --color-light-gauge-fill: #0284c7;
   --light-root-background: linear-gradient(to top right, var(--color-light-background-primary), var(--color-light-background-primary), var(--color-light-border));
   
   --color-dark-background-primary: #404040;
@@ -34,6 +36,8 @@
   --color-dark-cta-alt-hover-background: #404040;
   --color-dark-cta-alt-text: #fafafa;
   --color-dark-cta-alt-hover-text: var(--color-dark-cta-alt-text);
+  --color-dark-gauge-background: #e5e5e5;
+  --color-dark-gauge-fill: #38bdf8;
   --dark-root-background: linear-gradient(to top right, var(--color-dark-background-primary), var(--color-dark-background-primary), var(--color-dark-background-secondary));
   
   --color-background-primary: var(--color-light-background-primary);
@@ -51,6 +55,8 @@
   --color-cta-alt-hover-background: var(--color-light-cta-alt-hover-background);
   --color-cta-alt-text: var(--color-light-cta-alt-text);
   --color-cta-alt-hover-text: var(--color-light-cta-alt-hover-text);
+  --color-gauge-background: var(--color-light-gauge-background);
+  --color-gauge-fill: var(--color-light-gauge-fill);
   --root-background: var(--light-root-background);
 }
 
@@ -71,6 +77,8 @@
     --color-cta-alt-hover-background: var(--color-dark-cta-alt-hover-background);
     --color-cta-alt-text: var(--color-dark-cta-alt-text);
     --color-cta-alt-hover-text: var(--color-dark-cta-alt-hover-text);
+    --color-gauge-background: var(--color-dark-gauge-background);
+    --color-gauge-fill: var(--color-dark-gauge-fill);
     --root-background: var(--dark-root-background);
   }
 }
@@ -91,6 +99,8 @@
   --color-cta-alt-hover-background: var(--color-light-cta-alt-hover-background);
   --color-cta-alt-text: var(--color-light-cta-alt-text);
   --color-cta-alt-hover-text: var(--color-light-cta-alt-hover-text);
+  --color-gauge-background: var(--color-light-gauge-background);
+  --color-gauge-fill: var(--color-light-gauge-fill);
   --root-background: var(--light-root-background);
 }
 
@@ -110,6 +120,8 @@
   --color-cta-alt-hover-background: var(--color-dark-cta-alt-hover-background);
   --color-cta-alt-text: var(--color-dark-cta-alt-text);
   --color-cta-alt-hover-text: var(--color-dark-cta-alt-hover-text);
+  --color-gauge-background: var(--color-dark-gauge-background);
+  --color-gauge-fill: var(--color-dark-gauge-fill);
   --root-background: var(--dark-root-background);
 }
 
@@ -494,6 +506,54 @@ hr{
 .span-12 {
   grid-column-end: span 12;
   grid-auto-rows: min-content;
+}
+
+.gauge-container {
+  display: block;
+  margin: auto;
+  position: relative;
+  width: 100%;
+}
+
+.gauge .dial {
+  stroke: var(--color-gauge-background);
+  stroke-width: 10;
+  opacity: 0.1;
+}
+
+.gauge .value {
+  stroke: var(--color-gauge-fill);
+  stroke-dasharray: none;
+  stroke-width: 10;
+}
+
+.gauge-title-text {
+  color: var(--color-text-primary);
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  font-size: 10vw;
+}
+
+.gauge-value-text {
+  color: var(--color-text-primary);
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+}
+
+.gauge-sub-text {
+  color: var(--color-text-secondary);
+  display: inline-block;
+  font-size: .8rem;
+}
+
+.gauge-content {
+  position: absolute;
+  margin: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .dashboard-container {

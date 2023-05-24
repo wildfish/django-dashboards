@@ -17,6 +17,7 @@
 {% if sections.items %}
 <div class="menu-card">
     <div class="bumper"></div>
+    {% block navigation %}
     <nav role="navigation">
         <ul class="menu">
             {% for section, items in sections.items %}
@@ -47,6 +48,7 @@
             </li>
         </ul>
     </nav>
+    {% endblock navigation %}
     <div class="bumper"></div>
 </div>
 {% endif %}
