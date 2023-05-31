@@ -1,8 +1,7 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 from dashboards.component import Component
-from dashboards.types import ValueData
 
 
 @dataclass
