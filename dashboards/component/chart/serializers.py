@@ -62,24 +62,36 @@ class ChartSerializer(ClassWithMeta):
     @classmethod
     def serialize(cls, **kwargs) -> str:
         self = cls()
+        request = kwargs.get("request")
         df = self.get_data(**kwargs)
 
         if isinstance(df, pd.DataFrame) and df.empty:
             return self.empty_chart()
 
         fig = self.to_fig(df)
-        fig = self.apply_layout(fig)
+
+        fig = self.apply_layout(
+            fig, dark=request and request.COOKIES.get("appearanceMode") == "dark"
+        )
+
         return fig.to_json()
 
     def get_fields(self) -> Optional[List[str]]:
         # TODO: for some reason mypy complains about this one line
         return self._meta.fields  # type: ignore
 
-    def apply_layout(self, fig: go.Figure):
+    def apply_layout(self, fig: go.Figure, dark=False):
         layout = self.layout or {}
 
         for attr in self.meta_layout_attrs:
             layout.setdefault(attr, getattr(self._meta, attr))
+
+        if dark:
+            fig = fig.update_layout(
+                template="plotly_dark",
+                plot_bgcolor="rgba(0,0,0,0.05)",
+                paper_bgcolor="rgba(0,0,0,0.05)",
+            )
 
         return fig.update_layout(**layout)
 
