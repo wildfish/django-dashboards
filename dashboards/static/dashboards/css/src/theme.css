@@ -17,6 +17,8 @@
   --color-light-cta-alt-hover-background: #fafafa;
   --color-light-cta-alt-text: #404040;
   --color-light-cta-alt-hover-text: var(--color-light-cta-alt-text);
+  --color-light-gauge-background: #a3a3a3;
+  --color-light-gauge-fill: #0284c7;
   --light-root-background: linear-gradient(to top right, var(--color-light-background-primary), var(--color-light-background-primary), var(--color-light-border));
   
   --color-dark-background-primary: #404040;
@@ -34,6 +36,8 @@
   --color-dark-cta-alt-hover-background: #404040;
   --color-dark-cta-alt-text: #fafafa;
   --color-dark-cta-alt-hover-text: var(--color-dark-cta-alt-text);
+  --color-dark-gauge-background: #e5e5e5;
+  --color-dark-gauge-fill: #38bdf8;
   --dark-root-background: linear-gradient(to top right, var(--color-dark-background-primary), var(--color-dark-background-primary), var(--color-dark-background-secondary));
   
   --color-background-primary: var(--color-light-background-primary);
@@ -51,6 +55,8 @@
   --color-cta-alt-hover-background: var(--color-light-cta-alt-hover-background);
   --color-cta-alt-text: var(--color-light-cta-alt-text);
   --color-cta-alt-hover-text: var(--color-light-cta-alt-hover-text);
+  --color-gauge-background: var(--color-light-gauge-background);
+  --color-gauge-fill: var(--color-light-gauge-fill);
   --root-background: var(--light-root-background);
 }
 
@@ -71,6 +77,8 @@
     --color-cta-alt-hover-background: var(--color-dark-cta-alt-hover-background);
     --color-cta-alt-text: var(--color-dark-cta-alt-text);
     --color-cta-alt-hover-text: var(--color-dark-cta-alt-hover-text);
+    --color-gauge-background: var(--color-dark-gauge-background);
+    --color-gauge-fill: var(--color-dark-gauge-fill);
     --root-background: var(--dark-root-background);
   }
 }
@@ -91,6 +99,8 @@
   --color-cta-alt-hover-background: var(--color-light-cta-alt-hover-background);
   --color-cta-alt-text: var(--color-light-cta-alt-text);
   --color-cta-alt-hover-text: var(--color-light-cta-alt-hover-text);
+  --color-gauge-background: var(--color-light-gauge-background);
+  --color-gauge-fill: var(--color-light-gauge-fill);
   --root-background: var(--light-root-background);
 }
 
@@ -110,5 +120,7 @@
   --color-cta-alt-hover-background: var(--color-dark-cta-alt-hover-background);
   --color-cta-alt-text: var(--color-dark-cta-alt-text);
   --color-cta-alt-hover-text: var(--color-dark-cta-alt-hover-text);
+  --color-gauge-background: var(--color-dark-gauge-background);
+  --color-gauge-fill: var(--color-dark-gauge-fill);
   --root-background: var(--dark-root-background);
 }

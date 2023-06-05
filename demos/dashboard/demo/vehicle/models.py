@@ -3,9 +3,9 @@ from collections import namedtuple
 
 from django.db import models
 from django.db.models import Q, QuerySet
+from django.urls import reverse
 
 from dateutil.relativedelta import relativedelta
-from django.urls import reverse
 
 
 class VehicleQueryset(QuerySet):

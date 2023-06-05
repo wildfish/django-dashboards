@@ -1,6 +1,7 @@
 from .base import CTA, Component
 from .chart import Chart
 from .form import Form
+from .gauge import Gauge
 from .map import Map
 from .table import BasicTable, Table
 from .text import Stat, Text
@@ -16,4 +17,5 @@ __all__ = [
     "Text",
     "Table",
     "BasicTable",
+    "Gauge",
 ]
