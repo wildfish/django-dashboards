@@ -36,13 +36,13 @@
                 <a href="#">☼</a>
                 <ul class="dropdown">
                     <li class="{% if request.COOKIES.appearanceMode == 'light' %}active{% endif %}">
-                        <a href="#" onclick="Dashboard.setAppearance('light')">☼ light</a>
+                        <a href="#" onclick="Dashboard.setAppearance('light'); location.reload();">☼ light</a>
                     </li>
                     <li class="{% if request.COOKIES.appearanceMode == 'dark' %}active{% endif %}">
-                        <a href="#" onclick="Dashboard.setAppearance('dark')">☾ dark</a>
+                        <a href="#" onclick="Dashboard.setAppearance('dark'); location.reload();">☾ dark</a>
                     </li>
                     <li class="{% if not request.COOKIES.appearanceMode %}active{% endif %}">
-                        <a href="#" onclick="Dashboard.setAppearance(null)">🖳 system</a>
+                        <a href="#" onclick="Dashboard.setAppearance(null); location.reload();">🖳 system</a>
                     </li>
                 </ul>
             </li>
