@@ -33,7 +33,10 @@ value
     <div hx-get="/dash/app1/testdashboard/@component/component_2/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
-            Loading...
+            
+<div class="loading-img">
+    <img src="/static/dashboards/loading.svg" />
+</div>
         </div>
     </div>
 
@@ -188,7 +191,10 @@ value
     <div hx-get="/dash/app1/testdashboard/@component/component_2/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
-            Loading...
+            
+<div class="loading-img">
+    <img src="/static/dashboards/loading.svg" />
+</div>
         </div>
     </div>
 
@@ -217,7 +223,10 @@ value
     <div hx-get="/dash/app1/testdashboard/@component/component_2/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
-            Loading...
+            
+<div class="loading-img">
+    <img src="/static/dashboards/loading.svg" />
+</div>
         </div>
     </div>
 

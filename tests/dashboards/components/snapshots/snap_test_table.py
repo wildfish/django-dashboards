@@ -341,7 +341,10 @@ snapshots[
     <div hx-get="/dash/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
-            Loading...
+            
+<div class="loading-img">
+    <img src="/static/dashboards/loading.svg" />
+</div>
         </div>
     </div>
 
@@ -357,7 +360,10 @@ snapshots[
     <div hx-get="/dash/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
-            Loading...
+            
+<div class="loading-img">
+    <img src="/static/dashboards/loading.svg" />
+</div>
         </div>
     </div>
 
