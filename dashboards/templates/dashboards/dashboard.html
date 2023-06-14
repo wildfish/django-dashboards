@@ -22,14 +22,18 @@
         <ul class="menu">
             {% for section, items in sections.items %}
             <li class="{% if section == active_section %}active{% endif %}">
-                <a href="#">{{ section }}</a>
-                <ul class="dropdown">
-                    {% for item in items %}
-                    <li class="{% if item.selected %}active{% endif %}">
-                        <a href="{{ item.url }}">{{ item.title }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                {% if items|length > 1 %}
+                    <a href="#">{{ section }}</a>
+                    <ul class="dropdown">
+                        {% for item in items %}
+                        <li class="{% if item.selected %}active{% endif %}">
+                            <a href="{{ item.url }}">{{ item.title }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <a href="{{ items.0.url }}">{{ section }}</a>
+                {% endif %}
             </li>
             {% endfor %}
             <li>
