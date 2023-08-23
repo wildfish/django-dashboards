@@ -128,6 +128,22 @@ by component basis.
 
     one = Text(template_name="custom/template/one.html")
 
+
+If you'd like to change the one of the default components templates globally, this can be done by creating your
+own version of the templates in your templates dir as per Django's standard approach to overriding app templates.
+
+It's also possible to define a component that doesn't required a template by defining a ``render_as_html()`` function,
+see :doc:`Build your own <custom>` for more details.
+
+wrapper_template_name
++++++++++++++++++++++
+
+By default all components will render via the ``dashboards/components/component.html`` template, which applies
+logic required for the HTMX aspects.
+
+As with the above you can override the template globally if required, or this can be set on a per component
+to custom component basis if required using this attribute.
+
 cta
 +++
 

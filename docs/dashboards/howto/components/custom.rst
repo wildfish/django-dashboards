@@ -117,3 +117,28 @@ You can then use the new component in your dashboard:
 
 .. image:: ../_images/components_gauge.png
    :alt: Form Filter
+
+
+
+Rendering without a template
+============================
+
+Custom components can also be created without a template, the below is an illustrative example of this
+as it could also be achieved by passing html and mark_safe to the ``Text`` component.
+
+::
+
+    from dataclasses import dataclass
+
+    from django.template import Context
+
+    from dashboards.component import Component
+
+
+    @dataclass
+    class Italic(Component):
+        def render_as_html(self, context: Context):
+            return f"<i>{context['rendered_value']}</i>"
+
+The context argument gives access to the ``request``, ``rendered_value``, ``component`` and ``htmx`` which is a bool
+to indicate whether the component is being called currently as an htmx partial.
