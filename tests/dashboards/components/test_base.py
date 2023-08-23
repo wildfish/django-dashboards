@@ -6,6 +6,7 @@ import pytest
 
 from dashboards.component import Chart, Component, Text
 from dashboards.component.text import Stat
+from tests.dashboards.app1.components import ComponentNoRender, TextAsHTML
 from tests.utils import render_component_test
 
 
@@ -134,7 +135,7 @@ def test_get_absolute_url__with_object(component_kwargs, expected, dashboard, us
     assert component.get_absolute_url() == expected
 
 
-@pytest.mark.parametrize("component_class", [Text, Chart, Stat])
+@pytest.mark.parametrize("component_class", [Text, Chart, Stat, TextAsHTML])
 @pytest.mark.parametrize(
     "component_kwargs",
     [
@@ -156,3 +157,29 @@ def test_render(component_class, dashboard, component_kwargs, htmx, rf, snapshot
     )
 
     snapshot.assert_match(render_component_test(context, htmx=htmx))
+
+
+@pytest.mark.parametrize(
+    "component_kwargs",
+    [
+        {"value": "value"},
+        {"defer": lambda **kwargs: "value"},
+        {"value": "value", "css_classes": ["a", "b"]},
+    ],
+)
+@pytest.mark.parametrize("htmx", [True, False])
+def test_render__no_template_or_render_as_html__runtime_error(
+    component_kwargs, htmx, dashboard, rf, snapshot
+):
+    component = ComponentNoRender(**component_kwargs)
+    component.dashboard = dashboard
+    component.key = "test"
+    context = Context(
+        {
+            "component": component,
+            "request": rf.get("/"),
+        }
+    )
+
+    with pytest.raises(RuntimeError):
+        render_component_test(context, htmx=htmx)

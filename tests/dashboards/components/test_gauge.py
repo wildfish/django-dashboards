@@ -31,7 +31,7 @@ def test_gauge_component__renders_value(htmx, dashboard, rf, snapshot):
     "component_kwargs",
     [
         {"value": GaugeValue(value=50, max=100)},
-        {"defer": lambda **k: GaugeValue(value=50, max=100)},
+        {"value": lambda **k: GaugeValue(value=50, max=100)},
         {"value": GaugeValue(value=50, max=100, min=-100)},
         {"value": GaugeValue(value=50, max=100, sub_text="foo")},
         {"value": GaugeValue(value=50, max=100, value_text="bar")},

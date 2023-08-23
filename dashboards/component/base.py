@@ -48,6 +48,7 @@ class CTA:
 @dataclass
 class Component:
     template_name: Optional[str] = None
+    wrapper_template_name: Optional[str] = "dashboards/components/component.html"
     value: Optional[ValueData] = None
     defer: Optional[Callable[..., ValueData]] = None
     defer_url: Optional[Callable[..., str]] = None
@@ -142,9 +143,9 @@ class Component:
 
         return value
 
-    def render(
+    def get_context(
         self, context: Context, htmx: Optional[bool] = None, call_deferred: bool = False
-    ) -> str:
+    ):
         request = context.get("request")
         if request:
             filters = (
@@ -153,7 +154,7 @@ class Component:
         else:
             filters = {}
 
-        context = {
+        return {
             "request": request,
             "component": self,
             "rendered_value": self.get_value(
@@ -162,9 +163,32 @@ class Component:
             "htmx": self.is_deferred if htmx is None else htmx,
         }
 
-        return mark_safe(
-            render_to_string("dashboards/components/component.html", context)
+    def render_as_html(self, context: Context):
+        raise NotImplementedError
+
+    def render(
+        self, context: Context, htmx: Optional[bool] = None, call_deferred: bool = False
+    ) -> str:
+        context = self.get_context(
+            context=context, htmx=htmx, call_deferred=call_deferred
         )
+
+        # if a template is defined, pass the context to render the template first
+        if self.template_name:
+            context["rendered_component"] = render_to_string(
+                self.template_name, context
+            )
+        else:
+            # if there is no template, check for a render_as_html()
+            try:
+                context["rendered_component"] = mark_safe(self.render_as_html(context))
+            except NotImplementedError:
+                raise RuntimeError(
+                    "Components must set either a template_name or "
+                    "defined a render_as_html() function"
+                )
+
+        return mark_safe(render_to_string(self.wrapper_template_name, context))
 
     def get_absolute_url(self):
         """

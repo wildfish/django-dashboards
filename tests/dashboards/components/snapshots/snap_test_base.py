@@ -65,6 +65,21 @@ snapshots[
 """
 
 snapshots[
+    "test_render[False-component_kwargs0-TextAsHTML] 1"
+] = """
+
+
+
+    
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <i>value</i>
+        </div>
+    
+
+
+"""
+
+snapshots[
     "test_render[False-component_kwargs0-Text] 1"
 ] = """
 
@@ -132,6 +147,21 @@ snapshots[
   </p>
   
 </div>
+        </div>
+    
+
+
+"""
+
+snapshots[
+    "test_render[False-component_kwargs1-TextAsHTML] 1"
+] = """
+
+
+
+    
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <i>value</i>
         </div>
     
 
@@ -213,6 +243,21 @@ snapshots[
 """
 
 snapshots[
+    "test_render[False-component_kwargs2-TextAsHTML] 1"
+] = """
+
+
+
+    
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <i>value</i>
+        </div>
+    
+
+
+"""
+
+snapshots[
     "test_render[False-component_kwargs2-Text] 1"
 ] = """
 
@@ -287,6 +332,21 @@ snapshots[
 """
 
 snapshots[
+    "test_render[True-component_kwargs0-TextAsHTML] 1"
+] = """
+
+
+
+    
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <i>value</i>
+        </div>
+    
+
+
+"""
+
+snapshots[
     "test_render[True-component_kwargs0-Text] 1"
 ] = """
 
@@ -324,6 +384,25 @@ snapshots[
 
 snapshots[
     "test_render[True-component_kwargs1-Stat] 1"
+] = """
+
+
+
+    <div hx-get="/dash/app1/testdashboard/@component/test/"
+         hx-trigger="intersect once delay:1ms">
+        <div class="htmx-indicator">
+            
+<div class="loading-img">
+    <img src="/static/dashboards/loading.svg" />
+</div>
+        </div>
+    </div>
+
+
+"""
+
+snapshots[
+    "test_render[True-component_kwargs1-TextAsHTML] 1"
 ] = """
 
 
@@ -411,6 +490,21 @@ snapshots[
   </p>
   
 </div>
+        </div>
+    
+
+
+"""
+
+snapshots[
+    "test_render[True-component_kwargs2-TextAsHTML] 1"
+] = """
+
+
+
+    
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <i>value</i>
         </div>
     
 

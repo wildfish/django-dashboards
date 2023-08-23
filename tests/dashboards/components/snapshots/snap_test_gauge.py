@@ -325,15 +325,35 @@ snapshots[
 
 
 
-    <div hx-get="/dash/app1/testdashboard/@component/test/"
-         hx-trigger="intersect once delay:1ms">
-        <div class="htmx-indicator">
+    
+        <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+            <div class="gauge">
+
+    
+    
+    <script type="module">
+        var componentGauge = Gauge(document.getElementById("dashapp1testdashboardcomponenttest"), {
+            max: 100,
             
-<div class="loading-img">
-    <img src="/static/dashboards/loading.svg" />
-</div>
+            value: 50,
+            showValue: false,
+        });
+
+        componentGauge.setValue(0);
+        componentGauge.setValueAnimated(50, 2);
+    </script>
+
+    <h2 class="gaugue-title-text"></h2>
+    <div id="dashapp1testdashboardcomponenttest" class="gauge-container">
+        <div class="gauge-content">
+            <span class="gauge-value-text">50</span>
+            
         </div>
     </div>
+    
+</div>
+        </div>
+    
 
 
 """
