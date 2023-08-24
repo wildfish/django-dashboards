@@ -7,7 +7,7 @@ from demo.vehicle.tables import VehicleTableSerializer
 
 from dashboards import config
 from dashboards.component import Form, Map, Stat, Table
-from dashboards.component.layout import HTML, Card, ComponentLayout, Div
+from dashboards.component.layout import HTML, Card, ComponentLayout
 from dashboards.dashboard import Dashboard, ModelDashboard
 from dashboards.registry import registry
 
