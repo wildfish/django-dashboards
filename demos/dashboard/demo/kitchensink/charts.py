@@ -7,17 +7,7 @@ import plotly.graph_objs as go
 from dashboards.component.chart import ChartSerializer
 
 
-class DarkChartSerializer(ChartSerializer):
-    def apply_layout(self, fig: go.Figure):
-        fig = super().apply_layout(fig)
-        return fig.update_layout(
-            template="plotly_dark",
-            plot_bgcolor="rgba(0,0,0,0.05)",
-            paper_bgcolor="rgba(0,0,0,0.05)",
-        )
-
-
-class ScatterChartSerializer(DarkChartSerializer):
+class ScatterChartSerializer(ChartSerializer):
     x: Optional[str] = None
     y: Optional[str] = None
     size: Optional[str] = None
@@ -46,7 +36,7 @@ class ScatterChartSerializer(DarkChartSerializer):
         return fig
 
 
-class BarChartSerializer(DarkChartSerializer):
+class BarChartSerializer(ChartSerializer):
     x: Optional[str] = None
     y: Optional[str] = None
     color: Optional[str] = None
@@ -71,7 +61,7 @@ class BarChartSerializer(DarkChartSerializer):
         return fig
 
 
-class ChoroplethMapSerializer(DarkChartSerializer):
+class ChoroplethMapSerializer(ChartSerializer):
     locations: List[str]
     locationmode: Optional[str] = "USA-states"
     color: Optional[List[int]] = None
@@ -143,7 +133,7 @@ class ExampleBubbleChartSerializer(ScatterChartSerializer):
         return px.data.iris()
 
 
-class ExampleGaugeChartSerializer(DarkChartSerializer):
+class ExampleGaugeChartSerializer(ChartSerializer):
     class Meta:
         title = "Gauge Speed Example"
 

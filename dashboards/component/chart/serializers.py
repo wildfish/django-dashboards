@@ -71,7 +71,8 @@ class ChartSerializer(ClassWithMeta):
         fig = self.to_fig(df)
 
         fig = self.apply_layout(
-            fig, dark=request and request.COOKIES.get("appearanceMode") == "dark"
+            fig,
+            dark=request and request.COOKIES.get("appearanceMode", "dark") == "dark",
         )
 
         return fig.to_json()

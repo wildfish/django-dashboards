@@ -161,7 +161,7 @@ snapshots[
   </a>
 </div>
     </div>
-
+    <hr>
     <div class="tab-content">
         <div :class="{ \' active show\': tab === \'component_1\' }" x-show="tab === \'component_1\'">
     
@@ -256,7 +256,7 @@ snapshots[
   </a>
 </div>
     </div>
-
+    <hr>
     <div class="tab-content">
         <div :class="{ \' active show\': tab === \'htmlhtmlsome-text\' }" x-show="tab === \'htmlhtmlsome-text\'">
     

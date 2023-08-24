@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from django.contrib.auth.models import User
+from django.template import Context
 
 from dashboards.component import Chart, Component, Stat
 from dashboards.component.text import StatData
@@ -57,3 +58,11 @@ class GaugeData:
 @dataclass
 class Gauge(Component):
     template_name: str = "demo/includes/gauge.html"
+
+
+@dataclass
+class NoTemplateComponent(Component):
+    def render_as_html(self, context: Context):
+        return (
+            f"<i>Rendered this value with no template: {context['rendered_value']}</i>"
+        )

@@ -56,15 +56,11 @@ class VehicleOverviewDashboard(Dashboard):
                 "diam. Duis quis congue ex. Mauris at bibendum est, nec bibendum ipsum. Lorem ipsum "
                 "dolor sit amet, consectetur adipiscing elit.</p>",
             ),
-            "filter_form",
-            Div(
-                Card("no_vehicles", grid_css_classes=Grid.FOUR.value),
-                Card("in_use", grid_css_classes=Grid.FOUR.value),
-                Card("available", grid_css_classes=Grid.FOUR.value),
-                Card("requires_service", grid_css_classes=Grid.FOUR.value),
-                css_classes="dashboard-container",
-                grid_css_classes=Grid.ONE.value,
-            ),
+            Card("filter_form", grid_css_classes=Grid.ONE.value),
+            Card("no_vehicles", grid_css_classes=Grid.FOUR.value),
+            Card("in_use", grid_css_classes=Grid.FOUR.value),
+            Card("available", grid_css_classes=Grid.FOUR.value),
+            Card("requires_service", grid_css_classes=Grid.FOUR.value),
             Card(
                 "map",
                 "vehicles",

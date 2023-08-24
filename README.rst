@@ -31,8 +31,11 @@ of how django-dashboards works.
 
 .. inclusion-quickstart-do-not-remove
 
+To see how things work you can either checkout our :doc:`demo` project running or follow the quickstart from here:
+
 Quickstart
 ==========
+
 
 This is a quickstart guide for creating a simple dashboard.
 

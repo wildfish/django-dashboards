@@ -15,6 +15,7 @@ from demo.kitchensink.charts import (
 from demo.kitchensink.components import (
     Gauge,
     GaugeData,
+    NoTemplateComponent,
     SharedComponent,
     SSEChart,
     SSEStat,
@@ -150,6 +151,9 @@ class DemoDashboard(Dashboard):
     )
     choropleth_map_example = Map(
         defer=ExampleMapSerializer, grid_css_classes=Grid.TWO.value
+    )
+    no_template = NoTemplateComponent(
+        value="Hello!",
     )
 
     class Meta:
