@@ -18,3 +18,6 @@ class Gauge(Component):
     title: str = ""
     value: Optional[GaugeValue] = None
     template_name: str = "dashboards/components/gauge/gauge.html"
+
+    class Media:
+        js = ("dashboards/vendor/js/gauge.min.js",)

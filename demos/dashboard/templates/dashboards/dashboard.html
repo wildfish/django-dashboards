@@ -5,13 +5,16 @@
 {% block dashboards_js %}
     {{ block.super }}
     {% include "dashboards/includes/static/js.html" %}
-    <script src="{% static 'js/svg-gauge.js' %}"></script>
+    <!-- dashboard defined js -->
+    {{ dashboard.media.js.render }}
+    <!-- end dashboard defined js -->
 {% endblock %}
 
 {% block dashboards_style %}
     {{ block.super }}
-    {% include "dashboards/includes/static/style.html" %}
-    <link rel="stylesheet" href="{% static "css/menu.css" %}">
+    <!-- dashboard defined css -->
+    {{ dashboard.media.css.render }}
+    <!-- end dashboard defined css -->
 {% endblock %}
 
 {% block body %}

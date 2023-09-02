@@ -1,0 +1,16 @@
+{% with "data_"|add:template_id as data_key %}
+<script type="module">
+    const {{ data_key }} = {{ value|safe }};
+    Plotly.newPlot(
+        '{{ template_id }}',
+        {{ data_key }}.data,
+        {{ data_key }}.layout,
+        {
+            displayModeBar: {{ displayModeBar|yesno:'"hover",false'|safe }},
+            staticPlot: {{ staticPlot|yesno:"true,false" }},
+            responsive: {{ responsive|yesno:"true,false" }}
+        },
+    );
+</script>
+{% endwith %}
+<div id="{{ template_id }}" class="{{ css_classes|default_if_none:"" }}"></div>

@@ -1,18 +1,17 @@
 {% load dashboards %}
 {% random_ms_delay as delay %}
-
-{% if component.is_deferred and htmx %}
-    <div hx-get="{{ component.get_absolute_url }}"
-         hx-trigger="{{ component.htmx_trigger_on }}intersect once{% if component.htmx_poll_rate %}, {{ component.htmx_poll_rate }}{% endif %} delay:{{ delay }}">
+{% if is_deferred and htmx %}
+    <div hx-get="{{ defer_url }}"
+         hx-trigger="{{ trigger_on }}intersect once{% if poll_rate %}, {{ poll_rate }}{% endif %} delay:{{ delay }}">
         <div class="htmx-indicator">
-            {% include component.defer_loading_template_name %}
+            {% include defer_loading_template_name %}
         </div>
     </div>
 {% else %}
-    {% if component.cta %}<a href="{{ component.cta|cta_href:component.object }}">{% endif %}
-        <div id="component-{{ component.template_id }}-inner" class="dashboard-component-inner fade-in">
-            {% include component.template_name %}
+    {% if cta %}<a href="{{ cta|cta_href:object }}">{% endif %}
+        <div id="component-{{ template_id }}-inner" class="dashboard-component-inner fade-in">
+            {{ rendered_value }}
         </div>
-    {% if component.cta %}</a>{% endif %}
+    {% if cta %}</a>{% endif %}
 {% endif %}
 

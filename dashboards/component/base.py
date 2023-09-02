@@ -7,9 +7,12 @@ from django.http import HttpRequest
 from django.template import Context
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils.functional import lazy
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
+
+import asset_definitions
 
 from dashboards import config
 
@@ -142,9 +145,27 @@ class Component:
 
         return value
 
-    def render(
-        self, context: Context, htmx: Optional[bool] = None, call_deferred: bool = False
-    ) -> str:
+    @property
+    def media(self):
+        return self.get_media()
+
+    def _get_media_from_definition(self) -> Optional[asset_definitions.Media]:
+        definition = getattr(self.__class__, "Media", None)
+        if definition:
+            return asset_definitions.Media(media=definition)
+
+    def get_media(self) -> asset_definitions.Media:
+        # component level media
+        media = self._get_media_from_definition() or asset_definitions.Media()
+        # serializers may have media, if so use that instead of component media
+        if callable(self.value) and hasattr(self.value, "get_media"):
+            media = self.value().get_media()
+        elif callable(self.defer) and hasattr(self.defer, "get_media"):
+            media = self.defer().get_media()
+
+        return media
+
+    def render_value(self, context: Context, call_deferred: bool = False) -> str:
         request = context.get("request")
         if request:
             filters = (
@@ -153,17 +174,55 @@ class Component:
         else:
             filters = {}
 
-        context = {
+        if self.is_deferred and self.defer and call_deferred:
+            render = getattr(self.defer, "render", None)
+        else:
+            render = getattr(self.value, "render", None)
+
+        if callable(render):
+            lazy_render = lazy(render)
+            rendered_value = lazy_render(
+                template_id=self.template_id,
+                request=request,
+                object=self.object,
+                css_classes=self.css_classes,
+                is_deferred=self.is_deferred,
+                defer_url=self.get_absolute_url(),
+            )
+            return rendered_value
+
+        value = self.get_value(
+            request=request, call_deferred=call_deferred, filters=filters
+        )
+
+        template_context = {
             "request": request,
             "component": self,
-            "rendered_value": self.get_value(
-                request=request, call_deferred=call_deferred, filters=filters
-            ),
+            "rendered_value": value,
+        }
+        return render_to_string(self.template_name, template_context)
+
+    def render(
+        self, context: Context, htmx: Optional[bool] = None, call_deferred: bool = False
+    ) -> str:
+        template_context = {
+            "template_id": self.template_id,
+            "object": self.object,
+            "media": self.media,
+            "cta": self.cta,
+            "is_deferred": self.is_deferred,
             "htmx": self.is_deferred if htmx is None else htmx,
+            "defer_url": self.get_absolute_url(),
+            "trigger_on": self.htmx_trigger_on(),
+            "poll_rate": self.htmx_poll_rate(),
+            "defer_loading_template_name": self.defer_loading_template_name,
+            "rendered_value": self.render_value(
+                context=context, call_deferred=call_deferred
+            ),
         }
 
         return mark_safe(
-            render_to_string("dashboards/components/component.html", context)
+            render_to_string("dashboards/components/component.html", template_context)
         )
 
     def get_absolute_url(self):
@@ -192,6 +251,7 @@ class Component:
 
         return url
 
+    @property
     def template_id(self):
         return slugify(self.get_absolute_url())
 

@@ -138,7 +138,7 @@ class DemoDashboard(Dashboard):
     )
     table_example = Table(
         page_size=5,
-        defer=ExampleTableSerializer,
+        value=ExampleTableSerializer,
         grid_css_classes=Grid.TWO.value,
     )
     table_example_not_deferred = BasicTable(
