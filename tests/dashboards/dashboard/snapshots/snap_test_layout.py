@@ -14,7 +14,6 @@ snapshots[
   
 
 
-
     
         <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
@@ -27,7 +26,6 @@ value
 
 </div><div class="span-6 ">
   
-
 
 
     <div hx-get="/dash/app1/testdashboard/@component/component_2/"
@@ -59,7 +57,6 @@ snapshots[
       
 
 
-
     
         <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
@@ -79,7 +76,6 @@ snapshots[
     "test_html_component__div__css_classes 1"
 ] = """<div class="span-6 css_class">
   
-
 
 
     
@@ -104,7 +100,6 @@ snapshots[
       
 
 
-
     
         <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
@@ -124,7 +119,6 @@ snapshots[
     "test_html_component__render[Div] 1"
 ] = """<div class="span-6 ">
   
-
 
 
     
@@ -161,7 +155,7 @@ snapshots[
   </a>
 </div>
     </div>
-
+    <hr>
     <div class="tab-content">
         <div :class="{ \' active show\': tab === \'component_1\' }" x-show="tab === \'component_1\'">
     
@@ -174,7 +168,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
@@ -182,7 +175,6 @@ value
 
         </div>
     
-
 
 
 
@@ -206,7 +198,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponentcomponent_1-inner" class="dashboard-component-inner fade-in">
             
@@ -214,7 +205,6 @@ value
 
         </div>
     
-
 
 
 
@@ -229,7 +219,6 @@ value
 </div>
         </div>
     </div>
-
 
 
 
@@ -256,7 +245,7 @@ snapshots[
   </a>
 </div>
     </div>
-
+    <hr>
     <div class="tab-content">
         <div :class="{ \' active show\': tab === \'htmlhtmlsome-text\' }" x-show="tab === \'htmlhtmlsome-text\'">
     

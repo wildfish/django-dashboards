@@ -63,7 +63,11 @@ decorator==5.1.1
 distlib==0.3.6
     # via virtualenv
 django==4.1.7
-    # via model-bakery
+    # via
+    #   django-asset-definitions
+    #   model-bakery
+django-asset-definitions==1.0.0
+    # via -r requirements.in
 django-webtest==1.9.10
     # via -r requirements.in
 docutils==0.18.1
@@ -96,7 +100,7 @@ idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.1.0
+importlib-metadata==6.8.0
     # via sphinx
 iniconfig==2.0.0
     # via pytest
@@ -291,6 +295,7 @@ urllib3==1.26.15
     # via requests
 vine==5.0.0
     # via
+    #   amqp
     #   celery
     #   kombu
 virtualenv==20.21.0
@@ -309,7 +314,7 @@ webtest==3.0.0
     # via django-webtest
 wheel==0.40.0
     # via pip-tools
-zipp==3.15.0
+zipp==3.16.2
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:

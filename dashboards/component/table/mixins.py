@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Tuple, Union
+from collections.abc import Iterable
+from typing import Any, Dict, List, Tuple, Type, Union
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.paginator import Page, Paginator
@@ -34,7 +35,7 @@ class TableQuerysetProcessor:
 
     @staticmethod
     def sort(
-        qs: QuerySet, fields: List[str], filters: Dict[str, Any], force_lower: bool
+        qs: QuerySet, fields: List[Any], filters: Dict[str, Any], force_lower: bool
     ) -> QuerySet:
         """
         Apply ordering to a queryset based on the order[{field}][column] column request params.
@@ -140,29 +141,32 @@ class TableListProcessor:
 
 
 class TableDataProcessorMixin:
+    _meta: Type[Any]
+
     @classmethod
     def get_data_processor(cls, data):
         if isinstance(data, QuerySet):
             return TableQuerysetProcessor
-        elif isinstance(data, List):
+        elif isinstance(data, Iterable):
             return TableListProcessor
 
         raise Exception("data must be either a queryset or a list")
 
     @classmethod
     def filter(
-        cls, data: Union[QuerySet, List], fields: List[str], filters: Dict[str, Any]
+        cls, data: Union[QuerySet, List], filters: Dict[str, Any]
     ) -> Union[List, QuerySet]:
+        fields = list(cls._meta.columns)
         return cls.get_data_processor(data).filter(data, fields, filters)
 
     @classmethod
     def sort(
         cls,
         data: Union[QuerySet, List],
-        fields: List[str],
         filters: Dict[str, Any],
-        force_lower: bool,
     ) -> Union[List, QuerySet]:
+        force_lower = cls._meta.force_lower
+        fields = list(cls._meta.columns)
         return cls.get_data_processor(data).sort(data, fields, filters, force_lower)
 
     @classmethod

@@ -16,7 +16,6 @@ snapshots[
 
 
 
-
     
         <div id="component-dashapp1testdashboardcomponentcomponent_2-inner" class="dashboard-component-inner fade-in">
             
@@ -34,7 +33,6 @@ value
 snapshots[
     "test_model_dashboard__object_is_set 1"
 ] = """
-
 
 
 

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
+from django.db.models import Model, QuerySet
 
 import asset_definitions
 
@@ -78,10 +78,8 @@ class BaseTableSerializer(
             draw = int(filters.get("draw", draw))
 
         # apply filtering, sorting and pagination (datatables)
-        data = self.filter(data=data, fields=fields, filters=filters)
-        data = self.sort(
-            data=data, fields=fields, filters=filters, force_lower=cls._meta.force_lower
-        )
+        data = self.filter(data=data, filters=filters)
+        data = self.sort(data=data, filters=filters)
         processed_data = []
         filtered_count = 0
 
@@ -156,10 +154,15 @@ class TableSerializer(BaseTableSerializer):
     SerializedTable returns the in a format accepted by datatables.js
     """
 
-    _meta: Type["TableSerializer.Meta"]
+    _meta: Type[Any]
 
-    class Meta(BaseTableSerializer.Meta):
-        model: Optional[str] = None
+    class Meta:
+        columns: Dict[str, str]
+        order: List[str]
+        title: Optional[str] = None
+        first_as_absolute_url = False
+        force_lower = True
+        model: Optional[Model] = None
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

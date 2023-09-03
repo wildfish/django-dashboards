@@ -12,7 +12,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="gauge">
@@ -49,7 +48,6 @@ snapshots[
 snapshots[
     "test_gauge_component__renders_value[True] 1"
 ] = """
-
 
 
     
@@ -90,7 +88,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="gauge">
@@ -127,7 +124,6 @@ snapshots[
 snapshots[
     "test_stat_component__renders_value[False-component_kwargs1] 1"
 ] = """
-
 
 
     
@@ -168,7 +164,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="gauge">
@@ -205,7 +200,6 @@ snapshots[
 snapshots[
     "test_stat_component__renders_value[False-component_kwargs3] 1"
 ] = """
-
 
 
     
@@ -246,7 +240,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="gauge">
@@ -283,7 +276,6 @@ snapshots[
 snapshots[
     "test_stat_component__renders_value[True-component_kwargs0] 1"
 ] = """
-
 
 
     
@@ -324,7 +316,6 @@ snapshots[
 ] = """
 
 
-
     <div hx-get="/dash/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
@@ -341,7 +332,6 @@ snapshots[
 snapshots[
     "test_stat_component__renders_value[True-component_kwargs2] 1"
 ] = """
-
 
 
     
@@ -382,7 +372,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="gauge">
@@ -419,7 +408,6 @@ snapshots[
 snapshots[
     "test_stat_component__renders_value[True-component_kwargs4] 1"
 ] = """
-
 
 
     

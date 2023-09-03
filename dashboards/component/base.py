@@ -130,6 +130,7 @@ class Component:
                 value = self.defer(request=request, object=self.object, filters=filters)
             else:
                 value = self.defer
+
         else:
             serializable = getattr(self.value, "serialize", None)
             if serializable:
@@ -154,6 +155,8 @@ class Component:
         if definition:
             return asset_definitions.Media(media=definition)
 
+        return None
+
     def get_media(self) -> asset_definitions.Media:
         # component level media
         media = self._get_media_from_definition() or asset_definitions.Media()
@@ -166,6 +169,10 @@ class Component:
         return media
 
     def render_value(self, context: Context, call_deferred: bool = False) -> str:
+        # if value is deferred and we are not ready to call it, return loading template
+        if self.is_deferred and not call_deferred:
+            return render_to_string(self.defer_loading_template_name)
+
         request = context.get("request")
         if request:
             filters = (

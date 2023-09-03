@@ -1,7 +1,8 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Model
 from django.template.loader import render_to_string
 
 import asset_definitions
@@ -18,7 +19,9 @@ class ModelDataMixin:
 
     class Meta:
         fields: Optional[List[str]] = None
-        model: Optional[str] = None
+        model: Optional[Model] = None
+
+    _meta: Type["ModelDataMixin.Meta"]
 
     def get_fields(self) -> Optional[List[str]]:
         # TODO: for some reason mypy complains about this one line
@@ -56,9 +59,13 @@ class PlotlyChartSerializerMixin:
     template_name: str = "dashboards/components/chart/plotly.html"
     meta_layout_attrs = ["title", "width", "height"]
     layout: Optional[Dict[str, Any]] = None
-    displayModeBar: Optional[bool] = True
-    staticPlot: Optional[bool] = False
-    responsive: Optional[bool] = True
+
+    _meta: Type[Any]
+
+    class Meta:
+        displayModeBar: Optional[bool] = True
+        staticPlot: Optional[bool] = False
+        responsive: Optional[bool] = True
 
     def empty_chart(self) -> str:
         return json.dumps(
@@ -123,14 +130,16 @@ class PlotlyChartSerializerMixin:
         context = {
             "template_id": template_id,
             "value": value,
-            "displayModeBar": self.displayModeBar,
-            "staticPlot": self.staticPlot,
-            "responsive": self.responsive,
+            "displayModeBar": self._meta.displayModeBar,
+            "staticPlot": self._meta.staticPlot,
+            "responsive": self._meta.responsive,
         }
         return render_to_string(cls.template_name, context)
 
 
 class BaseChartSerializer(ClassWithMeta, asset_definitions.MediaDefiningClass):
+    _meta: Type[Any]
+
     class Meta:
         title: Optional[str] = None
         width: Optional[int] = None
@@ -165,6 +174,9 @@ class PlotlyChartSerializer(PlotlyChartSerializerMixin, BaseChartSerializer):
     Serializer to convert data into a plotly js format
     """
 
+    class Meta(PlotlyChartSerializerMixin.Meta, BaseChartSerializer.Meta):
+        pass
+
     class Media:
         js = ("dashboards/vendor/js/plotly.min.js",)
 
@@ -174,3 +186,8 @@ class ChartSerializer(ModelDataMixin, PlotlyChartSerializer):
     Default chart serializer to read data from a django model
     and serialize it to something plotly js can render
     """
+
+    class Meta(ModelDataMixin.Meta, PlotlyChartSerializer.Meta):
+        pass
+
+    _meta: Type["ChartSerializer.Meta"]

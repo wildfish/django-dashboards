@@ -9,7 +9,7 @@ from django.template import Context
 import pytest
 
 from dashboards.component import BasicTable, Table
-from dashboards.component.table.mixins import TableFilterMixin, TableSortMixin
+from dashboards.component.table.mixins import TableDataProcessorMixin
 from dashboards.component.table.serializers import SerializedTable, TableSerializer
 from tests.dashboards.fakes import fake_user
 from tests.utils import render_component_test
@@ -398,8 +398,8 @@ def test_serializer__sort_and_filter_applied(test_user_serializer__qs):
     for u in range(0, 11):
         fake_user(username=str(u))
 
-    with patch.object(TableSortMixin, "sort") as mock_sort:
-        with patch.object(TableFilterMixin, "filter") as mock_filter:
+    with patch.object(TableDataProcessorMixin, "sort") as mock_sort:
+        with patch.object(TableDataProcessorMixin, "filter") as mock_filter:
             result = test_user_serializer__qs.serialize()
 
     assert isinstance(result, SerializedTable)
