@@ -168,18 +168,23 @@ class Component:
 
         return media
 
-    def render_value(self, context: Context, call_deferred: bool = False) -> str:
-        # if value is deferred and we are not ready to call it, return loading template
-        if self.is_deferred and not call_deferred:
-            return render_to_string(self.defer_loading_template_name)
-
-        request = context.get("request")
+    def get_filters(self, request: HttpRequest) -> Dict[str, Any]:
         if request:
             filters = (
                 request.GET.dict() if request.method == "GET" else request.POST.dict()
             )
         else:
             filters = {}
+
+        return filters
+
+    def render_value(self, context: Context, call_deferred: bool = False) -> str:
+        # if value is deferred and we are not ready to call it, return loading template
+        if self.is_deferred and not call_deferred:
+            return render_to_string(self.defer_loading_template_name)
+
+        request = context.get("request")
+        filters = self.get_filters(request)
 
         if self.is_deferred and self.defer and call_deferred:
             render = getattr(self.defer, "render", None)
@@ -191,6 +196,7 @@ class Component:
             rendered_value = lazy_render(
                 template_id=self.template_id,
                 request=request,
+                filters=filters,
                 object=self.object,
                 css_classes=self.css_classes,
                 is_deferred=self.is_deferred,
