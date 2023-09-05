@@ -22,9 +22,9 @@ snapshots[
             data_dashapp1testdashboardcomponenttest.data,
             data_dashapp1testdashboardcomponenttest.layout,
             {
-                displayModeBar: false,
+                displayModeBar: "hover",
                 staticPlot: false,
-                responsive: false
+                responsive: true
             },
         );
     </script>
@@ -93,9 +93,9 @@ snapshots[
             data_dashapp1testdashboardcomponenttest.data,
             data_dashapp1testdashboardcomponenttest.layout,
             {
-                displayModeBar: false,
+                displayModeBar: "hover",
                 staticPlot: false,
-                responsive: false
+                responsive: true
             },
         );
     </script>
@@ -164,9 +164,9 @@ snapshots[
             data_dashapp1testdashboardcomponenttest.data,
             data_dashapp1testdashboardcomponenttest.layout,
             {
-                displayModeBar: false,
+                displayModeBar: "hover",
                 staticPlot: false,
-                responsive: false
+                responsive: true
             },
         );
     </script>
@@ -235,9 +235,9 @@ snapshots[
             data_dashapp1testdashboardcomponenttest.data,
             data_dashapp1testdashboardcomponenttest.layout,
             {
-                displayModeBar: false,
+                displayModeBar: "hover",
                 staticPlot: false,
-                responsive: false
+                responsive: true
             },
         );
     </script>
@@ -360,9 +360,9 @@ snapshots[
             data_dashapp1testdashboardcomponenttest.data,
             data_dashapp1testdashboardcomponenttest.layout,
             {
-                displayModeBar: false,
+                displayModeBar: "hover",
                 staticPlot: false,
-                responsive: false
+                responsive: true
             },
         );
     </script>
