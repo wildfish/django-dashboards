@@ -31,7 +31,7 @@ class BasicTable(Component):
 
 
 @dataclass
-class Table(Component):
+class DataTable(BasicTable):
     """
     HTML Table with js for pagination, sorting, filtering etc.
     """
@@ -41,20 +41,15 @@ class Table(Component):
     searching: Optional[bool] = True
     paging: Optional[bool] = True
     ordering: Optional[bool] = True
-    value: Optional[Union[Callable[..., SerializedTable], Type[TableSerializer]]] = None
-    defer: Optional[Union[Callable[..., SerializedTable], Type[TableSerializer]]] = None
-    defer_url: Optional[Callable[..., str]] = None
-    poll_rate: Optional[int] = None
 
-    def __post_init__(self):
-        default_css_classes = config.Config().DASHBOARDS_COMPONENT_CLASSES["Table"]
-        # make sure css_classes is a dict as this is what form template requires
-        if self.css_classes and isinstance(self.css_classes, str):
-            # if sting assume this is form class
-            self.css_classes = {"table": self.css_classes}
+    class Media:
+        js = ("dashboards/vendor/js/datatables.min.js",)
+        css = {
+            "all": ("dashboards/vendor/css/datatables.min.css",),
+        }
 
-        # update defaults with any css classes which have been passed in
-        if isinstance(default_css_classes, dict) and isinstance(self.css_classes, dict):
-            default_css_classes.update(self.css_classes)
 
-        self.css_classes = default_css_classes
+class Table(DataTable):
+    """
+    The default table is a DataTable but this could change
+    """

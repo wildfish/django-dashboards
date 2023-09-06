@@ -12,7 +12,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -45,7 +44,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
@@ -69,7 +67,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -84,7 +81,6 @@ value
 snapshots[
     "test_render[False-component_kwargs1-Chart] 1"
 ] = """
-
 
 
     
@@ -119,7 +115,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
@@ -143,7 +138,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -158,7 +152,6 @@ value
 snapshots[
     "test_render[False-component_kwargs2-Chart] 1"
 ] = """
-
 
 
     
@@ -193,7 +186,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="">
@@ -217,7 +209,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -232,7 +223,6 @@ value
 snapshots[
     "test_render[True-component_kwargs0-Chart] 1"
 ] = """
-
 
 
     
@@ -267,7 +257,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
@@ -291,7 +280,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -306,7 +294,6 @@ value
 snapshots[
     "test_render[True-component_kwargs1-Chart] 1"
 ] = """
-
 
 
     <div hx-get="/dash/app1/testdashboard/@component/test/"
@@ -327,7 +314,6 @@ snapshots[
 ] = """
 
 
-
     <div hx-get="/dash/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
@@ -346,7 +332,6 @@ snapshots[
 ] = """
 
 
-
     <div hx-get="/dash/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
@@ -363,7 +348,6 @@ snapshots[
 snapshots[
     "test_render[True-component_kwargs2-Chart] 1"
 ] = """
-
 
 
     
@@ -398,7 +382,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="">
@@ -420,7 +403,6 @@ snapshots[
 snapshots[
     "test_render[True-component_kwargs2-Text] 1"
 ] = """
-
 
 
     

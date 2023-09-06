@@ -5,15 +5,21 @@
 {% block dashboards_js %}
 {{ block.super }}
 {% include "dashboards/includes/static/js.html" %}
+<!-- dashboard defined js -->
+{{ dashboard.media.js.render }}
+<!-- end dashboard defined js -->
 {% endblock %}
 
 {% block dashboards_style %}
 {{ block.super }}
-{% include "dashboards/includes/static/style.html" %}
+<!-- dashboard defined css -->
+{{ dashboard.media.css.render }}
+<!-- end dashboard defined css -->
 {% endblock %}
 
 {% block content %}
 {% dashboard_menus %}
+
 {% if sections.items %}
 <div class="menu-card">
     <div class="bumper"></div>

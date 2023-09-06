@@ -57,3 +57,6 @@ class GaugeData:
 @dataclass
 class Gauge(Component):
     template_name: str = "demo/includes/gauge.html"
+
+    class Media:
+        js = ("js/svg-gauge.js",)

@@ -12,7 +12,6 @@ snapshots[
 ] = """
 
 
-
     <a href="/">
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -29,7 +28,6 @@ snapshots[
 ] = """
 
 
-
     <a href="/">
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -44,7 +42,6 @@ click here
 snapshots[
     "test_stat_component__renders_value[False-component_kwargs0] 1"
 ] = """
-
 
 
     
@@ -70,7 +67,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
@@ -92,7 +88,6 @@ snapshots[
 snapshots[
     "test_stat_component__renders_value[False-component_kwargs2] 1"
 ] = """
-
 
 
     
@@ -124,7 +119,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             <div class="stat">
@@ -148,7 +142,6 @@ snapshots[
 ] = """
 
 
-
     <div hx-get="/dash/app1/testdashboard/@component/test/"
          hx-trigger="intersect once delay:1ms">
         <div class="htmx-indicator">
@@ -165,7 +158,6 @@ snapshots[
 snapshots[
     "test_stat_component__renders_value[True-component_kwargs2] 1"
 ] = """
-
 
 
     

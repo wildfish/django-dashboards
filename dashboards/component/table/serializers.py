@@ -1,17 +1,18 @@
 from dataclasses import dataclass
 from datetime import datetime
 from functools import reduce
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Type
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.exceptions import ImproperlyConfigured
-from django.core.paginator import Page, Paginator
-from django.db.models import QuerySet
+from django.db.models import Model, QuerySet
+
+import asset_definitions
 
 from dashboards.log import logger
 from dashboards.meta import ClassWithMeta
 
-from .mixins import TableMixin
+from .mixins import TableDataProcessorMixin
 
 
 @dataclass
@@ -25,28 +26,15 @@ class SerializedTable:
     filtered: Optional[int] = 0
 
 
-class TableSerializer(TableMixin, ClassWithMeta):
-    """
-    Applies filtering, sorting and pagination to a dataset before returning.
-
-    SerializedTable returns the in a format accepted by datatables.js
-    """
-
-    _meta: Type["TableSerializer.Meta"]
-
+class BaseTableSerializer(
+    ClassWithMeta, asset_definitions.MediaDefiningClass, TableDataProcessorMixin
+):
     class Meta:
         columns: Dict[str, str]
         order: List[str]
         title: Optional[str] = None
-        model: Optional[str] = None
         first_as_absolute_url = False
         force_lower = True
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-        if not hasattr(cls._meta, "columns"):
-            raise ImproperlyConfigured("Table must have columns defined")
 
     @classmethod
     def preprocess_meta(cls, current_class_meta):
@@ -72,6 +60,8 @@ class TableSerializer(TableMixin, ClassWithMeta):
         self = cls()
         filters = serialize_kwargs.get("filters", {})
         data = self.get_data(**serialize_kwargs)
+        columns = self._meta.columns
+        fields = list(columns)
 
         # how many results do we have before table filtering and paginating
         initial_count = self.count(data)
@@ -88,8 +78,8 @@ class TableSerializer(TableMixin, ClassWithMeta):
             draw = int(filters.get("draw", draw))
 
         # apply filtering, sorting and pagination (datatables)
-        data = self.filter(data, filters)
-        data = self.sort(data, filters)
+        data = self.filter(data=data, filters=filters)
+        data = self.sort(data=data, filters=filters)
         processed_data = []
         filtered_count = 0
 
@@ -99,7 +89,6 @@ class TableSerializer(TableMixin, ClassWithMeta):
 
             for obj in page_obj.object_list:
                 values = {}
-                fields = list(self._meta.columns.keys())
                 for field in fields:
                     if not isinstance(obj, dict):
                         # reduce is used to allow relations to be traversed.
@@ -138,7 +127,7 @@ class TableSerializer(TableMixin, ClassWithMeta):
         if hasattr(self._meta, "order"):
             order = [
                 [
-                    list(self._meta.columns.keys()).index(v.replace("-", "")),
+                    fields.index(v.replace("-", "")),
                     "desc" if "-" in v else "asc",
                 ]
                 for v in self._meta.order
@@ -146,28 +135,45 @@ class TableSerializer(TableMixin, ClassWithMeta):
 
         return SerializedTable(
             data=processed_data,
-            columns=self._meta.columns,
-            columns_datatables=[
-                {"data": d, "title": t} for d, t in self._meta.columns.items()
-            ],
+            columns=columns,
+            columns_datatables=[{"data": d, "title": t} for d, t in columns.items()],
             order=order,
             draw=draw,
             total=initial_count,
             filtered=filtered_count,
         )
 
-    @staticmethod
-    def apply_paginator(
-        data: Union[QuerySet, List], start: int, length: int
-    ) -> Tuple[Page, int]:
-        paginator = Paginator(data, length)
-        page_number = (int(start) / int(length)) + 1
-        return paginator.get_page(page_number), paginator.count
-
     def get_data(self, *args, **kwargs):
+        raise NotImplementedError
+
+
+class TableSerializer(BaseTableSerializer):
+    """
+    Applies filtering, sorting and pagination to a dataset before returning.
+
+    SerializedTable returns the in a format accepted by datatables.js
+    """
+
+    _meta: Type[Any]
+
+    class Meta:
+        columns: Dict[str, str]
+        order: List[str]
+        title: Optional[str] = None
+        first_as_absolute_url = False
+        force_lower = True
+        model: Optional[Model] = None
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        if not hasattr(cls._meta, "columns"):
+            raise ImproperlyConfigured("Table must have columns defined")
+
+    def get_data(self, *args, **kwargs) -> QuerySet:
         return self.get_queryset(*args, **kwargs)
 
-    def get_queryset(self, *args, **kwargs):
+    def get_queryset(self, *args, **kwargs) -> QuerySet:
         if self._meta.model is not None:
             queryset = self._meta.model._default_manager.all()
         else:

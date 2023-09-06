@@ -49,10 +49,11 @@ class NoTemplateComponentDeferView(ComponentView):
 class SyncComponentView(ComponentView):
     def get(self, request: HttpRequest, *args, **kwargs):
         status = ["200", "302", "400", "404", "500"]
-        responses = [httpx.get(f"https://httpbin.org/status/{s}") for s in status]
+        responses = [httpx.get(f"https://postman-echo.com/status/{s}") for s in status]
 
         return HttpResponse(
-            "Sync<br/>" + "<hr/>".join([str(r.status_code) for r in responses])
+            "Fetched an API Sync<br/>"
+            + "<hr/>".join([str(r.status_code) for r in responses])
         )
 
 
@@ -70,11 +71,12 @@ class AsyncComponentView(ComponentView):
         async with httpx.AsyncClient() as client:
             status = ["200", "302", "400", "404", "500"]
             responses = await asyncio.gather(
-                *[client.get(f"https://httpbin.org/status/{s}") for s in status]
+                *[client.get(f"https://postman-echo.com/status/{s}") for s in status]
             )
 
         return HttpResponse(
-            "Async<br/>" + "<hr/>".join([str(r.status_code) for r in responses])
+            "Fetched an API Async<br/>"
+            + "<hr/>".join([str(r.status_code) for r in responses])
         )
 
     async def post(self, *args, **kwargs):

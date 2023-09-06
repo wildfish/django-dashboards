@@ -180,6 +180,7 @@
   background-color: var(--color-background-tertiary);
   padding: 1rem;
   border-bottom: solid 1px var(--color-border);
+  border-radius: 15px 15px 0 0;
 }
 
 .card .card-header .header-title {
@@ -244,6 +245,7 @@
   padding: 5px;
   font-size: 0.75em;
   background-color: var(--color-background-tertiary);
+  border-radius: 0 0 15px 15px;
 }
 
 .form-table {
@@ -323,6 +325,8 @@ h1, h2, h3, h4, h5, h6 {
 
 hr{
   border-color: var(--color-text-primary);
+  grid-column-end: span 12;
+  width: 100%;
 }
 
 .menu {
@@ -556,7 +560,7 @@ hr{
   transform: translate(-50%, -50%);
 }
 
-.dashboard-container {
+.dashboard-container, .tab-content>.active {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-gap: 1rem;
@@ -565,12 +569,8 @@ hr{
   width: 100%;
 }
 
-h1, h2, h3, h4, p, .tab-container {
+h1, h2, h3, h4, p {
   grid-column: 1 / 13;
-}
-
-.tab-content div.active .card{
-    border-radius: 0 15px 15px 15px;
 }
 
 .dashboard-component-inner {
@@ -584,8 +584,9 @@ h1, h2, h3, h4, p, .tab-container {
   font-size: 1.3rem;
 }
 
+.tab-content{}
+
 .tabs {
-  border-top: 2px var(--color-border) solid;
   display: flex;
   flex-wrap: wrap;
   margin-left: 0;

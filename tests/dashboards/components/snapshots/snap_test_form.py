@@ -12,7 +12,6 @@ snapshots[
 ] = """
 
 
-
     
         <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
             
@@ -26,7 +25,6 @@ snapshots[
 snapshots[
     "test_form_component__renders_value[True] 1"
 ] = """
-
 
 
     

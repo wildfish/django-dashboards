@@ -9,6 +9,8 @@ from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
+import asset_definitions
+
 from dashboards.component import Component
 from dashboards.component.layout import Card, ComponentLayout
 from dashboards.config import Config
@@ -18,7 +20,9 @@ from dashboards.permissions import BasePermission
 from dashboards.registry import Registrable
 
 
-class Dashboard(Registrable, ClassWithAppConfigMeta):
+class Dashboard(
+    Registrable, ClassWithAppConfigMeta, asset_definitions.MediaDefiningClass
+):
     components: Dict[str, Any]
 
     class Meta(ClassWithAppConfigMeta.Meta):
@@ -28,6 +32,12 @@ class Dashboard(Registrable, ClassWithAppConfigMeta):
         template_name: Optional[str] = None
         lookup_kwarg: str = "lookup"  # url parameter name
         lookup_field: str = "pk"  # model field
+
+    class Media:
+        js = ("dashboards/js/dashboard.js",)
+        css = {
+            "all": ("dashboards/css/dashboards.css",),
+        }
 
     def __init__(self, *args, **kwargs):
         logger.debug(f"Calling init for {self.class_name()}")
@@ -178,6 +188,15 @@ class Dashboard(Registrable, ClassWithAppConfigMeta):
     def get_context(self, **kwargs) -> dict:
         return kwargs
 
+    def get_media(self) -> asset_definitions.Media:
+        # dashboard level media
+        media = super().get_media()
+        # add any media defined in components
+        for key, component in self.components.items():
+            media += component.get_media()
+
+        return media
+
     def render(self, request: HttpRequest, template_name=None):
         """
         Renders 3 ways
@@ -185,7 +204,9 @@ class Dashboard(Registrable, ClassWithAppConfigMeta):
         - else if layout is set use layout.
         - else render a generic layout by wrapping all components.
         """
-        context = self.get_context(request=request, call_deferred=False)
+        context = self.get_context(
+            request=request, media=self.get_media(), call_deferred=False
+        )
 
         layout = self.Layout()
 
