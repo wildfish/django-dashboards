@@ -2,9 +2,15 @@
 # Project requirements
 #
 
+# Core
+django
+django-cors-headers
+django-asset-definitions
+
 # Charts
 pandas
 plotly
+plotly_express
 
 # Dev tools
 Faker
