@@ -7,6 +7,12 @@ For an overview of what has changed between versions, see the :ref:`changelog`.
 
 .. _changelog:
 
+0.1.5 2023-09-08
+-----------------
+
+- Improvement of rendering hooks per component & refactor how media on components is defined.
+- Updated django versions
+
 0.1.4 2023-06-14
 -----------------
 
