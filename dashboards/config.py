@@ -55,7 +55,11 @@ class Config:
             "stat": "stat",
             "icon": "stat__icon",
             "heading": "stat__heading",
+            "title": "stat__title",
+            "icon": "stat__icon",
+            "body": "stat__body",
             "text": "stat__text",
+            "change": "stat__change",
         }
         default_css_classes = {
             "Form": FORM_CLASSES,

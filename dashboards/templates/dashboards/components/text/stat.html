@@ -5,7 +5,7 @@
     {{ component.icon|safe }}
   </div>
   {% endif %}
-  <h2 class="{{ component.css_classes.heading }}">{{ rendered_value.text }}</h2>
+  <h2>{{ rendered_value.text }}</h2>
   <p class="{{ component.css_classes.text }}">
     {% if rendered_value.change_by_display %}
     <span class="text-{% if rendered_value.change_by > 0 %}success{% else %}danger{% endif %}">

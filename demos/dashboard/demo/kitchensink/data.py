@@ -1,6 +1,12 @@
 import json
+from datetime import timedelta
+
+from django.contrib.auth.models import User
+from django.db.models import Count
 
 from demo.kitchensink.models import FlatText
+
+from dashboards.component.stat import StatDateChangeSerializer, StatSerializer
 
 
 class DashboardData:
@@ -66,3 +72,14 @@ class DashboardData:
                 ]
             )
         )
+
+
+class UsersThisWeek(StatDateChangeSerializer):
+    class Meta:
+        annotation_field = "id"
+        annotation = Count
+        model = User
+        date_field_name = "date_joined"
+        previous_delta = timedelta(days=7)
+        title = "New Users"
+        unit = " people"
