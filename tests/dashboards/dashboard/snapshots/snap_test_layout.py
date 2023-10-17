@@ -53,7 +53,7 @@ snapshots[
   <div class="css_class">
     
     
-    <div class="card-body">
+    <div>
       
 
 
@@ -96,7 +96,7 @@ snapshots[
   <div class="card">
     
     
-    <div class="card-body">
+    <div>
       
 
 
