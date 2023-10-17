@@ -16,8 +16,8 @@ from dashboards.meta import ClassWithMeta
 @dataclass
 class StatSerializerData:
     title: str
-    value: float
-    previous: Optional[float] = None
+    value: Any
+    previous: Optional[Any] = None
     unit: Optional[str] = ""
     change_period: Optional[str] = ""
     change: Optional[float] = field(init=False)
@@ -28,7 +28,10 @@ class StatSerializerData:
         elif self.previous == 0:
             self.change = 100.0
         else:
-            self.change = (self.value - self.previous) / self.previous * 100
+            try:
+                self.change = (self.value - self.previous) / self.previous * 100
+            except:
+                self.change = None
 
 
 class BaseStatSerializer(ClassWithMeta):

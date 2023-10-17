@@ -99,7 +99,7 @@ class DemoDashboard(Dashboard):
         grid_css_classes=Grid.ONE.value,
     )
     stat_one = Stat(
-        value=UsersThisWeek,
+        defer=UsersThisWeek,
         icon="<i data-feather='users'></i>",
         grid_css_classes=Grid.TWO.value,
     )

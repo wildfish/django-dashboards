@@ -24,3 +24,8 @@
     {% endif %}
   </div>
 </div>
+{% if is_deferred %}
+<script>
+  feather.replace();
+</script>
+{% endif %}
