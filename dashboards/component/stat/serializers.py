@@ -30,7 +30,7 @@ class StatSerializerData:
         else:
             try:
                 self.change = (self.value - self.previous) / self.previous * 100
-            except:
+            except:  # noqa
                 self.change = None
 
 
