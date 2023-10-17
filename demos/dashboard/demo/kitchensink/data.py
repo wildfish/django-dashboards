@@ -6,7 +6,7 @@ from django.db.models import Count
 
 from demo.kitchensink.models import FlatText
 
-from dashboards.component.stat import StatDateChangeSerializer, StatSerializer
+from dashboards.component.stat import StatDateChangeSerializer
 
 
 class DashboardData:

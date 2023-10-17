@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from datetime import timedelta
-from typing import Any, Callable, Optional, Type
+from typing import Any, Optional, Type
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Model, QuerySet
+from django.db.models import Aggregate, Model, QuerySet
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.timesince import timesince
@@ -14,7 +14,7 @@ from dashboards.meta import ClassWithMeta
 
 
 @dataclass
-class StatData:
+class StatSerializerData:
     title: str
     value: float
     previous: Optional[float] = None
@@ -32,9 +32,9 @@ class StatData:
 
 
 class BaseStatSerializer(ClassWithMeta):
-    class Meta:
+    class Meta(ClassWithMeta.Meta):
         annotation_field: str
-        annotation: Callable
+        annotation: Aggregate
         model: Optional[Model] = None
         title: Optional[str] = ""
         unit: Optional[str] = ""
@@ -89,7 +89,7 @@ class BaseStatSerializer(ClassWithMeta):
         return queryset
 
     @classmethod
-    def serialize(cls, **kwargs) -> StatData:
+    def serialize(cls, **kwargs) -> StatSerializerData:
         raise NotImplementedError
 
 
@@ -108,10 +108,10 @@ class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
         return queryset[self.annotated_field_name]
 
     @classmethod
-    def serialize(cls, **kwargs) -> StatData:
+    def serialize(cls, **kwargs) -> StatSerializerData:
         self = cls()
 
-        return StatData(
+        return StatSerializerData(
             title=self._meta.verbose_name,
             value=self.get_value(),
             unit=self._meta.unit,
@@ -133,7 +133,7 @@ class StatDateChangeSerializer(StatSerializer):
         date_field_name: Optional[str] = None
         previous_delta: Optional[timedelta] = None
 
-    _meta: Type["StatChangeSerializer.Meta"]
+    _meta: Type["StatDateChangeSerializer.Meta"]
 
     def get_date_current(self):
         # only do this if we are set-up with a date field
@@ -157,10 +157,10 @@ class StatDateChangeSerializer(StatSerializer):
         return ""
 
     @classmethod
-    def serialize(cls, **kwargs) -> StatData:
+    def serialize(cls, **kwargs) -> StatSerializerData:
         self = cls()
 
-        return StatData(
+        return StatSerializerData(
             title=self._meta.verbose_name,
             value=self.get_value(),
             previous=self.get_previous(),
@@ -171,7 +171,7 @@ class StatDateChangeSerializer(StatSerializer):
     @property
     def date_field(self) -> str:
         if not self._meta.date_field_name:
-            return None
+            return ""
 
         return f"{self._meta.date_field_name}__lte"
 

@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
 from .base import Component
-from .stat import *
+from .stat import Stat, StatData
+
+
+__all__ = ["Stat", "StatData", "Text"]
 
 
 @dataclass
