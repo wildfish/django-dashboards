@@ -1,7 +1,7 @@
 :root {
     --color-positive: #11cc23;
     --color-negative: #dc2626;
-    --color-background: #eee;
+    --color-background: #fafafa;
     --color-separator: #ccc;
 }
 
@@ -10,8 +10,6 @@
     flex-direction: column;
     width: 100%;
     background-color: var(--color-background);
-    border-radius: 15px;
-    padding: 1rem;
 }
 
 .stat .stat__heading {

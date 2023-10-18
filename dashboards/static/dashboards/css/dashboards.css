@@ -180,7 +180,6 @@
   background-color: var(--color-background-tertiary);
   padding: 1rem;
   border-bottom: solid 1px var(--color-border);
-  border-radius: 15px 15px 0 0;
 }
 
 .card .card-header .header-title {
@@ -245,7 +244,6 @@
   padding: 5px;
   font-size: 0.75em;
   background-color: var(--color-background-tertiary);
-  border-radius: 0 0 15px 15px;
 }
 
 .form-table {
@@ -325,8 +323,6 @@ h1, h2, h3, h4, h5, h6 {
 
 hr{
   border-color: var(--color-text-primary);
-  grid-column-end: span 12;
-  width: 100%;
 }
 
 .menu {
@@ -560,7 +556,70 @@ hr{
   transform: translate(-50%, -50%);
 }
 
-.dashboard-container, .tab-content>.active {
+:root {
+    --color-positive: #11cc23;
+    --color-negative: #dc2626;
+    --color-background: #fafafa;
+    --color-separator: #ccc;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--color-background);
+}
+
+.stat .stat__heading {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-content: center;
+    border-bottom: 1px solid var(--color-separator);
+}
+
+.stat .stat__heading .stat__title {
+    text-align: left;
+    font-size: 1.25rem;
+    flex: 1 1 0;
+}
+
+.stat .stat__heading .stat__icon {
+    flex-grow: 0;
+}
+
+.stat .stat__body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-content: stretch;
+    margin-top: 0.5rem;
+}
+
+.stat .stat__body .stat__text {
+    font-size: 2rem;
+    font-weight: bold;
+    flex: 100%;
+    margin: 0;
+}
+
+.stat .stat__body .stat__change {
+    flex: 100%;
+    color: #999;
+    margin: 0;
+    font-size: 0.75rem;
+}
+
+.stat .stat__body .positive {
+    color: var(--color-positive);
+}
+
+.stat .stat__body .negative {
+    color: var(--color-negative);
+}
+
+.dashboard-container {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-gap: 1rem;
@@ -569,8 +628,12 @@ hr{
   width: 100%;
 }
 
-h1, h2, h3, h4, p {
+h1, h2, h3, h4, p, .tab-container {
   grid-column: 1 / 13;
+}
+
+.tab-content div.active .card{
+    border-radius: 0 15px 15px 15px;
 }
 
 .dashboard-component-inner {
@@ -584,9 +647,8 @@ h1, h2, h3, h4, p {
   font-size: 1.3rem;
 }
 
-.tab-content{}
-
 .tabs {
+  border-top: 2px var(--color-border) solid;
   display: flex;
   flex-wrap: wrap;
   margin-left: 0;
@@ -651,8 +713,4 @@ h1, h2, h3, h4, p {
 .gauge-container {
   margin: auto;
   max-width: 65%;
-}
-
-.loading-img{
-  padding: 5em;
 }

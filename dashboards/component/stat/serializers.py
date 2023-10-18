@@ -101,9 +101,6 @@ class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
 
     class Media:
         js = ("https://unpkg.com/feather-icons", "dashboards/js/icons.js")
-        css = {
-            "all": ("dashboards/css/src/stat.css",),
-        }
 
     def get_value(self) -> Any:
         queryset = self.get_queryset()
