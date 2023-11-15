@@ -198,6 +198,7 @@ class Component:
                 request=request,
                 filters=filters,
                 object=self.object,
+                icon=self.icon,
                 css_classes=self.css_classes,
                 is_deferred=self.is_deferred,
                 defer_url=self.get_absolute_url(),

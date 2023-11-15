@@ -1,0 +1,62 @@
+:root {
+    --color-positive: #11cc23;
+    --color-negative: #dc2626;
+    --color-background: #fafafa;
+    --color-separator: #ccc;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--color-background);
+}
+
+.stat .stat__heading {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-content: center;
+    border-bottom: 1px solid var(--color-separator);
+}
+
+.stat .stat__heading .stat__title {
+    text-align: left;
+    font-size: 1.25rem;
+    flex: 1 1 0;
+}
+
+.stat .stat__heading .stat__icon {
+    flex-grow: 0;
+}
+
+.stat .stat__body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-content: stretch;
+    margin-top: 0.5rem;
+}
+
+.stat .stat__body .stat__text {
+    font-size: 2rem;
+    font-weight: bold;
+    flex: 100%;
+    margin: 0;
+}
+
+.stat .stat__body .stat__change {
+    flex: 100%;
+    color: #999;
+    margin: 0;
+    font-size: 0.75rem;
+}
+
+.stat .stat__body .positive {
+    color: var(--color-positive);
+}
+
+.stat .stat__body .negative {
+    color: var(--color-negative);
+}

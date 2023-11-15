@@ -19,7 +19,7 @@ from demo.kitchensink.components import (
     SSEChart,
     SSEStat,
 )
-from demo.kitchensink.data import DashboardData
+from demo.kitchensink.data import DashboardData, UsersThisWeek
 from demo.kitchensink.forms import MedalForm
 from demo.kitchensink.tables import ExampleTableSerializer
 from faker import Faker
@@ -55,21 +55,6 @@ class Grid(Enum):
 
 
 fake = Faker()
-
-
-def get_bubble_chart(*args, **kwargs):
-    import plotly.express as px
-
-    df = px.data.iris()
-    fig = px.scatter(
-        df,
-        x="sepal_width",
-        y="sepal_length",
-        size="petal_length",
-        color="species",
-    )
-    fig = fig.update_traces(mode="markers")
-    return fig.to_json()
 
 
 class DemoDashboard(Dashboard):
@@ -114,11 +99,13 @@ class DemoDashboard(Dashboard):
         grid_css_classes=Grid.ONE.value,
     )
     stat_one = Stat(
-        value=StatData(text="100%", sub_text="increase"),
+        defer=UsersThisWeek,
+        icon="<i data-feather='users'></i>",
         grid_css_classes=Grid.TWO.value,
     )
     stat_two = Stat(
         value=StatData(text="88%", sub_text="decrease", change_by="12%"),
+        icon="<i data-feather='users'></i>",
         grid_css_classes=Grid.TWO.value,
     )
     gauge_one = Chart(

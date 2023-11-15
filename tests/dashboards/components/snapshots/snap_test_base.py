@@ -49,7 +49,7 @@ snapshots[
             <div class="stat">
   
   
-  <h2 class="stat__heading"></h2>
+  <h2></h2>
   <p class="stat__text">
     
     <span></span>
@@ -120,7 +120,7 @@ snapshots[
             <div class="stat">
   
   
-  <h2 class="stat__heading"></h2>
+  <h2></h2>
   <p class="stat__text">
     
     <span></span>
@@ -191,7 +191,7 @@ snapshots[
             <div class="">
   
   
-  <h2 class=""></h2>
+  <h2></h2>
   <p class="">
     
     <span></span>
@@ -262,7 +262,7 @@ snapshots[
             <div class="stat">
   
   
-  <h2 class="stat__heading"></h2>
+  <h2></h2>
   <p class="stat__text">
     
     <span></span>
@@ -387,7 +387,7 @@ snapshots[
             <div class="">
   
   
-  <h2 class=""></h2>
+  <h2></h2>
   <p class="">
     
     <span></span>

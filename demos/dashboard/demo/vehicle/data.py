@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 
 from demo.vehicle.models import Data, Parameter, Vehicle
 
-from dashboards.component.text import StatData
+from dashboards.component.stat import StatData
 
 
 def dict_to_table(d: dict):

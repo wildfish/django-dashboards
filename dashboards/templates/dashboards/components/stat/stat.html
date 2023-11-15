@@ -1,0 +1,31 @@
+<div id="{{ template_id }}" class="{{ css_classes.stat }}">
+  <div class="{{ css_classes.heading }}">
+    <h2 class="{{ css_classes.title }}">{{ rendered_value.title }}</h2>
+    {% if icon %}
+    <div class="{{ css_classes.icon }}">
+      {{ icon|safe }}
+    </div>
+    {% endif %}
+  </div>
+  <div class="{{ css_classes.body }}">
+    <p class="{{ css_classes.text }}">
+      {{ rendered_value.value }}{{ rendered_value.unit|default_if_none:"" }}
+    </p>
+    {% if rendered_value.change %}
+    {% with positive=rendered_value.change %}
+      <p class="{{ css_classes.change }}">
+        <span class="{% if positive %}positive{% else %}negative{%endif %}">
+        {% if positive > 0 %}&uarr;{% else %}&darr;{% endif %}
+        {{ rendered_value.change }}%
+        </span>
+        in {{ rendered_value.change_period }}
+      </p>
+      {% endwith %}
+    {% endif %}
+  </div>
+</div>
+{% if is_deferred %}
+<script>
+  feather.replace();
+</script>
+{% endif %}
