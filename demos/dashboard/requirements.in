@@ -4,7 +4,6 @@
 
 
 # Specific for this demo only.
-# TODO until pip installable
 django-dashboards
 envdir
 django_configurations
@@ -18,3 +17,4 @@ model_bakery
 psutil
 psycopg2
 whitenoise
+setuptools
