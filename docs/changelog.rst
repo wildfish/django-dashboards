@@ -7,6 +7,12 @@ For an overview of what has changed between versions, see the :ref:`changelog`.
 
 .. _changelog:
 
+0.1.6 2023-11-22
+-----------------
+
+- Python 3.12 support and dependency updated.
+- Added new stat serializer.
+
 0.1.5 2023-09-08
 -----------------
 
