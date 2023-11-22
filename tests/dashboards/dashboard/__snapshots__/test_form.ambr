@@ -1,0 +1,39 @@
+# serializer version: 1
+# name: test_dashboard_form__asdict
+  list([
+    dict({
+      'choices': list([
+      ]),
+      'field_type': 'TextInput',
+      'help_text': '',
+      'id': 'id_name',
+      'label': 'Name',
+      'name': 'name',
+      'required': True,
+      'value': '',
+    }),
+    dict({
+      'choices': list([
+        tuple(
+          'one',
+          'one',
+        ),
+        tuple(
+          'two',
+          'two',
+        ),
+        tuple(
+          'three',
+          'three',
+        ),
+      ]),
+      'field_type': 'Select',
+      'help_text': '',
+      'id': 'id_number',
+      'label': 'Number',
+      'name': 'number',
+      'required': True,
+      'value': '',
+    }),
+  ])
+# ---

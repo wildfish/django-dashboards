@@ -28,6 +28,8 @@ class TabbedView(TemplateView):
         tabs = [DemoDashboard(), DynamicDashboard(request=self.request)]
         context["tabs"] = tabs
         context["initial_tab"] = tabs[0]
+        # you'd need to combine the media for each tab, for ease just use the first dashboards media here
+        context["dashboard"] = tabs[0]
         return context
 
 

@@ -24,7 +24,7 @@ Features
 * Dashboard view generation with components including stats, tables, charts and more.
 * HTMX driven dashboards and templates for a modern MPA interface.
 
-Supports Django 3.2 to 4.1, on Python 3.9+.
+Supports Django 3.2 to 4.2, on Python 3.9+.
 
 See the `full documentation <https://wildfish-django-dashboards.readthedocs.io>`_ for details
 of how django-dashboards works.

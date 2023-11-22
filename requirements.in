@@ -19,6 +19,7 @@ ipdb
 pip-tools
 pre-commit
 typing_extensions
+setuptools
 
 # Testing
 django-webtest
@@ -33,7 +34,7 @@ pytest-isort
 pytest-flake8
 pytest-freezegun
 pytest-mypy
-snapshottest
+syrupy
 
 # Documentation
 sphinx
