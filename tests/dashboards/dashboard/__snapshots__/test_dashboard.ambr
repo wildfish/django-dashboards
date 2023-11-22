@@ -1,0 +1,7 @@
+# serializer version: 1
+# name: test__get_attributes_order
+  dict_keys(['component_1', 'component_2', 'component_3'])
+# ---
+# name: test__get_attributes_order__with_parent
+  dict_keys(['component_1', 'component_2', 'component_3', 'component_4', 'component_5', 'component_6', 'component_7'])
+# ---

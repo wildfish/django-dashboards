@@ -1,0 +1,51 @@
+# serializer version: 1
+# name: test_get__json
+  b'"value"'
+# ---
+# name: test_get__partial_template
+  '''
+  
+  
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponentcomponent_2-inner" class="dashboard-component-inner fade-in">
+              
+  value
+  
+          </div>
+      
+  
+  
+  
+  
+  
+  
+  '''
+# ---
+# name: test_model_dashboard__object_is_set
+  '''
+  
+  
+  
+  
+  
+      
+          <div id="component-dashapp1testmodeldashboard1componentcomponent_1-inner" class="dashboard-component-inner fade-in">
+              
+  value
+  
+          </div>
+      
+  
+  
+  
+  
+  
+  
+  '''
+# ---
+# name: test_post__json
+  b'"value"'
+# ---

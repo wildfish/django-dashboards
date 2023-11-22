@@ -1,0 +1,428 @@
+# serializer version: 1
+# name: test_render[False-component_kwargs0-Chart]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+      <script type="module">
+          var data_dashapp1testdashboardcomponenttest = value;
+          Plotly.newPlot(
+              'dashapp1testdashboardcomponenttest',
+              data_dashapp1testdashboardcomponenttest.data,
+              data_dashapp1testdashboardcomponenttest.layout,
+              {
+                  displayModeBar: "hover",
+                  staticPlot: false,
+                  responsive: true
+              },
+          );
+      </script>
+  
+  
+  <div id="dashapp1testdashboardcomponenttest" class=""></div>
+  
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs0-Stat]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              <div class="stat">
+    
+    
+    <h2></h2>
+    <p class="stat__text">
+      
+      <span></span>
+    </p>
+    
+  </div>
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs0-Text]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+  value
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs1-Chart]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+      <script type="module">
+          var data_dashapp1testdashboardcomponenttest = value;
+          Plotly.newPlot(
+              'dashapp1testdashboardcomponenttest',
+              data_dashapp1testdashboardcomponenttest.data,
+              data_dashapp1testdashboardcomponenttest.layout,
+              {
+                  displayModeBar: "hover",
+                  staticPlot: false,
+                  responsive: true
+              },
+          );
+      </script>
+  
+  
+  <div id="dashapp1testdashboardcomponenttest" class=""></div>
+  
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs1-Stat]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              <div class="stat">
+    
+    
+    <h2></h2>
+    <p class="stat__text">
+      
+      <span></span>
+    </p>
+    
+  </div>
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs1-Text]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+  value
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs2-Chart]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+      <script type="module">
+          var data_dashapp1testdashboardcomponenttest = value;
+          Plotly.newPlot(
+              'dashapp1testdashboardcomponenttest',
+              data_dashapp1testdashboardcomponenttest.data,
+              data_dashapp1testdashboardcomponenttest.layout,
+              {
+                  displayModeBar: "hover",
+                  staticPlot: false,
+                  responsive: true
+              },
+          );
+      </script>
+  
+  
+  <div id="dashapp1testdashboardcomponenttest" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
+  
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs2-Stat]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              <div class="">
+    
+    
+    <h2></h2>
+    <p class="">
+      
+      <span></span>
+    </p>
+    
+  </div>
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[False-component_kwargs2-Text]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+  value
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs0-Chart]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+      <script type="module">
+          var data_dashapp1testdashboardcomponenttest = value;
+          Plotly.newPlot(
+              'dashapp1testdashboardcomponenttest',
+              data_dashapp1testdashboardcomponenttest.data,
+              data_dashapp1testdashboardcomponenttest.layout,
+              {
+                  displayModeBar: "hover",
+                  staticPlot: false,
+                  responsive: true
+              },
+          );
+      </script>
+  
+  
+  <div id="dashapp1testdashboardcomponenttest" class=""></div>
+  
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs0-Stat]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              <div class="stat">
+    
+    
+    <h2></h2>
+    <p class="stat__text">
+      
+      <span></span>
+    </p>
+    
+  </div>
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs0-Text]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+  value
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs1-Chart]
+  '''
+  
+  
+  
+      <div hx-get="/dash/app1/testdashboard/@component/test/"
+           hx-trigger="intersect once delay:1ms">
+          <div class="htmx-indicator">
+              
+  <div class="loading-img">
+      <img src="/static/dashboards/loading.svg" />
+  </div>
+          </div>
+      </div>
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs1-Stat]
+  '''
+  
+  
+  
+      <div hx-get="/dash/app1/testdashboard/@component/test/"
+           hx-trigger="intersect once delay:1ms">
+          <div class="htmx-indicator">
+              
+  <div class="loading-img">
+      <img src="/static/dashboards/loading.svg" />
+  </div>
+          </div>
+      </div>
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs1-Text]
+  '''
+  
+  
+  
+      <div hx-get="/dash/app1/testdashboard/@component/test/"
+           hx-trigger="intersect once delay:1ms">
+          <div class="htmx-indicator">
+              
+  <div class="loading-img">
+      <img src="/static/dashboards/loading.svg" />
+  </div>
+          </div>
+      </div>
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs2-Chart]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+      <script type="module">
+          var data_dashapp1testdashboardcomponenttest = value;
+          Plotly.newPlot(
+              'dashapp1testdashboardcomponenttest',
+              data_dashapp1testdashboardcomponenttest.data,
+              data_dashapp1testdashboardcomponenttest.layout,
+              {
+                  displayModeBar: "hover",
+                  staticPlot: false,
+                  responsive: true
+              },
+          );
+      </script>
+  
+  
+  <div id="dashapp1testdashboardcomponenttest" class="[&#x27;a&#x27;, &#x27;b&#x27;]"></div>
+  
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs2-Stat]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              <div class="">
+    
+    
+    <h2></h2>
+    <p class="">
+      
+      <span></span>
+    </p>
+    
+  </div>
+          </div>
+      
+  
+  
+  
+  '''
+# ---
+# name: test_render[True-component_kwargs2-Text]
+  '''
+  
+  
+  
+      
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+  value
+  
+          </div>
+      
+  
+  
+  
+  '''
+# ---

@@ -82,8 +82,6 @@ executing==2.0.1
     # via stack-data
 faker==20.0.3
     # via -r requirements.in
-fastdiff==0.3.0
-    # via snapshottest
 filelock==3.13.1
     # via
     #   pytest-mypy
@@ -209,6 +207,7 @@ pytest==7.4.3
     #   pytest-freezegun
     #   pytest-isort
     #   pytest-mypy
+    #   syrupy
 pytest-black==0.3.12
     # via -r requirements.in
 pytest-celery==0.0.0
@@ -246,9 +245,6 @@ six==1.16.0
     #   asttokens
     #   patsy
     #   python-dateutil
-    #   snapshottest
-snapshottest==0.6.0
-    # via -r requirements.in
 snowballstemmer==2.2.0
     # via sphinx
 soupsieve==2.5
@@ -289,10 +285,10 @@ stack-data==0.6.3
     # via ipython
 statsmodels==0.14.0
     # via plotly-express
+syrupy==4.6.0
+    # via -r requirements.in
 tenacity==8.2.3
     # via plotly
-termcolor==2.3.0
-    # via snapshottest
 toml==0.10.2
     # via pytest-black
 traitlets==5.13.0
@@ -318,10 +314,6 @@ virtualenv==20.24.6
     # via pre-commit
 waitress==2.1.2
     # via webtest
-wasmer==1.1.0
-    # via fastdiff
-wasmer-compiler-cranelift==1.1.0
-    # via fastdiff
 wcwidth==0.2.10
     # via prompt-toolkit
 webob==1.8.7

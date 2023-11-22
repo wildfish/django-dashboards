@@ -1,0 +1,35 @@
+# serializer version: 1
+# name: test_cta_component__renders_value[False]
+  '''
+  
+  
+  
+      <a href="/">
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+  click here
+  
+          </div>
+      </a>
+  
+  
+  
+  '''
+# ---
+# name: test_cta_component__renders_value[True]
+  '''
+  
+  
+  
+      <a href="/">
+          <div id="component-dashapp1testdashboardcomponenttest-inner" class="dashboard-component-inner fade-in">
+              
+  click here
+  
+          </div>
+      </a>
+  
+  
+  
+  '''
+# ---
