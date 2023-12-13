@@ -15,3 +15,6 @@ class Map(Component):
     # we should also probably accept objects which have a to_json() on them
     value: Optional[str] = None
     defer: Optional[Callable[[HttpRequest], str]] = None
+
+    class Media:
+        js = ("dashboards/vendor/js/plotly.min.js",)
