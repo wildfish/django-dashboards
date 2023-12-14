@@ -5,12 +5,27 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 from django.template.loader import render_to_string
 
-import asset_definitions
+# Import missing components
+from dashboards.component.base import Component
+from dashboards.meta import ClassWithMeta
+import asset_definitions  # Import asset_definitions module if it's part of your project
+
 import pandas as pd
 import plotly.graph_objs as go
 
 from dashboards.meta import ClassWithMeta
+import django_filters
+import random
 
+class FilterComponent(Component):
+    filter_class = None
+    dependents: List[str]
+
+    def apply_filters(self, queryset, filters):
+        if self.filter_class:
+            filter_set = self.filter_class(filters, queryset=queryset)
+            return filter_set.qs
+        return queryset
 
 class ModelDataMixin:
     """
@@ -53,7 +68,6 @@ class ModelDataMixin:
             )
 
         return queryset
-
 
 class PlotlyChartSerializerMixin:
     template_name: str = "dashboards/components/chart/plotly.html"
@@ -136,7 +150,6 @@ class PlotlyChartSerializerMixin:
         }
         return render_to_string(cls.template_name, context)
 
-
 class BaseChartSerializer(ClassWithMeta, asset_definitions.MediaDefiningClass):
     _meta: Type[Any]
 
@@ -168,7 +181,6 @@ class BaseChartSerializer(ClassWithMeta, asset_definitions.MediaDefiningClass):
     def serialize(cls, **kwargs) -> str:
         raise NotImplementedError
 
-
 class PlotlyChartSerializer(PlotlyChartSerializerMixin, BaseChartSerializer):
     """
     Serializer to convert data into a plotly js format
@@ -180,8 +192,7 @@ class PlotlyChartSerializer(PlotlyChartSerializerMixin, BaseChartSerializer):
     class Media:
         js = ("dashboards/vendor/js/plotly.min.js",)
 
-
-class ChartSerializer(ModelDataMixin, PlotlyChartSerializer):
+class ChartSerializer(ModelDataMixin, PlotlyChartSerializer, FilterComponent):
     """
     Default chart serializer to read data from a django model
     and serialize it to something plotly js can render
@@ -191,3 +202,31 @@ class ChartSerializer(ModelDataMixin, PlotlyChartSerializer):
         pass
 
     _meta: Type["ChartSerializer.Meta"]
+
+class StatSerializer(ModelDataMixin, PlotlyChartSerializer, FilterComponent):
+    """
+    Stat serializer to read data from a django model
+    and serialize it to something plotly js can render
+    """
+
+    class Meta(ModelDataMixin.Meta, PlotlyChartSerializer.Meta):
+        pass
+
+    _meta: Type["StatSerializer.Meta"]
+
+    def get_data(self, *args, **kwargs) -> pd.DataFrame:
+        fields = self.get_fields()
+        queryset = self.get_queryset(*args, **kwargs)
+
+        # Apply filters using the FilterComponent
+        queryset = self.apply_filters(queryset, kwargs.get('filter', {}))
+
+        if fields:
+            queryset = queryset.values(*fields)
+
+        try:
+            df = self.convert_to_df(queryset.iterator(), fields)
+        except KeyError:
+            return pd.DataFrame()
+        return df
+
