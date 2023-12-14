@@ -7,6 +7,11 @@ For an overview of what has changed between versions, see the :ref:`changelog`.
 
 .. _changelog:
 
+0.1.7 2023-12-14
+-----------------
+
+- Bug fix to Chart components missing plotly.js.
+
 0.1.6 2023-11-22
 -----------------
 
