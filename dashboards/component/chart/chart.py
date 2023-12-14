@@ -17,3 +17,6 @@ class Chart(Component):
 
     value: Optional[Union[Callable[..., Any], Type["ChartSerializer"]]] = None
     defer: Optional[Union[Callable[..., Any], Type["ChartSerializer"]]] = None
+
+    class Media:
+        js = ("dashboards/vendor/js/plotly.min.js",)
