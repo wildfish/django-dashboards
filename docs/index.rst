@@ -18,4 +18,4 @@ Currently, included are:
    dashboards/index.rst
    api/modules.rst
    contributing.rst
-   changelog.rst
+   changelog
