@@ -22,8 +22,7 @@ class ModelDataMixin:
     _meta: Type["ModelDataMixin.Meta"]
 
     def get_fields(self) -> Optional[List[str]]:
-        # TODO: for some reason mypy complains about this one line
-        return self._meta.fields  # type: ignore
+        return self._meta.fields
 
     def convert_to_df(self, data: Any, columns: Optional[List] = None) -> pd.DataFrame:
         return pd.DataFrame(data, columns=columns)
@@ -43,9 +42,9 @@ class ModelDataMixin:
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset(*args, **kwargs)
 
-        # Apply filters from FilterComponent
+        # Applying filters from FilterComponent
         if self._meta.filter_component:
-            filters = {}  # You need to obtain filters from the FilterComponent
+            filters = {}  # here we can  obtain filters from the FilterComponent
             queryset = self._meta.filter_component.apply_filters(queryset, filters)
 
         return queryset

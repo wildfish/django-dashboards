@@ -1,7 +1,7 @@
 {% extends "dashboards/base.html" %}
 {% load static %}
 {% load dashboards %}
-
+{{ rendered_value.get_rendered_filter_form(request) }}
 {% block dashboards_js %}
 {{ block.super }}
 {% include "dashboards/includes/static/js.html" %}

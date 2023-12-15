@@ -7,10 +7,10 @@ from django.db.models import Aggregate, Model, QuerySet
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.timesince import timesince
-from dashboards.component.filter import FilterComponent
 
 import asset_definitions
 
+from dashboards.component.filter import FilterComponent
 from dashboards.meta import ClassWithMeta
 
 
@@ -70,7 +70,7 @@ class BaseStatSerializer(ClassWithMeta):
         return f"{self._meta.annotation.name.lower()}_{self._meta.annotation_field}"
 
     def aggregate_queryset(self, queryset) -> QuerySet:
-        # apply aggregation to queryset to get single value
+        # apply aggregation to queryset to get a single value
         queryset = queryset.aggregate(
             **{
                 self.annotated_field_name: self._meta.annotation(
@@ -119,7 +119,7 @@ class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
     @classmethod
     def serialize(cls, **kwargs) -> StatSerializerData:
         self = cls()
-        filters = {}  # You need to obtain filters from the FilterComponent
+        filters = {}  # here we can  obtain filters from the FilterComponent
         queryset = self.apply_filters(self.get_queryset(), filters)
         queryset = self.aggregate_queryset(queryset)
 
@@ -148,7 +148,7 @@ class StatDateChangeSerializer(StatSerializer):
     _meta: Type["StatDateChangeSerializer.Meta"]
 
     def get_date_current(self):
-        # only do this if we are set-up with a date field
+        # only do this if we are set up with a date field
         if not self._meta.date_field_name:
             return None
 
