@@ -1,0 +1,9 @@
+<form id="filter-form" hx-post="{% url 'your_dashboard_refresh_url' %}" hx-trigger="submit">
+    {% csrf_token %}
+
+    {# Include your filter fields here, for example: #}
+    <label for="{{ filter_form.price.id_for_label }}">Price:</label>
+    {{ filter_form.price }}
+
+    <button type="submit">Apply Filters</button>
+</form>

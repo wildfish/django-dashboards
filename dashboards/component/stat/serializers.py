@@ -41,6 +41,7 @@ class BaseStatSerializer(ClassWithMeta):
         model: Optional[Model] = None
         title: Optional[str] = ""
         unit: Optional[str] = ""
+        filter_component: Optional[Type[FilterComponent]] = None
 
     _meta: Type["BaseStatSerializer.Meta"]
 
@@ -91,6 +92,13 @@ class BaseStatSerializer(ClassWithMeta):
 
         return queryset
 
+    def apply_filters(self, queryset, filters):
+        # Apply filters from FilterComponent
+        if self._meta.filter_component:
+            queryset = self._meta.filter_component.apply_filters(queryset, filters)
+
+        return queryset
+
     @classmethod
     def serialize(cls, **kwargs) -> StatSerializerData:
         raise NotImplementedError
@@ -110,6 +118,9 @@ class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
     @classmethod
     def serialize(cls, **kwargs) -> StatSerializerData:
         self = cls()
+        filters = {}  # You need to obtain filters from the FilterComponent
+        queryset = self.apply_filters(self.get_queryset(), filters)
+        queryset = self.aggregate_queryset(queryset)
 
         return StatSerializerData(
             title=self._meta.verbose_name,
