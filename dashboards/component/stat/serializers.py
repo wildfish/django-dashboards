@@ -7,6 +7,7 @@ from django.db.models import Aggregate, Model, QuerySet
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.timesince import timesince
+from dashboards.component.filter import FilterComponent
 
 import asset_definitions
 
