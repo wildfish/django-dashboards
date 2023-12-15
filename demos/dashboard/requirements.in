@@ -18,3 +18,4 @@ psutil
 psycopg2
 whitenoise
 setuptools
+django-filters
