@@ -6,9 +6,6 @@ import plotly.graph_objs as go
 
 from dashboards.component.chart import ChartSerializer
 
-
-
-
 class ScatterChartSerializer(ChartSerializer):
     x: Optional[str] = None
     y: Optional[str] = None
