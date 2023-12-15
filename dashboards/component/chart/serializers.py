@@ -5,8 +5,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 from django.template.loader import render_to_string
 
+from dashboards.component.filter import FilterComponent
 # Import missing components
-from dashboards.component.base import Component
 from dashboards.meta import ClassWithMeta
 import asset_definitions  # Import asset_definitions module if it's part of your project
 
@@ -17,15 +17,6 @@ from dashboards.meta import ClassWithMeta
 import django_filters
 import random
 
-class FilterComponent(Component):
-    filter_class = None
-    dependents: List[str]
-
-    def apply_filters(self, queryset, filters):
-        if self.filter_class:
-            filter_set = self.filter_class(filters, queryset=queryset)
-            return filter_set.qs
-        return queryset
 
 class ModelDataMixin:
     """
