@@ -12,12 +12,13 @@ import plotly.graph_objs as go
 from dashboards.meta import ClassWithMeta
 from dashboards.component.filter import FilterComponent
 
+from dashboards.component.filter import MyFilter
 
 class ModelDataMixin:
     class Meta:
         fields: Optional[List[str]] = None
         model: Optional[Model] = None
-        filter_component: Optional[FilterComponent] = None  # Add this line
+        filter_component = MyFilter
 
     _meta: Type["ModelDataMixin.Meta"]
 

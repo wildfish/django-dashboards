@@ -10,7 +10,8 @@ from django.utils.timesince import timesince
 
 import asset_definitions
 
-from dashboards.component.filter import FilterComponent
+from dashboards.component.filter import MyFilter
+
 from dashboards.meta import ClassWithMeta
 
 
@@ -42,7 +43,7 @@ class BaseStatSerializer(ClassWithMeta):
         model: Optional[Model] = None
         title: Optional[str] = ""
         unit: Optional[str] = ""
-        filter_component: Optional[Type[FilterComponent]] = None
+        filter_component = MyFilter
 
     _meta: Type["BaseStatSerializer.Meta"]
 
@@ -104,24 +105,35 @@ class BaseStatSerializer(ClassWithMeta):
     def serialize(cls, **kwargs) -> StatSerializerData:
         raise NotImplementedError
 
+class StatSerializer(BaseStatSerializer):
+
+  def get_queryset(self, *args, **kwargs):
+
+    filter = MyFilter()
+    queryset = super().get_queryset(*args, **kwargs)
+    queryset = filter.filter(queryset, self.context['request'].GET)
+
+    return queryset 
+
 
 class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
     template_name: str = "dashboards/components/stat/stat.html"
 
     class Media:
         js = ("https://unpkg.com/feather-icons", "dashboards/js/icons.js")
-
+    
     def get_value(self) -> Any:
         queryset = self.get_queryset()
         queryset = self.aggregate_queryset(queryset)
         return queryset[self.annotated_field_name]
-
+    
     @classmethod
     def serialize(cls, **kwargs) -> StatSerializerData:
         self = cls()
         filters = {}  # here we can  obtain filters from the FilterComponent
         queryset = self.apply_filters(self.get_queryset(), filters)
         queryset = self.aggregate_queryset(queryset)
+        queryset = self.apply_filters(queryset, filters)
 
         return StatSerializerData(
             title=self._meta.verbose_name,
