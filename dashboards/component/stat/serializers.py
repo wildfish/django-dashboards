@@ -10,6 +10,8 @@ from django.utils.timesince import timesince
 
 import asset_definitions
 
+from dashboards.component.filters import MyFilter
+
 from dashboards.meta import ClassWithMeta
 
 
@@ -41,6 +43,7 @@ class BaseStatSerializer(ClassWithMeta):
         model: Optional[Model] = None
         title: Optional[str] = ""
         unit: Optional[str] = ""
+        filter_component = MyFilter
 
     _meta: Type["BaseStatSerializer.Meta"]
 
@@ -68,7 +71,7 @@ class BaseStatSerializer(ClassWithMeta):
         return f"{self._meta.annotation.name.lower()}_{self._meta.annotation_field}"
 
     def aggregate_queryset(self, queryset) -> QuerySet:
-        # apply aggregation to queryset to get single value
+        # apply aggregation to queryset to get a single value
         queryset = queryset.aggregate(
             **{
                 self.annotated_field_name: self._meta.annotation(
@@ -91,9 +94,26 @@ class BaseStatSerializer(ClassWithMeta):
 
         return queryset
 
+    def apply_filters(self, queryset, filters):
+        # Apply filters from FilterComponent
+        if self._meta.filter_component:
+            queryset = self._meta.filter_component.apply_filters(queryset, filters)
+
+        return queryset
+
     @classmethod
     def serialize(cls, **kwargs) -> StatSerializerData:
         raise NotImplementedError
+
+class StatSerializer(BaseStatSerializer):
+
+  def get_queryset(self, *args, **kwargs):
+
+    filter = MyFilter()
+    queryset = super().get_queryset(*args, **kwargs)
+    queryset = filter.filter(queryset, self.context['request'].GET)
+
+    return queryset 
 
 
 class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
@@ -101,15 +121,19 @@ class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
 
     class Media:
         js = ("https://unpkg.com/feather-icons", "dashboards/js/icons.js")
-
+    
     def get_value(self) -> Any:
         queryset = self.get_queryset()
         queryset = self.aggregate_queryset(queryset)
         return queryset[self.annotated_field_name]
-
+    
     @classmethod
     def serialize(cls, **kwargs) -> StatSerializerData:
         self = cls()
+        filters = {}  # here we can  obtain filters from the FilterComponent
+        queryset = self.apply_filters(self.get_queryset(), filters)
+        queryset = self.aggregate_queryset(queryset)
+        queryset = self.apply_filters(queryset, filters)
 
         return StatSerializerData(
             title=self._meta.verbose_name,
@@ -136,7 +160,7 @@ class StatDateChangeSerializer(StatSerializer):
     _meta: Type["StatDateChangeSerializer.Meta"]
 
     def get_date_current(self):
-        # only do this if we are set-up with a date field
+        # only do this if we are set up with a date field
         if not self._meta.date_field_name:
             return None
 

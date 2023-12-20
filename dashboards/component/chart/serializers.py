@@ -11,21 +11,18 @@ import plotly.graph_objs as go
 
 from dashboards.meta import ClassWithMeta
 
+from dashboards.component.filters import MyFilter
 
 class ModelDataMixin:
-    """
-    gets data from a django model and converts to a pandas dataframe
-    """
-
     class Meta:
         fields: Optional[List[str]] = None
         model: Optional[Model] = None
+        filter_component = MyFilter
 
     _meta: Type["ModelDataMixin.Meta"]
 
     def get_fields(self) -> Optional[List[str]]:
-        # TODO: for some reason mypy complains about this one line
-        return self._meta.fields  # type: ignore
+        return self._meta.fields
 
     def convert_to_df(self, data: Any, columns: Optional[List] = None) -> pd.DataFrame:
         return pd.DataFrame(data, columns=columns)
@@ -43,14 +40,12 @@ class ModelDataMixin:
         return df
 
     def get_queryset(self, *args, **kwargs):
-        if self._meta.model is not None:
-            queryset = self._meta.model._default_manager.all()
-        else:
-            raise ImproperlyConfigured(
-                "%(self)s is missing a QuerySet. Define "
-                "%(self)s.model or override "
-                "%(self)s.get_queryset()." % {"self": self.__class__.__name__}
-            )
+        queryset = super().get_queryset(*args, **kwargs)
+
+        # Applying filters from FilterComponent
+        if self._meta.filter_component:
+            filters = {}  # here we can  obtain filters from the FilterComponent
+            queryset = self._meta.filter_component.apply_filters(queryset, filters)
 
         return queryset
 
@@ -170,10 +165,6 @@ class BaseChartSerializer(ClassWithMeta, asset_definitions.MediaDefiningClass):
 
 
 class PlotlyChartSerializer(PlotlyChartSerializerMixin, BaseChartSerializer):
-    """
-    Serializer to convert data into a plotly js format
-    """
-
     class Meta(PlotlyChartSerializerMixin.Meta, BaseChartSerializer.Meta):
         pass
 
@@ -182,11 +173,6 @@ class PlotlyChartSerializer(PlotlyChartSerializerMixin, BaseChartSerializer):
 
 
 class ChartSerializer(ModelDataMixin, PlotlyChartSerializer):
-    """
-    Default chart serializer to read data from a django model
-    and serialize it to something plotly js can render
-    """
-
     class Meta(ModelDataMixin.Meta, PlotlyChartSerializer.Meta):
         pass
 
