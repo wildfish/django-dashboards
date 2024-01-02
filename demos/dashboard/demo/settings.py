@@ -170,22 +170,28 @@ class Common(Configuration):
     DATABASE_NAME = get_env("DATABASE_NAME", default=PROJECT_NAME)
     DATABASE_USER = get_env("DATABASE_USER", default=PROJECT_NAME)
     DATABASE_PASSWORD = get_env("DATABASE_PASSWORD", default=PROJECT_NAME)
-
-    @property
-    def DATABASES(self):
-        """
-        Build the databases object here to allow subclasses to override specific values
-        """
-        return {
-            "default": {
-                "ENGINE": "django.db.backends.postgresql_psycopg2",
-                "HOST": self.DATABASE_HOST,
-                "PORT": self.DATABASE_PORT,
-                "NAME": self.DATABASE_NAME,
-                "USER": self.DATABASE_USER,
-                "PASSWORD": self.DATABASE_PASSWORD,
-            }
+    
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
+    }
+    # @property
+    # def DATABASES(self):
+    #     """
+    #     Build the databases object here to allow subclasses to override specific values
+    #     """
+    #     return {
+    #         "default": {
+    #             "ENGINE": "django.db.backends.postgresql_psycopg2",
+    #             "HOST": self.DATABASE_HOST,
+    #             "PORT": self.DATABASE_PORT,
+    #             "NAME": self.DATABASE_NAME,
+    #             "USER": self.DATABASE_USER,
+    #             "PASSWORD": self.DATABASE_PASSWORD,
+    #         }
+    #     }
 
     # Password validation
     # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
