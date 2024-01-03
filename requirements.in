@@ -42,3 +42,4 @@ sphinx_rtd_theme
 furo
 
 exceptiongroup
+django-filter

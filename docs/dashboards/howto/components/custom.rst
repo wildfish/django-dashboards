@@ -117,3 +117,54 @@ You can then use the new component in your dashboard:
 
 .. image:: ../_images/components_gauge.png
    :alt: Form Filter
+
+
+Dynamic Data Filtering with GenericFilter
+
+Customize your Django Dashboards by integrating the GenericFilter component for dynamic data filtering. Here's how:
+
+1. Import GenericFilter:
+
+
+from dashboards.component.filters import GenericFilter
+2. Apply GenericFilter in data.py:
+
+In your data fetching methods, use GenericFilter to dynamically adjust data based on user-selected filters.
+
+
+in data.py in demo dashbaords
+from dashboards.component.filters import GenericFilter
+from .forms import ExampleForm, MedalForm
+
+class DashboardData:
+    @staticmethod
+    def fetch_users_data(form):
+        queryset = User.objects.all()
+
+        # Apply filtering based on GenericFilter
+        if form.is_valid():
+            user_filter = GenericFilter(data=form.cleaned_data, queryset=queryset)
+            queryset = user_filter.qs
+
+        # Apply additional filtering based on your requirements
+        # ...
+
+        return queryset
+3. Define Forms:
+
+Ensure filter criteria are defined in forms (e.g., ExampleForm, MedalForm) for user choices.
+
+4. Apply GenericFilter in Dashboards:
+
+When defining dashboard components, use GenericFilter for dynamic data filtering.
+
+Example:
+
+from dashboards.component.filters import GenericFilter
+
+class YourDashboard(Dashboard):
+    filtered_data = GenericFilter(
+        method='fetch_users_data',  # data fetching method
+        form_class=ExampleForm,  # form class for filter choices
+    )
+Empower users with interactive data filtering in Django Dashboards.

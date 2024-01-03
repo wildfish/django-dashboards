@@ -80,19 +80,19 @@ class DashboardData:
     def fetch_users_data(form):
         queryset = User.objects.all()
 
-        # Apply filtering based on the GenericFilter
+        #here I am  Applying filtering based on the GenericFilter
         if form.is_valid():
             user_filter = GenericFilter(data=form.cleaned_data, queryset=queryset)
             queryset = user_filter.qs
 
-        # Apply additional filtering based on your requirements
-        # For example, filtering by age_range if it's available in the form
+        # here I am Applying additional filtering based on your requirements
+        # here we can perform  filtering by age_range if it's available in the form
         age_range = form.cleaned_data.get('age_range')
         if age_range:
             queryset = queryset.filter(age__range=age_range)
 
-        # You can apply additional filtering based on your requirements
-        # For example, filtering by country if it's available in the form
+        # this is for additional filtering based on your requirements
+        # this part is For  filtering by country if it's available in the form
         country = form.cleaned_data.get('country')
         if country:
             queryset = queryset.filter(country=country)

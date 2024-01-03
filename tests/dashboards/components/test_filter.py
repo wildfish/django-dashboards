@@ -5,49 +5,23 @@ from django.test import TestCase
 from dashboards.component.filters import GenericFilter
 
 
-class GenericFilterTestCase(TestCase):
-    def test_generic_filter(self):
-        # Create some test data (adjust as needed)
-        user_data = [
-            {
-                "username": "user1",
-                "email": "user1@example.com",
-                "age": 25,
-                "country": "europe",
-            },
-            {
-                "username": "user2",
-                "email": "user2@example.com",
-                "age": 30,
-                "country": "asia",
-            },
-            # Add more test data based on your structure
-        ]
+def test_generic_filter(self):
+    self.assertTrue(self.filter_instance.is_valid())
 
-        # Set the fields you want to filter on
-        fields = {
-            "username": "char",
-            "country": "choice",
-        }  # Update with actual field types
+    filtered_queryset: QuerySet = self.filter_instance.qs
 
-        # Create an instance of the GenericFilter
-        filter_instance = GenericFilter(
-            data=user_data, fields=fields, queryset=User.objects.all()
-        )
+    print("User Data:", self.user_data)
+    print("Fields:", self.fields)
+    print("Filtered Usernames:", [user.username for user in filtered_queryset])
 
-        # Check if the filter is valid
-        self.assertTrue(filter_instance.is_valid())
+    self.assertGreater(filtered_queryset.count(), 0)
 
-        # Get the filtered queryset
-        filtered_queryset: QuerySet = filter_instance.qs
+    for user_data in self.user_data:
+        username = user_data["username"]
+        print(f"Checking if user '{username}' is in filtered queryset.")
+        self.assertIn(username, [user.username for user in filtered_queryset])
 
-        # Assert your test cases based on the expected results
-        # Check if the queryset is not empty
-        self.assertGreater(filtered_queryset.count(), 0)
-
-        # Compare primary keys (IDs) instead of usernames
-        user_ids = [user.id for user in filtered_queryset]
-        self.assertIn(User.objects.get(username=user_data[0]["username"]).id, user_ids)
-        self.assertIn(User.objects.get(username=user_data[1]["username"]).id, user_ids)
-
-        # Add more assertions based on your requirements
+        if "country" in self.fields:
+            country_value = self.fields["country"]
+            user = User.objects.get(username=username)
+            self.assertEqual(user.country, country_value)

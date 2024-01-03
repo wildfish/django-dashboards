@@ -1,4 +1,21 @@
-django
-sphinx
-sphinx_rtd_theme
-furo
+#
+# Project requirements
+#
+
+
+# Specific for this demo only.
+django-dashboards
+envdir
+django_configurations
+django_eventstream
+django-cors-headers
+django_redis
+django_silk
+faker
+httpx
+model_bakery
+psutil
+psycopg2
+whitenoise
+setuptools
+django-filter
