@@ -13,6 +13,7 @@ from dashboards.log import logger
 from dashboards.meta import ClassWithMeta
 
 from .mixins import TableDataProcessorMixin
+from dashboards.component.filters import Filter
 
 
 @dataclass
@@ -163,6 +164,7 @@ class TableSerializer(BaseTableSerializer):
         first_as_absolute_url = False
         force_lower = True
         model: Optional[Model] = None
+        filter_component = Filter  # Add the filter component here
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -171,7 +173,10 @@ class TableSerializer(BaseTableSerializer):
             raise ImproperlyConfigured("Table must have columns defined")
 
     def get_data(self, *args, **kwargs) -> QuerySet:
-        return self.get_queryset(*args, **kwargs)
+        filter_instance = self._meta.filter_component(model=self._meta.model)
+        queryset = self.get_queryset(*args, **kwargs)
+        queryset = filter_instance.apply_filters(queryset, self.context['request'].GET)
+        return queryset
 
     def get_queryset(self, *args, **kwargs) -> QuerySet:
         if self._meta.model is not None:

@@ -1,7 +1,7 @@
-from dataclasses import dataclass, field
-from datetime import timedelta
-from typing import Any, Optional, Type
+from typing import Optional, Type
 
+from dashboards.component.filters import Filter
+from dashboards.meta import ClassWithMeta
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Aggregate, Model, QuerySet
 from django.template.loader import render_to_string
@@ -9,9 +9,9 @@ from django.utils import timezone
 from django.utils.timesince import timesince
 
 import asset_definitions
-
-from dashboards.meta import ClassWithMeta
-
+from dataclasses import dataclass, field
+from datetime import timedelta, datetime
+from typing import Any
 
 @dataclass
 class StatSerializerData:
@@ -68,7 +68,7 @@ class BaseStatSerializer(ClassWithMeta):
         return f"{self._meta.annotation.name.lower()}_{self._meta.annotation_field}"
 
     def aggregate_queryset(self, queryset) -> QuerySet:
-        # apply aggregation to queryset to get single value
+        # apply aggregation to queryset to get a single value
         queryset = queryset.aggregate(
             **{
                 self.annotated_field_name: self._meta.annotation(
@@ -79,7 +79,7 @@ class BaseStatSerializer(ClassWithMeta):
 
         return queryset
 
-    def get_queryset(self, *args, **kwargs) -> QuerySet:
+    def get_queryset(self, filter_component: Optional[Filter] = None, *args, **kwargs) -> QuerySet:
         if self._meta.model is not None:
             queryset = self._meta.model._default_manager.all()
         else:
@@ -89,10 +89,15 @@ class BaseStatSerializer(ClassWithMeta):
                 "%(self)s.get_queryset()." % {"self": self.__class__.__name__}
             )
 
+        if filter_component:
+            # Apply filter data to the form
+            filter_instance = filter_component.get_filter_form()(kwargs.get('request').GET, queryset=queryset)
+            queryset = filter_instance.qs
+
         return queryset
 
     @classmethod
-    def serialize(cls, **kwargs) -> StatSerializerData:
+    def serialize(cls, filter_component: Optional[Filter] = None, **kwargs) -> StatSerializerData:
         raise NotImplementedError
 
 
@@ -102,24 +107,24 @@ class StatSerializer(BaseStatSerializer, asset_definitions.MediaDefiningClass):
     class Media:
         js = ("https://unpkg.com/feather-icons", "dashboards/js/icons.js")
 
-    def get_value(self) -> Any:
-        queryset = self.get_queryset()
+    def get_value(self, filter_component: Optional[Filter] = None) -> Any:
+        queryset = self.get_queryset(filter_component)
         queryset = self.aggregate_queryset(queryset)
         return queryset[self.annotated_field_name]
 
     @classmethod
-    def serialize(cls, **kwargs) -> StatSerializerData:
+    def serialize(cls, filter_component: Optional[Filter] = None, **kwargs) -> StatSerializerData:
         self = cls()
 
         return StatSerializerData(
             title=self._meta.verbose_name,
-            value=self.get_value(),
+            value=self.get_value(filter_component),
             unit=self._meta.unit,
         )
 
     @classmethod
-    def render(cls, **kwargs) -> str:
-        value = cls.serialize(**kwargs)
+    def render(cls, filter_component: Optional[Filter] = None, **kwargs) -> str:
+        value = cls.serialize(filter_component, **kwargs)
         context = {
             "rendered_value": value,
             **kwargs,
@@ -157,13 +162,13 @@ class StatDateChangeSerializer(StatSerializer):
         return ""
 
     @classmethod
-    def serialize(cls, **kwargs) -> StatSerializerData:
+    def serialize(cls, filter_component: Optional[Filter] = None, **kwargs) -> StatSerializerData:
         self = cls()
 
         return StatSerializerData(
             title=self._meta.verbose_name,
-            value=self.get_value(),
-            previous=self.get_previous(),
+            value=self.get_value(filter_component),
+            previous=self.get_previous(filter_component),
             unit=self._meta.unit,
             change_period=self.get_change_period(),
         )
@@ -175,24 +180,26 @@ class StatDateChangeSerializer(StatSerializer):
 
         return f"{self._meta.date_field_name}__lte"
 
-    def get_value(self) -> Any:
-        queryset = self.get_queryset()
+    def get_value(self, filter_component: Optional[Filter] = None) -> Any:
+        queryset = self.get_queryset(filter_component)
         date_current = self.get_date_current()
-        # filter on date if we have it
+
         if date_current:
+            # filter on date if we have it
             queryset = queryset.filter(**{self.date_field: date_current})
 
         queryset = self.aggregate_queryset(queryset)
 
         return queryset[self.annotated_field_name]
 
-    def get_previous(self) -> Any:
+    def get_previous(self, filter_component: Optional[Filter] = None) -> Any:
         data_previous = self.get_date_previous()
+
         # only return previous if we have a previous date to compare
         if data_previous is None:
             return None
 
-        queryset = self.get_queryset()
+        queryset = self.get_queryset(filter_component)
         queryset = queryset.filter(**{self.date_field: data_previous})
         queryset = self.aggregate_queryset(queryset)
 

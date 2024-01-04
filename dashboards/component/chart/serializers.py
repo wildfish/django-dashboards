@@ -11,6 +11,7 @@ import plotly.graph_objs as go
 
 from dashboards.meta import ClassWithMeta
 
+from dashboards.component.filters import Filter
 
 class ModelDataMixin:
     """
@@ -182,12 +183,13 @@ class PlotlyChartSerializer(PlotlyChartSerializerMixin, BaseChartSerializer):
 
 
 class ChartSerializer(ModelDataMixin, PlotlyChartSerializer):
-    """
-    Default chart serializer to read data from a django model
-    and serialize it to something plotly js can render
-    """
-
     class Meta(ModelDataMixin.Meta, PlotlyChartSerializer.Meta):
-        pass
+        filter_component = Filter  # Added the Filter component here
 
     _meta: Type["ChartSerializer.Meta"]
+
+    def get_queryset(self, *args, **kwargs):
+        filter_instance = self._meta.filter_component(model=self.Meta.model)  
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = filter_instance.apply_filters(queryset, self.context['request'].GET)
+        return queryset
