@@ -127,6 +127,7 @@ class Common(Configuration):
         # Project
         "demo.kitchensink.apps.KitchenSinkConfig",
         "demo.vehicle.apps.VehicleConfig",
+        'django_filters'
     ]
     MIDDLEWARE = [
         # django_grip required for dashboards/eventstream
