@@ -1,5 +1,3 @@
-# data.py
-
 import json
 from datetime import timedelta
 
@@ -9,8 +7,7 @@ from django.db.models import Count
 from demo.kitchensink.models import FlatText
 
 from dashboards.component.stat import StatDateChangeSerializer
-from dashboards.component.filters import GenericFilter
-from .forms import ExampleForm, MedalForm
+
 
 class DashboardData:
     def _apply_filter_age_range(self):
@@ -75,29 +72,6 @@ class DashboardData:
                 ]
             )
         )
-
-    @staticmethod
-    def fetch_users_data(form):
-        queryset = User.objects.all()
-
-        #here I am  Applying filtering based on the GenericFilter
-        if form.is_valid():
-            user_filter = GenericFilter(data=form.cleaned_data, queryset=queryset)
-            queryset = user_filter.qs
-
-        # here I am Applying additional filtering based on your requirements
-        # here we can perform  filtering by age_range if it's available in the form
-        age_range = form.cleaned_data.get('age_range')
-        if age_range:
-            queryset = queryset.filter(age__range=age_range)
-
-        # this is for additional filtering based on your requirements
-        # this part is For  filtering by country if it's available in the form
-        country = form.cleaned_data.get('country')
-        if country:
-            queryset = queryset.filter(country=country)
-
-        return queryset
 
 
 class UsersThisWeek(StatDateChangeSerializer):
