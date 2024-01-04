@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "dashboards",
     "tests.dashboards.app1",
+    'django_filters'
 ]
 
 MIDDLEWARE = [
