@@ -618,7 +618,7 @@ Below is a full example how to create a dashboard that achieves this.
 
         def save(self):
             students.append(
-                {
+                {f
                     "name": self.cleaned_data["name"],
                     "grade": self.cleaned_data["final_grade"],
                 }

@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Type
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model
 from django.template.loader import render_to_string
+from django_filters import FilterSet
 
 import asset_definitions
 import pandas as pd
@@ -184,11 +185,13 @@ class PlotlyChartSerializer(PlotlyChartSerializerMixin, BaseChartSerializer):
 
 class ChartSerializer(ModelDataMixin, PlotlyChartSerializer):
     class Meta(ModelDataMixin.Meta, PlotlyChartSerializer.Meta):
-        filter_component = Filter  # Added the Filter component here
+             filter_component: Optional[Type[FilterSet]] = None
 
     _meta: Type["ChartSerializer.Meta"]
 
     def get_queryset(self, *args, **kwargs):
+        filter_component = self._meta.filter_component or FilterSet(model=self.Meta.model)
+
         filter_instance = self._meta.filter_component(model=self.Meta.model)  
         queryset = super().get_queryset(*args, **kwargs)
         queryset = filter_instance.apply_filters(queryset, self.context['request'].GET)

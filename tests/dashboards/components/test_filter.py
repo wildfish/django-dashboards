@@ -1,90 +1,70 @@
-from django.urls import reverse
-from django import forms
 import pytest
+from django.http import HttpRequest
+from django.db.models import CharField, Model
+from django.core.exceptions import FieldDoesNotExist
+from django_filters import FilterSet
+from django.forms.widgets import NumberInput
+from .. import config
+from ..forms import DashboardForm
+from ..types import ValueData
+from .base import Component, value_render_encoder
+from typing import Literal, Union, Type, Dict, Any, List
+from dashboards.component.filters import FilterData, TableFilterSet, TableFilterProcessor, Filter
 
-from dashboards.component.filters import Filter
-from dashboards.forms import DashboardForm
-from tests.utils import render_component_test
+class FakeModel(Model):
+    name = CharField(max_length=255)
+    age = CharField(max_length=3)
 
-pytest_plugins = [
-    "tests.dashboards.fixtures",
-]
+@pytest.fixture
+def fake_model_queryset():
+    fake_data = [
+        {'name': 'John', 'age': '25'},
+        {'name': 'Alice', 'age': '30'},
+        {'name': 'Bob', 'age': '22'},
+    ]
+    return FakeModel.objects.bulk_create([FakeModel(**data) for data in fake_data])
 
-class TestFilter(DashboardForm):
-    filter_field = forms.CharField()
+def test_table_filter_processor(fake_model_queryset):
+    qs = FakeModel.objects.all()
+    filters = {'global_search': 'John'}
 
-@pytest.mark.parametrize("htmx", [True, False])
-def test_filter_component__renders_value(dashboard, htmx, rf, snapshot):
-    form_instance = TestFilter()  # Create an instance of the form
-    component = Filter(form=form_instance, model=None, method="get")
-    component.dashboard = dashboard
-    component.key = "test"
+    # Test filter method
+    filtered_qs = TableFilterProcessor.filter(qs, filters)
+    assert len(filtered_qs) == 1
+    assert filtered_qs[0].name == 'John'
 
-    # Ensure that the Filter component is added to the dashboard's components
-    dashboard.components = [component]
+    sorted_qs = TableFilterProcessor.sort(qs, ['name'], filters, force_lower=False)
+    assert list(sorted_qs) == sorted(list(qs), key=lambda x: x.name)
 
-    context = Context(
-        {
-            "component": component,
-            "request": rf.get("/"),
-        }
-    )
+    count = TableFilterProcessor.count(qs)
+    assert count == len(qs)
 
-    snapshot.assert_match(render_component_test(context, htmx=htmx))
-@pytest.mark.parametrize("method", ["get", "post"])
-def test_filter_component__get_value(dashboard, method, rf):
-    component = Filter(form=TestFilter, model=None, method=method, dependents=["component_1"])
-    component.dashboard = dashboard
-    component.key = "test"
-    request = rf.get("/")
-    value = component.get_value(request)
+def test_filter(fake_model_queryset):
+    form_mock = lambda: None
+    filter_component = Filter(form=form_mock)
+    filter_component.model = FakeModel
 
-    assert isinstance(value["form"], TestFilter)
-    assert value["method"] == method
-    assert value["dependents"] == ["component_1"]
-    assert value["action"] == component.get_submit_url()
+    filterset_class = filter_component.get_filterset()
+    assert issubclass(filterset_class, FilterSet)
+    assert hasattr(filterset_class, 'global_search')
 
-def test_filter_component__get_submit_url(dashboard):
-    component = Filter(form=TestFilter, model=None)
-    component.dashboard = dashboard
-    component.key = "test"
+    request_mock = HttpRequest()
+    filters = {'global_search': 'John'}
+    value = filter_component.get_value(request=request_mock, filters=filters)
+    expected_value = FilterData(form={'global_search': 'John'}, dependents=[])
+    assert value == expected_value
 
-    assert component.get_submit_url() == reverse(
-        "dashboards:filter_component",
-        args=[dashboard._meta.app_label, dashboard.class_name(), "test"],
-    )
+    data = FakeModel.objects.all()
+    filtered_data = Filter.filter_data(data, filters)
+    assert list(filtered_data) == list(data.filter(name__icontains='John'))
 
-def test_filter_component__get_submit_url__specified(dashboard):
-    component = Filter(form=TestFilter, model=None, submit_url="/submit-me/")
-    component.dashboard = dashboard
-    component.key = "test"
+    sorted_data = Filter.sort_data(data, filters)
+    assert list(sorted_data) == sorted(list(data), key=lambda x: x.name)
 
-    assert component.get_submit_url() == "/submit-me/"
+    count_data = Filter.count_data(data)
+    assert count_data == len(data)
 
-def test_filter_component__get_form_with_get(dashboard, rf):
-    component = Filter(form=TestFilter, model=None, method="get")
-    component.dashboard = dashboard
-    component.key = "test"
-    request = rf.get("/?filter_field=value")
-    form = component.get_form(request)
+    page, total_records = Filter.apply_paginator(data, start=0, length=10)
+    assert len(page.object_list) == 3
+    assert total_records == len(data)
 
-    assert isinstance(form, TestFilter)
-
-def test_filter_component__get_form_with_post(dashboard, rf):
-    component = Filter(form=TestFilter, model=None, method="post")
-    component.dashboard = dashboard
-    component.key = "test"
-    request = rf.post("/", {"filter_field": "value"})
-
-    form = component.get_form(request)
-
-    assert isinstance(form, TestFilter)
-
-def test_filter_component__get_value_returns_error_on_invalid(dashboard, rf):
-    component = Filter(form=TestFilter, model=None, method="get")
-    component.dashboard = dashboard
-    component.key = "test"
-    request = rf.post("/", {})
-    form = component.get_form(request)
-
-    assert form.errors == {"filter_field": ["This field is required."]}

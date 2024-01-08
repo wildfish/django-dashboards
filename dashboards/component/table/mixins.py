@@ -6,7 +6,6 @@ from django.core.paginator import Page, Paginator
 from django.db.models import CharField, F, Q, QuerySet
 from django.db.models.functions import Lower
 
-
 class TableQuerysetProcessor:
     @staticmethod
     def filter(qs: QuerySet, fields: List[str], filters: Dict[str, Any]) -> QuerySet:
@@ -14,7 +13,6 @@ class TableQuerysetProcessor:
         Apply filtering on a queryset based on the search[value] and
         columns[{field}][search][value] column request params.
         """
-
         global_search_value = filters.get("search[value]")
         # used to filter out non model fields
         model_fields = [f.name for f in qs.model._meta.get_fields()]
@@ -69,9 +67,8 @@ class TableQuerysetProcessor:
         return qs
 
     @staticmethod
-    def count(qs: QuerySet) -> QuerySet:
+    def count(qs: QuerySet) -> int:
         return qs.count()
-
 
 class TableListProcessor:
     @staticmethod
@@ -80,7 +77,6 @@ class TableListProcessor:
         Apply filtering to a list based on the search[value] request params and
         columns[{field}][search][value] column request params.
         """
-
         global_search_value = filters.get("search[value]")
 
         if global_search_value:
@@ -104,8 +100,7 @@ class TableListProcessor:
                 data = [
                     d
                     for d in data
-                    for field, value in fields_to_search.items()
-                    if d[field] == value
+                    if all(d[field] == value for field, value in fields_to_search.items())
                 ]
         return data
 
@@ -116,7 +111,6 @@ class TableListProcessor:
         """
         Apply ordering to a list based on the order[{field}][column] column request params.
         """
-
         def conditionally_apply_lower(v):
             if force_lower and isinstance(v, str):
                 return v.lower()
@@ -138,7 +132,6 @@ class TableListProcessor:
     @staticmethod
     def count(data: List) -> int:
         return len(data)
-
 
 class TableDataProcessorMixin:
     _meta: Type[Any]
@@ -170,7 +163,7 @@ class TableDataProcessorMixin:
         return cls.get_data_processor(data).sort(data, fields, filters, force_lower)
 
     @classmethod
-    def count(cls, data: Union[QuerySet, List]):
+    def count(cls, data: Union[QuerySet, List]) -> int:
         return cls.get_data_processor(data).count(data)
 
     @staticmethod

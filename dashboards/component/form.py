@@ -1,5 +1,5 @@
-from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, List, Literal, Optional, Type
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, Literal, Optional, Type
 
 from django.http import HttpRequest
 from django.urls import reverse
@@ -8,14 +8,15 @@ from .. import config
 from ..forms import DashboardForm
 from ..types import ValueData
 from .base import Component, value_render_encoder
-from dashboards.component.filters import Filter
+
 
 @dataclass
 class FormData:
-    action: str
-    form: Dict[str, Any]
+    action: list[str]
+    form: list[dict[str, Any]]
     method: str
-    dependents: Optional[List[str]] = None
+    dependents: Optional[list[str]] = None
+
 
 @dataclass
 class Form(Component):
@@ -24,16 +25,12 @@ class Form(Component):
     method: Literal["get", "post"] = "get"
     trigger: Literal["change", "submit"] = "change"
     submit_url: Optional[str] = None
-    # Add these attributes for the GenericFilter
-    filter_data: Optional[List[Dict[str, Any]]] = None
-    filter_fields: Optional[Dict[str, Any]] = None
 
     def __post_init__(self):
         default_css_classes = config.Config().DASHBOARDS_COMPONENT_CLASSES["Form"]
-
         # make sure css_classes is a dict as this is what form template requires
         if self.css_classes and isinstance(self.css_classes, str):
-            # if string assume this is form class
+            # if sting assume this is form class
             self.css_classes = {"form": self.css_classes}
 
         # update defaults with any css classes which have been passed in
@@ -80,13 +77,6 @@ class Form(Component):
                 data = request.GET
 
         form = self.form(data=data)
-
-        # Create and apply the GenericFilter if filter_data and filter_fields are provided
-        if self.filter_data and self.filter_fields and self.model:
-            filter_instance = Filter(data=self.filter_data, fields=self.filter_fields)
-            queryset = filter_instance.filter(self.model.objects.all(), None, None)
-            form.fields['filter_field'].queryset = queryset
-
         return form
 
     def get_value(
@@ -98,7 +88,7 @@ class Form(Component):
         form = self.get_form(request=request)
         form_data = FormData(
             method=self.method,
-            form=asdict(form, dict_factory=value_render_encoder),
+            form=form,
             action=self.get_submit_url(),
             dependents=self.dependents,
         )
