@@ -164,13 +164,13 @@ class Common(Configuration):
 
     WSGI_APPLICATION = "demo.wsgi.application"
 
-    # Database
-    # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-    DATABASE_HOST = get_env("DATABASE_HOST", default="localhost")
-    DATABASE_PORT = get_env("DATABASE_PORT", default=5432, cast=int)
-    DATABASE_NAME = get_env("DATABASE_NAME", default=PROJECT_NAME)
-    DATABASE_USER = get_env("DATABASE_USER", default=PROJECT_NAME)
-    DATABASE_PASSWORD = get_env("DATABASE_PASSWORD", default=PROJECT_NAME)
+    # # Database
+    # # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+    # DATABASE_HOST = get_env("DATABASE_HOST", default="localhost")
+    # DATABASE_PORT = get_env("DATABASE_PORT", default=5432, cast=int)
+    # DATABASE_NAME = get_env("DATABASE_NAME", default=PROJECT_NAME)
+    # DATABASE_USER = get_env("DATABASE_USER", default=PROJECT_NAME)
+    # DATABASE_PASSWORD = get_env("DATABASE_PASSWORD", default=PROJECT_NAME)
     
     DATABASES = {
         "default": {
