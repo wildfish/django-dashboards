@@ -394,6 +394,7 @@ django==4.2.7
     #   django-asset-definitions
     #   django-cors-headers
     #   model-bakery
+django-filter==2.4.0
 django-asset-definitions==1.0.0
     # via -r requirements.in
 django-cors-headers==4.3.1

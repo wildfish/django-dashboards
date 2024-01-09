@@ -25,10 +25,10 @@ class FilterData:
         self.dependents = dependents
 
 class DynamicFilterSet(FilterSet):
-    pass  # No need to define any specific filters here
+    pass  #  we can  define any specific filters
 
 class SampleFilterSet(FilterSet):
-    # This is a placeholder for the FilterSet. You should replace or extend it.
+    # This is a placeholder for the FilterSet. 
     sample_filter = CharFilter(field_name='sample_field', lookup_expr='icontains')
 
 class Filter(Component):
@@ -90,7 +90,7 @@ class Filter(Component):
         if not self.form or not self.filter_fields:
             raise ConfigurationError("Form and filter_fields must be specified for Filter Component")
 
-        filter_form_data = {}  # Assuming you have some data to populate the form
+        filter_form_data = {}   # to populate the  data from the form
         filter_form = self.get_filter_form(filter_form_data)
         filter_set = self.get_filterset()(data=filter_form_data, queryset=QuerySet())  # Initialize with an empty queryset
 

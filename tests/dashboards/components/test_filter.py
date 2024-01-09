@@ -56,5 +56,3 @@ def test_invalid_configuration():
     # Ensure ConfigurationError is raised for invalid configuration
     with pytest.raises(ImproperlyConfigured):
         Filter()  # Missing required parameters
-
-# Additional tests can be added based on specific scenarios and requirements
