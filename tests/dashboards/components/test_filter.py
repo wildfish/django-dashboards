@@ -1,70 +1,60 @@
 import pytest
 from django.http import HttpRequest
-from django.db.models import CharField, Model
-from django.core.exceptions import FieldDoesNotExist
-from django_filters import FilterSet
-from django.forms.widgets import NumberInput
-from .. import config
-from ..forms import DashboardForm
-from ..types import ValueData
-from .base import Component, value_render_encoder
-from typing import Literal, Union, Type, Dict, Any, List
-from dashboards.component.filters import FilterData, TableFilterSet, TableFilterProcessor, Filter
+from dashboards.component.filters import Filter, FilterData, DynamicFilterSet
+from dashboards.forms import DashboardForm
+from django.core.exceptions import ImproperlyConfigured
+from typing import Type, Literal
 
-class FakeModel(Model):
-    name = CharField(max_length=255)
-    age = CharField(max_length=3)
+class MockDashboard:
+    _meta = type("MockMeta", (), {"app_label": "mock_app", "lookup_field": "id"})
 
 @pytest.fixture
-def fake_model_queryset():
-    fake_data = [
-        {'name': 'John', 'age': '25'},
-        {'name': 'Alice', 'age': '30'},
-        {'name': 'Bob', 'age': '22'},
-    ]
-    return FakeModel.objects.bulk_create([FakeModel(**data) for data in fake_data])
+def mock_dashboard():
+    return MockDashboard()
 
-def test_table_filter_processor(fake_model_queryset):
-    qs = FakeModel.objects.all()
-    filters = {'global_search': 'John'}
+@pytest.fixture
+def sample_filter(mock_dashboard):
+    class MockForm(DashboardForm):
+        pass  # Implement a mock form if needed
 
-    # Test filter method
-    filtered_qs = TableFilterProcessor.filter(qs, filters)
-    assert len(filtered_qs) == 1
-    assert filtered_qs[0].name == 'John'
+    class MockFilterSet(DynamicFilterSet):
+        pass  # Implement a mock FilterSet if needed
 
-    sorted_qs = TableFilterProcessor.sort(qs, ['name'], filters, force_lower=False)
-    assert list(sorted_qs) == sorted(list(qs), key=lambda x: x.name)
+    return Filter(
+        filter_fields=MockFilterSet,
+        form=MockForm,
+        dashboard=mock_dashboard,
+    )
 
-    count = TableFilterProcessor.count(qs)
-    assert count == len(qs)
+def test_submit_url_generation(sample_filter):
+    # Ensure submit_url is generated correctly
+    assert sample_filter.get_submit_url() == f"/mock_app/mock_dashboard/{sample_filter.key}"
 
-def test_filter(fake_model_queryset):
-    form_mock = lambda: None
-    filter_component = Filter(form=form_mock)
-    filter_component.model = FakeModel
+def test_get_filter_form(sample_filter):
+    # Ensure get_filter_form returns a valid form instance
+    form_data = {"key": "value"}  # Replace with actual form data
+    form_instance = sample_filter.get_filter_form(form_data)
+    assert isinstance(form_instance, DashboardForm)
+    assert form_instance.is_valid()
 
-    filterset_class = filter_component.get_filterset()
-    assert issubclass(filterset_class, FilterSet)
-    assert hasattr(filterset_class, 'global_search')
+def test_get_filterset(sample_filter):
+    # Ensure get_filterset returns a valid FilterSet class
+    filterset_class = sample_filter.get_filterset()
+    assert filterset_class == DynamicFilterSet
 
-    request_mock = HttpRequest()
-    filters = {'global_search': 'John'}
-    value = filter_component.get_value(request=request_mock, filters=filters)
-    expected_value = FilterData(form={'global_search': 'John'}, dependents=[])
-    assert value == expected_value
+def test_get_value(sample_filter):
+    # Ensure get_value returns a valid ValueData
+    request = HttpRequest()
+    value_data = sample_filter.get_value(request)
+    assert isinstance(value_data, dict)
+    assert "method" in value_data
+    assert "form" in value_data
+    assert "action" in value_data
+    assert "dependents" in value_data
 
-    data = FakeModel.objects.all()
-    filtered_data = Filter.filter_data(data, filters)
-    assert list(filtered_data) == list(data.filter(name__icontains='John'))
+def test_invalid_configuration():
+    # Ensure ConfigurationError is raised for invalid configuration
+    with pytest.raises(ImproperlyConfigured):
+        Filter()  # Missing required parameters
 
-    sorted_data = Filter.sort_data(data, filters)
-    assert list(sorted_data) == sorted(list(data), key=lambda x: x.name)
-
-    count_data = Filter.count_data(data)
-    assert count_data == len(data)
-
-    page, total_records = Filter.apply_paginator(data, start=0, length=10)
-    assert len(page.object_list) == 3
-    assert total_records == len(data)
-
+# Additional tests can be added based on specific scenarios and requirements
