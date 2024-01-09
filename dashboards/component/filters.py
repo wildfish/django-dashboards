@@ -15,7 +15,7 @@ from django_filters import (
 from .base import Component, ValueData
 
 
-# Example non-ORM data for filtering
+
 EXAMPLE_NON_ORM_DATA = {
     "char_field": "example",
     "date_field": "2022-01-01",
