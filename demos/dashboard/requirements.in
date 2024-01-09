@@ -11,6 +11,7 @@ django_eventstream
 django-cors-headers
 django_redis
 django_silk
+django-filter
 faker
 httpx
 model_bakery

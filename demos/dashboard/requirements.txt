@@ -29,6 +29,7 @@ django==4.2.7
     #   django-redis
     #   django-silk
     #   model-bakery
+django-filter==2.4.0
 django-asset-definitions==1.0.0
     # via django-dashboards
 django-configurations==2.5
