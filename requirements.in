@@ -10,7 +10,6 @@ django-asset-definitions
 # Charts
 pandas
 plotly
-plotly_express
 
 # Dev tools
 Faker
