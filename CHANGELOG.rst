@@ -7,6 +7,12 @@ For an overview of what has changed between versions, see the :ref:`changelog`.
 
 .. _changelog:
 
+0.1.8 2024-10-08
+-----------------
+
+- Updated plotly to 5.24.1 (https://github.com/wildfish/django-dashboards/issues/29)
+- Fixed failing mypy checks
+
 0.1.7 2023-12-14
 -----------------
 
