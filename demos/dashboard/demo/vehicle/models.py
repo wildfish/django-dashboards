@@ -115,4 +115,4 @@ class Data(models.Model):
             Coord = namedtuple("Coord", ["lon", "lat"])
             return Coord(lon=lon, lat=lat)
         elif self.parameter.cast_type == "datetime":
-            return datetime.strptime(self.value, self.DT_FORMAT)
+            return datetime.strptime(self.value, self.DT_FORMAT)  # type: ignore

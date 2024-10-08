@@ -104,7 +104,7 @@ class DemoDashboard(Dashboard):
         grid_css_classes=Grid.TWO.value,
     )
     stat_two = Stat(
-        value=StatData(text="88%", sub_text="decrease", change_by="12%"),
+        value=StatData(text="88%", sub_text="decrease", change_by_text="12%"),
         icon="<i data-feather='users'></i>",
         grid_css_classes=Grid.TWO.value,
     )

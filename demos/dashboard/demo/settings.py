@@ -267,7 +267,7 @@ class RedisCache:
             "default": {
                 "BACKEND": "django_redis.cache.RedisCache",
                 "LOCATION": f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/1",
-                "KEY_PREFIX": f"{self.PROJECT_ENVIRONMENT_SLUG}_",
+                "KEY_PREFIX": f"{self.PROJECT_ENVIRONMENT_SLUG}_",  # type: ignore
                 "OPTIONS": {
                     "CLIENT_CLASS": "django_redis.client.DefaultClient",
                     "PARSER_CLASS": "redis.connection.HiredisParser",

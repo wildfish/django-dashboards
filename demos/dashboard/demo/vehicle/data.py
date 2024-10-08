@@ -74,7 +74,7 @@ class VehicleData:
 
     @staticmethod
     def fetch_vehicle_details(*args, **kwargs):
-        vehicle = kwargs.get("object")
+        vehicle: Vehicle = kwargs.get("object")  # type: ignore
         return StatData(
             text=dict_to_table(
                 {
@@ -92,7 +92,7 @@ class VehicleData:
 
     @staticmethod
     def fetch_last_route(*args, **kwargs):
-        vehicle = kwargs.get("object")
+        vehicle: Vehicle = kwargs.get("object")  # type: ignore
         locations = vehicle.get_locations_for_last_job()
         lat_coords = [location.lat for location in locations]
         lon_coords = [location.lon for location in locations]
