@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).absolute().parent.parent
 PROJECT_NAME = "docs"
 
 
-ADMINS = []
+ADMINS = []  # type: ignore
 
 
 SECRET_KEY = "somesecretvalue"

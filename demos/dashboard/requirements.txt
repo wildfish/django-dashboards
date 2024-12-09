@@ -37,7 +37,7 @@ django-cors-headers==4.3.1
     # via
     #   -r requirements.in
     #   django-dashboards
-django-dashboards==0.1.7
+django-dashboards==0.1.8
     # via -r requirements.in
 django-eventstream==4.5.1
     # via -r requirements.in

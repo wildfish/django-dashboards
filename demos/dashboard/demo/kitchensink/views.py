@@ -66,7 +66,7 @@ class AsyncComponentView(ComponentView):
         Needed prior to 4.1 for CBV
         """
         view = super().as_view(**initkwargs)
-        view._is_coroutine = asyncio.coroutines._is_coroutine
+        view._is_coroutine = asyncio.coroutines._is_coroutine  # type: ignore
         return view
 
     async def get(self, request: HttpRequest, *args, **kwargs):

@@ -10,7 +10,7 @@ from ...models import Data, Parameter
 class Command(BaseCommand):
     def handle(self, *args, **options):
         if Data.objects.count() == 0:
-            vehicles = baker.make("Vehicle", _quantity=5, _bulk_create=True)
+            vehicles = baker.make("Vehicle", _quantity=5, _bulk_create=True)  # type: ignore
             location_param, _ = Parameter.objects.get_or_create(
                 name="Current Location", cast_type=Parameter.CastType.COORDINATE
             )

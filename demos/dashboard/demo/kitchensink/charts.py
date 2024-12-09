@@ -14,13 +14,13 @@ class ScatterChartSerializer(ChartSerializer):
     color: Optional[str] = None
     mode: Optional[str] = "markers"
 
-    def get_x(self, df) -> str:
+    def get_x(self, df) -> str | None:
         return self.x
 
-    def get_y(self, df) -> str:
+    def get_y(self, df) -> str | None:
         return self.y
 
-    def get_size(self, df) -> str:
+    def get_size(self, df) -> str | None:
         return self.size
 
     def to_fig(self, df) -> go.Figure:
@@ -42,10 +42,10 @@ class BarChartSerializer(ChartSerializer):
     color: Optional[str] = None
     barmode: Optional[str] = "group"
 
-    def get_x(self, df) -> str:
+    def get_x(self, df) -> str | None:
         return self.x
 
-    def get_y(self, df) -> str:
+    def get_y(self, df) -> str | None:
         return self.y
 
     def to_fig(self, df) -> go.Figure:
